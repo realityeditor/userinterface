@@ -232,117 +232,67 @@ body {
     background-color: #a0a0a0;
 }
 
-#content1Padding {
+.PrefTitle {
     position: relative;
     float: left;
+    height: 50px;
+    width: 50%;
+    box-sizing: border-box;
+    background-color: #aaaaaa;
+}
+
+#content1Padding {
     height: 10px;
     width: 100%;
-    box-sizing: border-box;
     padding: 5px;
-
     text-align: center;
-
-    background-color: #aaaaaa;
 }
 
 #content11 {
-    position: relative;
-    float: left;
-    height: 50px;
-    width: 50%;
-    box-sizing: border-box;
     padding-top: 5px;
     padding-left: 13px;
     text-align: left;
-    background-color: #aaaaaa;
 }
 
 #content12 {
-    position: relative;
-    float: left;
-    height: 50px;
-    width: 50%;
-    box-sizing: border-box;
     padding: 5px;
     padding-left: 13px;
     text-align: center;
-    background-color: #aaaaaa;
-    -webkit-transform-style: preserve-3d;
-    transform-style: preserve-3d;
 }
 
 #content13 {
-    position: relative;
-    float: left;
-    height: 50px;
-    width: 50%;
-    box-sizing: border-box;
     padding-top: 5px;
     padding-left: 13px;
     text-align: left;
-    background-color: #aaaaaa;
-    -webkit-transform-style: preserve-3d;
-    transform-style: preserve-3d;
 }
 
 #content14 {
-    position: relative;
-    float: left;
-    height: 50px;
-    width: 50%;
-    box-sizing: border-box;
     padding: 5px;
     padding-left: 13px;
-
     text-align: center;
-
-    background-color: #aaaaaa;
 }
 
 #content15 {
-    position: relative;
-    float: left;
-    height: 50px;
-    width: 50%;
-    box-sizing: border-box;
     padding-top: 5px;
     padding-left: 13px;
-
     vertical-align: middle;
     text-align: left;
-
-    background-color: #aaaaaa;
 }
 
 #content16 {
-    position: relative;
-    float: left;
-    height: 50px;
-    width: 50%;
     padding-top: 5px;
-    box-sizing: border-box;
     padding-left: 13px;
-
     text-align: left;
-
-    background-color: #aaaaaa;
 }
 
 #content20 {
-    position: relative;
-    float: left;
     height: 55px;
-    width: 100%;
-    box-sizing: border-box;
     padding-left: 13px;
     padding-top: 5px;
     padding-bottom: 10px;
     margin-bottom: 3px;
     padding-right: 13px;
-
     text-align: left;
-
-    background-color: #aaaaaa;
 }
 
 #newURLText {
@@ -351,60 +301,35 @@ body {
 }
 
 #content30 {
-    position: relative;
-    float: left;
     height: 55px;
-    width: 50%;
-    box-sizing: border-box;
     padding-top: 5px;
     padding-left: 13px;
-
     text-align: left;
-
-    background-color: #aaaaaa;
 }
 
 #content31 {
-    position: relative;
-    float: left;
     height: 55px;
-    width: 50%;
-    box-sizing: border-box;
     right:0px;
     padding: 5px;
     padding-left: 0px;
 
     text-align: center;
-
-    background-color: #aaaaaa;
 }
 
 #content18 {
-    position: relative;
-    float: left;
     height: 320px;
     width: 100%;
-    box-sizing: border-box;
     padding-top: 13px;
     padding-left: 13px;
     padding-right: 13px;
-
     text-align: left;
-
-    background-color: #aaaaaa;
 }
 
 #contentPadding {
-    position: relative;
-    float: left;
     height: 10px;
     width: 100%;
-    box-sizing: border-box;
     padding: 5px;
-
     text-align: center;
-
-    background-color: #aaaaaa;
 }
 
 #content1title {
