@@ -1257,25 +1257,19 @@ function addElementInPreferences() {
 
     var htmlContent = "";
 
-    htmlContent += "<div class='Interfaces'" +
-        "id='preferencesLabelName'>" +
-        "Name</div>";
+    htmlContent += "<div class='Interfaces objectEntry objectName'>Name</div>";
 
-    htmlContent += "<div class='Interfaces'" +
-        "id='preferencesLabelIP'>" +
-        "IP</div>";
+    htmlContent += "<div class='Interfaces objectEntry objectIP'>IP</div>";
 
-    htmlContent += "<div class='Interfaces'" +
-        "id='preferencesLabelVersion'>" +
-        "Version</div>";
+    htmlContent += "<div class='Interfaces objectEntry objectVersion'>Version</div>";
 
-    htmlContent += "<div class='Interfaces'" +
-        "id='preferencesLabelIO'>" +
-        "Nodes</div>";
+    htmlContent += "<div class='Interfaces objectEntry objectIO'>Nodes</div>";
 
-    htmlContent += "<div class='Interfaces'" +
-        "id='preferencesLabelLinks'>" +
-        "Links</div>";
+    htmlContent += "<div class='Interfaces objectEntry objectLinks'>Links</div>";
+
+
+    // Construct the entries for each current object. Turns into a row through
+    // convenient wrapping
 
     var bgSwitch = false;
     var bgcolor = "";
@@ -1289,19 +1283,19 @@ function addElementInPreferences() {
             bgSwitch = true;
         }
 
-        htmlContent += "<div class='Interfaces preferencesObjectName' id='" +
+        htmlContent += "<div class='Interfaces objectEntry objectName' id='" +
             "name" + keyPref +
             "' style='" + bgcolor + "'>" +
             objectExp[keyPref].name
             + "</div>";
 
-        htmlContent += "<div class='Interfaces preferencesObjectIP' id='" +
+        htmlContent += "<div class='Interfaces objectEntry objectIP' id='" +
             "ip" + keyPref +
             "' style='" + bgcolor + "'>" +
             objectExp[keyPref].ip
             + "</div>";
 
-        htmlContent += "<div class='Interfaces preferencesObjectVersion' id='" +
+        htmlContent += "<div class='Interfaces objectEntry objectVersion' id='" +
             "version" + keyPref +
             "' style='" + bgcolor + "'>" +
             objectExp[keyPref].version
@@ -1313,7 +1307,7 @@ function addElementInPreferences() {
             anzahl++;
         }
 
-        htmlContent += "<div class='Interfaces preferencesObjectIO' id='" +
+        htmlContent += "<div class='Interfaces objectEntry objectIO' id='" +
             "io" + keyPref +
             "' style='" + bgcolor + "'>" +
             anzahl
@@ -1325,7 +1319,7 @@ function addElementInPreferences() {
             anzahl++;
         }
 
-        htmlContent += "<div class='Interfaces preferencesObjectLinks' id='" +
+        htmlContent += "<div class='Interfaces objectEntry objectLinks' id='" +
             "links" + keyPref +
             "' style='" + bgcolor + "'>" +
             anzahl

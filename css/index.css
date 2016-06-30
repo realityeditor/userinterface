@@ -449,132 +449,37 @@ body {
     -webkit-transform: translateZ(2px);
 }
 
-#preferencesLabelName {
+.objectEntry {
     position: relative;
     float: left;
     height: 20px;
+    text-align: center;
+    line-height: 20px;
+    vertical-align: middle;
+    display: table-cell;
+    background-color: #a0a0a0;
+    -webkit-transform-style: preserve-3d;
+}
+
+.objectName {
     width: 34%;
-    text-align: center;
-    line-height: 20px;
-    vertical-align: middle;
-    display: table-cell;
-    background-color: #a0a0a0;
-    -webkit-transform-style: preserve-3d;
 }
 
-#preferencesLabelIP {
-    position: relative;
-    float: left;
-    height: 20px;
+.objectIP {
     width: 30%;
-    text-align: center;
-    line-height: 20px;
-    vertical-align: middle;
-    display: table-cell;
-    background-color: #a0a0a0;
-    -webkit-transform-style: preserve-3d;
 }
 
-#preferencesLabelVersion {
-    position: relative;
-    float: left;
-    height: 20px;
+.objectVersion {
     width: 14%;
-    text-align: center;
-    line-height: 20px;
-    vertical-align: middle;
-    display: table-cell;
-    background-color: #a0a0a0;
-    -webkit-transform-style: preserve-3d;
 }
 
-#preferencesLabelIO {
-    position: relative;
-    float: left;
-    height: 20px;
+.objectIO {
     width: 11%;
-    text-align: center;
-    line-height: 20px;
-    vertical-align: middle;
-    display: table-cell;
-    background-color: #a0a0a0;
-    -webkit-transform-style: preserve-3d;
 }
 
-#preferencesLabelLinks {
-    position: relative;
-    float: left;
-    height: 20px;
-    width: 11%;
-    text-align: center;
-    line-height: 20px;
-    vertical-align: middle;
-    display: table-cell;
-    background-color: #a0a0a0;
-    -webkit-transform-style: preserve-3d;
-}
-
-.preferencesObjectName {
-    position: relative;
-    float: left;
-    height: 20px;
-    width: 34%;
-    text-align: center;
-    line-height: 20px;
-    vertical-align: middle;
-    display: table-cell;
-    -webkit-transform-style: preserve-3d;
-}
-
-.preferencesObjectIP {
-    position: relative;
-    float: left;
-    height: 20px;
-    width: 30%;
-    text-align: center;
-    line-height: 20px;
-    vertical-align: middle;
-    display: table-cell;
-    -webkit-transform-style: preserve-3d;
-}
-
-.preferencesObjectVersion {
-    position: relative;
-    float: left;
-    height: 20px;
-    width: 14%;
-    text-align: center;
-    line-height: 20px;
-    vertical-align: middle;
-    display: table-cell;
-    -webkit-transform-style: preserve-3d;
-}
-
-.preferencesObjectIO {
-    position: relative;
-    float: left;
-    height: 20px;
-    width: 11%;
-     text-align: center;
-    line-height: 20px;
-    vertical-align: middle;
-    display: table-cell;
-    -webkit-transform-style: preserve-3d;
-}
-
-.preferencesObjectLinks {
-    position: relative;
-    float: left;
-    height: 20px;
+.objectLinks {
     width: 12%;
-    text-align: center;
-    line-height: 20px;
-    vertical-align: middle;
-    display: table-cell;
-    -webkit-transform-style: preserve-3d;
 }
-
-
 
 .Canvas {
     visibility: visible;
