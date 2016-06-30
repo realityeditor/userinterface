@@ -70,6 +70,9 @@ body {
 
     /* -webkit-user-select: none;  Disable selection/Copy of UIWebView */
     -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    color: #ffffff;
 }
 
 .main {
@@ -219,482 +222,431 @@ body {
  /*   -webkit-user-select: text;*/
 /*}*/
 
+#content1 {
+    position: fixed;
+    left: 5%;
+    top: 7%;
+    right: 58%;
+    bottom: 10%;
+
+    background-color: #a0a0a0;
+}
+
+#content1Padding {
+    position: relative;
+    float: left;
+    height: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px;
+
+    text-align: center;
+
+    background-color: #aaaaaa;
+}
+
 #content11 {
-  position: relative;
-  float: left;
-  height: 50px;
-  width: 50%;
-  box-sizing: border-box;
-  padding-top: 5px;
-  padding-left: 15px;
-  text-align: left;
-  font-family: Helvetica Neue, Helvetica, Arial;
-  background-color: #aaaaaa;
-  -webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 50px;
+    width: 50%;
+    box-sizing: border-box;
+    padding-top: 5px;
+    padding-left: 13px;
+    text-align: left;
+    background-color: #aaaaaa;
 }
 
 #content12 {
-  position: relative;
-  float: left;
-  height: 50px;
-  width: 50%;
-  box-sizing: border-box;
-  padding: 5px;
-  padding-left: 13px;
-  text-align: center;
-  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-  background-color: #aaaaaa;
-  -webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 50px;
+    width: 50%;
+    box-sizing: border-box;
+    padding: 5px;
+    padding-left: 13px;
+    text-align: center;
+    background-color: #aaaaaa;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
 }
 
 #content13 {
-  position: relative;
-  float: left;
-  height: 50px;
-  width: 50%;
-  box-sizing: border-box;
-  padding-top: 5px;
-  padding-left: 13px;
-  text-align: left;
-  font-family: Helvetica Neue, Helvetica, Arial;
-  background-color: #aaaaaa;
-  -webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 50px;
+    width: 50%;
+    box-sizing: border-box;
+    padding-top: 5px;
+    padding-left: 13px;
+    text-align: left;
+    background-color: #aaaaaa;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
 }
 
 #content14 {
-  position: relative;
-  float: left;
-  height: 50px;
-  width: 50%;
-  box-sizing: border-box;
-  padding: 5px;
-  padding-left: 13px;
+    position: relative;
+    float: left;
+    height: 50px;
+    width: 50%;
+    box-sizing: border-box;
+    padding: 5px;
+    padding-left: 13px;
 
-  text-align: center;
-  font-family: Helvetica Neue, Helvetica, Arial;
+    text-align: center;
 
-  background-color: #aaaaaa;
-  -webkit-transform-style: preserve-3d;
+    background-color: #aaaaaa;
 }
 
 #content15 {
-  position: relative;
-  float: left;
-  height: 50px;
-  width: 50%;
-  box-sizing: border-box;
-  padding-top: 5px;
-  padding-left: 13px;
+    position: relative;
+    float: left;
+    height: 50px;
+    width: 50%;
+    box-sizing: border-box;
+    padding-top: 5px;
+    padding-left: 13px;
 
-  vertical-align: middle;
-  text-align: left;
-  font-family: Helvetica Neue, Helvetica, Arial;
+    vertical-align: middle;
+    text-align: left;
 
-  background-color: #aaaaaa;
-  -webkit-transform-style: preserve-3d;
+    background-color: #aaaaaa;
 }
 
 #content16 {
-  position: relative;
-  float: left;
-  height: 50px;
-  width: 50%;
-  padding-top: 5px;
-  box-sizing: border-box;
-  padding-left: 13px;
+    position: relative;
+    float: left;
+    height: 50px;
+    width: 50%;
+    padding-top: 5px;
+    box-sizing: border-box;
+    padding-left: 13px;
 
-  text-align: left;
-  font-family: Helvetica Neue, Helvetica, Arial;
+    text-align: left;
 
-  background-color: #aaaaaa;
-  -webkit-transform-style: preserve-3d;
+    background-color: #aaaaaa;
 }
 
 #content20 {
-  position: relative;
-  float: left;
-  height: 55px;
-  width: 100%;
-  box-sizing: border-box;
-  padding-left: 13px;
-  padding-top: 5px;
-  padding-bottom: 10px;
-  margin-bottom: 3px;
-  padding-right: 13px;
+    position: relative;
+    float: left;
+    height: 55px;
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: 13px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    margin-bottom: 3px;
+    padding-right: 13px;
 
-  text-align: left;
-  font-family: Helvetica Neue, Helvetica, Arial;
+    text-align: left;
 
-  background-color: #aaaaaa;
-  -webkit-transform-style: preserve-3d;
+    background-color: #aaaaaa;
 }
 
 #newURLText {
-  font-size: large;
-  -webkit-user-select: text;
+    font-size: large;
+    -webkit-user-select: text;
 }
 
 #content30 {
-  position: relative;
-  float: left;
-  height: 55px;
-  width: 50%;
-  box-sizing: border-box;
-  padding-top: 5px;
-  padding-left: 13px;
+    position: relative;
+    float: left;
+    height: 55px;
+    width: 50%;
+    box-sizing: border-box;
+    padding-top: 5px;
+    padding-left: 13px;
 
-  text-align: left;
-  font-family: Helvetica Neue, Helvetica, Arial;
+    text-align: left;
 
-  background-color: #aaaaaa;
-  -webkit-transform-style: preserve-3d;
+    background-color: #aaaaaa;
 }
 
 #content31 {
-  position: relative;
-  float: left;
-  height: 55px;
-  width: 50%;
-  box-sizing: border-box;
-  right:0px;
-  padding: 5px;
-  padding-left: 0px;
+    position: relative;
+    float: left;
+    height: 55px;
+    width: 50%;
+    box-sizing: border-box;
+    right:0px;
+    padding: 5px;
+    padding-left: 0px;
 
-  text-align: center;
-  font-family: Helvetica Neue, Helvetica, Arial;
+    text-align: center;
 
-  background-color: #aaaaaa;
-  -webkit-transform-style: preserve-3d;
+    background-color: #aaaaaa;
 }
 
 #content18 {
-  position: relative;
-  float: left;
-  height: 320px;
-  width: 100%;
-  box-sizing: border-box;
-  padding-top: 13px;
-  padding-left: 13px;
-  padding-right: 13px;
+    position: relative;
+    float: left;
+    height: 320px;
+    width: 100%;
+    box-sizing: border-box;
+    padding-top: 13px;
+    padding-left: 13px;
+    padding-right: 13px;
 
-  text-align: left;
-  font-family: Helvetica Neue, Helvetica, Arial;
+    text-align: left;
 
-  background-color: #aaaaaa;
-  -webkit-transform-style: preserve-3d;
+    background-color: #aaaaaa;
 }
 
 #contentPadding {
-  position: relative;
-  float: left;
-  height: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 5px;
+    position: relative;
+    float: left;
+    height: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px;
 
-  text-align: center;
-  font-family: Helvetica Neue, Helvetica, Arial;
+    text-align: center;
 
-  background-color: #aaaaaa;
-  -webkit-transform-style: preserve-3d;
+    background-color: #aaaaaa;
 }
 
 #content1title {
-  position: fixed;
-  left: 5%;
-  top: 2%;
-  right: 58%;
-  bottom: 89%;
+    position: fixed;
+    left: 5%;
+    top: 2%;
+    right: 58%;
+    bottom: 89%;
 
-  font-family: Helvetica Neue, Helvetica, Arial;
-  font-size: 18pt;
+    font-size: 18pt;
 
-  -webkit-transform-style: preserve-3d;
-
-  text-align: center;
+    text-align: center;
 }
 
 #content2 {
-  position: fixed;
-  left: 47%;
-  top: 7%;
-  right: 17%;
-  bottom: 10%;
-  -webkit-transform-style: preserve-3d;
+    position: fixed;
+    left: 47%;
+    top: 7%;
+    right: 17%;
+    bottom: 10%;
 
-  background-color: #a0a0a0;
+    background-color: #a0a0a0;
 }
 
 #content2title {
-  position: fixed;
-  left: 47%;
-  top: 2%;
-  right: 17%;
-  bottom: 89%;
+    position: fixed;
+    left: 47%;
+    top: 2%;
+    right: 17%;
+    bottom: 89%;
 
-  font-family: Helvetica Neue, Helvetica, Arial;
-  font-size: 18pt;
+    font-size: 18pt;
 
-
-  -webkit-transform-style: preserve-3d;
-
-  text-align: center;
+    text-align: center;
 }
 
 #UIButtons {
-  -webkit-transform-style: preserve-3d;
-  visibility: hidden;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  /* right: 18px;
-  top: 18px;*/
+    visibility: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    /* right: 18px;
+    top: 18px;*/
 
-  /* this is a hack for adding the interface in front of the transformed web interface */
-  -webkit-transform: translateZ(1px);
+    /* this is a hack for adding the interface in front of the transformed web interface */
+    -webkit-transform: translateZ(1px);
+}
+
+.UIButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    visibility: visible;
 }
 
 #guiButtonDiv {
-  position: fixed;
-  width: 60px;
-  height: 125px;
-  right: 0px;
-  top: 0px;
-  -webkit-transform-style: preserve-3d;
-  visibility: visible;
+    height: 125px;
+    right: 0px;
+    top: 0px;
 }
 
 #feezeButtonDiv {
-  position: fixed;
-  width: 60px;
-  height: 60px;
-  right: 0px;
-  top: 130px;
-  -webkit-transform-style: preserve-3d;
-  visibility: visible;
+    right: 0px;
+    top: 130px;
 }
 
 #guiButtonImage1 {
-  position: fixed;
-  width: 60px;
-  height: 60px;
-  right: 0px;
-  top:0px;
-  -webkit-transform-style: preserve-3d;
-  visibility: visible;
+    right: 0px;
+    top:0px;
 }
 
 #guiButtonImage2 {
-  position: fixed;
-  width: 60px;
-  height: 60px;
-  right: 0px;
-  top:62px;
-  -webkit-transform-style: preserve-3d;
-  visibility: visible;
+    right: 0px;
+    top: 62px;
 }
 
 #reloadButtonDiv {
-  position: fixed;
-  width: 60px;
-  height: 60px;
-  right: 0px;
-  top: 260px;
-  -webkit-transform-style: preserve-3d;
-  visibility: visible;
+    right: 0px;
+    top: 260px;
 }
 
 #logButtonDiv {
-  position: fixed;
-  width: 60px;
-  height: 60px;
-  right: 0px;
-  bottom: 176px;
-  -webkit-transform-style: preserve-3d;
-  display:none;
-  visibility: hidden;
+    right: 0px;
+    bottom: 176px;
+    display: none;
+    visibility: hidden;
 }
 
 #preferencesButtonDiv {
-  position: fixed;
-  width: 60px;
-  height: 60px;
-  right: 0px;
-  top: 195px;
-  -webkit-transform-style: preserve-3d;
-  visibility: visible;
+    right: 0px;
+    top: 195px;
 }
 
 #resetButtonDiv {
-  position: fixed;
-  width: 60px;
-  height: 60px;
-  right: 130px;
-  top: 0px;
-  -webkit-transform-style: preserve-3d;
-  visibility: hidden;
+    right: 130px;
+    top: 0px;
+    visibility: hidden;
 }
 
 #unconstButtonDiv {
-  position: fixed;
-  width: 60px;
-  height: 60px;
-  right: 65px;
-  top: 0px;
-  -webkit-transform-style: preserve-3d;
-  visibility: hidden;
+    right: 65px;
+    top: 0px;
+    visibility: hidden;
 }
 
 #overlay {
-  -webkit-transform-style: preserve-3d;
-  display: none;
-  pointer-events: none;
-  position: fixed;
-  width: 120px;
-  height: 120px;
-  left: 0px;
-  top: 0px;
+    -webkit-transform-style: preserve-3d;
+    display: none;
+    pointer-events: none;
+    position: fixed;
+    width: 120px;
+    height: 120px;
+    left: 0px;
+    top: 0px;
 
-  /* this is a hack for adding the interface in front of the transformed web interface */
-  -webkit-transform: translateZ(2px);
+    /* this is a hack for adding the interface in front of the transformed web interface */
+    -webkit-transform: translateZ(2px);
 }
 
 #preferencesLabelName {
-  position: relative;
-  float: left;
-  height: 20px;
-  width: 34%;
-  text-align: center;
-  line-height: 20px;
-  vertical-align: middle;
-  display: table-cell;
-  font-family: Helvetica Neue, Helvetica, Arial;
-  background-color: #a0a0a0;
-  -webkit-transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 20px;
+    width: 34%;
+    text-align: center;
+    line-height: 20px;
+    vertical-align: middle;
+    display: table-cell;
+    background-color: #a0a0a0;
+    -webkit-transform-style: preserve-3d;
 }
 
 #preferencesLabelIP {
-  position: relative;
-  float: left;
-  height: 20px;
-  width: 30%;
-  text-align: center;
-  line-height: 20px;
-  vertical-align: middle;
-  display: table-cell;
-  font-family: Helvetica Neue, Helvetica, Arial;
-  background-color: #a0a0a0;
-  -webkit-transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 20px;
+    width: 30%;
+    text-align: center;
+    line-height: 20px;
+    vertical-align: middle;
+    display: table-cell;
+    background-color: #a0a0a0;
+    -webkit-transform-style: preserve-3d;
 }
 
 #preferencesLabelVersion {
-  position: relative;
-  float: left;
-  height: 20px;
-  width: 14%;
-  text-align: center;
-  line-height: 20px;
-  vertical-align: middle;
-  display: table-cell;
-  font-family: Helvetica Neue, Helvetica, Arial;
-  background-color: #a0a0a0;
-  -webkit-transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 20px;
+    width: 14%;
+    text-align: center;
+    line-height: 20px;
+    vertical-align: middle;
+    display: table-cell;
+    background-color: #a0a0a0;
+    -webkit-transform-style: preserve-3d;
 }
 
 #preferencesLabelIO {
-  position: relative;
-  float: left;
-  height: 20px;
-  width: 11%;
-  text-align: center;
-  line-height: 20px;
-  vertical-align: middle;
-  display: table-cell;
-  font-family: Helvetica Neue, Helvetica, Arial;
-  background-color: #a0a0a0;
-  -webkit-transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 20px;
+    width: 11%;
+    text-align: center;
+    line-height: 20px;
+    vertical-align: middle;
+    display: table-cell;
+    background-color: #a0a0a0;
+    -webkit-transform-style: preserve-3d;
 }
 
 #preferencesLabelLinks {
-  position: relative;
-  float: left;
-  height: 20px;
-  width: 11%;
-  text-align: center;
-  line-height: 20px;
-  vertical-align: middle;
-  display: table-cell;
-  font-family: Helvetica Neue, Helvetica, Arial;
-  background-color: #a0a0a0;
-  -webkit-transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 20px;
+    width: 11%;
+    text-align: center;
+    line-height: 20px;
+    vertical-align: middle;
+    display: table-cell;
+    background-color: #a0a0a0;
+    -webkit-transform-style: preserve-3d;
 }
 
 .preferencesObjectName {
-  position: relative;
-  float: left;
-  height: 20px;
-  width: 34%;
-  text-align: center;
-  line-height: 20px;
-  vertical-align: middle;
-  display: table-cell;
-  font-family: Helvetica Neue, Helvetica, Arial;
-  -webkit-transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 20px;
+    width: 34%;
+    text-align: center;
+    line-height: 20px;
+    vertical-align: middle;
+    display: table-cell;
+    -webkit-transform-style: preserve-3d;
 }
 
 .preferencesObjectIP {
-  position: relative;
-  float: left;
-  height: 20px;
-  width: 30%;
-  text-align: center;
-  line-height: 20px;
-  vertical-align: middle;
-  display: table-cell;
-  font-family: Helvetica Neue, Helvetica, Arial;
-  -webkit-transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 20px;
+    width: 30%;
+    text-align: center;
+    line-height: 20px;
+    vertical-align: middle;
+    display: table-cell;
+    -webkit-transform-style: preserve-3d;
 }
 
 .preferencesObjectVersion {
-  position: relative;
-  float: left;
-  height: 20px;
-  width: 14%;
-  text-align: center;
-  line-height: 20px;
-  vertical-align: middle;
-  display: table-cell;
-  font-family: Helvetica Neue, Helvetica, Arial;
-  -webkit-transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 20px;
+    width: 14%;
+    text-align: center;
+    line-height: 20px;
+    vertical-align: middle;
+    display: table-cell;
+    -webkit-transform-style: preserve-3d;
 }
 
 .preferencesObjectIO {
-  position: relative;
-  float: left;
-  height: 20px;
-  width: 11%;
-   text-align: center;
-  line-height: 20px;
-  vertical-align: middle;
-  display: table-cell;
-  font-family: Helvetica Neue, Helvetica, Arial;
-  -webkit-transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 20px;
+    width: 11%;
+     text-align: center;
+    line-height: 20px;
+    vertical-align: middle;
+    display: table-cell;
+    -webkit-transform-style: preserve-3d;
 }
 
 .preferencesObjectLinks {
-  position: relative;
-  float: left;
-  height: 20px;
-  width: 12%;
-  text-align: center;
-  line-height: 20px;
-  vertical-align: middle;
-  display: table-cell;
-  font-family: Helvetica Neue, Helvetica, Arial;
-  -webkit-transform-style: preserve-3d;
+    position: relative;
+    float: left;
+    height: 20px;
+    width: 12%;
+    text-align: center;
+    line-height: 20px;
+    vertical-align: middle;
+    display: table-cell;
+    -webkit-transform-style: preserve-3d;
 }
 
 

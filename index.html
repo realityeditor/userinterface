@@ -75,7 +75,7 @@
     <script src="js/datacraftingEventHelpers.js"></script>
 
 </head>
-<body text="#ffffff">
+<body>
 
 <div class='main' id="GUI"></div>
 
@@ -85,20 +85,11 @@
 
 <div class='Interfaces' id="preferences">
 
-    <div id="content1" class='Interfaces'
-         style="position: fixed; left: 5%; top: 7%; right: 58%; bottom: 10%;  -webkit-transform-style: preserve-3d;
-             background-color: #a0a0a0;">
-
-        <div class='Interfaces'
-             style='position: relative;  float: left; height: 10px; width: 100%; box-sizing: border-box; padding: 5px;
-               text-align: center; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
+    <div id="content1" class='Interfaces'>
+        <div id="content1Padding" class='Interfaces'>
         </div>
 
-        <div id="content11" class='Interfaces'
-             style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box;   padding-top: 5px;padding-left: 13px;
-               text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
+        <div id="content11" class='Interfaces'>
             <b>Authoring: Position UI</b><br>
         </div>
 
@@ -168,7 +159,7 @@
 
 <div class='Interfaces' id="UIButtons">
     <!-- guiButtonImage    -->
-    <div class='Interfaces' id="guiButtonDiv">
+    <div class='Interfaces UIButton' id="guiButtonDiv">
         <img class='Interfaces' id="guiButtonImage" src="png/intOneSelect.png" width="60" height="125" alt="">
     </div>
 
@@ -179,35 +170,40 @@
     </div>
 
     <!-- feezeButton    -->
-    <div class='Interfaces' id="feezeButtonDiv">
+    <div class='Interfaces UIButton' id="feezeButtonDiv">
         <img class='Interfaces' id="feezeButton" src="png/freeze.png" width="60" height="60" alt=""/>
     </div>
-    <div class='Interfaces' id="guiButtonImage1">
+    <div class='Interfaces UIButton' id="guiButtonImage1">
     </div>
+
     <!--  guiButtonImage2   -->
-    <div class='Interfaces' id="guiButtonImage2">
+    <div class='Interfaces UIButton' id="guiButtonImage2">
     </div>
+
     <!--   reloadButtonDiv -- only visible in ipad -->
-    <div class='Interfaces' id="reloadButtonDiv">
+    <div class='Interfaces UIButton' id="reloadButtonDiv">
         <img class='Interfaces' id="reloadButton" src="png/reload.png" width="60" height="60" alt=""/>
     </div>
+
     <!--  logButtonDiv -- Outdated   -->
-    <div id="logButtonDiv">
+    <div class='Interfaces UIButton' id="logButtonDiv">
         <img class='Interfaces' id="logButton" src="png/log.png" width="60" height="60" alt=""/>
     </div>
+
     <!--   preferencesButton  -->
-    <div class='Interfaces'  id="preferencesButtonDiv">
+    <div class='Interfaces UIButton'  id="preferencesButtonDiv">
         <img class='Interfaces'  id="preferencesButton" src="png/pref.png" width="60"
              height="60" alt=""/>
     </div>
+
     <!--  resetButton - this is for editing mode only  -->
-    <div class='Interfaces'  id="resetButtonDiv">
+    <div class='Interfaces UIButton'  id="resetButtonDiv">
         <img class='Interfaces'  id="resetButton" src="png/reset.png" width="60"
              height="60" alt=""/>
     </div>
+
     <!--  unconstButton - this is for editing mode only   -->
-    <div class='Interfaces'  id="unconstButtonDiv"
-         style="">
+    <div class='Interfaces UIButton'  id="unconstButtonDiv">
         <img class='Interfaces'  id="unconstButton" src="png/unconst.png" width="60"
              height="60" alt=""/>
     </div>
