@@ -166,84 +166,60 @@
 
 <!-- This is the Interface frontend GUI part -->
 
-<div class='Interfaces' id="UIButtons" style="
-  -webkit-transform-style: preserve-3d;
-   visibility: hidden;
-position: fixed;
-    width: 100%;
-    height: 100%;
-   /* right: 18px;
-    top: 18px;*/
-
-   /* this is a hack for adding the interface in front of the transformed web interface */
--webkit-transform: translateZ(1px);
-">
+<div class='Interfaces' id="UIButtons">
     <!-- guiButtonImage    -->
-    <div class='Interfaces'
-         style="position: fixed; width: 60px;height: 125px;right: 0px; top: 0px;  -webkit-transform-style: preserve-3d;  visibility: visible;">
-        <img class='Interfaces' id="guiButtonImage" src="png/intOneSelect.png" width="60" height="125" alt=""></div>
-
+    <div class='Interfaces' id="guiButtonDiv">
+        <img class='Interfaces' id="guiButtonImage" src="png/intOneSelect.png" width="60" height="125" alt="">
+    </div>
 
     <!-- pocketButton    -->
     <div class='Interfaces' id="pocketButtonDiv"
          style="position: fixed; width: 60px;height: 60px;right: 0px; top: 130px;  -webkit-transform-style: preserve-3d; visibility: visible;">
         <img class='Interfaces' id="pocketButton" src="png/pocket.png" width="60" height="60" alt=""/></div>
+    </div>
 
     <!-- feezeButton    -->
-    <div class='Interfaces' id="feezeButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; top: 260px;  -webkit-transform-style: preserve-3d; visibility: visible;">
-        <img class='Interfaces' id="feezeButton" src="png/freeze.png" width="60" height="60" alt=""/></div>
-    <!--  guiButtonImage1   -->
-    <div class='Interfaces' id="guiButtonImage1"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; top:0px;  -webkit-transform-style: preserve-3d; visibility: visible;">
+    <div class='Interfaces' id="feezeButtonDiv">
+        <img class='Interfaces' id="feezeButton" src="png/freeze.png" width="60" height="60" alt=""/>
+    </div>
+    <div class='Interfaces' id="guiButtonImage1">
     </div>
     <!--  guiButtonImage2   -->
-    <div class='Interfaces' id="guiButtonImage2"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; top:62px;  -webkit-transform-style: preserve-3d; visibility: visible;">
+    <div class='Interfaces' id="guiButtonImage2">
     </div>
     <!--   reloadButtonDiv -- only visible in ipad -->
-    <div class='Interfaces' id="reloadButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; top: 325px;  -webkit-transform-style: preserve-3d; visibility: visible;">
-        <img class='Interfaces' id="reloadButton" src="png/reload.png" width="60" height="60" alt=""/></div>
+    <div class='Interfaces' id="reloadButtonDiv">
+        <img class='Interfaces' id="reloadButton" src="png/reload.png" width="60" height="60" alt=""/>
+    </div>
     <!--  logButtonDiv -- Outdated   -->
-    <div id="logButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; bottom: 176px;  -webkit-transform-style: preserve-3d; display:none; visibility: hidden;">
-        <img class='Interfaces' id="logButton" src="png/log.png" width="60" height="60" alt=""/></div>
+    <div id="logButtonDiv">
+        <img class='Interfaces' id="logButton" src="png/log.png" width="60" height="60" alt=""/>
+    </div>
     <!--   preferencesButton  -->
-    <div class='Interfaces' id="preferencesButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; top: 195px;  -webkit-transform-style: preserve-3d; visibility: visible;">
-        <img class='Interfaces' id="preferencesButton" src="png/pref.png" width="60"
-             height="60" alt=""/></div>
+    <div class='Interfaces'  id="preferencesButtonDiv">
+        <img class='Interfaces'  id="preferencesButton" src="png/pref.png" width="60"
+             height="60" alt=""/>
+    </div>
     <!--  resetButton - this is for editing mode only  -->
-    <div class='Interfaces' id="resetButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 130px; top: 0px;  -webkit-transform-style: preserve-3d; visibility: hidden;">
-        <img class='Interfaces' id="resetButton" src="png/reset.png" width="60"
-             height="60" alt=""/></div>
+    <div class='Interfaces'  id="resetButtonDiv">
+        <img class='Interfaces'  id="resetButton" src="png/reset.png" width="60"
+             height="60" alt=""/>
+    </div>
     <!--  unconstButton - this is for editing mode only   -->
-    <div class='Interfaces' id="unconstButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 65px; top: 0px;  -webkit-transform-style: preserve-3d; visibility: hidden;">
-        <img class='Interfaces' id="unconstButton" src="png/unconst.png" width="60"
-             height="60" alt=""/></div>
-    <!-- ontouchmove='eventTest()'-->
-
+    <div class='Interfaces'  id="unconstButtonDiv"
+         style="">
+        <img class='Interfaces'  id="unconstButton" src="png/unconst.png" width="60"
+             height="60" alt=""/>
+    </div>
 </div>
+
 <canvas class="Canvas" id="canvas"></canvas>
 
-<div class='Interfaces' id="overlay" style="
-  -webkit-transform-style: preserve-3d;
-   display: none;
-   pointer-events: none;
-position: fixed;
-    width: 120px;
-    height: 120px;
-    left: 0px;
-    top: 0px;
-
-   /* this is a hack for adding the interface in front of the transformed web interface */
--webkit-transform: translateZ(2px);
-"><svg id = "overlayImg" height="120" width="120">
+<div class='Interfaces' id="overlay" style=>
+  <svg id = "overlayImg" height="120" width="120">
     <circle id="overlayImgRing" cx="60" cy="60" r="30" stroke="#00ffff" stroke-width="4" fill="none" />
-</svg></div>
+  </svg>
+</div>
 
 </body>
 </html>
