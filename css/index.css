@@ -219,6 +219,231 @@ body {
  /*   -webkit-user-select: text;*/
 /*}*/
 
+#content11 {
+  position: relative;
+  float: left;
+  height: 50px;
+  width: 50%;
+  box-sizing: border-box;
+  padding-top: 5px;
+  padding-left: 15px;
+  text-align: left;
+  font-family: Helvetica Neue, Helvetica, Arial;
+  background-color: #aaaaaa;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+#content12 {
+  position: relative;
+  float: left;
+  height: 50px;
+  width: 50%;
+  box-sizing: border-box;
+  padding: 5px;
+  padding-left: 13px;
+  text-align: center;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  background-color: #aaaaaa;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+#content13 {
+  position: relative;
+  float: left;
+  height: 50px;
+  width: 50%;
+  box-sizing: border-box;
+  padding-top: 5px;
+  padding-left: 13px;
+  text-align: left;
+  font-family: Helvetica Neue, Helvetica, Arial;
+  background-color: #aaaaaa;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+#content14 {
+  position: relative;
+  float: left;
+  height: 50px;
+  width: 50%;
+  box-sizing: border-box;
+  padding: 5px;
+  padding-left: 13px;
+
+  text-align: center;
+  font-family: Helvetica Neue, Helvetica, Arial;
+
+  background-color: #aaaaaa;
+  -webkit-transform-style: preserve-3d;
+}
+
+#content15 {
+  position: relative;
+  float: left;
+  height: 50px;
+  width: 50%;
+  box-sizing: border-box;
+  padding-top: 5px;
+  padding-left: 13px;
+
+  vertical-align: middle;
+  text-align: left;
+  font-family: Helvetica Neue, Helvetica, Arial;
+
+  background-color: #aaaaaa;
+  -webkit-transform-style: preserve-3d;
+}
+
+#content16 {
+  position: relative;
+  float: left;
+  height: 50px;
+  width: 50%;
+  padding-top: 5px;
+  box-sizing: border-box;
+  padding-left: 13px;
+
+  text-align: left;
+  font-family: Helvetica Neue, Helvetica, Arial;
+
+  background-color: #aaaaaa;
+  -webkit-transform-style: preserve-3d;
+}
+
+#content20 {
+  position: relative;
+  float: left;
+  height: 55px;
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 13px;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  margin-bottom: 3px;
+  padding-right: 13px;
+
+  text-align: left;
+  font-family: Helvetica Neue, Helvetica, Arial;
+
+  background-color: #aaaaaa;
+  -webkit-transform-style: preserve-3d;
+}
+
+#newURLText {
+  font-size: large;
+  -webkit-user-select: text;
+}
+
+#content30 {
+  position: relative;
+  float: left;
+  height: 55px;
+  width: 50%;
+  box-sizing: border-box;
+  padding-top: 5px;
+  padding-left: 13px;
+
+  text-align: left;
+  font-family: Helvetica Neue, Helvetica, Arial;
+
+  background-color: #aaaaaa;
+  -webkit-transform-style: preserve-3d;
+}
+
+#content31 {
+  position: relative;
+  float: left;
+  height: 55px;
+  width: 50%;
+  box-sizing: border-box;
+  right:0px;
+  padding: 5px;
+  padding-left: 0px;
+
+  text-align: center;
+  font-family: Helvetica Neue, Helvetica, Arial;
+
+  background-color: #aaaaaa;
+  -webkit-transform-style: preserve-3d;
+}
+
+#content18 {
+  position: relative;
+  float: left;
+  height: 320px;
+  width: 100%;
+  box-sizing: border-box;
+  padding-top: 13px;
+  padding-left: 13px;
+  padding-right: 13px;
+
+  text-align: left;
+  font-family: Helvetica Neue, Helvetica, Arial;
+
+  background-color: #aaaaaa;
+  -webkit-transform-style: preserve-3d;
+}
+
+#contentPadding {
+  position: relative;
+  float: left;
+  height: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px;
+
+  text-align: center;
+  font-family: Helvetica Neue, Helvetica, Arial;
+
+  background-color: #aaaaaa;
+  -webkit-transform-style: preserve-3d;
+}
+
+#content1title {
+  position: fixed;
+  left: 5%;
+  top: 2%;
+  right: 58%;
+  bottom: 89%;
+
+  font-family: Helvetica Neue, Helvetica, Arial;
+  font-size: 18pt;
+
+  -webkit-transform-style: preserve-3d;
+
+  text-align: center;
+}
+
+#content2 {
+  position: fixed;
+  left: 47%;
+  top: 7%;
+  right: 17%;
+  bottom: 10%;
+  -webkit-transform-style: preserve-3d;
+
+  background-color: #a0a0a0;
+}
+
+#content2title {
+  position: fixed;
+  left: 47%;
+  top: 2%;
+  right: 17%;
+  bottom: 89%;
+
+  font-family: Helvetica Neue, Helvetica, Arial;
+  font-size: 18pt;
+
+
+  -webkit-transform-style: preserve-3d;
+
+  text-align: center;
+}
+
 .Canvas {
     visibility: visible;
     -webkit-transform-style: preserve-3d;
