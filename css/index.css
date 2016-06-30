@@ -562,6 +562,143 @@ body {
   -webkit-transform: translateZ(2px);
 }
 
+#preferencesLabelName {
+  position: relative;
+  float: left;
+  height: 20px;
+  width: 34%;
+  text-align: center;
+  line-height: 20px;
+  vertical-align: middle;
+  display: table-cell;
+  font-family: Helvetica Neue, Helvetica, Arial;
+  background-color: #a0a0a0;
+  -webkit-transform-style: preserve-3d;
+}
+
+#preferencesLabelIP {
+  position: relative;
+  float: left;
+  height: 20px;
+  width: 30%;
+  text-align: center;
+  line-height: 20px;
+  vertical-align: middle;
+  display: table-cell;
+  font-family: Helvetica Neue, Helvetica, Arial;
+  background-color: #a0a0a0;
+  -webkit-transform-style: preserve-3d;
+}
+
+#preferencesLabelVersion {
+  position: relative;
+  float: left;
+  height: 20px;
+  width: 14%;
+  text-align: center;
+  line-height: 20px;
+  vertical-align: middle;
+  display: table-cell;
+  font-family: Helvetica Neue, Helvetica, Arial;
+  background-color: #a0a0a0;
+  -webkit-transform-style: preserve-3d;
+}
+
+#preferencesLabelIO {
+  position: relative;
+  float: left;
+  height: 20px;
+  width: 11%;
+  text-align: center;
+  line-height: 20px;
+  vertical-align: middle;
+  display: table-cell;
+  font-family: Helvetica Neue, Helvetica, Arial;
+  background-color: #a0a0a0;
+  -webkit-transform-style: preserve-3d;
+}
+
+#preferencesLabelLinks {
+  position: relative;
+  float: left;
+  height: 20px;
+  width: 11%;
+  text-align: center;
+  line-height: 20px;
+  vertical-align: middle;
+  display: table-cell;
+  font-family: Helvetica Neue, Helvetica, Arial;
+  background-color: #a0a0a0;
+  -webkit-transform-style: preserve-3d;
+}
+
+.preferencesObjectName {
+  position: relative;
+  float: left;
+  height: 20px;
+  width: 34%;
+  text-align: center;
+  line-height: 20px;
+  vertical-align: middle;
+  display: table-cell;
+  font-family: Helvetica Neue, Helvetica, Arial;
+  -webkit-transform-style: preserve-3d;
+}
+
+.preferencesObjectIP {
+  position: relative;
+  float: left;
+  height: 20px;
+  width: 30%;
+  text-align: center;
+  line-height: 20px;
+  vertical-align: middle;
+  display: table-cell;
+  font-family: Helvetica Neue, Helvetica, Arial;
+  -webkit-transform-style: preserve-3d;
+}
+
+.preferencesObjectVersion {
+  position: relative;
+  float: left;
+  height: 20px;
+  width: 14%;
+  text-align: center;
+  line-height: 20px;
+  vertical-align: middle;
+  display: table-cell;
+  font-family: Helvetica Neue, Helvetica, Arial;
+  -webkit-transform-style: preserve-3d;
+}
+
+.preferencesObjectIO {
+  position: relative;
+  float: left;
+  height: 20px;
+  width: 11%;
+   text-align: center;
+  line-height: 20px;
+  vertical-align: middle;
+  display: table-cell;
+  font-family: Helvetica Neue, Helvetica, Arial;
+  -webkit-transform-style: preserve-3d;
+}
+
+.preferencesObjectLinks {
+  position: relative;
+  float: left;
+  height: 20px;
+  width: 12%;
+  text-align: center;
+  line-height: 20px;
+  vertical-align: middle;
+  display: table-cell;
+  font-family: Helvetica Neue, Helvetica, Arial;
+  -webkit-transform-style: preserve-3d;
+}
+
+
+
 .Canvas {
     visibility: visible;
     -webkit-transform-style: preserve-3d;
