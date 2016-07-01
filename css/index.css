@@ -85,7 +85,27 @@ body {
     border-width: 0px;
     /*-webkit-user-select: none;    Disable selection/Copy of UIWebView */
     -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+}
 
+.memoryBar {
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    visibility: hidden;
+    z-index: 1;
+    position: fixed;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    border-width: 0px;
+}
+
+.memory {
+    display: inline-block;
+    padding: 5px;
+    border: 2px solid #001FFC;
+    width: 100px;
+    height: 75px;
 }
 
 .mainProgram {
