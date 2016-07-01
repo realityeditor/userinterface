@@ -175,11 +175,15 @@ function GUI() {
             timeForContentLoaded = 240000;
             window.location.href = "of://clearSkyOn";
 
+            var memoryBar = document.querySelector('.memoryBar');
+            memoryBar.classList.add('clearSky');
         } else {
             globalStates.UIOffMode = false;
             timeForContentLoaded = 240;
             window.location.href = "of://clearSkyOff";
 
+            var memoryBar = document.querySelector('.memoryBar');
+            memoryBar.classList.remove('clearSky');
         }
     });
     ec++;
