@@ -53,6 +53,10 @@ function onMemoryPointerDown(event) {
     console.log(this);
     if (this.style.background) {
         window.location.href = 'of://remember' + getMemoryIndex(this);
+        if (!globalStates.UIOffMode) {
+            document.getElementById('feezeButton').src = freezeButtonImage[2].src;
+        }
+        globalStates.feezeButtonState = true;
     }
 }
 
