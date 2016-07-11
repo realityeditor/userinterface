@@ -441,6 +441,8 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
+    z-index: 1;
+    -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
 
 .memoryBar.clearSky {
@@ -448,25 +450,55 @@ body {
 }
 
 .memory {
+    box-sizing: border-box;
     display: inline-block;
     padding: 5px;
     border: 2px solid #01FFFC;
-    width: 100px;
+    width: 134px;
     height: 75px;
 }
 
 #overlay {
-    -webkit-transform-style: preserve-3d;
-    display: none;
+    visibility: hidden;
     pointer-events: none;
     position: fixed;
-    width: 120px;
-    height: 120px;
+
+    box-sizing: border-box;
+    width: 60px;
+    height: 60px;
     left: 0px;
     top: 0px;
+    margin-left: -30px;
+    margin-top: -30px;
+    padding: 0;
+
+    border: 4px solid #01fffc;
+    border-radius: 60px;
+    transition: width 0.3s linear, height 0.3s linear, border-radius 0.3s linear, border-width 0.3s linear;
 
     /* this is a hack for adding the interface in front of the transformed web interface */
     -webkit-transform: translateZ(2px);
+}
+
+#overlay.overlayMemory {
+  margin-top: -37.5px;
+  margin-left: -67px;
+  width: 134px;
+  height: 75px;
+  border-radius: 0px;
+  border: 2px solid #01FFFC;
+}
+
+#overlay.overlayPositive {
+  border-color: #3AF431;
+}
+
+#overlay.overlayNegative {
+  border-color: #FF019F;
+}
+
+#overlay.overlayAction {
+  border-color: #F9F90A;
 }
 
 .objectEntry {

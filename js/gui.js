@@ -531,9 +531,6 @@ function GUI() {
        // globalStates.pocketButtonUp = false;
     }, false);
 
-
-
-
     function pocketButtonAction() {
 
         console.log("state: " + globalStates.pocketButtonState);
@@ -1123,7 +1120,3 @@ function preload(array) {
 
     cout("preload");
 }
-
-
-
-

@@ -68,6 +68,7 @@ window.onload = function () {
     globalSVGCach["overlayImgRing"] = document.getElementById('overlayImg').getElementById('overlayImgRing');
 
     GUI();
+    initMemoryBar();
 
     console.log(globalStates.platform);
 
@@ -152,9 +153,6 @@ window.onload = function () {
     if (globalStates.platform) {
         window.location.href = "of://kickoff";
     }
-
-    document.handjs_forcePreventDefault = true;
-    globalCanvas.canvas.handjs_forcePreventDefault = true;
 
     globalCanvas.canvas.addEventListener("pointerdown", canvasPointerDown, false);
     ec++;

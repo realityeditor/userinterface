@@ -256,6 +256,7 @@ function touchLeave () {
  **/
 
 function canvasPointerDown(evt) {
+    evt.preventDefault();
     if (globalStates.guiState ==="node" && !globalStates.editingMode) {
         if (!globalProgram.objectA) {
             globalStates.drawDotLine = true;
@@ -277,6 +278,7 @@ function canvasPointerDown(evt) {
  **/
 
 function getPossition(evt) {
+    evt.preventDefault();
 
     globalStates.pointerPosition = [evt.clientX, evt.clientY];
 
@@ -322,7 +324,6 @@ function setPocketPossition (evt){
 
 
     }
-
 
 }
 
@@ -392,7 +393,9 @@ function documentPointerUp(evt) {
     }
     globalCanvas.hasContent = true;
 
-    overlayDiv.style.display = "none";
+    overlayDiv.style.visibility = "hidden";
+
+    overlayDiv.classList.remove('overlayMemory');
 
     cout("documentPointerUp");
 
@@ -405,20 +408,21 @@ function documentPointerUp(evt) {
 };
 
 /**
- * @desc
+ * When the pointer goes down, show the overlay and position it at the
+ * pointer's location. If in GUI mode, mark the overlay as holding a memory
+ * Save its location to globalStates.pointerPosition
  * @param evt
- **/
-
+ */
 function documentPointerDown(evt) {
-
     globalStates.pointerPosition = [evt.clientX, evt.clientY];
 
     // overlayImg.src = overlayImage[globalStates.overlay].src;
-
     overlayDiv.style.display = "inline";
     overlayDiv.style.left = evt.clientX - 60;
     overlayDiv.style.top = evt.clientY - 60;
-
+    if (globalStates.guiButtonState) {
+        overlayDiv.classList.add('overlayMemory');
+    }
 
 /*
     // todo for testing only
