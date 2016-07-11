@@ -14,6 +14,7 @@ function initMemoryBar() {
     memories.forEach(function(memory) {
         memory.addEventListener('pointerdown', onMemoryPointerDown);
         memory.addEventListener('pointerup', onMemoryPointerUp);
+        memory.addEventListener('pointerenter', onMemoryPointerEnter);
     });
 
     overlayDiv.addEventListener('transitionend', onOverlayTransitionEnd);
@@ -34,11 +35,16 @@ function getMemoryIndex(memoryElement) {
     return [].slice.call(memoryElement.parentElement.children).indexOf(memoryElement);
 }
 
-function onMemoryPointerUp(event) {
-    console.log('onMemoryPointerUp');
-    console.log(event);
-    console.log(this);
+function remember(memoryElement) {
+    window.location.href = 'of://remember' + getMemoryIndex(memoryElement);
+    if (!globalStates.UIOffMode) {
+        document.getElementById('feezeButton').src = freezeButtonImage[2].src;
+    }
+    globalStates.feezeButtonState = true;
+}
 
+
+function onMemoryPointerUp(event) {
     if (activeThumbnail) {
         this.style.background = 'url(' + activeThumbnail + ')';
         overlayDiv.style.background = '';
@@ -47,28 +53,26 @@ function onMemoryPointerUp(event) {
     }
 }
 
+function onMemoryPointerEnter(event) {
+    if (!overlayDiv.classList.contains('overlayMemory')) {
+        // We are drawing a connection or otherwise not caring about memories
+        remember(this);
+    }
+}
+
 function onMemoryPointerDown(event) {
-    console.log('onMemoryPointerDown');
-    console.log(event);
-    console.log(this);
     if (this.style.background) {
-        window.location.href = 'of://remember' + getMemoryIndex(this);
-        if (!globalStates.UIOffMode) {
-            document.getElementById('feezeButton').src = freezeButtonImage[2].src;
-        }
-        globalStates.feezeButtonState = true;
+        remember(this);
     }
 }
 
 function onOverlayTransitionEnd(event) {
-    console.log('transitionhasended');
     if (overlayDiv.classList.contains('overlayMemory')) {
-        window.location.href = 'of://getThumbnail';
+        window.location.href = 'of://createMemory';
     }
 }
 
 function receiveThumbnail(thumbnailUrl) {
-    console.log('receiving thumbnail');
     overlayDiv.style.background = 'url(' + thumbnailUrl + ')';
     activeThumbnail = thumbnailUrl;
 }

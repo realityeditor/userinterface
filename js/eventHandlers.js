@@ -396,6 +396,10 @@ function documentPointerUp(evt) {
     overlayDiv.style.visibility = "hidden";
 
     overlayDiv.classList.remove('overlayMemory');
+    if (overlayDiv.style.background) {
+        overlayDiv.style.background = '';
+        window.location.href = 'of://clearMemory';
+    }
 
     cout("documentPointerUp");
 
