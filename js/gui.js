@@ -384,6 +384,8 @@ function GUI() {
         if (globalStates.feezeButtonState === true) {
             if (!globalStates.UIOffMode)    document.getElementById('feezeButton').src = freezeButtonImage[0].src;
             globalStates.feezeButtonState = false;
+            var memoryBackground = document.querySelector('.memoryBackground');
+            memoryBackground.style.backgroundImage = 'none';
             window.location.href = "of://unfreeze";
         }
         else {

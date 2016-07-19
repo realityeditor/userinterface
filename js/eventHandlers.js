@@ -396,8 +396,8 @@ function documentPointerUp(evt) {
     overlayDiv.style.visibility = "hidden";
 
     overlayDiv.classList.remove('overlayMemory');
-    if (overlayDiv.style.background) {
-        overlayDiv.style.background = '';
+    if (overlayDiv.style.backgroundImage !== 'none') {
+        overlayDiv.style.backgroundImage = 'none';
         window.location.href = 'of://clearMemory';
     }
 
@@ -425,7 +425,10 @@ function documentPointerDown(evt) {
     overlayDiv.style.left = evt.clientX - 60;
     overlayDiv.style.top = evt.clientY - 60;
     if (globalStates.guiButtonState) {
-        overlayDiv.classList.add('overlayMemory');
+        // If the event is hitting the background
+        if (evt.target.id === 'canvas') {
+            overlayDiv.classList.add('overlayMemory');
+        }
     }
 
 /*

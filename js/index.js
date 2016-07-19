@@ -261,8 +261,10 @@ function setStates(developerState, extendedTrackingState, clearSkyState, externa
  * @param action
  **/
 
-function action(action) {
-    var thisAction = JSON.parse(action);
+function action(actionData) {
+    cout('action', actionData);
+    var id = actionData.id;
+    var url = 'http://' + actionData.ip + ':' + httpPort + '/object/' + id;
 
     if (thisAction.reloadLink) {
         getData('http://' + thisAction.reloadLink.ip + ':' + httpPort + '/object/' + thisAction.reloadLink.id, thisAction.reloadLink.id, function (req, thisKey) {
@@ -288,6 +290,7 @@ function action(action) {
             }
 
             // cout(objects[thisKey]);
+
             cout("got links");
         });
 
@@ -328,6 +331,13 @@ function action(action) {
 
     cout("found action: " + action);
 
+    if (thisAction.loadMemory) {
+        getData(url, id, function (req, thisKey) {
+            cout('received memory', req.memory);
+            objectExp[thisKey].memory = req.memory;
+            addObjectMemory(objectExp[thisKey]);
+        });
+    }
 }
 
 /**********************************************************************************************************************
