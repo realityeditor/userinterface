@@ -481,12 +481,10 @@ function checkForNetworkLoop(globalObjectA, globalLocationInA, globalLogicA, glo
 
 /**
  * @desc function to print to console based on debug mode set to true
- * @param {String} e any text that should be printed
  **/
-
-function cout(e) {
-    if (globalStates.debug) {
-        console.log(e);
+function cout() {
+    if (globalStates.debug){
+        console.log.apply(this, arguments);
     }
 }
 
