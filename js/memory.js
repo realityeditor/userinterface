@@ -35,7 +35,13 @@ function setMemory(index, memory) {
 
     memories[index] = memory;
     var element = getElements()[index];
-    element.style.backgroundImage = url(memory.image);
+
+    var preloadImage = document.createElement('img');
+    preloadImage.onload = function() {
+        element.style.backgroundImage = url(memory.image);
+        element.classList.remove('memoryPlaceholder');
+    };
+    preloadImage.src = memory.image;
 }
 
 function initMemoryBar() {
@@ -82,6 +88,10 @@ function remember(memoryElement) {
 function onMemoryPointerUp(event) {
     if (activeThumbnail) {
         var index = getMemoryIndex(this);
+
+        this.style.backgroundImage = url(activeThumbnail);
+        this.classList.add('memoryPlaceholder');
+
         overlayDiv.style.backgroundImage = 'none';
         overlayDiv.classList.remove('overlayMemory');
         overlayDiv.style.visibility = 'hidden';
