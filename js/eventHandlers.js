@@ -424,7 +424,7 @@ function documentPointerDown(evt) {
     overlayDiv.style.display = "inline";
     overlayDiv.style.left = evt.clientX - 60;
     overlayDiv.style.top = evt.clientY - 60;
-    if (globalStates.guiButtonState) {
+    if (globalStates.guiButtonState && !globalStates.feezeButtonState) {
         // If the event is hitting the background
         if (evt.target.id === 'canvas') {
             overlayDiv.classList.add('overlayMemory');
