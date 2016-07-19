@@ -175,6 +175,57 @@ var globalProgram = {
     logicSelector:4
 };
 
+/*
+{
+    "Lightc99uzo639y15": {
+      "objectId": "Lightc99uzo639y15"
+    , "name": "Light"
+    , "ip": "192.168.1.13"
+    , "version": "1.6.1"
+    , "tcs": "7ofsR"
+    , "x": 0
+    , "y": 0
+    , "scale": 1
+    , "visible": false
+    , "visibleText": false
+    , "visibleEditing": false
+    , "developer": true
+    , "matrix3dMemory": null
+    , "objectLinks": {
+		"B01m2d7l": {
+          "ObjectA": "Lightc99uzo639y15"
+        , "ObjectB": "Lightc99uzo639y15"
+        , "locationInA": "hue"
+        , "locationInB": "saturation"
+        , "ObjectNameA": "Light"
+        , "ObjectNameB": "Light"
+        , "ballAnimationCount": 1.323082920095505
+      }
+	}
+    , "objectValues": {
+        "switch": {
+          "name": "switch"
+        , "value": null
+        , "mode": "f"
+        , "x": 92
+        , "y": 1
+        , "scale": 1
+        , "plugin": "default"
+        , "pluginParameter": null
+        , "type": "philipsHue"
+        , "frameSizeX": 47
+        , "frameSizeY": 47
+      }
+    }
+    , "folder": "Light"
+    , "ObjectVisible": false
+    , "screenZ": 1000
+    , "fullScreen": false
+    , "sendMatrix": false
+    , "IntegerVersion": 161
+  }
+}
+*/
 var objects = {};
 
 var globalMatrix = {
