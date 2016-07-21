@@ -411,6 +411,11 @@ body {
     top: 260px;
 }
 
+#memoryWebButtonDiv {
+    right: 0px;
+    top: 325px;
+}
+
 #logButtonDiv {
     right: 0px;
     bottom: 176px;
@@ -458,6 +463,12 @@ body {
 
 .memoryBar.clearSky {
     visibility: hidden;
+}
+
+.memoryWeb > .memory {
+    position: absolute;
+    margin-left: -67px;
+    margin-top: -37.5px;
 }
 
 .memory {
@@ -859,3 +870,15 @@ Logic Interface CSS
   height: 75%;
   opacity: 0.5;
 }
+
+.memoryWeb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 1000;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+}
+

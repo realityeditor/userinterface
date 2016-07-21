@@ -7,18 +7,42 @@ function createMemoryWeb() {
     var width = window.innerWidth;
     var height = window.innerHeight;
 
+    var svg = d3.select('body').append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('class', 'memoryWeb');
+
     var nodes = Object.keys(objectExp).map(function(id) {
-        return {id: id, name: objectExp[id].name};
+        return {id: id, obj: objectExp[id]};
+    }).filter(function(node) {
+        return node.obj.memory;
+    });
+
+    var container = document.createElement('div');
+    container.classList.add('memoryWeb');
+    document.body.appendChild(container);
+
+    var memoryElements = nodes.map(function(node) {
+        var objectId = node.id;
+        var element = document.createElement('div');
+        element.classList.add('memory');
+        addMemoryListeners(element);
+        // TODO: possible FOUC
+        container.appendChild(element);
+        setMemory(element, node.obj);
+        return element;
     });
 
     var links = [];
-    for (var linkId in objectExp.objectLinks) {
-        links.push({
-            source: objectLinks[linkId].ObjectA,
-            target: objectLinks[linkId].ObjectB,
-        });
-    }
-
+    nodes.forEach(function(node) {
+        var obj = node.obj;
+        for (var linkId in obj.objectLinks) {
+            links.push({
+                source: obj.objectLinks[linkId].ObjectA,
+                target: obj.objectLinks[linkId].ObjectB,
+            });
+        }
+    });
 
     function forceSides(alpha) {
         var tol = 55;
@@ -40,14 +64,11 @@ function createMemoryWeb() {
     }
 
     var force = d3.forceSimulation()
-        .force('link', d3.forceLink().distance(200))
+        .force('link', d3.forceLink().distance(200).id(function(d) { return d.id; }))
         .force('charge', d3.forceManyBody().strength(-500))
         .force('center', d3.forceCenter(width / 2, height / 2))
         .force('sides', forceSides);
 
-    var svg = d3.select('body').append('svg')
-        .attr('width', width)
-        .attr('height', height);
 
     force.nodes(nodes);
 
@@ -58,18 +79,8 @@ function createMemoryWeb() {
         .data(links)
         .enter()
             .append('line')
-            .attr('class', 'link');
-
-    var node = svg.selectAll('.node')
-        .data(nodes)
-        .enter().append('rect')
-            .attr('class', 'node')
-            .attr('width', 100)
-            .attr('height', 100)
-            .attr('fill', '#00d1ff');
-
-    node.on('mousedown', function(d) {
-    });
+            .attr('class', 'link')
+            .attr('stroke', '#01fffc');
 
     force.on('tick', function() {
         link.attr('x1', function(d) { return d.source.x; })
@@ -77,7 +88,21 @@ function createMemoryWeb() {
             .attr('x2', function(d) { return d.target.x; })
             .attr('y2', function(d) { return d.target.y; });
 
-        node.attr('x', function(d) { return d.x - 50; })
-            .attr('y', function(d) { return d.y - 50; });
+        for (var i = 0; i < nodes.length; i++) {
+            memoryElements[i].style.left = nodes[i].x;
+            memoryElements[i].style.top = nodes[i].y;
+        }
     });
+}
+
+function destroyMemoryWeb() {
+    var memoryElements = [].slice.call(document.querySelectorAll('.memoryWeb > .memory'));
+    memoryElements.forEach(function(element) {
+        removeMemoryListeners(element);
+    });
+    var webs = [].slice.call(document.querySelectorAll('.memoryWeb'));
+    webs.forEach(function(web) {
+        web.parentNode.removeChild(web);
+    });
+    document.getElementById('memoryWebButton').src = memoryWebButtonImage[0].src
 }

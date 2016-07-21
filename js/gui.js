@@ -66,6 +66,7 @@ var editingButtonImage = [];
 var pocketButtonImage = [];
 var loadNewUiImage = [];
 var blockTabImage = [];
+var memoryWebButtonImage = [];
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
@@ -108,6 +109,10 @@ function GUI() {
     preload(blockTabImage,
         'png/iconBlocks.png', 'png/iconEvents.png', 'png/iconSignals.png', 'png/iconMath.png', 'png/iconWeb.png'
     );
+
+    preload(memoryWebButtonImage,
+        'png/memoryWeb.png', 'png/memoryWebOver.png', 'png/memoryWebSelect.png'
+   );
 
     document.getElementById("guiButtonImage1").addEventListener("touchstart", function () {
         if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[0].src;
@@ -561,9 +566,6 @@ function GUI() {
 
     }
 
-
-
-
     ec++;
     document.getElementById("reloadButton").addEventListener("touchstart", function () {
         if (!globalStates.UIOffMode)    document.getElementById('reloadButton').src = reloadButtonImage[0].src;
@@ -576,6 +578,30 @@ function GUI() {
         window.open("index.html?v=" + Math.floor((Math.random() * 100) + 1));
     });
     ec++;
+
+    var memoryWebButton = document.getElementById('memoryWebButton');
+    memoryWebButton.addEventListener('touchstart', function() {
+        if (!globalStates.UIOffMode) {
+            memoryWebButton.src = memoryWebButtonImage[1].src;
+        }
+    });
+
+    ec++;
+    memoryWebButton.addEventListener('touchend', function() {
+        if (document.querySelector('.memoryWeb')) {
+            if (!globalStates.UIOffMode) {
+                memoryWebButton.src = memoryWebButtonImage[0].src
+            }
+            destroyMemoryWeb();
+        } else {
+            if (!globalStates.UIOffMode) {
+                memoryWebButton.src = memoryWebButtonImage[2].src
+            }
+            createMemoryWeb();
+        }
+    });
+    ec++;
+
     cout("GUI");
 }
 

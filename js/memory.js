@@ -12,6 +12,10 @@ var activeThumbnail = '';
 var memories = [];
 var pendingMemorizations = {};
 
+function getBarElements() {
+    return [].slice.call(document.querySelector('.memoryBar').querySelectorAll('.memory'));
+}
+
 function getElements() {
     return [].slice.call(document.querySelectorAll('.memory'));
 }
@@ -20,59 +24,77 @@ function url(href) {
     return 'url(' + href + ')';
 }
 
-function clearMemory(index) {
-    memories[index] = null;
-    var element = getElements()[index];
-    element.style.backgroundImage = 'none';
+function clearBarMemory(elt) {
+    elt.style.backgroundImage = 'none';
+    delete elt.dataset.objectId;
 }
 
-function setMemory(index, memory) {
-    for (var i = 0; i < memories.length; i++) {
-        if (memories[i] && memories[i].id === memory.id) {
-            clearMemory(i);
-        }
-    }
+function setMemory(element, obj) {
+    var memory = {
+        image: 'http://' + obj.ip + ':8080/obj/' + obj.name + '/memory/memory.jpg',
+        matrix: obj.memory.matrix,
+        id: obj.objectId
+    };
 
-    memories[index] = memory;
-    var element = getElements()[index];
+    element.dataset.objectId = memory.id;
+    memories[memory.id] = memory;
+
+    var elements = getElements().filter(function(elt) {
+        return elt.dataset.objectId === memory.id;
+    });
+
+    elements.forEach(function(elt) {
+        elt.classList.add('memoryPlaceholder');
+    });
 
     var preloadImage = document.createElement('img');
     preloadImage.onload = function() {
-        element.style.backgroundImage = url(memory.image);
-        element.classList.remove('memoryPlaceholder');
+        elements.forEach(function(elt) {
+            elt.style.backgroundImage = url(memory.image);
+            elt.classList.remove('memoryPlaceholder');
+        });
     };
     preloadImage.src = memory.image;
 }
 
+function addMemoryListeners(element) {
+    element.addEventListener('pointerdown', onMemoryPointerDown);
+    element.addEventListener('pointerup', onMemoryPointerUp);
+    element.addEventListener('pointerenter', onMemoryPointerEnter);
+}
+
+function removeMemoryListeners(element) {
+    element.removeEventListener('pointerdown', onMemoryPointerDown);
+    element.removeEventListener('pointerup', onMemoryPointerUp);
+    element.removeEventListener('pointerenter', onMemoryPointerEnter);
+}
+
 function initMemoryBar() {
-    getElements().forEach(function(memory) {
-        memory.addEventListener('pointerdown', onMemoryPointerDown);
-        memory.addEventListener('pointerup', onMemoryPointerUp);
-        memory.addEventListener('pointerenter', onMemoryPointerEnter);
+    getBarElements().forEach(function(element) {
+        addMemoryListeners(element);
     });
 
     overlayDiv.addEventListener('transitionend', onOverlayTransitionEnd);
 }
 
 function destroyMemoryBar() {
-    getElements().forEach(function(memory) {
-        memory.removeEventListener('pointerdown', onMemoryPointerDown);
-        memory.removeEventListener('pointerup', onMemoryPointerUp);
+    getBarElements().forEach(function(element) {
+        removeMemoryListeners(element);
     });
 
     overlayDiv.removeEventListener('transitionend', onOverlayTransitionEnd);
 }
 
-function getMemoryIndex(memoryElement) {
-    return [].slice.call(memoryElement.parentElement.children).indexOf(memoryElement);
-}
-
 function remember(memoryElement) {
-    var i = getMemoryIndex(memoryElement)
-    var memory = memories[i];
+    var memory = memories[memoryElement.dataset.objectId];
     if (!memory) {
         return;
     }
+
+    if (document.querySelector('.memoryWeb')) {
+        destroyMemoryWeb();
+    }
+
     var memoryBackground = document.querySelector('.memoryBackground');
     memoryBackground.style.backgroundImage = url(memory.image);
     window.location.href = 'of://remember/?data=' + encodeURIComponent(JSON.stringify(
@@ -87,8 +109,6 @@ function remember(memoryElement) {
 
 function onMemoryPointerUp(event) {
     if (activeThumbnail) {
-        var index = getMemoryIndex(this);
-
         this.style.backgroundImage = url(activeThumbnail);
         this.classList.add('memoryPlaceholder');
 
@@ -101,7 +121,7 @@ function onMemoryPointerUp(event) {
             console.warn('Memorization attempted with multiple objects');
             return;
         }
-        pendingMemorizations[potentialObjects[0] || ''] = index;
+        pendingMemorizations[potentialObjects[0] || ''] = this;
         window.location.href = 'of://memorize';
         event.stopPropagation();
     }
@@ -135,28 +155,31 @@ function addObjectMemory(obj) {
         freeMemory = pendingMemorizations[obj.objectId];
         delete pendingMemorizations[obj.objectId];
     } else {
-        for (freeMemory = 0; freeMemory < memories.length; freeMemory++) {
-            if (memories[freeMemory]) {
-                continue;
-            }
-            break;
-        }
-        if (freeMemory >= getElements().length) {
+        freeMemory = getBarElements().filter(function(elt) {
+            return !elt.dataset.objectId || elt.dataset.objectId === obj.objectId;
+        })[0];
+
+        if (!freeMemory) {
             console.warn('There are no free memory slots');
             return;
         }
     }
 
-    setMemory(freeMemory, {
-        image: 'http://' + obj.ip + ':8080/obj/' + obj.name + '/memory/memory.jpg',
-        matrix: obj.memory.matrix,
-        id: obj.objectId
+    getBarElements().forEach(function(elt) {
+        if (elt.dataset.objectId === obj.objectId) {
+            clearBarMemory(elt);
+        }
     });
+
+    setMemory(freeMemory, obj);
 }
 
 exports.initMemoryBar = initMemoryBar;
 exports.destroyMemoryBar = destroyMemoryBar;
 exports.receiveThumbnail = receiveThumbnail;
 exports.addObjectMemory = addObjectMemory;
+exports.setMemory = setMemory;
+exports.addMemoryListeners = addMemoryListeners;
+exports.removeMemoryListeners = removeMemoryListeners;
 
 })(window);
