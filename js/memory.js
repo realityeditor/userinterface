@@ -53,9 +53,16 @@ MemoryContainer.prototype.set = function(obj) {
 
 MemoryContainer.prototype.clear = function() {
     this.memory = null;
-    this.image.parentNode.removeChild(this.image);
-    this.image = null;
+    this.removeImage();
     delete this.element.dataset.objectId;
+};
+
+MemoryContainer.prototype.removeImage = function() {
+    this.image.parentNode.removeChild(this.image);
+    this.image.removeEventListener('touchstart', this.onTouchStart);
+    this.image.removeEventListener('touchmove', this.onTouchMove);
+    this.image.removeEventListener('touchend', this.onTouchEnd);
+    this.image = null;
 };
 
 MemoryContainer.prototype.onTouchStart = function(event) {
@@ -181,11 +188,9 @@ MemoryContainer.prototype.remember = function() {
 
 MemoryContainer.prototype.remove = function() {
     this.element.parentNode.removeChild(this.element);
-    this.element.removeEventListener('touchstart', this.onTouchStart);
-    this.element.removeEventListener('touchmove', this.onTouchMove);
-    this.element.removeEventListener('touchend', this.onTouchEnd);
     this.element.removeEventListener('pointerup', this.onPointerUp);
     this.element.removeEventListener('pointerenter', this.onPointerEnter);
+    this.removeImage();
 };
 
 MemoryContainer.prototype.onPointerEnter = function() {
@@ -286,5 +291,6 @@ exports.initMemoryBar = initMemoryBar;
 exports.removeMemoryBar = removeMemoryBar;
 exports.receiveThumbnail = receiveThumbnail;
 exports.addObjectMemory = addObjectMemory;
+exports.MemoryContainer = MemoryContainer;
 
 }(window));

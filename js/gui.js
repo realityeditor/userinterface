@@ -592,7 +592,7 @@ function GUI() {
             if (!globalStates.UIOffMode) {
                 memoryWebButton.src = memoryWebButtonImage[0].src
             }
-            destroyMemoryWeb();
+            removeMemoryWeb();
         } else {
             if (!globalStates.UIOffMode) {
                 memoryWebButton.src = memoryWebButtonImage[2].src

@@ -3,6 +3,9 @@
 //   objectValues: {}
 // }
 
+(function(exports) {
+var memoryElements = [];
+
 function createMemoryWeb() {
     var width = window.innerWidth;
     var height = window.innerHeight;
@@ -25,12 +28,13 @@ function createMemoryWeb() {
     var memoryElements = nodes.map(function(node) {
         var objectId = node.id;
         var element = document.createElement('div');
-        element.classList.add('memory');
-        addMemoryListeners(element);
+        element.classList.add('memoryContainer');
+        element.setAttribute('touch-action', 'none');
         // TODO: possible FOUC
         container.appendChild(element);
-        setMemory(element, node.obj);
-        return element;
+        var memoryContainer = new MemoryContainer(element);
+        memoryContainer.set(node.obj);
+        return memoryContainer;
     });
 
     var links = [];
@@ -89,16 +93,15 @@ function createMemoryWeb() {
             .attr('y2', function(d) { return d.target.y; });
 
         for (var i = 0; i < nodes.length; i++) {
-            memoryElements[i].style.left = nodes[i].x;
-            memoryElements[i].style.top = nodes[i].y;
+            memoryElements[i].element.style.left = nodes[i].x;
+            memoryElements[i].element.style.top = nodes[i].y;
         }
     });
 }
 
-function destroyMemoryWeb() {
-    var memoryElements = [].slice.call(document.querySelectorAll('.memoryWeb > .memory'));
+function removeMemoryWeb() {
     memoryElements.forEach(function(element) {
-        removeMemoryListeners(element);
+        element.remove();
     });
     var webs = [].slice.call(document.querySelectorAll('.memoryWeb'));
     webs.forEach(function(web) {
@@ -106,3 +109,8 @@ function destroyMemoryWeb() {
     });
     document.getElementById('memoryWebButton').src = memoryWebButtonImage[0].src
 }
+
+exports.createMemoryWeb = createMemoryWeb;
+exports.removeMemoryWeb = removeMemoryWeb;
+
+}(window));
