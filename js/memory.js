@@ -7,110 +7,125 @@
  */
 
 (function(exports) {
+function MemoryContainer(element) {
+    this.element = element;
+    this.image = null;
+    this.memory = null;
+    this.dragging = false;
+    this.dragTimer = null;
 
-var activeThumbnail = '';
-var memories = [];
-var pendingMemorizations = {};
+    this.onPointerUp = this.onPointerUp.bind(this);
+    this.onPointerEnter = this.onPointerEnter.bind(this);
+    this.onTouchStart = this.onTouchStart.bind(this);
+    this.onTouchMove = this.onTouchMove.bind(this);
+    this.onTouchEnd = this.onTouchEnd.bind(this);
 
-function getBarElements() {
-    return [].slice.call(document.querySelector('.memoryBar').querySelectorAll('.memory'));
+    this.element.addEventListener('pointerup', this.onPointerUp);
+    this.element.addEventListener('pointerenter', this.onPointerEnter);
+
+    this.createImage();
+    this.image.addEventListener('touchstart', this.onTouchStart);
+    this.image.addEventListener('touchmove', this.onTouchMove);
+    this.image.addEventListener('touchend', this.onTouchEnd);
 }
 
-function getElements() {
-    return [].slice.call(document.querySelectorAll('.memory'));
-}
-
-function url(href) {
-    return 'url(' + href + ')';
-}
-
-function clearBarMemory(elt) {
-    elt.style.backgroundImage = 'none';
-    delete elt.dataset.objectId;
-}
-
-function setMemory(element, obj) {
-    var memory = {
-        image: 'http://' + obj.ip + ':8080/obj/' + obj.name + '/memory/memory.jpg',
-        matrix: obj.memory.matrix,
-        id: obj.objectId
+MemoryContainer.prototype.set = function(obj) {
+    var image = 'http://' + obj.ip + ':8080/obj/' + obj.name + '/memory/memory.jpg';
+    this.memory = {
+        id: obj.objectId,
+        image: image,
+        matrix: obj.memory.matrix
     };
+    this.element.dataset.objectId = this.memory.id;
 
-    element.dataset.objectId = memory.id;
-    memories[memory.id] = memory;
+    if (!this.image) {
+        this.createImage();
+    }
 
-    var elements = getElements().filter(function(elt) {
-        return elt.dataset.objectId === memory.id;
-    });
+    // TODO cutting out all of this logic
+    var elements = [].slice.call(document.querySelectorAll('.memoryContainer'));
+    elements = elements.filter(function(elt) {
+        return elt.dataset.objectId === this.memory.id;
+    }.bind(this));
 
     elements.forEach(function(elt) {
         elt.classList.add('memoryPlaceholder');
     });
 
-    var preloadImage = document.createElement('img');
-    preloadImage.onload = function() {
+    this.image.onload = function() {
         elements.forEach(function(elt) {
-            elt.style.backgroundImage = url(memory.image);
+            // TODO consider refactoring out to custom event
+            elt.querySelector('img').src = image;
             elt.classList.remove('memoryPlaceholder');
         });
+        this.image.classList.add('memoryLoaded');
+    }.bind(this);
+    this.image.src = image;
+};
+
+MemoryContainer.prototype.clear = function() {
+    this.memory = null;
+    this.image.parentNode.removeChild(this.image);
+    this.image = null;
+    delete this.element.dataset.objectId;
+};
+
+MemoryContainer.prototype.onTouchStart = function(event) {
+    console.log('onTouchStart', this);
+    this.lastTouch = {
+        left: event.touches[0].clientX,
+        top: event.touches[0].clientY
     };
-    preloadImage.src = memory.image;
-}
 
-function addMemoryListeners(element) {
-    element.addEventListener('pointerdown', onMemoryPointerDown);
-    element.addEventListener('pointerup', onMemoryPointerUp);
-    element.addEventListener('pointerenter', onMemoryPointerEnter);
-}
+    this.dragTimer = setTimeout(function() {
+        this.startDragging();
+    }.bind(this), 100);
+};
 
-function removeMemoryListeners(element) {
-    element.removeEventListener('pointerdown', onMemoryPointerDown);
-    element.removeEventListener('pointerup', onMemoryPointerUp);
-    element.removeEventListener('pointerenter', onMemoryPointerEnter);
-}
-
-function initMemoryBar() {
-    getBarElements().forEach(function(element) {
-        addMemoryListeners(element);
-    });
-
-    overlayDiv.addEventListener('transitionend', onOverlayTransitionEnd);
-}
-
-function destroyMemoryBar() {
-    getBarElements().forEach(function(element) {
-        removeMemoryListeners(element);
-    });
-
-    overlayDiv.removeEventListener('transitionend', onOverlayTransitionEnd);
-}
-
-function remember(memoryElement) {
-    var memory = memories[memoryElement.dataset.objectId];
-    if (!memory) {
+MemoryContainer.prototype.startDragging = function() {
+    if (!this.memory) {
         return;
     }
+    this.dragging = true;
 
-    if (document.querySelector('.memoryWeb')) {
-        destroyMemoryWeb();
+    var rect = this.image.getBoundingClientRect();
+    this.image.classList.add('memoryDragging');
+    this.dragDelta = {
+        top: -this.lastTouch.top,
+        left: -this.lastTouch.left
+    };
+};
+
+MemoryContainer.prototype.onTouchMove = function() {
+    var touch = {
+        left: event.touches[0].clientX,
+        top: event.touches[0].clientY
+    };
+
+    if (this.dragging) {
+        this.image.style.top = touch.top + this.dragDelta.top + 'px';
+        this.image.style.left = touch.left + this.dragDelta.left + 'px';
+    }
+};
+
+MemoryContainer.prototype.stopDragging = function() {
+    this.dragging = false;
+    if (this.image) {
+        this.image.style.top = 0;
+        this.image.style.left = 0;
+        this.image.classList.remove('memoryDragging');
+    }
+};
+
+MemoryContainer.prototype.onPointerUp = function() {
+    console.log('onPointerUp', this);
+    if (this.dragTimer) {
+        clearTimeout(this.dragTimer);
     }
 
-    var memoryBackground = document.querySelector('.memoryBackground');
-    memoryBackground.style.backgroundImage = url(memory.image);
-    window.location.href = 'of://remember/?data=' + encodeURIComponent(JSON.stringify(
-        {id: memory.id, matrix: memory.matrix}
-    ));
-    if (!globalStates.UIOffMode) {
-        document.getElementById('feezeButton').src = freezeButtonImage[2].src;
-    }
-    globalStates.feezeButtonState = true;
-}
-
-
-function onMemoryPointerUp(event) {
     if (activeThumbnail) {
-        this.style.backgroundImage = url(activeThumbnail);
-        this.classList.add('memoryPlaceholder');
+        this.image.src = activeThumbnail;
+        this.element.classList.add('memoryPlaceholder');
 
         overlayDiv.style.backgroundImage = 'none';
         overlayDiv.classList.remove('overlayMemory');
@@ -119,23 +134,125 @@ function onMemoryPointerUp(event) {
         var potentialObjects = Object.keys(globalObjects);
         if (potentialObjects.length !== 1) {
             console.warn('Memorization attempted with multiple objects');
+        } else {
+            pendingMemorizations[potentialObjects[0] || ''] = this;
+            window.location.href = 'of://memorize';
+            event.stopPropagation();
+        }
+    } else if (this.dragging) {
+        return;
+    } else if (this.memory) {
+        this.remember();
+    }
+};
+
+MemoryContainer.prototype.onPointerEnter = function() {
+    console.log('onPointerEnter', this);
+    if (overlayDiv.classList.contains('overlayMemory')) {
+        return;
+    }
+    if (this.dragging) {
+        return;
+    }
+    if (!this.memory) {
+        return;
+    }
+    // We are drawing a connection or otherwise not caring about memories
+    this.remember();
+};
+
+MemoryContainer.prototype.onTouchEnd = function() {
+    console.log('onTouchEnd');
+    if (parseInt(this.image.style.top) > memoryBarHeight) {
+        this.clear();
+    }
+    // Defer stopping to the next event loop when onPointerUp will have already
+    // occurred.
+    setTimeout(function() {
+        this.stopDragging();
+    }.bind(this), 0);
+};
+
+
+MemoryContainer.prototype.remember = function() {
+    console.log('remember', this);
+    if (document.querySelector('.memoryWeb')) {
+        removeMemoryWeb();
+    }
+
+    var memoryBackground = document.querySelector('.memoryBackground');
+    memoryBackground.style.backgroundImage = url(this.memory.image);
+    window.location.href = 'of://remember/?data=' + encodeURIComponent(JSON.stringify(
+        {id: this.memory.id, matrix: this.memory.matrix}
+    ));
+    if (!globalStates.UIOffMode) {
+        document.getElementById('feezeButton').src = freezeButtonImage[2].src;
+    }
+    globalStates.feezeButtonState = true;
+};
+
+MemoryContainer.prototype.remove = function() {
+    this.element.parentNode.removeChild(this.element);
+    this.element.removeEventListener('touchstart', this.onTouchStart);
+    this.element.removeEventListener('touchmove', this.onTouchMove);
+    this.element.removeEventListener('touchend', this.onTouchEnd);
+    this.element.removeEventListener('pointerup', this.onPointerUp);
+    this.element.removeEventListener('pointerenter', this.onPointerEnter);
+};
+
+MemoryContainer.prototype.onPointerEnter = function() {
+    if (!overlayDiv.classList.contains('overlayMemory') && this.memory) {
+        // We are drawing a connection or otherwise not caring about memories
+        if (this.dragging || this.dragTimer) {
             return;
         }
-        pendingMemorizations[potentialObjects[0] || ''] = this;
-        window.location.href = 'of://memorize';
-        event.stopPropagation();
+        // We are also not dragging or preparing to drag
+        this.remember();
     }
+};
+
+MemoryContainer.prototype.createImage = function() {
+    this.image = document.createElement('img');
+    this.image.classList.add('memory');
+    this.element.appendChild(this.image);
+};
+
+
+var activeThumbnail = '';
+var barContainers = [];
+var pendingMemorizations = {};
+var memoryBarHeight = 40;
+
+function getBarContainers() {
+    return barContainers;
 }
 
-function onMemoryPointerEnter(event) {
-    if (!overlayDiv.classList.contains('overlayMemory')) {
-        // We are drawing a connection or otherwise not caring about memories
-        remember(this);
-    }
+function url(href) {
+    return 'url(' + href + ')';
 }
 
-function onMemoryPointerDown(event) {
-    remember(this);
+function initMemoryBar() {
+    var memoryBar = document.querySelector('.memoryBar');
+    for (var i = 0; i < 6; i++) {
+        var memoryContainer = document.createElement('div');
+        memoryContainer.classList.add('memoryContainer');
+        memoryContainer.setAttribute('touch-action', 'none');
+        memoryBar.appendChild(memoryContainer);
+
+        var container = new MemoryContainer(memoryContainer);
+        barContainers.push(container);
+    }
+
+    overlayDiv.addEventListener('transitionend', onOverlayTransitionEnd);
+}
+
+function removeMemoryBar() {
+    barContainers.forEach(function(container) {
+        container.remove();
+    });
+    barContainers = [];
+
+    overlayDiv.removeEventListener('transitionend', onOverlayTransitionEnd);
 }
 
 function onOverlayTransitionEnd(event) {
@@ -145,8 +262,10 @@ function onOverlayTransitionEnd(event) {
 }
 
 function receiveThumbnail(thumbnailUrl) {
-    overlayDiv.style.backgroundImage = url(thumbnailUrl);
-    activeThumbnail = thumbnailUrl;
+    if (overlayDiv.classList.contains('overlayMemory')) {
+        overlayDiv.style.backgroundImage = url(thumbnailUrl);
+        activeThumbnail = thumbnailUrl;
+    }
 }
 
 function addObjectMemory(obj) {
@@ -155,8 +274,9 @@ function addObjectMemory(obj) {
         freeMemory = pendingMemorizations[obj.objectId];
         delete pendingMemorizations[obj.objectId];
     } else {
-        freeMemory = getBarElements().filter(function(elt) {
-            return !elt.dataset.objectId || elt.dataset.objectId === obj.objectId;
+        freeMemory = barContainers.filter(function(container) {
+            // Container either doesn't have a memory or the memory is of this object
+            return !container.memory || container.memory.id === obj.objectId;
         })[0];
 
         if (!freeMemory) {
@@ -165,21 +285,18 @@ function addObjectMemory(obj) {
         }
     }
 
-    getBarElements().forEach(function(elt) {
-        if (elt.dataset.objectId === obj.objectId) {
-            clearBarMemory(elt);
+   barContainers.forEach(function(container) {
+        if (container.memory && container.memory.id === obj.objectId) {
+            container.clear();
         }
     });
 
-    setMemory(freeMemory, obj);
+    freeMemory.set(obj);
 }
 
 exports.initMemoryBar = initMemoryBar;
-exports.destroyMemoryBar = destroyMemoryBar;
+exports.removeMemoryBar = removeMemoryBar;
 exports.receiveThumbnail = receiveThumbnail;
 exports.addObjectMemory = addObjectMemory;
-exports.setMemory = setMemory;
-exports.addMemoryListeners = addMemoryListeners;
-exports.removeMemoryListeners = removeMemoryListeners;
 
-})(window);
+}(window));
