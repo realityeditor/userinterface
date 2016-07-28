@@ -42,22 +42,10 @@ MemoryContainer.prototype.set = function(obj) {
         this.createImage();
     }
 
-    // TODO cutting out all of this logic
-    var elements = [].slice.call(document.querySelectorAll('.memoryContainer'));
-    elements = elements.filter(function(elt) {
-        return elt.dataset.objectId === this.memory.id;
-    }.bind(this));
-
-    elements.forEach(function(elt) {
-        elt.classList.add('memoryPlaceholder');
-    });
+    this.element.classList.add('memoryPlaceholder');
 
     this.image.onload = function() {
-        elements.forEach(function(elt) {
-            // TODO consider refactoring out to custom event
-            elt.querySelector('img').src = image;
-            elt.classList.remove('memoryPlaceholder');
-        });
+        this.element.classList.remove('memoryPlaceholder');
         this.image.classList.add('memoryLoaded');
     }.bind(this);
     this.image.src = image;
