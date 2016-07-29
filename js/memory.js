@@ -24,12 +24,10 @@ function MemoryContainer(element) {
     this.element.addEventListener('pointerenter', this.onPointerEnter);
 
     this.createImage();
-    this.image.addEventListener('touchstart', this.onTouchStart);
-    this.image.addEventListener('touchmove', this.onTouchMove);
-    this.image.addEventListener('touchend', this.onTouchEnd);
 }
 
 MemoryContainer.prototype.set = function(obj) {
+    this.obj = obj;
     var image = 'http://' + obj.ip + ':8080/obj/' + obj.name + '/memory/memory.jpg';
     this.memory = {
         id: obj.objectId,
@@ -52,6 +50,7 @@ MemoryContainer.prototype.set = function(obj) {
 };
 
 MemoryContainer.prototype.clear = function() {
+    this.obj = null;
     this.memory = null;
     this.removeImage();
     delete this.element.dataset.objectId;
@@ -105,10 +104,41 @@ MemoryContainer.prototype.onTouchMove = function() {
 
 MemoryContainer.prototype.stopDragging = function() {
     this.dragging = false;
+
+    var isBar = barContainers.indexOf(this) >= 0;
+
+    var imageRect = this.image.getBoundingClientRect();
+
     if (this.image) {
         this.image.style.top = 0;
         this.image.style.left = 0;
         this.image.classList.remove('memoryDragging');
+    }
+
+    if (isBar && imageRect.top > memoryBarHeight) {
+        this.clear();
+        return;
+    }
+
+    var containerRect = this.element.getBoundingClientRect();
+
+    if (isBar) {
+        // Move requested
+        if (imageRect.right < containerRect.left || imageRect.left > containerRect.right) {
+            var newContainer = getBarContainerAtLeft(imageRect.left);
+            if (newContainer) {
+                newContainer.set(this.obj);
+                this.clear();
+            }
+        }
+    } else {
+        // Move into bar
+        if (imageRect.top < memoryBarHeight) {
+            var newContainer = getBarContainerAtLeft(imageRect.left);
+            if (newContainer) {
+                newContainer.set(this.obj);
+            }
+        }
     }
 };
 
@@ -119,6 +149,9 @@ MemoryContainer.prototype.onPointerUp = function() {
     }
 
     if (activeThumbnail) {
+        if (!this.image) {
+            this.createImage();
+        }
         this.image.src = activeThumbnail;
         this.element.classList.add('memoryPlaceholder');
 
@@ -158,9 +191,6 @@ MemoryContainer.prototype.onPointerEnter = function() {
 
 MemoryContainer.prototype.onTouchEnd = function() {
     console.log('onTouchEnd');
-    if (parseInt(this.image.style.top) > memoryBarHeight) {
-        this.clear();
-    }
     // Defer stopping to the next event loop when onPointerUp will have already
     // occurred.
     setTimeout(function() {
@@ -207,6 +237,10 @@ MemoryContainer.prototype.onPointerEnter = function() {
 MemoryContainer.prototype.createImage = function() {
     this.image = document.createElement('img');
     this.image.classList.add('memory');
+    this.image.addEventListener('touchstart', this.onTouchStart);
+    this.image.addEventListener('touchmove', this.onTouchMove);
+    this.image.addEventListener('touchend', this.onTouchEnd);
+
     this.element.appendChild(this.image);
 };
 
@@ -216,8 +250,16 @@ var barContainers = [];
 var pendingMemorizations = {};
 var memoryBarHeight = 40;
 
-function getBarContainers() {
-    return barContainers;
+function getBarContainerAtLeft(left) {
+    // Assumes bar containers are in order of DOM insertion
+    for (var i = 0; i < barContainers.length; i++) {
+        var barContainer = barContainers[i];
+        var barRect = barContainer.element.getBoundingClientRect();
+        if (left > barRect.left && left < barRect.right) {
+            return barContainer;
+        }
+    }
+    return null;
 }
 
 function url(href) {
