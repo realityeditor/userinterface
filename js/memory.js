@@ -329,10 +329,22 @@ function addObjectMemory(obj) {
     freeMemory.set(obj);
 }
 
+function getMemoryWithId(id) {
+    for (var i = 0; i < barContainers.length; i++) {
+        var barContainer = barContainers[i];
+        if (barContainer.memory && barContainer.memory.id === id) {
+            return barContainer;
+        }
+    }
+    // TODO free-float memories not in bar
+    return null;
+}
+
 exports.initMemoryBar = initMemoryBar;
 exports.removeMemoryBar = removeMemoryBar;
 exports.receiveThumbnail = receiveThumbnail;
 exports.addObjectMemory = addObjectMemory;
 exports.MemoryContainer = MemoryContainer;
+exports.getMemoryWithId = getMemoryWithId;
 
 }(window));
