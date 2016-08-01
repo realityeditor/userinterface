@@ -211,9 +211,9 @@ MemoryContainer.prototype.remember = function() {
         {id: this.memory.id, matrix: this.memory.matrix}
     ));
     if (!globalStates.UIOffMode) {
-        document.getElementById('feezeButton').src = freezeButtonImage[2].src;
+        document.getElementById('freezeButton').src = freezeButtonImage[2].src;
     }
-    globalStates.feezeButtonState = true;
+    globalStates.freezeButtonState = true;
 };
 
 MemoryContainer.prototype.remove = function() {

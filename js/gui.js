@@ -340,7 +340,7 @@ function GUI() {
 
             if (globalStates.UIOffMode) {
                 document.getElementById('preferencesButton').src = preferencesButtonImage[3].src;
-                document.getElementById('feezeButton').src = freezeButtonImage[3].src;
+                document.getElementById('freezeButton').src = freezeButtonImage[3].src;
                 document.getElementById('reloadButton').src = reloadButtonImage[2].src;
                 document.getElementById('guiButtonImage').src = guiButtonImage[4].src;
                 document.getElementById('resetButton').src = resetButtonImage[3].src;
@@ -364,7 +364,7 @@ function GUI() {
 
             if (globalStates.UIOffMode) {
                 document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
-                document.getElementById('feezeButton').src = freezeButtonImage[0].src;
+                document.getElementById('freezeButton').src = freezeButtonImage[0].src;
                 document.getElementById('reloadButton').src = reloadButtonImage[0].src;
                 document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
                 document.getElementById('resetButton').src = resetButtonImage[0].src;
@@ -381,21 +381,21 @@ function GUI() {
     * Freeze Button
      */
 
-    document.getElementById("feezeButton").addEventListener("touchstart", function () {
-        if (!globalStates.UIOffMode) document.getElementById('feezeButton').src = freezeButtonImage[1].src;
+    document.getElementById("freezeButton").addEventListener("touchstart", function () {
+        if (!globalStates.UIOffMode) document.getElementById('freezeButton').src = freezeButtonImage[1].src;
     });
     ec++;
-    document.getElementById("feezeButton").addEventListener("touchend", function () {
-        if (globalStates.feezeButtonState === true) {
-            if (!globalStates.UIOffMode)    document.getElementById('feezeButton').src = freezeButtonImage[0].src;
-            globalStates.feezeButtonState = false;
+    document.getElementById("freezeButton").addEventListener("touchend", function () {
+        if (globalStates.freezeButtonState === true) {
+            if (!globalStates.UIOffMode)    document.getElementById('freezeButton').src = freezeButtonImage[0].src;
+            globalStates.freezeButtonState = false;
             var memoryBackground = document.querySelector('.memoryBackground');
             memoryBackground.style.backgroundImage = 'none';
             window.location.href = "of://unfreeze";
         }
         else {
-            if (!globalStates.UIOffMode)    document.getElementById('feezeButton').src = freezeButtonImage[2].src;
-            globalStates.feezeButtonState = true;
+            if (!globalStates.UIOffMode)    document.getElementById('freezeButton').src = freezeButtonImage[2].src;
+            globalStates.freezeButtonState = true;
             window.location.href = "of://freeze";
         }
 

@@ -99,7 +99,7 @@ var globalStates = {
     pocketButtonState: false,
     pocketButtonDown: false,
     pocketButtonUp: false,
-    feezeButtonState: false,
+    freezeButtonState: false,
     logButtonState: false,
     editingMode: false,
     guiURL: "",
