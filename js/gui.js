@@ -67,6 +67,7 @@ var pocketButtonImage = [];
 var loadNewUiImage = [];
 var blockTabImage = [];
 var memoryWebButtonImage = [];
+var pocketButtonImage = [];
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
@@ -112,7 +113,11 @@ function GUI() {
 
     preload(memoryWebButtonImage,
         'png/memoryWeb.png', 'png/memoryWebOver.png', 'png/memoryWebSelect.png'
-   );
+    );
+
+    preload(pocketButtonImage,
+        'png/pocket.png', 'png/pocketOver.png', 'png/pocketSelect.png', 'png/pocketEmpty.png'
+    );
 
     document.getElementById("guiButtonImage1").addEventListener("touchstart", function () {
         if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[0].src;
@@ -602,6 +607,31 @@ function GUI() {
     });
     ec++;
 
+    var pocketButton = document.getElementById('pocketButton');
+    pocketButton.addEventListener('touchstart', function() {
+        if (!globalStates.UIOffMode) {
+            pocketButton.src = pocketButtonImage[1].src;
+        }
+    });
+
+    ec++;
+    pocketButton.addEventListener('touchend', function() {
+        if (pocketShown()) {
+            if (!globalStates.UIOffMode) {
+                pocketButton.src = pocketButtonImage[0].src
+            }
+            pocketHide();
+        } else {
+            if (!globalStates.UIOffMode) {
+                pocketButton.src = pocketButtonImage[2].src
+            }
+            pocketShow();
+        }
+    });
+    ec++;
+
+
+
     cout("GUI");
 }
 
@@ -703,6 +733,22 @@ function blockMenuHide() {
           document.getElementById('pocketButton').src = pocketButtonImage[4].src;
         }
     }
+}
+
+function pocketElement() {
+    return document.querySelector('.pocket');
+}
+
+function pocketShown() {
+    return pocketElement().classList.contains('pocketShown');
+}
+
+function pocketHide() {
+    pocketElement().classList.remove('pocketShown');
+}
+
+function pocketShow() {
+    pocketElement().classList.add('pocketShown');
 }
 
 /**********************************************************************************************************************

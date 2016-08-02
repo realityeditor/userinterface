@@ -406,14 +406,19 @@ body {
     top: 62px;
 }
 
-#reloadButtonDiv {
+#preferencesButtonDiv {
     right: 0px;
     top: 260px;
 }
 
-#memoryWebButtonDiv {
+#reloadButtonDiv {
     right: 0px;
     top: 325px;
+}
+
+#memoryWebButtonDiv {
+    right: 0px;
+    top: 390px;
 }
 
 #logButtonDiv {
@@ -423,7 +428,7 @@ body {
     visibility: hidden;
 }
 
-#preferencesButtonDiv {
+#pocketButtonDiv {
     right: 0px;
     top: 195px;
 }
@@ -899,3 +904,23 @@ Logic Interface CSS
     -webkit-backdrop-filter: blur(8px);
 }
 
+.pocket {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: translateZ(0px);
+    -webkit-backdrop-filter: blur(0px);
+    background-color: rgba(17, 55, 55, 0.5);
+    visibility: hidden;
+}
+
+.pocket.pocketShown {
+    visibility: visible;
+    -webkit-backdrop-filter: blur(8px);
+}
