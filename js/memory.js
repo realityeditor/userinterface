@@ -65,7 +65,6 @@ MemoryContainer.prototype.removeImage = function() {
 };
 
 MemoryContainer.prototype.onTouchStart = function(event) {
-    console.log('onTouchStart', this);
     this.lastTouch = {
         left: event.touches[0].clientX,
         top: event.touches[0].clientY
@@ -143,7 +142,6 @@ MemoryContainer.prototype.stopDragging = function() {
 };
 
 MemoryContainer.prototype.onPointerUp = function() {
-    console.log('onPointerUp', this);
     if (this.dragTimer) {
         clearTimeout(this.dragTimer);
     }
@@ -175,7 +173,6 @@ MemoryContainer.prototype.onPointerUp = function() {
 };
 
 MemoryContainer.prototype.onPointerEnter = function() {
-    console.log('onPointerEnter', this);
     if (overlayDiv.classList.contains('overlayMemory')) {
         return;
     }
@@ -190,7 +187,6 @@ MemoryContainer.prototype.onPointerEnter = function() {
 };
 
 MemoryContainer.prototype.onTouchEnd = function() {
-    console.log('onTouchEnd');
     // Defer stopping to the next event loop when onPointerUp will have already
     // occurred.
     setTimeout(function() {
@@ -200,7 +196,6 @@ MemoryContainer.prototype.onTouchEnd = function() {
 
 
 MemoryContainer.prototype.remember = function() {
-    console.log('remember', this);
     if (document.querySelector('.memoryWeb')) {
         removeMemoryWeb();
     }
