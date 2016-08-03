@@ -192,7 +192,7 @@ body {
     padding: 20px;
     background-color: #969696;
 
-    -webkit-transform: translateZ(1px);
+    -webkit-transform: translateZ(2px);
 }
 
 
@@ -375,7 +375,8 @@ body {
     top: 18px;*/
 
     /* this is a hack for adding the interface in front of the transformed web interface */
-    -webkit-transform: translateZ(1px);
+    -webkit-transform: translateZ(2px);
+    z-index: 10;
 }
 
 #UIButtons.bigPocket > .UIButton {
@@ -945,7 +946,7 @@ Logic Interface CSS
 }
 
 .pocket {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -954,7 +955,7 @@ Logic Interface CSS
     padding: 0;
     z-index: 1;
     -webkit-transform-style: preserve-3d;
-    -webkit-transform: translateZ(0px);
+    -webkit-transform: translateZ(2px); /* Above web interfaces, below side buttons */
     -webkit-backdrop-filter: blur(0px);
     background-color: rgba(17, 55, 55, 0.5);
     visibility: hidden;
