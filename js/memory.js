@@ -165,6 +165,7 @@ MemoryContainer.prototype.onPointerUp = function() {
             window.location.href = 'of://memorize';
             event.stopPropagation();
         }
+        pocketOnMemoryCreationStop();
     } else if (this.dragging) {
         return;
     } else if (this.memory) {
@@ -288,6 +289,7 @@ function removeMemoryBar() {
 function onOverlayTransitionEnd(event) {
     if (overlayDiv.classList.contains('overlayMemory')) {
         window.location.href = 'of://createMemory';
+        pocketOnMemoryCreationStart();
     }
 }
 

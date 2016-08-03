@@ -115,10 +115,6 @@ function GUI() {
         'png/memoryWeb.png', 'png/memoryWebOver.png', 'png/memoryWebSelect.png'
     );
 
-    preload(pocketButtonImage,
-        'png/pocket.png', 'png/pocketOver.png', 'png/pocketSelect.png', 'png/pocketEmpty.png'
-    );
-
     document.getElementById("guiButtonImage1").addEventListener("touchstart", function () {
         if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[0].src;
         // kickoff();
@@ -607,31 +603,6 @@ function GUI() {
     });
     ec++;
 
-    var pocketButton = document.getElementById('pocketButton');
-    pocketButton.addEventListener('touchstart', function() {
-        if (!globalStates.UIOffMode) {
-            pocketButton.src = pocketButtonImage[1].src;
-        }
-    });
-
-    ec++;
-    pocketButton.addEventListener('touchend', function() {
-        if (pocketShown()) {
-            if (!globalStates.UIOffMode) {
-                pocketButton.src = pocketButtonImage[0].src
-            }
-            pocketHide();
-        } else {
-            if (!globalStates.UIOffMode) {
-                pocketButton.src = pocketButtonImage[2].src
-            }
-            pocketShow();
-        }
-    });
-    ec++;
-
-
-
     cout("GUI");
 }
 
@@ -750,6 +721,7 @@ function pocketHide() {
 function pocketShow() {
     pocketElement().classList.add('pocketShown');
 }
+
 
 /**********************************************************************************************************************
  ******************************************* datacrafting GUI  *******************************************************

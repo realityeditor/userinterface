@@ -69,6 +69,7 @@ window.onload = function () {
 
     GUI();
     initMemoryBar();
+    pocketInit();
 
     console.log(globalStates.platform);
 

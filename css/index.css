@@ -378,6 +378,22 @@ body {
     -webkit-transform: translateZ(1px);
 }
 
+#UIButtons.bigPocket > .UIButton {
+    visibility: hidden;
+}
+
+#UIButtons.bigPocket > #bigPocketButtonDiv {
+    visibility: visible;
+}
+
+#UIButtons.bigTrash > .UIButton {
+    visibility: hidden;
+}
+
+#UIButtons.bigTrash > #bigTrashButtonDiv {
+    visibility: visible;
+}
+
 .UIButton {
     position: fixed;
     width: 60px;
@@ -413,12 +429,14 @@ body {
 
 #reloadButtonDiv {
     right: 0px;
-    top: 325px;
+    top: 130px;
+    visibility: hidden;
 }
 
 #memoryWebButtonDiv {
     right: 0px;
-    top: 390px;
+    top: 130px;
+    visibility: hidden;
 }
 
 #logButtonDiv {
@@ -442,6 +460,22 @@ body {
 #unconstButtonDiv {
     right: 65px;
     top: 0px;
+    visibility: hidden;
+}
+
+#bigTrashButtonDiv {
+    top: 0px;
+    right: 0px;
+    width: 60px;
+    height: 320px;
+    visibility: hidden;
+}
+
+#bigPocketButtonDiv {
+    top: 0px;
+    right: 0px;
+    width: 60px;
+    height: 320px;
     visibility: hidden;
 }
 
