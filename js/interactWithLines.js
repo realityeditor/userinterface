@@ -127,28 +127,14 @@ function drawAllLines(thisObject, context) {
         }
 
         if (!oB.objectVisible) {
-            var memoryB = getMemoryWithId(l.objectB);
-            if (memoryB) {
-                var rect = memoryB.element.getBoundingClientRect();
-                bB.screenX = rect.left + rect.width / 2;
-                bB.screenY = rect.top + rect.height / 2;
-            } else {
-                bB.screenX = bA.screenX;
-                bB.screenY = -10;
-            }
+            bB.screenX = bA.screenX;
+            bB.screenY = -10;
             bB.screenZ = bA.screenZ;
         }
 
         if (!oA.objectVisible) {
-            var memoryA = getMemoryWithId(l.objectA);
-            if (memoryA) {
-                var rect = memoryA.element.getBoundingClientRect();
-                bA.screenX = rect.left + rect.width / 2;
-                bA.screenY = rect.top + rect.height / 2;
-            } else {
-                bA.screenX = bB.screenX;
-                bA.screenY = -10;
-            }
+            bA.screenX = bB.screenX;
+            bA.screenY = -10;
             bA.screenZ = bB.screenZ;
         }
 
