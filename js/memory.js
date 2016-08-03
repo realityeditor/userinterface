@@ -206,9 +206,7 @@ MemoryContainer.prototype.remember = function() {
     window.location.href = 'of://remember/?data=' + encodeURIComponent(JSON.stringify(
         {id: this.memory.id, matrix: this.memory.matrix}
     ));
-    if (!globalStates.UIOffMode) {
-        document.getElementById('freezeButton').src = freezeButtonImage[2].src;
-    }
+    document.getElementById('freezeButton').src = freezeButtonImage[2].src;
     globalStates.freezeButtonState = true;
 };
 

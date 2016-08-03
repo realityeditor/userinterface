@@ -401,6 +401,10 @@ body {
     visibility: visible;
 }
 
+.clearSky .UIButton {
+    opacity: 0;
+}
+
 #guiButtonDiv {
     height: 125px;
     right: 0px;
@@ -500,9 +504,11 @@ body {
     -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
 
-.memoryBar.clearSky {
+/* TODO: spec interaction between clear sky and pocket
+.clearSky .memoryBar {
     visibility: hidden;
 }
+*/
 
 .memoryWeb > .memoryContainer {
     position: absolute;
