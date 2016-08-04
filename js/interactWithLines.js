@@ -126,16 +126,45 @@ function drawAllLines(thisObject, context) {
             continue; //should not be undefined
         }
 
+        // Don't draw off-screen lines
+        if (!oB.objectVisible && !oA.objectVisible) {
+            continue;
+        }
+
         if (!oB.objectVisible) {
-            bB.screenX = bA.screenX;
-            bB.screenY = -10;
-            bB.screenZ = bA.screenZ;
+            if (oB.memory) {
+                var memoryPointer = getMemoryPointerWithId(oB.objectId);
+                if (!memoryPointer) {
+                    memoryPointer = new MemoryPointer(l, false);
+                    memoryPointer.update();
+                }
+
+                bB.screenX = memoryPointer.x;
+                bB.screenY = memoryPointer.y;
+                bB.screenZ = bA.screenZ;
+            } else {
+                bB.screenX = bA.screenX;
+                bB.screenY = -10;
+                bB.screenZ = bA.screenZ;
+            }
         }
 
         if (!oA.objectVisible) {
-            bA.screenX = bB.screenX;
-            bA.screenY = -10;
-            bA.screenZ = bB.screenZ;
+            if (oA.memory) {
+                var memoryPointer = getMemoryPointerWithId(oA.objectId);
+                if (!memoryPointer) {
+                    memoryPointer = new MemoryPointer(l, true);
+                    memoryPointer.update();
+                }
+
+                bA.screenX = memoryPointer.x;
+                bA.screenY = memoryPointer.y;
+                bA.screenZ = bB.screenZ;
+            } else {
+                bA.screenX = bB.screenX;
+                bA.screenY = -10;
+                bA.screenZ = bB.screenZ;
+            }
         }
 
         // linearize a non linear zBuffer

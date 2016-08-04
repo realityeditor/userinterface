@@ -531,6 +531,22 @@ body {
     -webkit-backdrop-filter: blur(4px);
 }
 
+.memoryPointerContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 2;
+    -webkit-transform: translateZ(0px);
+}
+
+.memoryPointer {
+    position: absolute;
+    margin-left: -67px;
+    margin-top: -37.5px;
+}
+
 .memory {
     width: 134px;
     height: 75px;
