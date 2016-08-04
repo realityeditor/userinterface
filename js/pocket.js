@@ -50,6 +50,7 @@ function pocketInit() {
     bigPocketButton.addEventListener('pointerenter', function() {
         show();
     });
+    ec++;
 
     element = document.querySelector('.pocket');
 }
@@ -79,9 +80,20 @@ function pocketOnMemoryCreationStop() {
     uiButtons.classList.remove('bigPocket');
 }
 
+function pocketOnMemoryDeletionStart() {
+    uiButtons.classList.add('bigTrash');
+    bigTrashButton.src = bigTrashImages[0].src;
+}
+
+function pocketOnMemoryDeletionStop() {
+    uiButtons.classList.remove('bigTrash');
+}
+
 exports.pocketInit = pocketInit;
 exports.pocketShown = pocketShown;
 exports.pocketOnMemoryCreationStart = pocketOnMemoryCreationStart;
 exports.pocketOnMemoryCreationStop = pocketOnMemoryCreationStop;
+exports.pocketOnMemoryDeletionStart = pocketOnMemoryDeletionStart;
+exports.pocketOnMemoryDeletionStop = pocketOnMemoryDeletionStop;
 
 }(window));

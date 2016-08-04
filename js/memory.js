@@ -87,6 +87,14 @@ MemoryContainer.prototype.startDragging = function() {
         top: -this.lastTouch.top,
         left: -this.lastTouch.left
     };
+
+    var isBar = barContainers.indexOf(this) >= 0;
+
+    if (isBar) {
+        pocketOnMemoryDeletionStart();
+    } else {
+        pocketOnMemoryCreationStart();
+    }
 };
 
 MemoryContainer.prototype.onTouchMove = function() {
@@ -96,8 +104,10 @@ MemoryContainer.prototype.onTouchMove = function() {
     };
 
     if (this.dragging) {
-        this.image.style.top = touch.top + this.dragDelta.top + 'px';
-        this.image.style.left = touch.left + this.dragDelta.left + 'px';
+        var top = touch.top + this.dragDelta.top + 'px';
+        var left = touch.left + this.dragDelta.left + 'px';
+        // Translate up 2px to be above pocket layer but below overlay and ui buttons
+        this.image.style.transform = 'translate3d(' + left + ',' + top + ',2px)';
     }
 };
 
@@ -106,11 +116,16 @@ MemoryContainer.prototype.stopDragging = function() {
 
     var isBar = barContainers.indexOf(this) >= 0;
 
+    if (isBar) {
+        pocketOnMemoryDeletionStop();
+    } else {
+        pocketOnMemoryCreationStop();
+    }
+
     var imageRect = this.image.getBoundingClientRect();
 
     if (this.image) {
-        this.image.style.top = 0;
-        this.image.style.left = 0;
+        this.image.style.transform = 'translate(0px, 0px)';
         this.image.classList.remove('memoryDragging');
     }
 

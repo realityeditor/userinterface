@@ -296,7 +296,6 @@ function setPocketPossition (evt){
 
     if(pocketItem.pocket.nodes[pocketItemId]){
 
-
         var thisItem = pocketItem.pocket.nodes[pocketItemId];
 
         if(globalLogic.farFrontElement==="") {

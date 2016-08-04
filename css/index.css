@@ -531,6 +531,10 @@ body {
     -webkit-backdrop-filter: blur(4px);
 }
 
+.memoryContainer.memoryDragging {
+    z-index: 4;
+}
+
 .memoryPointerContainer {
     position: absolute;
     top: 0;
@@ -583,7 +587,9 @@ body {
     transition: width 0.3s linear, height 0.3s linear, border-radius 0.3s linear, border-width 0.3s linear;
 
     /* this is a hack for adding the interface in front of the transformed web interface */
-    -webkit-transform: translateZ(2px);
+    z-index: 3;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: translateZ(6px);
 }
 
 #overlay.overlayMemory {
