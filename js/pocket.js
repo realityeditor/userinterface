@@ -32,23 +32,32 @@ function pocketInit() {
     bigPocketButton = document.getElementById('bigPocketButton');
     bigTrashButton = document.getElementById('bigPocketButton');
 
-    button.addEventListener('touchstart', function() {
+    button.addEventListener('pointerenter', function() {
+        console.log('pointerenter');
+        toggleShown();
+        // Show hover
         button.src = buttonImages[1].src;
     });
-
-    ec++;
-    button.addEventListener('touchend', function() {
-        toggleShown()
-    });
     ec++;
 
-    button.addEventListener('pointerenter', function() {
-        toggleShown()
+    button.addEventListener('pointerleave', function() {
+        console.log('pointerleave');
+        // Undo the hover state
+        updateButtons();
     });
     ec++;
 
     bigPocketButton.addEventListener('pointerenter', function() {
-        toggleShown()
+        console.log('big pointerenter');
+        toggleShown();
+        bigPocketButton.src = bigPocketImages[1].src;
+    });
+    ec++;
+
+    bigPocketButton.addEventListener('pointerleave', function() {
+        console.log('big pointerleave');
+        // Undo the hover state
+        updateButtons();
     });
     ec++;
 
@@ -66,14 +75,22 @@ function toggleShown() {
 
 function pocketShow() {
     element.classList.add('pocketShown');
-    bigPocketButton.src = bigPocketImages[2].src;
-    button.src = buttonImages[2].src
+    updateButtons();
 }
 
 function pocketHide() {
     element.classList.remove('pocketShown');
-    bigPocketButton.src = bigPocketImages[0].src;
-    button.src = buttonImages[0].src
+    updateButtons();
+}
+
+function updateButtons() {
+    if (pocketShown()) {
+        button.src = buttonImages[2].src
+        bigPocketButton.src = bigPocketImages[2].src;
+    } else {
+        button.src = buttonImages[0].src
+        bigPocketButton.src = bigPocketImages[0].src;
+    }
 }
 
 function pocketShown() {

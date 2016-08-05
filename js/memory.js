@@ -26,10 +26,14 @@ function MemoryContainer(element) {
 
 MemoryContainer.prototype.set = function(obj) {
     this.obj = obj;
-    var image = 'http://' + obj.ip + ':8080/obj/' + obj.name + '/memory/memory.jpg';
+    var urlBase = 'http://' + obj.ip + ':8080/obj/' + obj.name + '/memory/';
+    var image = urlBase + 'memory.jpg';
+    var thumbnail = urlBase + 'memoryThumbnail.jpg';
+
     this.memory = {
         id: obj.objectId,
         image: image,
+        thumbnail: thumbnail,
         matrix: obj.memory.matrix
     };
     this.element.dataset.objectId = this.memory.id;
@@ -44,7 +48,7 @@ MemoryContainer.prototype.set = function(obj) {
         this.element.classList.remove('memoryPlaceholder');
         this.image.classList.add('memoryLoaded');
     }.bind(this);
-    this.image.src = image;
+    this.image.src = thumbnail;
 };
 
 MemoryContainer.prototype.clear = function() {
@@ -156,6 +160,9 @@ MemoryContainer.prototype.stopDragging = function() {
             if (newContainer) {
                 newContainer.set(this.obj);
             }
+        } else {
+            // Didn't move into bar, pocket should close
+            pocketHide();
         }
     }
 };
