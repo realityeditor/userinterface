@@ -22,8 +22,6 @@ function MemoryContainer(element) {
 
     this.element.addEventListener('pointerup', this.onPointerUp);
     this.element.addEventListener('pointerenter', this.onPointerEnter);
-
-    this.createImage();
 }
 
 MemoryContainer.prototype.set = function(obj) {
@@ -83,9 +81,12 @@ MemoryContainer.prototype.startDragging = function() {
 
     var rect = this.image.getBoundingClientRect();
     this.image.classList.add('memoryDragging');
+    this.element.removeChild(this.image);
+    document.querySelector('.memoryDragContainer').appendChild(this.image);
+
     this.dragDelta = {
-        top: -this.lastTouch.top,
-        left: -this.lastTouch.left
+        top: rect.top - this.lastTouch.top,
+        left: rect.left - this.lastTouch.left
     };
 
     var isBar = barContainers.indexOf(this) >= 0;
@@ -107,7 +108,7 @@ MemoryContainer.prototype.onTouchMove = function() {
         var top = touch.top + this.dragDelta.top + 'px';
         var left = touch.left + this.dragDelta.left + 'px';
         // Translate up 2px to be above pocket layer but below overlay and ui buttons
-        this.image.style.transform = 'translate3d(' + left + ',' + top + ',2px)';
+        this.image.style.transform = 'translate(' + left + ',' + top + ')';
     }
 };
 
@@ -125,8 +126,11 @@ MemoryContainer.prototype.stopDragging = function() {
     var imageRect = this.image.getBoundingClientRect();
 
     if (this.image) {
+        this.image.style.position = 'static';
         this.image.style.transform = 'translate(0px, 0px)';
         this.image.classList.remove('memoryDragging');
+        document.querySelector('.memoryDragContainer').removeChild(this.image);
+        this.element.appendChild(this.image);
     }
 
     if (isBar && imageRect.top > memoryBarHeight) {
@@ -257,7 +261,7 @@ MemoryContainer.prototype.createImage = function() {
 var activeThumbnail = '';
 var barContainers = [];
 var pendingMemorizations = {};
-var memoryBarHeight = 40;
+var memoryBarHeight = 80;
 
 function getBarContainerAtLeft(left) {
     // Assumes bar containers are in order of DOM insertion
