@@ -23,8 +23,6 @@ function MemoryPointer(link, isObjectA) {
 
     this.memory = new MemoryContainer(this.element); // TODO
 
-    console.log(this.link);
-
     this.memory.set(this.getObject());
     this.x = 0;
     this.y = 0;
@@ -70,6 +68,11 @@ MemoryPointer.prototype.update = function(connectedValue) {
         this.remove();
         return;
     }
+    if (globalStates.guiButtonState || globalStates.editingMode) {
+        // Remove if no longer in connection-drawing mode
+        this.remove();
+        return;
+    }
     var connectedValue = this.getConnectedValue();
     this.x = connectedValue.screenX - 150;
     this.y = connectedValue.screenY - 50;
@@ -79,7 +82,6 @@ MemoryPointer.prototype.update = function(connectedValue) {
 };
 
 MemoryPointer.prototype.remove = function() {
-    console.log('removing pointer');
     this.alive = false;
     this.memory.remove();
     delete pointers[this.getObject().objectId];

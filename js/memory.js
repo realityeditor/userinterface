@@ -220,6 +220,8 @@ MemoryContainer.prototype.remember = function() {
         removeMemoryWeb();
     }
 
+    pocketHide();
+
     var memoryBackground = document.querySelector('.memoryBackground');
     memoryBackground.style.backgroundImage = url(this.memory.image);
     window.location.href = 'of://remember/?data=' + encodeURIComponent(JSON.stringify(

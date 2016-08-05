@@ -38,30 +38,39 @@ function pocketInit() {
 
     ec++;
     button.addEventListener('touchend', function() {
-        if (pocketShown()) {
-            button.src = buttonImages[0].src
-            element.classList.remove('pocketShown');
-        } else {
-            show();
-        }
+        toggleShown()
+    });
+    ec++;
+
+    button.addEventListener('pointerenter', function() {
+        toggleShown()
     });
     ec++;
 
     bigPocketButton.addEventListener('pointerenter', function() {
-        show();
+        toggleShown()
     });
     ec++;
 
     element = document.querySelector('.pocket');
 }
 
-function show() {
+function toggleShown() {
+    if (pocketShown()) {
+        pocketHide();
+    } else {
+        pocketShow();
+    }
+}
+
+
+function pocketShow() {
     element.classList.add('pocketShown');
     bigPocketButton.src = bigPocketImages[2].src;
     button.src = buttonImages[2].src
 }
 
-function hide() {
+function pocketHide() {
     element.classList.remove('pocketShown');
     bigPocketButton.src = bigPocketImages[0].src;
     button.src = buttonImages[0].src
@@ -91,6 +100,8 @@ function pocketOnMemoryDeletionStop() {
 
 exports.pocketInit = pocketInit;
 exports.pocketShown = pocketShown;
+exports.pocketShow = pocketShow;
+exports.pocketHide = pocketHide;
 exports.pocketOnMemoryCreationStart = pocketOnMemoryCreationStart;
 exports.pocketOnMemoryCreationStop = pocketOnMemoryCreationStop;
 exports.pocketOnMemoryDeletionStart = pocketOnMemoryDeletionStart;
