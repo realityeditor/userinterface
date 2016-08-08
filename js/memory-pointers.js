@@ -77,8 +77,6 @@ MemoryPointer.prototype.update = function(connectedValue) {
     this.x = connectedValue.screenX - 150;
     this.y = connectedValue.screenY - 50;
     this.element.style.transform = 'translate(' + this.x + 'px,' + this.y + 'px)';
-
-    requestAnimationFrame(this.update);
 };
 
 MemoryPointer.prototype.remove = function() {
