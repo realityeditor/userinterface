@@ -33,7 +33,6 @@ function pocketInit() {
     bigTrashButton = document.getElementById('bigPocketButton');
 
     button.addEventListener('pointerenter', function() {
-        console.log('pointerenter');
         toggleShown();
         // Show hover
         button.src = buttonImages[1].src;
@@ -41,21 +40,18 @@ function pocketInit() {
     ec++;
 
     button.addEventListener('pointerleave', function() {
-        console.log('pointerleave');
         // Undo the hover state
         updateButtons();
     });
     ec++;
 
     bigPocketButton.addEventListener('pointerenter', function() {
-        console.log('big pointerenter');
         toggleShown();
         bigPocketButton.src = bigPocketImages[1].src;
     });
     ec++;
 
     bigPocketButton.addEventListener('pointerleave', function() {
-        console.log('big pointerleave');
         // Undo the hover state
         updateButtons();
     });
