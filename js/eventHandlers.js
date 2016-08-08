@@ -397,6 +397,7 @@ function documentPointerUp(evt) {
     overlayDiv.classList.remove('overlayMemory');
     if (overlayDiv.style.backgroundImage !== 'none') {
         overlayDiv.style.backgroundImage = 'none';
+        pocketOnMemoryCreationStop();
         window.location.href = 'of://clearMemory';
     }
 
@@ -969,3 +970,4 @@ function removeEventHandlers() {
 
     cout("removeEventHandlers");
 }
+
