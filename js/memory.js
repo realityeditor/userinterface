@@ -85,7 +85,9 @@ MemoryContainer.prototype.startDragging = function() {
 
     var rect = this.image.getBoundingClientRect();
     this.image.classList.add('memoryDragging');
-    this.element.removeChild(this.image);
+    this.image.style.transform = 'translate(' + rect.left + 'px,' + rect.top + 'px)';
+
+    this.image.parentNode.removeChild(this.image);
     document.querySelector('.memoryDragContainer').appendChild(this.image);
 
     this.dragDelta = {
@@ -111,12 +113,14 @@ MemoryContainer.prototype.onTouchMove = function() {
     if (this.dragging) {
         var top = touch.top + this.dragDelta.top + 'px';
         var left = touch.left + this.dragDelta.left + 'px';
-        // Translate up 2px to be above pocket layer but below overlay and ui buttons
         this.image.style.transform = 'translate(' + left + ',' + top + ')';
     }
 };
 
 MemoryContainer.prototype.stopDragging = function() {
+    if (!this.dragging) {
+        return;
+    }
     this.dragging = false;
 
     var isBar = barContainers.indexOf(this) >= 0;
@@ -130,16 +134,18 @@ MemoryContainer.prototype.stopDragging = function() {
     var imageRect = this.image.getBoundingClientRect();
 
     if (this.image) {
-        this.image.style.position = 'static';
-        this.image.style.transform = 'translate(0px, 0px)';
+        this.image.style.transform = '';
         this.image.classList.remove('memoryDragging');
-        document.querySelector('.memoryDragContainer').removeChild(this.image);
+        this.image.parentNode.removeChild(this.image);
         this.element.appendChild(this.image);
     }
 
-    if (isBar && imageRect.top > memoryBarHeight) {
-        this.clear();
-        return;
+    if (isBar) {
+        var rightMostContainer = barContainers[barContainers.length - 1];
+        if (imageRect.left - this.dragDelta.left > rightMostContainer.element.getBoundingClientRect().right) {
+            this.clear();
+            return;
+        }
     }
 
     var containerRect = this.element.getBoundingClientRect();
@@ -359,7 +365,6 @@ function getMemoryWithId(id) {
             return barContainer;
         }
     }
-    // TODO free-float memories not in bar
     return null;
 }
 
