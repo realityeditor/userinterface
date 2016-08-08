@@ -515,7 +515,6 @@ function setProjectionMatrix(matrix) {
  **/
 
 
-
 function update(visibleObjects) {
 
 //    console.log(JSON.stringify(visibleObjects));
