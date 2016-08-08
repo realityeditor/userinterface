@@ -29,6 +29,7 @@ function MemoryPointer(link, isObjectA) {
     this.alive = true;
 
     this.update = this.update.bind(this);
+    this.update();
 
     pointers[this.getObject().objectId] = this;
 }
@@ -57,7 +58,7 @@ MemoryPointer.prototype.getConnectedValue = function() {
     }
 };
 
-MemoryPointer.prototype.update = function(connectedValue) {
+MemoryPointer.prototype.update = function() {
     var object = this.getObject();
     var connectedObject = this.getConnectedObject();
     if (!object || !connectedObject) {
@@ -73,6 +74,11 @@ MemoryPointer.prototype.update = function(connectedValue) {
         this.remove();
         return;
     }
+
+    requestAnimationFrame(this.update);
+}
+
+MemoryPointer.prototype.draw = function() {
     var connectedValue = this.getConnectedValue();
     this.x = connectedValue.screenX - 150;
     this.y = connectedValue.screenY - 50;

@@ -137,7 +137,7 @@ function drawAllLines(thisObject, context) {
                 if (!memoryPointer) {
                     memoryPointer = new MemoryPointer(l, false);
                 }
-                memoryPointer.update();
+                memoryPointer.draw();
 
                 bB.screenX = memoryPointer.x;
                 bB.screenY = memoryPointer.y;
@@ -155,7 +155,7 @@ function drawAllLines(thisObject, context) {
                 if (!memoryPointer) {
                     memoryPointer = new MemoryPointer(l, true);
                 }
-                memoryPointer.update();
+                memoryPointer.draw();
 
                 bA.screenX = memoryPointer.x;
                 bA.screenY = memoryPointer.y;
