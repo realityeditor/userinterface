@@ -528,7 +528,6 @@ body {
 
 .memoryContainer.memoryPlaceholder {
     opacity: 0.2;
-    -webkit-backdrop-filter: blur(4px);
 }
 
 .memoryContainer.memoryDragging {
@@ -975,7 +974,7 @@ Logic Interface CSS
     z-index: 4;
     -webkit-transform-style: preserve-3d;
     -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    -webkit-backdrop-filter: blur(8px);
+    background-color: rgba(17, 55, 55, 0.5);
 }
 
 .pocket {
@@ -989,12 +988,10 @@ Logic Interface CSS
     z-index: 1;
     -webkit-transform-style: preserve-3d;
     -webkit-transform: translateZ(2px); /* Above web interfaces, below side buttons */
-    -webkit-backdrop-filter: blur(0px);
     background-color: rgba(17, 55, 55, 0.5);
-    visibility: hidden;
+    display: none;
 }
 
 .pocket.pocketShown {
-    visibility: visible;
-    -webkit-backdrop-filter: blur(8px);
+    display: block;
 }
