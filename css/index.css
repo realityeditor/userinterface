@@ -974,7 +974,7 @@ Logic Interface CSS
     z-index: 4;
     -webkit-transform-style: preserve-3d;
     -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-    background-color: rgba(17, 55, 55, 0.5);
+    background-color: rgba(17, 55, 55, 0.7);
 }
 
 .pocket {
@@ -988,7 +988,7 @@ Logic Interface CSS
     z-index: 1;
     -webkit-transform-style: preserve-3d;
     -webkit-transform: translateZ(2px); /* Above web interfaces, below side buttons */
-    background-color: rgba(17, 55, 55, 0.5);
+    background-color: rgba(17, 55, 55, 0.7);
     display: none;
 }
 
