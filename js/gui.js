@@ -614,7 +614,7 @@ function preferencesHide() {
     document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
     globalStates.preferencesButtonState = false;
     document.getElementById("preferences").style.visibility = "hidden"; //= "hidden";
-    document.getElementById("preferences").style.dispaly = "none"; //= "hidden";
+    document.getElementById("preferences").style.display = "none"; //= "hidden";
     cout("preferencesHide");
 }
 
