@@ -11,8 +11,10 @@ var buttonImages = [];
 var bigPocketImages = [];
 var bigTrashImages = [];
 var element;
-var button;
 var uiButtons;
+var button;
+var bigPocketButton;
+var bigTrashButton;
 
 
 function pocketInit() {
@@ -30,7 +32,7 @@ function pocketInit() {
 
     button = document.getElementById('pocketButton');
     bigPocketButton = document.getElementById('bigPocketButton');
-    bigTrashButton = document.getElementById('bigPocketButton');
+    bigTrashButton = document.getElementById('bigTrashButton');
 
     button.addEventListener('pointerenter', function() {
         toggleShown();
@@ -83,9 +85,11 @@ function updateButtons() {
     if (pocketShown()) {
         button.src = buttonImages[2].src
         bigPocketButton.src = bigPocketImages[2].src;
+        bigTrashButton.src = bigTrashImages[2].src;
     } else {
         button.src = buttonImages[0].src
         bigPocketButton.src = bigPocketImages[0].src;
+        bigTrashButton.src = bigTrashImages[0].src;
     }
 }
 
