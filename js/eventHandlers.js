@@ -57,13 +57,13 @@ function touchDown(evt) {
     if (!globalStates.editingMode) {
         if (!globalStates.guiButtonState) {
             if (!globalProgram.objectA) {
-                globalProgram.objectA = this.ObjectId;
-                globalProgram.nodeA = this.location;
+                globalProgram.objectA = this.objectId;
+                globalProgram.nodeA = this.nodeId;
             }
         }
     } else {
-        globalStates.editingModeObject = this.ObjectId;
-        globalStates.editingModeLocation = this.location;
+        globalStates.editingModeObject = this.objectId;
+        globalStates.editingModeLocation = this.nodeId;
         globalStates.editingModeHaveObject = true;
     }
     cout("touchDown");
@@ -105,8 +105,8 @@ function trueTouchUp() {
             var thisTempObject = objects[globalProgram.objectA];
             var thisTempObjectLinks = thisTempObject.links;
 
-            globalProgram.objectB = this.ObjectId;
-            globalProgram.nodeB = this.location;
+            globalProgram.objectB = this.objectId;
+            globalProgram.nodeB = this.nodeId;
             var thisOtherTempObject = objects[globalProgram.objectB];
 
           var okForNewLink = checkForNetworkLoop( globalProgram.objectA, globalProgram.nodeA,  globalProgram.objectB, globalProgram.nodeB);
@@ -250,8 +250,8 @@ function MultiTouchStart(evt) {
 // generate action for all links to be reloaded after upload
 
     if (globalStates.editingMode && evt.targetTouches.length === 1) {
-        globalStates.editingModeObject = this.ObjectId;
-        globalStates.editingModeLocation = this.location;
+        globalStates.editingModeObject = this.objectId;
+        globalStates.editingModeLocation = this.nodeId;
         globalStates.editingModeHaveObject = true;
     }
     globalMatrix.matrixtouchOn = this.location;

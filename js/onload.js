@@ -183,9 +183,13 @@ var postMessage = function (e) {
 
     var msgContent = JSON.parse(e.data);
 
-    var tempThisObject = null;
+    var tempThisObject = {};
+    var thisVersionNumber;
 
-    var thisVersionNumber = this.integerVersion;
+    if (!msgContent.version) {thisVersionNumber = 0; }
+    else {
+        thisVersionNumber = msgContent.version;
+    }
 
     if (thisVersionNumber >= 170) {
         if ((!msgContent.object) || (!msgContent.object)) return;
@@ -211,11 +215,13 @@ var postMessage = function (e) {
         thisMsgNode.style.height = msgContent.height;
         thisMsgNode.style.top = ((globalStates.width - msgContent.height) / 2);
         thisMsgNode.style.left = ((globalStates.height - msgContent.width) / 2);
+
         thisMsgNode = document.getElementById("iframe" + msgContent.node);
         thisMsgNode.style.width = msgContent.width;
         thisMsgNode.style.height = msgContent.height;
         thisMsgNode.style.top = ((globalStates.width - msgContent.height) / 2);
         thisMsgNode.style.left = ((globalStates.height - msgContent.width) / 2);
+
     }
 
     if (msgContent.sendMatrix === "boolean") {

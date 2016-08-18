@@ -367,14 +367,14 @@ function rename(object, before, after) {
  * @return
  **/
 
-function checkForNetworkLoop(globalobjectA, globalLocationInA, globalobjectB, globalLocationInB){
+function checkForNetworkLoop(globalObjectA, globalLocationInA, globalObjectB, globalLocationInB){
 
     var signalIsOk = true;
-    var thisTempObject = objects[globalobjectA];
+    var thisTempObject = objects[globalObjectA];
     var thisTempObjectLinks = thisTempObject.links;
 
     // check if connection is with it self
-    if (globalobjectA === globalobjectB && globalLocationInA === globalLocationInB) {
+    if (globalObjectA === globalObjectB && globalLocationInA === globalLocationInB) {
         signalIsOk = false;
     }
 
@@ -382,8 +382,8 @@ function checkForNetworkLoop(globalobjectA, globalLocationInA, globalobjectB, gl
     // check if this connection already exists?
     if(signalIsOk) {
         for (var thisSubKey in thisTempObjectLinks) {
-            if (thisTempObjectLinks[thisSubKey].objectA === globalobjectA &&
-                thisTempObjectLinks[thisSubKey].objectB === globalobjectB &&
+            if (thisTempObjectLinks[thisSubKey].objectA === globalObjectA &&
+                thisTempObjectLinks[thisSubKey].objectB === globalObjectB &&
                 thisTempObjectLinks[thisSubKey].nodeA === globalLocationInA &&
                 thisTempObjectLinks[thisSubKey].nodeB === globalLocationInB) {
                 signalIsOk = false;
@@ -393,7 +393,7 @@ function checkForNetworkLoop(globalobjectA, globalLocationInA, globalobjectB, gl
     }
     // check that there is no endless loops through it self or any other connections
     if(signalIsOk) {
-        searchL(globalLocationInB, globalobjectB, globalLocationInA, globalobjectA);
+        searchL(globalLocationInB, globalObjectB, globalLocationInA, globalObjectA);
 
         function searchL(nodeB, objectB, nodeA, objectA) {
             for (var key in objects[objectB].links) {

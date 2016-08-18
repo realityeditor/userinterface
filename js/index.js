@@ -72,9 +72,6 @@
  **/
 
 function addHeartbeatObject(beat) {
-
-
-
     /*
      if (globalStates.platform) {
      window.location.href = "of://gotbeat_" + beat.id;
@@ -259,7 +256,7 @@ function action(action) {
             objects[thisKey].scale = req.scale;
 
             if (objects[thisKey].integerVersion < 170) {
-                objects[thisKey].nodes = req.nodes;
+                objects[thisKey].nodes = req.objectValues;
 
                 for (var nodeKey in objects[thisKey].nodes) {
                     thisObject = objects[thisKey].nodes[nodeKey];
@@ -524,10 +521,14 @@ function update(visibleObjects) {
             // once added, they will be associated with the object via the editor postMessages anyway.
 
             var destinationString;
-            if (generalObject.integerVersion > 40) {
-                destinationString = "/dataPointInterfaces/";
+            if (generalObject.integerVersion >= 170) {
+                destinationString = "/nodes/";
             } else {
-                destinationString = "/obj/dataPointInterfaces/";
+                if (generalObject.integerVersion > 40) {
+                    destinationString = "/dataPointInterfaces/";
+                } else {
+                    destinationString = "/obj/dataPointInterfaces/";
+                }
             }
 
             for (var subKey in generalObject.nodes) {
@@ -791,7 +792,7 @@ function hideTransformed(thisObject, thisKey, generalKey) {
  **/
 
 function addElementInPreferences() {
-    cout("addedObject");
+   cout("addedObject");
 
     var htmlContent = "";
 
@@ -893,6 +894,7 @@ function addElementInPreferences() {
  **/
 
 function addElement(thisObject, thisKey, thisUrl, generalObject) {
+   // console.log(thisUrl);
 
     if (globalStates.notLoading !== true && globalStates.notLoading !== thisKey && thisObject.loaded !== true) {
         console.log(JSON.stringify(thisObject));
@@ -942,21 +944,20 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
         thisIframe.setAttribute("frameBorder", "0");
         thisIframe.style.width = "0px";
         thisIframe.style.height = "0px";
-        thisIframe.style.top = ((globalStates.width - thisObject.frameSizeX) / 2) + "px";
-        thisIframe.style.left = ((globalStates.height - thisObject.frameSizeY) / 2) + "px";
+        thisIframe.style.top = "0px";
+        thisIframe.style.left = "0px";
         thisIframe.style.visibility = "hidden";
         thisIframe.setAttribute("src", thisUrl);
         thisIframe.setAttribute("class", "main");
         thisIframe.setAttribute("sandbox", "allow-forms allow-pointer-lock allow-same-origin allow-scripts");
-        thisIframe.integerVersion = thisObject.integerVersion;
 
         var theObject = document.createElement('div');
         theObject.id = thisKey;
         theObject.setAttribute("frameBorder", "0");
-        theObject.style.width = thisObject.frameSizeX + "px";
-        theObject.style.height = thisObject.frameSizeY + "px";
-        theObject.style.top = ((globalStates.width - thisObject.frameSizeX) / 2) + "px";
-        theObject.style.left = ((globalStates.height - thisObject.frameSizeY) / 2) + "px";
+        theObject.style.width = "0px";
+        theObject.style.height = "0px";
+        theObject.style.top = "0px";
+        theObject.style.left = "0px";
         theObject.style.visibility = "hidden";
         thisIframe.setAttribute("class", "mainEditing");
 
@@ -969,21 +970,18 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
         var textDiv = document.createElement('div');
         textDiv.id = "text" + thisKey;
         textDiv.setAttribute("frameBorder", "0");
-        textDiv.style.width = "5px";
-        textDiv.style.height = "5px";
-        textDiv.style.top = ((globalStates.width) / 2 + thisObject.frameSizeX / 2) + "px";
-        textDiv.style.left = ((globalStates.height - thisObject.frameSizeY) / 2) + "px";
+        textDiv.style.width = "0px";
+        textDiv.style.height = "0px";
+        textDiv.style.top = "0px";
+        textDiv.style.left = "0px";
         textDiv.style.visibility = "hidden";
         thisIframe.setAttribute("class", "mainProgram");
         textDiv.innerHTML = "<font color='white'>" + thisObject.name + "</font>";
 
-        var secondDIV = document.getElementById("thisObject" + thisKey);
-
-        secondDIV.appendChild(thisIframe);
-        secondDIV.appendChild(theObject);
-        secondDIV.appendChild(textDiv);
-
-        document.getElementById(thisKey).appendChild(thisCanvas);
+        theObject.appendChild(thisCanvas);
+        thisDiv.appendChild(thisIframe);
+        thisDiv.appendChild(theObject);
+        thisDiv.appendChild(textDiv);
 
         theObject.style["touch-action"] = "none";
         theObject["handjs_forcePreventDefault"] = true;
@@ -998,7 +996,7 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
                 contentForFeedback = 3;
             } else {
 
-                if (checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, this.ObjectId, this.nodeId))
+                if (checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, this.objectId, this.nodeId))
                     contentForFeedback = 2; // overlayImg.src = overlayImage[2].src;
                 else
                     contentForFeedback = 0; // overlayImg.src = overlayImage[0].src;
@@ -1041,7 +1039,7 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
                 theObject.className = "mainProgram";
             }
         }
-        theObject.ObjectId = generalObject;
+        theObject.objectId = generalObject;
         theObject.nodeId = thisKey;
 
         if (thisKey !== generalObject) {
