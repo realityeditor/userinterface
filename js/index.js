@@ -489,31 +489,32 @@ function update(visibleObjects) {
         globalCanvas.hasContent = false;
     }
 
-    for (var key in objects) {
-        if (!objects.hasOwnProperty(key)) {
+    for (var objectKey in objects) {
+        if (!objects.hasOwnProperty(objectKey)) {
             continue;
         }
+        var htmlKey = objectKey;
 
-        var generalObject = objects[key];
+        var generalObject = objects[objectKey];
 
         // I changed this to has property.
-        if (globalObjects.hasOwnProperty(key)) {
+        if (globalObjects.hasOwnProperty(objectKey)) {
 
             generalObject.visibleCounter = timeForContentLoaded;
             generalObject.objectVisible = true;
 
-            var tempMatrix = multiplyMatrix(rotateX, multiplyMatrix(globalObjects[key], globalStates.projectionMatrix));
+            var tempMatrix = multiplyMatrix(rotateX, multiplyMatrix(globalObjects[objectKey], globalStates.projectionMatrix));
 
-            //  var tempMatrix2 = multiplyMatrix(globalObjects[key], globalStates.projectionMatrix);
+            //  var tempMatrix2 = multiplyMatrix(globalObjects[objectKey], globalStates.projectionMatrix);
 
             //   document.getElementById("controls").innerHTML = (toAxisAngle(tempMatrix2)[0]).toFixed(1)+" "+(toAxisAngle(tempMatrix2)[1]).toFixed(1);
 
             if (globalStates.guiButtonState || Object.keys(generalObject.nodes).length === 0) {
-                drawTransformed(generalObject, key, tempMatrix, key);
-                addElement(generalObject, key, "http://" + generalObject.ip + ":" + httpPort + "/obj/" + generalObject.name + "/");
+                drawTransformed(objectKey, objectKey, htmlKey, generalObject, tempMatrix);
+                addElement(objectKey, objectKey, htmlKey, "http://" + generalObject.ip + ":" + httpPort + "/obj/" + generalObject.name + "/", generalObject);
             }
             else {
-                hideTransformed(generalObject, key, key);
+                hideTransformed(objectKey, objectKey, htmlKey, generalObject);
             }
 
             // do this for staying compatible with older versions but use new routing after some time.
@@ -531,18 +532,19 @@ function update(visibleObjects) {
                 }
             }
 
-            for (var subKey in generalObject.nodes) {
-                // if (!generalObject.nodes.hasOwnProperty(subKey)) { continue; }
+            for (var nodeKey in generalObject.nodes) {
+                // if (!generalObject.nodes.hasOwnProperty(nodeKey)) { continue; }
 
-                var tempValue = generalObject.nodes[subKey];
+                var _htmlKey = objectKey + nodeKey;
+                var generalNode = generalObject.nodes[nodeKey];
 
                 if (!globalStates.guiButtonState) {
-                    drawTransformed(tempValue, subKey, tempMatrix, key);
+                    drawTransformed(objectKey, nodeKey, _htmlKey, generalNode, tempMatrix);
 
-                    addElement(tempValue, subKey, "http://" + generalObject.ip + ":" + httpPort + destinationString + tempValue.appearance + "/", key);
+                    addElement(objectKey, nodeKey, _htmlKey, "http://" + generalObject.ip + ":" + httpPort + destinationString + generalNode.appearance + "/", generalNode);
 
                 } else {
-                    hideTransformed(tempValue, subKey, key);
+                    hideTransformed(objectKey, nodeKey, _htmlKey, generalNode);
                 }
             }
         }
@@ -550,27 +552,28 @@ function update(visibleObjects) {
         else {
             generalObject.objectVisible = false;
 
-            hideTransformed(generalObject, key, key);
+            hideTransformed(objectKey, objectKey, htmlKey, generalObject);
 
-            for (var subKey in generalObject.nodes) {
-                // if (!generalObject.nodes.hasOwnProperty(subKey)) {  continue;  }
-                hideTransformed(generalObject.nodes[subKey], subKey, key);
+            for (var nodeKey in generalObject.nodes) {
+                var _htmlKey = objectKey + nodeKey;
+                // if (!generalObject.nodes.hasOwnProperty(nodeKey)) {  continue;  }
+                hideTransformed(objectKey, nodeKey, _htmlKey, generalObject.nodes[nodeKey]);
             }
 
-            killObjects(generalObject, key);
+            killObjects(objectKey, htmlKey, generalObject);
         }
 
         if (globalStates.logButtonState) {
             consoleText += JSON.stringify(generalObject.links);
-            consoleText += objectLog(key);
+            consoleText += objectLog(objectKey);
         }
 
     }
 
     // draw all lines
     if (!globalStates.guiButtonState && !globalStates.editingMode) {
-        for (var keyT in objects) {
-            drawAllLines(objects[keyT], globalCanvas.context);
+        for (var objectKey in objects) {
+            drawAllLines(objects[objectKey], globalCanvas.context);
 
         }
         drawInteractionLines();
@@ -600,14 +603,15 @@ function update(visibleObjects) {
  * @return
  **/
 
-function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
-    if (globalStates.notLoading !== thisKey && thisObject.loaded === true) {
+function drawTransformed(objectKey, nodeKey, htmlKey, thisObject, thisTransform2) {
+
+    if (globalStates.notLoading !== htmlKey && thisObject.loaded === true) {
         if (!thisObject.visible) {
             thisObject.visible = true;
 
-            document.getElementById("thisObject" + thisKey).style.display = 'inline';
+            document.getElementById("thisObject" + htmlKey).style.display = 'inline';
 
-            var thisIframe = document.getElementById("iframe" + thisKey);
+            var thisIframe = document.getElementById("iframe" + htmlKey);
             thisIframe.style.visibility = 'visible';
             thisIframe.contentWindow.postMessage(
                 JSON.stringify(
@@ -615,28 +619,28 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
                         visibility: "visible"
                     }), '*');
 
-            if (generalKey !== thisKey) {
-                document.getElementById(thisKey).style.visibility = 'visible';
-                document.getElementById("text" + thisKey).style.visibility = 'visible';
+            if (objectKey !== nodeKey) {
+                document.getElementById(htmlKey).style.visibility = 'visible';
+                document.getElementById("text" + htmlKey).style.visibility = 'visible';
                 if (globalStates.editingMode) {
-                    document.getElementById("canvas" + thisKey).style.display = 'inline';
+                    document.getElementById("canvas" + htmlKey).style.display = 'inline';
                 } else {
-                    document.getElementById("canvas" + thisKey).style.display = 'none';
+                    document.getElementById("canvas" + htmlKey).style.display = 'none';
                 }
             }
 
-            if (generalKey === thisKey) {
+            if (objectKey === nodeKey) {
                 if (globalStates.editingMode) {
                     if (!thisObject.visibleEditing && thisObject.developer) {
                         thisObject.visibleEditing = true;
-                        document.getElementById(thisKey).style.visibility = 'visible';
-                        // showEditingStripes(thisKey, true);
-                        document.getElementById("canvas" + thisKey).style.display = 'inline';
+                        document.getElementById(htmlKey).style.visibility = 'visible';
+                        // showEditingStripes(htmlKey, true);
+                        document.getElementById("canvas" + htmlKey).style.display = 'inline';
 
-                        //document.getElementById(thisKey).className = "mainProgram";
+                        //document.getElementById(htmlKey).className = "mainProgram";
                     }
                 } else {
-                    document.getElementById("canvas" + thisKey).style.display = 'none';
+                    document.getElementById("canvas" + htmlKey).style.display = 'none';
                 }
             }
 
@@ -655,7 +659,7 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
             var thisTransform = [];
 
             if (globalStates.editingMode) {
-                if (globalMatrix.matrixtouchOn === thisKey) {
+                if (globalMatrix.matrixtouchOn === htmlKey) {
                     //if(globalStates.unconstrainedPositioning===true)
                     thisObject.temp = copyMatrix(thisTransform2);
 
@@ -685,9 +689,9 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
                         if (globalStates.unconstrainedPositioning === false) {
                             thisObject.begin = copyMatrix(multiplyMatrix(thisObject.matrix, thisObject.temp));
                         }
-                        estimateIntersection(thisKey, multiplyMatrix(finalMatrixTransform2, multiplyMatrix(thisObject.begin, invertMatrix(thisObject.temp))));
+                        estimateIntersection(htmlKey, multiplyMatrix(finalMatrixTransform2, multiplyMatrix(thisObject.begin, invertMatrix(thisObject.temp))));
                     } else {
-                        estimateIntersection(thisKey, [
+                        estimateIntersection(htmlKey, [
                             1, 0, 0, 0,
                             0, 1, 0, 0,
                             0, 0, 1, 0,
@@ -696,7 +700,7 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
                     }
 
                 } else {
-                    estimateIntersection(thisKey, [
+                    estimateIntersection(htmlKey, [
                         1, 0, 0, 0,
                         0, 1, 0, 0,
                         0, 0, 1, 0,
@@ -715,7 +719,7 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
             else {
                 thisTransform = multiplyMatrix(finalMatrixTransform2, thisTransform2);
             }
-            document.getElementById("thisObject" + thisKey).style.webkitTransform = 'matrix3d(' +
+            document.getElementById("thisObject" + htmlKey).style.webkitTransform = 'matrix3d(' +
                 thisTransform[0] + ',' + thisTransform[1] + ',' + thisTransform[2] + ',' + thisTransform[3] + ',' +
                 thisTransform[4] + ',' + thisTransform[5] + ',' + thisTransform[6] + ',' + thisTransform[7] + ',' +
                 thisTransform[8] + ',' + thisTransform[9] + ',' + thisTransform[10] + ',' + thisTransform[11] + ',' +
@@ -730,9 +734,9 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
         }
 
         if (thisObject.sendMatrix === true) {
-            if (generalKey === thisKey) {
-                document.getElementById("iframe" + thisKey).contentWindow.postMessage(
-                    JSON.stringify({modelViewMatrix: globalObjects[thisKey]}), '*');
+            if (objectKey === nodeKey) {
+                document.getElementById("iframe" + htmlKey).contentWindow.postMessage(
+                    JSON.stringify({modelViewMatrix: globalObjects[objectKey]}), '*');
             }
         }
     }
@@ -749,11 +753,11 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
  * @return
  **/
 
-function hideTransformed(thisObject, thisKey, generalKey) {
+function hideTransformed(objectKey, nodeKey, htmlKey, thisObject) {
     if (thisObject.visible === true) {
-        document.getElementById("thisObject" + thisKey).style.display = 'none';
+        document.getElementById("thisObject" + htmlKey).style.display = 'none';
 
-        var thisIframe = document.getElementById("iframe" + thisKey);
+        var thisIframe = document.getElementById("iframe" + htmlKey);
         thisIframe.style.visibility = 'hidden';
         thisIframe.contentWindow.postMessage(
             JSON.stringify(
@@ -761,23 +765,23 @@ function hideTransformed(thisObject, thisKey, generalKey) {
                     visibility: "hidden"
                 }), '*');
 
-        //document.getElementById("iframe" + thisKey).style.display = 'none';
-        document.getElementById("text" + thisKey).style.visibility = 'hidden';
-        //document.getElementById("text" + thisKey).style.display = 'none';
+        //document.getElementById("iframe" + htmlKey).style.display = 'none';
+        document.getElementById("text" + htmlKey).style.visibility = 'hidden';
+        //document.getElementById("text" + htmlKey).style.display = 'none';
         thisObject.visible = false;
         thisObject.visibleEditing = false;
-        document.getElementById(thisKey).style.visibility = 'hidden';
-        document.getElementById("canvas" + thisKey).style.display = 'none';
+        document.getElementById(htmlKey).style.visibility = 'hidden';
+        document.getElementById("canvas" + htmlKey).style.display = 'none';
 
-        //document.getElementById(thisKey).style.display = 'none';
+        //document.getElementById(htmlKey).style.display = 'none';
         cout("hideTransformed");
     }
 
     /*
      if (thisObject.visibleEditing === true) {
-     //  cout(thisKey);
+     //  cout(htmlKey);
      thisObject.visibleEditing = false;
-     document.getElementById(thisKey).style.visibility = 'hidden';
+     document.getElementById(htmlKey).style.visibility = 'hidden';
      }*/
 }
 
@@ -792,7 +796,7 @@ function hideTransformed(thisObject, thisKey, generalKey) {
  **/
 
 function addElementInPreferences() {
-   cout("addedObject");
+    cout("addedObject");
 
     var htmlContent = "";
 
@@ -893,18 +897,15 @@ function addElementInPreferences() {
  * @return
  **/
 
-function addElement(thisObject, thisKey, thisUrl, generalObject) {
-   // console.log(thisUrl);
+function addElement(objectKey, nodeKey, htmlKey, thisUrl, thisObject) {
+//console.log(thisUrl);
+    if (globalStates.notLoading !== true && globalStates.notLoading !== htmlKey && thisObject.loaded !== true) {
+        //      console.log(JSON.stringify(thisObject));
 
-    if (globalStates.notLoading !== true && globalStates.notLoading !== thisKey && thisObject.loaded !== true) {
-        console.log(JSON.stringify(thisObject));
-        if (typeof generalObject === 'undefined') {
-            generalObject = thisKey;
-        }
-
+//console.log(nodeKey);
         thisObject.loaded = true;
         thisObject.visibleEditing = false;
-        globalStates.notLoading = thisKey;
+        globalStates.notLoading = htmlKey;
 
         if (typeof thisObject.begin !== "object") {
             thisObject.begin = [
@@ -928,61 +929,36 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
 
         //  window.location.href = "of://objectloaded_" + globalStates.notLoading;
 
-        var thisDiv = document.createElement('div');
-        thisDiv.id = "thisObject" + thisKey;
-        thisDiv.style.width = globalStates.height + "px";
-        thisDiv.style.height = globalStates.width + "px";
-        thisDiv.style.display = "none";
-        thisDiv.style.border = "0";
-        thisDiv.className = "main";
-        document.getElementById("GUI").appendChild(thisDiv);
+        var addDoc = document.createElement('div');
+        addDoc.id = "thisObject" + htmlKey;
+        addDoc.style.width = globalStates.height + "px";
+        addDoc.style.height = globalStates.width + "px";
+        addDoc.style.display = "none";
+        addDoc.style.border = 0;
+        addDoc.className = "main";
+        document.getElementById("GUI").appendChild(addDoc);
 
-        var thisIframe = document.createElement('iframe');
-        thisIframe.id = "iframe" + thisKey;
-        thisIframe.setAttribute("onload", 'on_load("' + generalObject + '","' + thisKey + '")');
-        //
-        thisIframe.setAttribute("frameBorder", "0");
-        thisIframe.style.width = "0px";
-        thisIframe.style.height = "0px";
-        thisIframe.style.top = "0px";
-        thisIframe.style.left = "0px";
-        thisIframe.style.visibility = "hidden";
-        thisIframe.setAttribute("src", thisUrl);
-        thisIframe.setAttribute("class", "main");
-        thisIframe.setAttribute("sandbox", "allow-forms allow-pointer-lock allow-same-origin allow-scripts");
+        var tempAddContent =
+            "<iframe id='iframe" + htmlKey + "' onload='on_load(\"" +
+            objectKey + "\",\"" + nodeKey + "\")' frameBorder='0' " +
+            "style='width:0px; height:0px;" +
+            "top:" + ((globalStates.width - thisObject.frameSizeX) / 2) + "px; left:" +
+            ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' " +
+            "src='" + thisUrl + "' class='main' sandbox='allow-forms allow-pointer-lock allow-same-origin allow-scripts'>" +
+            "</iframe>";
 
-        var theObject = document.createElement('div');
-        theObject.id = thisKey;
-        theObject.setAttribute("frameBorder", "0");
-        theObject.style.width = "0px";
-        theObject.style.height = "0px";
-        theObject.style.top = "0px";
-        theObject.style.left = "0px";
-        theObject.style.visibility = "hidden";
-        thisIframe.setAttribute("class", "mainEditing");
+        tempAddContent += "<div id='" + htmlKey + "' frameBorder='0' style='width:" + thisObject.frameSizeX + "px; height:" + thisObject.frameSizeY + "px;" +
+            "top:" + ((globalStates.width - thisObject.frameSizeX) / 2) + "px; left:" + ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' class='mainEditing'>" +
+            "<canvas id='canvas" + htmlKey + "'style='width:100%; height:100%;' class='mainCanvas'></canvas>" +
+            "</div>" +
+            "";
 
-        var thisCanvas = document.createElement('canvas');
-        thisCanvas.id = "canvas" + thisKey;
-        thisCanvas.style.width = "100%";
-        thisCanvas.style.height = "100%";
-        thisIframe.setAttribute("class", "mainCanvas");
+        tempAddContent += "<div id='text" + htmlKey + "' frameBorder='0' style='width:5px; height:5px;" +
+            "top:" + ((globalStates.width) / 2 + thisObject.frameSizeX / 2) + "px; left:" + ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' class='mainProgram'><font color='white'>" + thisObject.name + "</font></div>" +
+            "";
 
-        var textDiv = document.createElement('div');
-        textDiv.id = "text" + thisKey;
-        textDiv.setAttribute("frameBorder", "0");
-        textDiv.style.width = "0px";
-        textDiv.style.height = "0px";
-        textDiv.style.top = "0px";
-        textDiv.style.left = "0px";
-        textDiv.style.visibility = "hidden";
-        thisIframe.setAttribute("class", "mainProgram");
-        textDiv.innerHTML = "<font color='white'>" + thisObject.name + "</font>";
-
-        theObject.appendChild(thisCanvas);
-        thisDiv.appendChild(thisIframe);
-        thisDiv.appendChild(theObject);
-        thisDiv.appendChild(textDiv);
-
+        document.getElementById("thisObject" + htmlKey).innerHTML = tempAddContent;
+        var theObject = document.getElementById(htmlKey);
         theObject.style["touch-action"] = "none";
         theObject["handjs_forcePreventDefault"] = true;
         theObject.addEventListener("pointerdown", touchDown, false);
@@ -1002,7 +978,7 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
                     contentForFeedback = 0; // overlayImg.src = overlayImage[0].src;
             }
 
-            document.getElementById("iframe" + this.nodeId).contentWindow.postMessage(
+            document.getElementById("iframe" + this.htmlKey).contentWindow.postMessage(
                 JSON.stringify(
                     {
                         uiActionFeedback: contentForFeedback
@@ -1013,12 +989,14 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
 
         }, false);
         ec++;
+
         theObject.addEventListener("pointerleave", function () {
+
             document.getElementById('overlayImg').src = overlayImage[1].src;
 
             cout("leave");
 
-            document.getElementById("iframe" + this.nodeId).contentWindow.postMessage(
+            document.getElementById("iframe" + this.htmlKey).contentWindow.postMessage(
                 JSON.stringify(
                     {
                         uiActionFeedback: 1
@@ -1029,7 +1007,7 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
         ec++;
 
         if (globalStates.editingMode) {
-            if (objects[generalObject].developer) {
+            if (objects[objectKey].developer) {
                 theObject.addEventListener("touchstart", MultiTouchStart, false);
                 ec++;
                 theObject.addEventListener("touchmove", MultiTouchMove, false);
@@ -1039,10 +1017,11 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
                 theObject.className = "mainProgram";
             }
         }
-        theObject.objectId = generalObject;
-        theObject.nodeId = thisKey;
+        theObject.objectId = objectKey;
+        theObject.nodeId = nodeKey;
+        theObject.htmlKey = htmlKey;
 
-        if (thisKey !== generalObject) {
+        if (nodeKey !== objectKey) {
             theObject.style.visibility = "visible";
             // theObject.style.display = "initial";
         }
@@ -1064,24 +1043,24 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
  * @return
  **/
 
-function killObjects(thisObject, thisKey) {
+function killObjects(objectKey, thisObject) {
 
     if (thisObject.visibleCounter > 0) {
         thisObject.visibleCounter--;
     } else if (thisObject.loaded) {
         thisObject.loaded = false;
 
-        var tempElementDiv = document.getElementById("thisObject" + thisKey);
+        var tempElementDiv = document.getElementById("thisObject" + objectKey);
         tempElementDiv.parentNode.removeChild(tempElementDiv);
 
-        for (var subKey in thisObject.nodes) {
+        for (var nodeKey in thisObject.nodes) {
             try {
-                tempElementDiv = document.getElementById("thisObject" + subKey);
+                tempElementDiv = document.getElementById("thisObject" + objectKey + nodeKey);
                 tempElementDiv.parentNode.removeChild(tempElementDiv);
             } catch (err) {
                 cout("could not find any");
             }
-            thisObject.nodes[subKey].loaded = false;
+            thisObject.nodes[nodeKey].loaded = false;
         }
         cout("killObjects");
     }
@@ -1097,33 +1076,37 @@ function killObjects(thisObject, thisKey) {
  * @return
  **/
 
-function on_load(generalObject, thisKey) {
+function on_load(objectKey, nodeKey) {
+
     globalStates.notLoading = false;
-    // window.location.href = "of://event_test_"+thisKey;
+    // window.location.href = "of://event_test_"+nodeKey;
 
     // cout("posting Msg");
     var oldStyle = {
-        obj: generalObject,
-        pos: thisKey,
-        objectValues: objects[generalObject].nodes
+        obj: objectKey,
+        pos: nodeKey,
+        objectValues: objects[objectKey].nodes
     };
 
     var newStyle = {
-        object: generalObject,
-        node: thisKey,
-        nodes: objects[generalObject].nodes
+        object: objectKey,
+        node: nodeKey,
+        nodes: objects[objectKey].nodes
     };
 
-    if (objects[generalObject].integerVersion < 170) {
+    if (objects[objectKey].integerVersion < 170) {
         newStyle = oldStyle;
     }
+    var _nodeKey;
+    if (objectKey !== nodeKey) _nodeKey = objectKey + nodeKey;
+    else _nodeKey = nodeKey;
 
-    document.getElementById("iframe" + thisKey).contentWindow.postMessage(
+    document.getElementById("iframe" + _nodeKey).contentWindow.postMessage(
         JSON.stringify(newStyle), '*');
     cout("on_load");
 }
 
-function fire(thisKey) {
+function fire(nodeKey) {
     // globalStates.notLoading = false;
     window.location.href = "of://event_" + this.nodeId;
 

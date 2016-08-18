@@ -55,13 +55,13 @@
  ******************************************** constant settings *******************************************************
  **********************************************************************************************************************/
 
-    var ec = 0;
+var ec = 0;
 var disp = {};
 
 var uiButtons;
 var httpPort = 8080;
 var timeForContentLoaded = 240; // temporary set to 1000x with the UI Recording mode for video recording
-var timeCorrection = { delta:0, now:0, then:0};
+var timeCorrection = {delta: 0, now: 0, then: 0};
 
 /**********************************************************************************************************************
  ******************************************** global variables  *******************************************************
@@ -69,13 +69,13 @@ var timeCorrection = { delta:0, now:0, then:0};
 
 
 var globalStates = {
-    debug : true,
-    overlay : 0,
+    debug: false,
+    overlay: 0,
     device: "",
     // drawWithLines
-    ballDistance : 14,
-    ballSize : 6,
-    ballAnimationCount : 0,
+    ballDistance: 14,
+    ballSize: 6,
+    ballAnimationCount: 0,
 
     width: window.screen.width,
     height: window.screen.height,
@@ -87,15 +87,15 @@ var globalStates = {
     extendedTrackingState: false,
     developerState: false,
     clearSkyState: false,
-    externalState:"",
-    sendMatrix3d:false,
-    sendAcl:false,
+    externalState: "",
+    sendMatrix3d: false,
+    sendAcl: false,
 
     feezeButtonState: false,
     logButtonState: false,
     editingMode: false,
     guiURL: "",
-    newURLText:"",
+    newURLText: "",
     platform: navigator.platform,
     lastLoop: 0,
     notLoading: "",
@@ -118,7 +118,7 @@ var globalStates = {
     editingModeHaveObject: false,
     angX: 0,
     angY: 0,
-    unconstrainedPositioning:false
+    unconstrainedPositioning: false
 };
 
 var globalCanvas = {};
@@ -133,7 +133,6 @@ var globalProgram = {
 };
 
 var objects = {};
-
 
 var globalMatrix = {
     temp: [
@@ -154,17 +153,17 @@ var globalMatrix = {
         0, 0, 1, 0,
         0, 0, 0, 1
     ],
-    matrixtouchOn : false,
-    copyStillFromMatrixSwitch : false
+    matrixtouchOn: false,
+    copyStillFromMatrixSwitch: false
 };
 
 var consoleText = "";
- var rotateX = [
-     1, 0, 0, 0,
-     0, -1, 0, 0,
-     0, 0, 1, 0,
-     0, 0, 0, 1
- ];
+var rotateX = [
+    1, 0, 0, 0,
+    0, -1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1
+];
 
 var testInterlink = {};
 

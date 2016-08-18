@@ -254,7 +254,14 @@ function MultiTouchStart(evt) {
         globalStates.editingModeLocation = this.nodeId;
         globalStates.editingModeHaveObject = true;
     }
-    globalMatrix.matrixtouchOn = this.location;
+
+    if (this.objectId !== this.nodeId) {
+        globalMatrix.matrixtouchOn = this.objectId + this.nodeId;
+    } else
+    {
+        globalMatrix.matrixtouchOn = this.objectId;
+    }
+
     globalMatrix.copyStillFromMatrixSwitch = true;
     cout("MultiTouchStart");
 }
@@ -566,6 +573,7 @@ function addEventHandlers() {
         var generalObject2 = objects[thisKey];
 
     if(generalObject2.developer) {
+
         if (document.getElementById(thisKey)) {
             var thisObject3 = document.getElementById(thisKey);
             //  if (globalStates.guiButtonState) {
@@ -589,11 +597,11 @@ function addEventHandlers() {
 
         for (var thisSubKey in generalObject2.nodes) {
             if (document.getElementById(thisSubKey)) {
-                var thisObject2 = document.getElementById(thisSubKey);
+                var thisObject2 = document.getElementById(thisKey+thisSubKey);
 
                 //thisObject2.className = "mainProgram";
 
-                var thisObject5 = document.getElementById("canvas"+thisSubKey);
+                var thisObject5 = document.getElementById("canvas"+thisKey+thisSubKey);
                 thisObject5.style.display= "inline";
 
                 //if(thisObject.developer) {
@@ -647,9 +655,9 @@ function removeEventHandlers() {
 
         for (var thisSubKey in generalObject2.nodes) {
             if (document.getElementById(thisSubKey)) {
-                var thisObject2 = document.getElementById(thisSubKey);
+                var thisObject2 = document.getElementById(thisKey+thisSubKey);
                 //thisObject2.className = "mainEditing";
-                document.getElementById("canvas"+thisSubKey).style.display= "none";
+                document.getElementById("canvas"+thisKey+thisSubKey).style.display= "none";
 
                 //    if(thisObject.developer) {
                 thisObject2.removeEventListener("touchstart", MultiTouchStart, false);

@@ -186,7 +186,9 @@ var postMessage = function (e) {
     var tempThisObject = {};
     var thisVersionNumber;
 
-    if (!msgContent.version) {thisVersionNumber = 0; }
+    if (!msgContent.version) {
+        thisVersionNumber = 0;
+    }
     else {
         thisVersionNumber = msgContent.version;
     }
@@ -209,14 +211,20 @@ var postMessage = function (e) {
         }
     } else return;
 
+    if (msgContent.object === msgContent.node) {
+        htmlKey = msgContent.object;
+    } else {
+        htmlKey = msgContent.object + msgContent.node;
+    }
+
     if (msgContent.width && msgContent.height) {
-        var thisMsgNode = document.getElementById(msgContent.node);
+        var thisMsgNode = document.getElementById(htmlKey);
         thisMsgNode.style.width = msgContent.width;
         thisMsgNode.style.height = msgContent.height;
         thisMsgNode.style.top = ((globalStates.width - msgContent.height) / 2);
         thisMsgNode.style.left = ((globalStates.height - msgContent.width) / 2);
 
-        thisMsgNode = document.getElementById("iframe" + msgContent.node);
+        thisMsgNode = document.getElementById("iframe" + htmlKey);
         thisMsgNode.style.width = msgContent.width;
         thisMsgNode.style.height = msgContent.height;
         thisMsgNode.style.top = ((globalStates.width - msgContent.height) / 2);
@@ -228,7 +236,7 @@ var postMessage = function (e) {
         if (msgContent.sendMatrix === true) {
             if (thisVersionNumber >= 32) {
                 tempThisObject.sendMatrix = true;
-                document.getElementById("iframe" + msgContent.node).contentWindow.postMessage(
+                document.getElementById("iframe" + htmlKey).contentWindow.postMessage(
                     '{"projectionMatrix":' + JSON.stringify(globalStates.realProjectionMatrix) + "}", '*');
             }
         }
@@ -242,9 +250,9 @@ var postMessage = function (e) {
                 if (iframes[i].integerVersion >= 32) {
                     var msg = {};
                     if (iframes[i].integerVersion >= 170) {
-                        msg = {ohGlobalMessage: msgContent.ohGlobalMessage};
+                        msg = {globalMessage: msgContent.globalMessage};
                     } else {
-                        msg = {globalMessage: msgContent.ohGlobalMessage};
+                        msg = {ohGlobalMessage: msgContent.ohGlobalMessage};
                     }
                     iframes[i].contentWindow.postMessage(JSON.stringify(msg), "*");
                 }
@@ -256,7 +264,7 @@ var postMessage = function (e) {
             if (msgContent.fullScreen === true) {
                 tempThisObject.fullScreen = true;
 
-                document.getElementById("thisObject" + msgContent.node).style.webkitTransform =
+                document.getElementById("thisObject" + htmlKey).style.webkitTransform =
                     'matrix3d(1, 0, 0, 0,' +
                     '0, 1, 0, 0,' +
                     '0, 0, 1, 0,' +
