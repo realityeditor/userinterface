@@ -56,9 +56,9 @@
 function touchDown(evt) {
     if (!globalStates.editingMode) {
         if (!globalStates.guiButtonState) {
-            if (!globalProgram.ObjectA) {
-                globalProgram.ObjectA = this.ObjectId;
-                globalProgram.locationInA = this.location;
+            if (!globalProgram.objectA) {
+                globalProgram.objectA = this.ObjectId;
+                globalProgram.nodeA = this.location;
             }
         }
     } else {
@@ -81,8 +81,8 @@ function touchDown(evt) {
 
 function falseTouchUp() {
     if (!globalStates.guiButtonState) {
-        globalProgram.ObjectA = false;
-        globalProgram.locationInA = false;
+        globalProgram.objectA = false;
+        globalProgram.nodeA = false;
     }
     globalCanvas.hasContent = true;
     cout("falseTouchUp");
@@ -100,40 +100,40 @@ function falseTouchUp() {
 
 function trueTouchUp() {
     if (!globalStates.guiButtonState) {
-        if (globalProgram.ObjectA) {
+        if (globalProgram.objectA) {
 
-            var thisTempObject = objectExp[globalProgram.ObjectA];
-            var thisTempObjectLinks = thisTempObject.objectLinks;
+            var thisTempObject = objects[globalProgram.objectA];
+            var thisTempObjectLinks = thisTempObject.links;
 
-            globalProgram.ObjectB = this.ObjectId;
-            globalProgram.locationInB = this.location;
-            var thisOtherTempObject = objectExp[globalProgram.ObjectB];
+            globalProgram.objectB = this.ObjectId;
+            globalProgram.nodeB = this.location;
+            var thisOtherTempObject = objects[globalProgram.objectB];
 
-          var okForNewLink = checkForNetworkLoop( globalProgram.ObjectA, globalProgram.locationInA,  globalProgram.ObjectB, globalProgram.locationInB);
+          var okForNewLink = checkForNetworkLoop( globalProgram.objectA, globalProgram.nodeA,  globalProgram.objectB, globalProgram.nodeB);
 
-            //  window.location.href = "of://event_" + objectExp[globalProgram.ObjectA].visible;
+            //  window.location.href = "of://event_" + objects[globalProgram.objectA].visible;
 
             if (okForNewLink) {
                 var thisKeyId =  uuidTimeShort();
 
                 thisTempObjectLinks[thisKeyId] = {
-                    ObjectA: globalProgram.ObjectA,
-                    ObjectB: globalProgram.ObjectB,
-                    locationInA: globalProgram.locationInA,
-                    locationInB: globalProgram.locationInB,
-                    ObjectNameA: thisTempObject.name,
-                    ObjectNameB: thisOtherTempObject.name
+                    objectA: globalProgram.objectA,
+                    objectB: globalProgram.objectB,
+                    nodeA: globalProgram.nodeA,
+                    nodeB: globalProgram.nodeB,
+                    nameA: thisTempObject.name,
+                    nameB: thisOtherTempObject.name
                 };
 
                 // push new connection to objectA
-                uploadNewLink(thisTempObject.ip, globalProgram.ObjectA, thisKeyId, thisTempObjectLinks[thisKeyId]);
+                uploadNewLink(thisTempObject.ip, globalProgram.objectA, thisKeyId, thisTempObjectLinks[thisKeyId]);
             }
 
             // set everything back to false
-            globalProgram.ObjectA = false;
-            globalProgram.locationInA = false;
-            globalProgram.ObjectB = false;
-            globalProgram.locationInB = false;
+            globalProgram.objectA = false;
+            globalProgram.nodeA = false;
+            globalProgram.objectB = false;
+            globalProgram.nodeB = false;
         }
     }
     globalCanvas.hasContent = true;
@@ -155,7 +155,7 @@ function trueTouchUp() {
 
 function canvasPointerDown(evt) {
     if (!globalStates.guiButtonState && !globalStates.editingMode) {
-        if (!globalProgram.ObjectA) {
+        if (!globalProgram.objectA) {
             globalStates.drawDotLine = true;
             globalStates.drawDotLineX = evt.clientX;
             globalStates.drawDotLineY = evt.clientY;
@@ -203,7 +203,7 @@ function documentPointerUp(evt) {
 
     if (!globalStates.guiButtonState) {
         falseTouchUp();
-        if (!globalProgram.ObjectA && globalStates.drawDotLine) {
+        if (!globalProgram.objectA && globalStates.drawDotLine) {
             deleteLines(globalStates.drawDotLineX, globalStates.drawDotLineY, evt.clientX, evt.clientY);
         }
         globalStates.drawDotLine = false;
@@ -282,9 +282,9 @@ function MultiTouchMove(evt) {
 
         var tempThisObject = {};
         if (globalStates.editingModeObject !== globalStates.editingModeLocation) {
-            tempThisObject = objectExp[globalStates.editingModeObject].objectValues[globalStates.editingModeLocation];
+            tempThisObject = objects[globalStates.editingModeObject].nodes[globalStates.editingModeLocation];
         } else {
-            tempThisObject = objectExp[globalStates.editingModeObject];
+            tempThisObject = objects[globalStates.editingModeObject];
         }
 
 
@@ -354,9 +354,9 @@ function MultiTouchEnd(evt) {
 
         var tempThisObject = {};
         if (globalStates.editingModeObject != globalStates.editingModeLocation) {
-            tempThisObject = objectExp[globalStates.editingModeObject].objectValues[globalStates.editingModeLocation];
+            tempThisObject = objects[globalStates.editingModeObject].nodes[globalStates.editingModeLocation];
         } else {
-            tempThisObject = objectExp[globalStates.editingModeObject];
+            tempThisObject = objects[globalStates.editingModeObject];
         }
 
         var content = {};
@@ -372,7 +372,7 @@ function MultiTouchEnd(evt) {
         }
 
 if(typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
-    postData('http://' + objectExp[globalStates.editingModeObject].ip + ':' + httpPort + '/object/' + globalStates.editingModeObject + "/size/" + globalStates.editingModeLocation, content);
+    postData('http://' + objects[globalStates.editingModeObject].ip + ':' + httpPort + '/object/' + globalStates.editingModeObject + "/size/" + globalStates.editingModeLocation, content);
 }
 
     globalStates.editingModeHaveObject = false;
@@ -404,9 +404,9 @@ function MultiTouchCanvasStart(evt) {
 
         var tempThisObject = {};
         if (globalStates.editingModeObject != globalStates.editingModeLocation) {
-            tempThisObject = objectExp[globalStates.editingModeObject].objectValues[globalStates.editingModeLocation];
+            tempThisObject = objects[globalStates.editingModeObject].nodes[globalStates.editingModeLocation];
         } else {
-            tempThisObject = objectExp[globalStates.editingModeObject];
+            tempThisObject = objects[globalStates.editingModeObject];
         }
         globalStates.editingScaledistanceOld = tempThisObject.scale;
     }
@@ -450,9 +450,9 @@ function scaleEvent(touch) {
 
     var tempThisObject = {};
     if (globalStates.editingModeObject != globalStates.editingModeLocation) {
-        tempThisObject = objectExp[globalStates.editingModeObject].objectValues[globalStates.editingModeLocation];
+        tempThisObject = objects[globalStates.editingModeObject].nodes[globalStates.editingModeLocation];
     } else {
-        tempThisObject = objectExp[globalStates.editingModeObject];
+        tempThisObject = objects[globalStates.editingModeObject];
     }
     if (thisScale < 0.2)thisScale = 0.2;
     if(typeof thisScale === "number" && thisScale>0) {
@@ -562,8 +562,8 @@ function addEventHandlers() {
     ec++;
 
 
-    for (var thisKey in objectExp) {
-        var generalObject2 = objectExp[thisKey];
+    for (var thisKey in objects) {
+        var generalObject2 = objects[thisKey];
 
     if(generalObject2.developer) {
         if (document.getElementById(thisKey)) {
@@ -587,7 +587,7 @@ function addEventHandlers() {
             //}
         }
 
-        for (var thisSubKey in generalObject2.objectValues) {
+        for (var thisSubKey in generalObject2.nodes) {
             if (document.getElementById(thisSubKey)) {
                 var thisObject2 = document.getElementById(thisSubKey);
 
@@ -625,8 +625,8 @@ function removeEventHandlers() {
     ec--;
     globalCanvas.canvas.removeEventListener("touchmove", MultiTouchCanvasMove, false);
     ec--;
-    for (var thisKey in objectExp) {
-        var generalObject2 = objectExp[thisKey];
+    for (var thisKey in objects) {
+        var generalObject2 = objects[thisKey];
          if(generalObject2.developer) {
         if (document.getElementById(thisKey)) {
             var thisObject3 = document.getElementById(thisKey);
@@ -645,7 +645,7 @@ function removeEventHandlers() {
             //  }
         }
 
-        for (var thisSubKey in generalObject2.objectValues) {
+        for (var thisSubKey in generalObject2.nodes) {
             if (document.getElementById(thisSubKey)) {
                 var thisObject2 = document.getElementById(thisSubKey);
                 //thisObject2.className = "mainEditing";

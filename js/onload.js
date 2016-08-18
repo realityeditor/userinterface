@@ -73,11 +73,10 @@ window.onload = function () {
         globalStates.platform = false;
     }
 
-
     if (globalStates.platform === 'iPhone') {
         document.getElementById("logButtonDiv").style.visibility = "hidden";
-       // document.getElementById("reloadButtonDiv").style.visibility = "hidden";
-     //   document.getElementById("preferencesButtonDiv").style.bottom = "36px";
+        // document.getElementById("reloadButtonDiv").style.visibility = "hidden";
+        //   document.getElementById("preferencesButtonDiv").style.bottom = "36px";
 
         var editingInterface = document.getElementById("content2title");
         editingInterface.style.fontSize = "12px";
@@ -88,7 +87,6 @@ window.onload = function () {
         editingInterface.style.fontSize = "12px";
         editingInterface.style.left = "2%";
         editingInterface.style.right = "65%";
-
 
         editingInterface = document.getElementById("content2");
         editingInterface.style.fontSize = "9px";
@@ -104,7 +102,6 @@ window.onload = function () {
         editingInterface.style.fontSize = "12px";
         editingInterface.style.width = "60%";
 
-
         editingInterface = document.getElementById("content13");
         editingInterface.style.fontSize = "12px";
         editingInterface.style.width = "40%";
@@ -112,7 +109,6 @@ window.onload = function () {
         editingInterface = document.getElementById("content14");
         editingInterface.style.fontSize = "12px";
         editingInterface.style.width = "60%";
-
 
         editingInterface = document.getElementById("content15");
         editingInterface.style.fontSize = "12px";
@@ -126,7 +122,6 @@ window.onload = function () {
         editingInterface = document.getElementById("content18");
         editingInterface.style.visibility = 'hidden';
 
-
         editingInterface = document.getElementById("content1");
         editingInterface.style.fontSize = "12px";
         editingInterface.style.left = "2%";
@@ -136,7 +131,6 @@ window.onload = function () {
     } else {
         editingInterface = document.getElementById("content15");
         editingInterface.style.paddingTop = "13px";
-
 
         editingInterface = document.getElementById("content20");
         editingInterface.innerHTML = '<input id="newURLText"' +
@@ -174,7 +168,6 @@ window.onload = function () {
         e.preventDefault();
     });
 
-
     cout("onload");
 
 };
@@ -188,98 +181,87 @@ window.onload = function () {
 
 var postMessage = function (e) {
 
-    //  cout("received: "+ e.data);
     var msgContent = JSON.parse(e.data);
 
-    var tempThisObject = false;
+    var tempThisObject = null;
 
-    var thisVersionNumber = 0;
+    var thisVersionNumber = this.integerVersion;
 
-    if (typeof msgContent.pos !== "undefined" && typeof msgContent.obj !== "undefined") {
-        if (typeof objectExp[msgContent.obj] !== "undefined") {
-            if (msgContent.pos === msgContent.obj) {
-                tempThisObject = objectExp[msgContent.pos];
-                thisVersionNumber  = parseInt(objectExp[msgContent.pos].version.replace(/\./g, ""));
-            } else {
-                if (typeof objectExp[msgContent.obj].objectValues[msgContent.pos] !== "undefined") {
-                    tempThisObject = objectExp[msgContent.obj].objectValues[msgContent.pos];
-                    thisVersionNumber  = parseInt(objectExp[msgContent.obj].version.replace(/\./g, ""));
-                }
+    if (thisVersionNumber >= 170) {
+        if ((!msgContent.object) || (!msgContent.object)) return;
+    } else {
+        if ((!msgContent.obj) || (!msgContent.pos)) return;
+        msgContent.object = msgContent.obj;
+        msgContent.node = msgContent.pos;
+    }
+
+    if (msgContent.object in objects) {
+        if (msgContent.node === msgContent.object) {
+            tempThisObject = objects[msgContent.object];
+        } else {
+            if (msgContent.node in objects[msgContent.object].nodes) {
+                tempThisObject = objects[msgContent.object].nodes[msgContent.node];
+            } else return;
+        }
+    } else return;
+
+    if (msgContent.width && msgContent.height) {
+        var thisMsgNode = document.getElementById(msgContent.node);
+        thisMsgNode.style.width = msgContent.width;
+        thisMsgNode.style.height = msgContent.height;
+        thisMsgNode.style.top = ((globalStates.width - msgContent.height) / 2);
+        thisMsgNode.style.left = ((globalStates.height - msgContent.width) / 2);
+        thisMsgNode = document.getElementById("iframe" + msgContent.node);
+        thisMsgNode.style.width = msgContent.width;
+        thisMsgNode.style.height = msgContent.height;
+        thisMsgNode.style.top = ((globalStates.width - msgContent.height) / 2);
+        thisMsgNode.style.left = ((globalStates.height - msgContent.width) / 2);
+    }
+
+    if (msgContent.sendMatrix === "boolean") {
+        if (msgContent.sendMatrix === true) {
+            if (thisVersionNumber >= 32) {
+                tempThisObject.sendMatrix = true;
+                document.getElementById("iframe" + msgContent.node).contentWindow.postMessage(
+                    '{"projectionMatrix":' + JSON.stringify(globalStates.realProjectionMatrix) + "}", '*');
             }
         }
     }
 
+    if (msgContent.globalMessage) {
+        var iframes = document.getElementsByTagName('iframe');
+        for (var i = 0; i < iframes.length; i++) {
 
-
-    if (tempThisObject !== false) {
-
-            if (typeof msgContent.width !== "undefined" && typeof msgContent.height !== "undefined") {
-
-                document.getElementById(msgContent.pos).style.width = msgContent.width;
-                document.getElementById(msgContent.pos).style.height = msgContent.height;
-                document.getElementById(msgContent.pos).style.top = ((globalStates.width - msgContent.height) / 2);
-                document.getElementById(msgContent.pos).style.left = ((globalStates.height - msgContent.width) / 2);
-
-                document.getElementById("iframe" + msgContent.pos).style.width = msgContent.width;
-                document.getElementById("iframe" + msgContent.pos).style.height = msgContent.height;
-                document.getElementById("iframe" + msgContent.pos).style.top = ((globalStates.width - msgContent.height) / 2);
-                document.getElementById("iframe" + msgContent.pos).style.left = ((globalStates.height - msgContent.width) / 2);
-                
-            }
-        if (typeof msgContent.sendMatrix !== "undefined") {
-                if (msgContent.sendMatrix === true) {
-                    if(thisVersionNumber>=32) {
-                        tempThisObject.sendMatrix = true;
-                        document.getElementById("iframe" + msgContent.pos).contentWindow.postMessage(
-                            '{"projectionMatrix":' + JSON.stringify(globalStates.realProjectionMatrix) + "}", '*');
+            if (iframes[i].id !== "iframe" + msgContent.node && iframes[i].style.visibility !== "hidden") {
+                if (iframes[i].integerVersion >= 32) {
+                    var msg = {};
+                    if (iframes[i].integerVersion >= 170) {
+                        msg = {ohGlobalMessage: msgContent.ohGlobalMessage};
+                    } else {
+                        msg = {globalMessage: msgContent.ohGlobalMessage};
                     }
-                }
-                // forward postMessages to all iFrames
-            }
-        if (typeof msgContent.ohGlobalMessage !== "undefined") {
-                var iframes = document.getElementsByTagName('iframe');
-                for (var i = 0; i < iframes.length; i++) {
-
-                    if (iframes[i].id !== "iframe" + msgContent.pos && iframes[i].style.visibility !== "hidden") {
-                        if(thisVersionNumber>=32) {
-                            iframes[i].contentWindow.postMessage(
-                                JSON.stringify(
-                                    {
-                                        "ohGlobalMessage": msgContent.ohGlobalMessage
-                                    })
-                                , "*");
-                        }
-                    }
+                    iframes[i].contentWindow.postMessage(JSON.stringify(msg), "*");
                 }
             }
-        if (typeof msgContent.fullScreen !== "undefined") {
-               // console.log("gotfullscreenmessage");
-                if (msgContent.fullScreen === true) {
-                    tempThisObject.fullScreen = true;
+        }
 
-                    document.getElementById("thisObject" + msgContent.pos).style.webkitTransform =
-                        'matrix3d(1, 0, 0, 0,' +
-                        '0, 1, 0, 0,' +
-                        '0, 0, 1, 0,' +
-                        '0, 0, 0, 1)';
+        if (typeof msgContent.fullScreen === "boolean") {
+            // console.log("gotfullscreenmessage");
+            if (msgContent.fullScreen === true) {
+                tempThisObject.fullScreen = true;
 
-                }
+                document.getElementById("thisObject" + msgContent.node).style.webkitTransform =
+                    'matrix3d(1, 0, 0, 0,' +
+                    '0, 1, 0, 0,' +
+                    '0, 0, 1, 0,' +
+                    '0, 0, 0, 1)';
+
+            }
             if (msgContent.fullScreen === false) {
-                   // console.log("noFullscreen");
-                    tempThisObject.fullScreen = false;
-                }
 
+                tempThisObject.fullScreen = false;
             }
+
+        }
     }
-
-    /* if (typeof msgContent.sendAcl !== "undefined") {
-     if(msgContent.sendAcl === true) {
-     objectExp[msgContent.obj].sendAcl = true;
-     window.location.href = "of://sendAccelerationData";
-     }
-     }*/
-
-
-    // cout("postMessage");
-
 };

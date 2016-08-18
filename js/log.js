@@ -58,25 +58,25 @@ function objectLog(thisKey) {
     cout("objectLog");
     var consoleText_ = "";
 
-    consoleText_ += "Object Name: <b>" + objectExp[thisKey].name;
+    consoleText_ += "Object Name: <b>" + objects[thisKey].name;
 
-    if (objectExp[thisKey].loaded === true) {
+    if (objects[thisKey].loaded === true) {
 
-        consoleText_ += "</b>; Unloading in <b>" + (objectExp[thisKey].visibleCounter / 60).toFixed(1) + " sec.";
+        consoleText_ += "</b>; Unloading in <b>" + (objects[thisKey].visibleCounter / 60).toFixed(1) + " sec.";
 
     } else {
         consoleText_ += "</b>; Content <b>not</b> loaded<b>";
 
     }
 
-    consoleText_ += "</b>;  Visible: <b>" + objectExp[thisKey].visible +
-    "</b>; MAC: <b>" + objectExp[thisKey].name +
-    "</b>; IP: <b>" + objectExp[thisKey].ip +
-        // "</b><br>Z: "+objectExp[thisKey].screenZ ;
+    consoleText_ += "</b>;  Visible: <b>" + objects[thisKey].visible +
+    "</b>; MAC: <b>" + objects[thisKey].name +
+    "</b>; IP: <b>" + objects[thisKey].ip +
+        // "</b><br>Z: "+objects[thisKey].screenZ ;
     "</b>";
 
-    /* for (var key4 in objectExp[thisKey].objectValues) {
-     consoleText_ += JSON.stringify(objectExp[thisKey].objectValues[key4]) + "<br>";
+    /* for (var key4 in objects[thisKey].nodes) {
+     consoleText_ += JSON.stringify(objects[thisKey].nodes[key4]) + "<br>";
      }*/
     return consoleText_;
 }
@@ -100,7 +100,7 @@ function generalLog(tempConsoleText) {
 
     var GUIElements = 0;
 
-    for (var key3 in objectExp) {
+    for (var key3 in objects) {
 
         if (document.getElementById("iframe" + key3)) {
             GUIElements++;

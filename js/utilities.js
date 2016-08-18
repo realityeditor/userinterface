@@ -337,15 +337,24 @@ var randomIntInc = function (min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-/**
- * @author Erik Karlsson, www.nonobtrusive.com
- **/
 var countEventHandlers = function (){
 
 
    cout("amount of event listenrs: " +ec);
 
 };
+
+
+/**
+ * rename an object (more or less)
+ **/
+
+function rename(object, before, after) {
+    if (typeof object[before] !== "undefined") {
+        object[after] = object[before];
+        delete object[before];
+    }
+}
 
 
 /**********************************************************************************************************************
@@ -358,14 +367,14 @@ var countEventHandlers = function (){
  * @return
  **/
 
-function checkForNetworkLoop(globalObjectA, globalLocationInA, globalObjectB, globalLocationInB){
+function checkForNetworkLoop(globalobjectA, globalLocationInA, globalobjectB, globalLocationInB){
 
     var signalIsOk = true;
-    var thisTempObject = objectExp[globalObjectA];
-    var thisTempObjectLinks = thisTempObject.objectLinks;
+    var thisTempObject = objects[globalobjectA];
+    var thisTempObjectLinks = thisTempObject.links;
 
     // check if connection is with it self
-    if (globalObjectA === globalObjectB && globalLocationInA === globalLocationInB) {
+    if (globalobjectA === globalobjectB && globalLocationInA === globalLocationInB) {
         signalIsOk = false;
     }
 
@@ -373,10 +382,10 @@ function checkForNetworkLoop(globalObjectA, globalLocationInA, globalObjectB, gl
     // check if this connection already exists?
     if(signalIsOk) {
         for (var thisSubKey in thisTempObjectLinks) {
-            if (thisTempObjectLinks[thisSubKey].ObjectA === globalObjectA &&
-                thisTempObjectLinks[thisSubKey].ObjectB === globalObjectB &&
-                thisTempObjectLinks[thisSubKey].locationInA === globalLocationInA &&
-                thisTempObjectLinks[thisSubKey].locationInB === globalLocationInB) {
+            if (thisTempObjectLinks[thisSubKey].objectA === globalobjectA &&
+                thisTempObjectLinks[thisSubKey].objectB === globalobjectB &&
+                thisTempObjectLinks[thisSubKey].nodeA === globalLocationInA &&
+                thisTempObjectLinks[thisSubKey].nodeB === globalLocationInB) {
                 signalIsOk = false;
             }
 
@@ -384,18 +393,18 @@ function checkForNetworkLoop(globalObjectA, globalLocationInA, globalObjectB, gl
     }
     // check that there is no endless loops through it self or any other connections
     if(signalIsOk) {
-        searchL(globalLocationInB, globalObjectB, globalLocationInA, globalObjectA);
+        searchL(globalLocationInB, globalobjectB, globalLocationInA, globalobjectA);
 
-        function searchL(locationInB, ObjectB, locationInA, ObjectA) {
-            for (var key in objectExp[ObjectB].objectLinks) {
-                cout(ObjectB);
-                var Bn = objectExp[ObjectB].objectLinks[key];
-                if (locationInB === Bn.locationInA) {
-                    if (locationInA === Bn.locationInB && ObjectA === Bn.ObjectB) {
+        function searchL(nodeB, objectB, nodeA, objectA) {
+            for (var key in objects[objectB].links) {
+                cout(objectB);
+                var Bn = objects[objectB].links[key];
+                if (nodeB === Bn.nodeA) {
+                    if (nodeA === Bn.nodeB && objectA === Bn.objectB) {
                         signalIsOk = false;
                         break;
                     } else {
-                        searchL(Bn.locationInB, Bn.ObjectB, locationInA, ObjectA);
+                        searchL(Bn.nodeB, Bn.objectB, nodeA, objectA);
                     }
                 }
             }

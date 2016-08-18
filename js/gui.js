@@ -219,13 +219,13 @@ function GUI() {
       //  window.location.href = "of://loadNewUI"+globalStates.newURLText;
 
 
-        for (var key in objectExp) {
+        for (var key in objects) {
             if (!globalObjects.hasOwnProperty(key)) {
                 continue;
             }
 
 
-            var tempResetObject = objectExp[key];
+            var tempResetObject = objects[key];
 
             if(globalStates.guiButtonState) {
                 tempResetObject.matrix = [];
@@ -237,8 +237,8 @@ function GUI() {
                 sendResetContent(key, key);
             }
 
-            for (var subKey in tempResetObject.objectValues) {
-                var tempResetValue = tempResetObject.objectValues[subKey];
+            for (var subKey in tempResetObject.nodes) {
+                var tempResetValue = tempResetObject.nodes[subKey];
 
                 if(!globalStates.guiButtonState) {
 
@@ -269,9 +269,9 @@ function GUI() {
 
             var tempThisObject = {};
             if (object != location) {
-                tempThisObject = objectExp[object].objectValues[location];
+                tempThisObject = objects[object].nodes[location];
             } else {
-                tempThisObject = objectExp[object];
+                tempThisObject = objects[object];
             }
 
             var content = {};
@@ -284,7 +284,7 @@ function GUI() {
             }
 
             if(typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
-                postData('http://' + objectExp[object].ip + ':' + httpPort + '/object/' + object + "/size/" + location, content);
+                postData('http://' + objects[object].ip + ':' + httpPort + '/object/' + object + "/size/" + location, content);
             }
 
     }

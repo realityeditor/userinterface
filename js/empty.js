@@ -44,14 +44,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-for (var index in objectExp) {
-    var generalObject = objectExp[index];
+for (var index in objects) {
+    var generalObject = objects[index];
 
     var thisObject = document.getElementById(index);
     thisObject.addEventListener("touchmove", MultiTouchMove, false);
     thisObject.addEventListener("touchend", MultiTouchEnd, false);
 
-    for (var thisSubKey in generalObject.objectValues) {
+    for (var thisSubKey in generalObject.nodes) {
 
         var thisObject = document.getElementById(thisSubKey);
         thisObject.addEventListener("touchmove", MultiTouchMove, false);

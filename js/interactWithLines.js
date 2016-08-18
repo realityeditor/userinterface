@@ -58,27 +58,27 @@
 
 function deleteLines(x21, y21, x22, y22) {
     // window.location.href = "of://gotsome";
-    for (var keysome in objectExp) {
-        if (!objectExp.hasOwnProperty(keysome)) {
+    for (var keysome in objects) {
+        if (!objects.hasOwnProperty(keysome)) {
             continue;
         }
 
-        var thisObject = objectExp[keysome];
-        for (var subKeysome in thisObject.objectLinks) {
-            if (!thisObject.objectLinks.hasOwnProperty(subKeysome)) {
+        var thisObject = objects[keysome];
+        for (var subKeysome in thisObject.links) {
+            if (!thisObject.links.hasOwnProperty(subKeysome)) {
                 continue;
             }
-            var l = thisObject.objectLinks[subKeysome];
+            var l = thisObject.links[subKeysome];
             var oA = thisObject;
-            var oB = objectExp[l.ObjectB];
-            var bA = oA.objectValues[l.locationInA];
-            var bB = oB.objectValues[l.locationInB];
+            var oB = objects[l.objectB];
+            var bA = oA.nodes[l.nodeA];
+            var bB = oB.nodes[l.nodeB];
 
             if (bA === undefined || bB === undefined || oA === undefined || oB === undefined) {
                 continue; //should not be undefined
             }
             if (checkLineCross(bA.screenX, bA.screenY, bB.screenX, bB.screenY, x21, y21, x22, y22, globalCanvas.canvas.width, globalCanvas.canvas.height)) {
-                delete thisObject.objectLinks[subKeysome];
+                delete thisObject.links[subKeysome];
                 cout("iam executing link deletion");
                 deleteLinkFromObject(thisObject.ip, keysome, subKeysome);
             }
@@ -97,40 +97,40 @@ function deleteLines(x21, y21, x22, y22) {
  **/
 
 function drawAllLines(thisObject, context) {
-    for (var subKey in thisObject.objectLinks) {
-        if (!thisObject.objectLinks.hasOwnProperty(subKey)) {
+    for (var subKey in thisObject.links) {
+        if (!thisObject.links.hasOwnProperty(subKey)) {
             continue;
         }
-        var l = thisObject.objectLinks[subKey];
+        var l = thisObject.links[subKey];
         var oA = thisObject;
 
         if (isNaN(l.ballAnimationCount))
             l.ballAnimationCount = 0;
 
-        if (!objectExp.hasOwnProperty(l.ObjectB)) {
+        if (!objects.hasOwnProperty(l.objectB)) {
             continue;
         }
-        var oB = objectExp[l.ObjectB];
-        if (!oA.objectValues.hasOwnProperty(l.locationInA)) {
+        var oB = objects[l.objectB];
+        if (!oA.nodes.hasOwnProperty(l.nodeA)) {
             continue;
         }
-        if (!oB.objectValues.hasOwnProperty(l.locationInB)) {
+        if (!oB.nodes.hasOwnProperty(l.nodeB)) {
             continue;
         }
-        var bA = oA.objectValues[l.locationInA];
-        var bB = oB.objectValues[l.locationInB];
+        var bA = oA.nodes[l.nodeA];
+        var bB = oB.nodes[l.nodeB];
 
         if (bA === undefined || bB === undefined || oA === undefined || oB === undefined) {
             continue; //should not be undefined
         }
 
-        if (!oB.ObjectVisible) {
+        if (!oB.objectVisible) {
             bB.screenX = bA.screenX;
             bB.screenY = -10;
             bB.screenZ = bA.screenZ;
         }
 
-        if (!oA.ObjectVisible) {
+        if (!oA.objectVisible) {
             bA.screenX = bB.screenX;
             bA.screenY = -10;
             bA.screenZ = bB.screenZ;
@@ -161,11 +161,11 @@ function drawInteractionLines() {
 
     // this function here needs to be more precise
 
-    if (globalProgram.ObjectA) {
+    if (globalProgram.objectA) {
 
-        var oA = objectExp[globalProgram.ObjectA];
+        var oA = objects[globalProgram.objectA];
 
-        var tempStart = objectExp[globalProgram.ObjectA].objectValues[globalProgram.locationInA];
+        var tempStart = objects[globalProgram.objectA].nodes[globalProgram.nodeA];
 
 
         // this is for making sure that the line is drawn out of the screen... Don't know why this got lost somewhere down the road.
@@ -174,7 +174,7 @@ function drawInteractionLines() {
         // map the linearized zBuffer to the final ball size
         tempStart.screenZ = map(tempStart.screenZ, 0.9971, 1, 25, 1);
 
-        if (!oA.ObjectVisible) {
+        if (!oA.objectVisible) {
             tempStart.screenX = globalStates.pointerPosition[0];
             tempStart.screenY = -10;
             tempStart.screenZ = 6;

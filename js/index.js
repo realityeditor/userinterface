@@ -72,27 +72,82 @@
  **/
 
 function addHeartbeatObject(beat) {
+
+
+
     /*
      if (globalStates.platform) {
      window.location.href = "of://gotbeat_" + beat.id;
      }
      */
     if (beat.id) {
-        if (!objectExp[beat.id]) {
+        if (!objects[beat.id]) {
             getData('http://' + beat.ip + ':' + httpPort + '/object/' + beat.id, beat.id, function (req, thisKey) {
-                objectExp[thisKey] = req;
+                if (req && thisKey) {
+                    objects[thisKey] = req;
+                    var thisObject = objects[thisKey];
+                    // this is a work around to set the state of an objects to not being visible.
+                    thisObject.objectVisible = false;
+                    thisObject.screenZ = 1000;
+                    thisObject.fullScreen = false;
+                    thisObject.sendMatrix = false;
+                    thisObject.integerVersion = parseInt(objects[thisKey].version.replace(/\./g, ""));
 
-                // this is a work around to set the state of an objects to not being visible.
-                objectExp[thisKey].ObjectVisible = false;
-                objectExp[thisKey].screenZ = 1000;
-                objectExp[thisKey].fullScreen = false;
-                objectExp[thisKey].sendMatrix = false;
-                objectExp[thisKey].IntegerVersion = parseInt(objectExp[thisKey].version.replace(/\./g, ""));
-                objectExp[thisKey].name = objectExp[thisKey].folder;
+                    if (thisObject.matrix === null || typeof thisObject.matrix !== "object") {
+                        thisObject.matrix = [];
+                    }
 
-                cout(objectExp[thisKey]);
-                addElementInPreferences();
+                    for (var nodeKey in objects[thisKey].nodes) {
+                        thisObject = objects[thisKey].nodes[nodeKey];
+                        if (thisObject.matrix === null || typeof thisObject.matrix !== "object") {
+                            thisObject.matrix = [];
+                        }
+                    }
 
+                    if (!thisObject.protocol) {
+                        thisObject.protocol = "R0";
+                    }
+
+                    if (thisObject.integerVersion < 170) {
+
+                        rename(thisObject, "folder", "name");
+                        rename(thisObject, "objectValues", "node");
+                        rename(thisObject, "objectLinks", "links");
+                        rename(thisObject, "matrix3dMemory", "matrixMemory");
+
+                        for (var linkKey in objects[thisKey].links) {
+                            thisObject = objects[thisKey].links[linkKey];
+
+                            rename(thisObject, "ObjectA", "objectA");
+                            rename(thisObject, "locationInA", "nodeA");
+                            rename(thisObject, "ObjectNameA", "nameA");
+
+                            rename(thisObject, "ObjectB", "objectB");
+                            rename(thisObject, "locationInB", "nodeB");
+                            rename(thisObject, "ObjectNameB", "nameB");
+                            rename(thisObject, "endlessLoop", "loop");
+                            rename(thisObject, "countLinkExistance", "health");
+                        }
+
+                        for (var nodeKey in objects[thisKey].nodes) {
+                            thisObject = objects[thisKey].nodes[nodeKey];
+                            rename(thisObject, "plugin", "appearance");
+                            thisObject.item = {
+                                number: thisObject.value,
+                                mode: thisObject.mode,
+                                unit: "",
+                                unitMin: 0,
+                                unitMax: 1
+                            };
+                            delete thisObject.value;
+                            delete thisObject.mode;
+
+                        }
+
+                    }
+                    cout(JSON.stringify(objects[thisKey]));
+                    addElementInPreferences();
+                }
             });
         }
     }
@@ -112,12 +167,10 @@ function setDeviceName(deviceName) {
 
 function setStates(developerState, extendedTrackingState, clearSkyState, externalState) {
 
-
     globalStates.extendedTrackingState = extendedTrackingState;
     globalStates.developerState = developerState;
     globalStates.clearSkyState = clearSkyState;
     globalStates.externalState = externalState;
-
 
     if (clearSkyState) {
         // globalStates.UIOffMode = true;
@@ -136,11 +189,9 @@ function setStates(developerState, extendedTrackingState, clearSkyState, externa
         document.getElementById("extendedTrackingSwitch").checked = true;
     }
 
-
     if (globalStates.externalState !== "") {
         document.getElementById("newURLText").value = globalStates.externalState;
     }
-
 
     if (globalStates.editingMode) {
         document.getElementById('resetButton').style.visibility = "visible";
@@ -148,7 +199,6 @@ function setStates(developerState, extendedTrackingState, clearSkyState, externa
         document.getElementById('resetButtonDiv').style.display = "inline";
         document.getElementById('unconstButtonDiv').style.display = "inline";
     }
-
 
     // Once all the states are send the alternative checkbox is loaded
     // Its a bad hack to place it here, but it works
@@ -163,7 +213,6 @@ function setStates(developerState, extendedTrackingState, clearSkyState, externa
     }
 }
 
-
 /**
  * @desc
  * @param
@@ -176,8 +225,28 @@ function action(action) {
 
     if (thisAction.reloadLink) {
         getData('http://' + thisAction.reloadLink.ip + ':' + httpPort + '/object/' + thisAction.reloadLink.id, thisAction.reloadLink.id, function (req, thisKey) {
-            objectExp[thisKey].objectLinks = req.objectLinks;
-            // cout(objectExp[thisKey]);
+
+            if (objects[thisKey].integerVersion < 170) {
+                objects[thisKey].links = req.links;
+                for (var linkKey in objects[thisKey].links) {
+                    thisObject = objects[thisKey].links[linkKey];
+
+                    rename(thisObject, "objectA", "objectA");
+                    rename(thisObject, "nodeA", "nodeA");
+                    rename(thisObject, "nameA", "nameA");
+
+                    rename(thisObject, "objectB", "objectB");
+                    rename(thisObject, "nodeB", "nodeB");
+                    rename(thisObject, "nameB", "nameB");
+                    rename(thisObject, "endlessLoop", "loop");
+                    rename(thisObject, "countLinkExistance", "health");
+                }
+            }
+            else {
+                objects[thisKey].links = req.links;
+            }
+
+            // cout(objects[thisKey]);
             cout("got links");
         });
 
@@ -185,16 +254,35 @@ function action(action) {
 
     if (thisAction.reloadObject) {
         getData('http://' + thisAction.reloadObject.ip + ':' + httpPort + '/object/' + thisAction.reloadObject.id, thisAction.reloadObject.id, function (req, thisKey) {
-            objectExp[thisKey].x = req.x;
-            objectExp[thisKey].y = req.y;
-            objectExp[thisKey].scale = req.scale;
-            objectExp[thisKey].objectValues = req.objectValues;
+            objects[thisKey].x = req.x;
+            objects[thisKey].y = req.y;
+            objects[thisKey].scale = req.scale;
 
-            // cout(objectExp[thisKey]);
+            if (objects[thisKey].integerVersion < 170) {
+                objects[thisKey].nodes = req.nodes;
+
+                for (var nodeKey in objects[thisKey].nodes) {
+                    thisObject = objects[thisKey].nodes[nodeKey];
+                    rename(thisObject, "plugin", "appearance");
+                    thisObject.item = {
+                        number: thisObject.value,
+                        mode: thisObject.mode,
+                        unit: "",
+                        unitMin: 0,
+                        unitMax: 1
+                    };
+                    delete thisObject.value;
+                    delete thisObject.mode;
+                }
+            }
+            else {
+                objects[thisKey].nodes = req.nodes;
+            }
+
+            // cout(objects[thisKey]);
             cout("got links");
         });
     }
-
 
     cout("found action: " + action);
 
@@ -234,7 +322,6 @@ function getData(url, thisKey, callback) {
     }
 }
 
-
 /**********************************************************************************************************************
  **********************************************************************************************************************/
 // set projection matrix
@@ -248,7 +335,6 @@ function getData(url, thisKey, callback) {
 
 function setProjectionMatrix(matrix) {
     // globalStates.projectionMatrix = matrix;
-
 
     //  generate all transformations for the object that needs to be done ASAP
     var scaleZ = [
@@ -294,7 +380,6 @@ function setProjectionMatrix(matrix) {
         corY = -6;
     }
 
-
     // iPhone 6s
     if (globalStates.device === "iPhone8,1") {
         // not yet tested todo add values
@@ -310,7 +395,7 @@ function setProjectionMatrix(matrix) {
 
     // iPad
     if (globalStates.device === "iPad1,1") {
-      // not yet tested todo add values
+        // not yet tested todo add values
         corX = 0;
         corY = 0;
     }
@@ -352,7 +437,6 @@ function setProjectionMatrix(matrix) {
         corY = 6.5;
     }
 
-
     var viewportScaling = [
         globalStates.height, 0, 0, 0,
         0, -globalStates.width, 0, 0,
@@ -366,10 +450,8 @@ function setProjectionMatrix(matrix) {
     globalStates.projectionMatrix = multiplyMatrix(multiplyMatrix(scaleZ, matrix), viewportScaling);
     window.location.href = "of://gotProjectionMatrix";
 
-
     //   onceTransform();
 }
-
 
 /**********************************************************************************************************************
  ******************************************** update and draw the 3D Interface ****************************************
@@ -390,14 +472,14 @@ function updateReDraw() {
     uiButtons.style.display = disp;
 }
 
-function update(objects) {
-
+function update(visibleObjects) {
+//    console.log(JSON.stringify(visibleObjects));
     timeSynchronizer(timeCorrection);
     //disp = uiButtons.style.display;
     //uiButtons.style.display = 'none';
 
     if (globalStates.feezeButtonState == false) {
-        globalObjects = objects;
+        globalObjects = visibleObjects;
     }
     /* if (consoleText !== "") {
      consoleText = "";
@@ -410,29 +492,26 @@ function update(objects) {
         globalCanvas.hasContent = false;
     }
 
-    for (var key in objectExp) {
-        if (!objectExp.hasOwnProperty(key)) {
+    for (var key in objects) {
+        if (!objects.hasOwnProperty(key)) {
             continue;
         }
 
-        var generalObject = objectExp[key];
+        var generalObject = objects[key];
 
         // I changed this to has property.
         if (globalObjects.hasOwnProperty(key)) {
 
             generalObject.visibleCounter = timeForContentLoaded;
-            generalObject.ObjectVisible = true;
+            generalObject.objectVisible = true;
 
             var tempMatrix = multiplyMatrix(rotateX, multiplyMatrix(globalObjects[key], globalStates.projectionMatrix));
 
-
             //  var tempMatrix2 = multiplyMatrix(globalObjects[key], globalStates.projectionMatrix);
-
 
             //   document.getElementById("controls").innerHTML = (toAxisAngle(tempMatrix2)[0]).toFixed(1)+" "+(toAxisAngle(tempMatrix2)[1]).toFixed(1);
 
-
-            if (globalStates.guiButtonState || Object.keys(generalObject.objectValues).length === 0) {
+            if (globalStates.guiButtonState || Object.keys(generalObject.nodes).length === 0) {
                 drawTransformed(generalObject, key, tempMatrix, key);
                 addElement(generalObject, key, "http://" + generalObject.ip + ":" + httpPort + "/obj/" + generalObject.name + "/");
             }
@@ -445,21 +524,21 @@ function update(objects) {
             // once added, they will be associated with the object via the editor postMessages anyway.
 
             var destinationString;
-            if(generalObject.IntegerVersion > 40){
-                destinationString= "/dataPointInterfaces/";
-            }else {
-                destinationString= "/obj/dataPointInterfaces/";
+            if (generalObject.integerVersion > 40) {
+                destinationString = "/dataPointInterfaces/";
+            } else {
+                destinationString = "/obj/dataPointInterfaces/";
             }
 
-            for (var subKey in generalObject.objectValues) {
-                // if (!generalObject.objectValues.hasOwnProperty(subKey)) { continue; }
+            for (var subKey in generalObject.nodes) {
+                // if (!generalObject.nodes.hasOwnProperty(subKey)) { continue; }
 
-                var tempValue = generalObject.objectValues[subKey];
+                var tempValue = generalObject.nodes[subKey];
 
                 if (!globalStates.guiButtonState) {
                     drawTransformed(tempValue, subKey, tempMatrix, key);
 
-                    addElement(tempValue, subKey, "http://" + generalObject.ip + ":" + httpPort + destinationString + tempValue.plugin + "/", key);
+                    addElement(tempValue, subKey, "http://" + generalObject.ip + ":" + httpPort + destinationString + tempValue.appearance + "/", key);
 
                 } else {
                     hideTransformed(tempValue, subKey, key);
@@ -468,30 +547,29 @@ function update(objects) {
         }
 
         else {
-            generalObject.ObjectVisible = false;
+            generalObject.objectVisible = false;
 
             hideTransformed(generalObject, key, key);
 
-            for (var subKey in generalObject.objectValues) {
-                // if (!generalObject.objectValues.hasOwnProperty(subKey)) {  continue;  }
-                hideTransformed(generalObject.objectValues[subKey], subKey, key);
+            for (var subKey in generalObject.nodes) {
+                // if (!generalObject.nodes.hasOwnProperty(subKey)) {  continue;  }
+                hideTransformed(generalObject.nodes[subKey], subKey, key);
             }
 
             killObjects(generalObject, key);
         }
 
         if (globalStates.logButtonState) {
-            consoleText += JSON.stringify(generalObject.objectLinks);
+            consoleText += JSON.stringify(generalObject.links);
             consoleText += objectLog(key);
         }
-
 
     }
 
     // draw all lines
     if (!globalStates.guiButtonState && !globalStates.editingMode) {
-        for (var keyT in objectExp) {
-            drawAllLines(objectExp[keyT], globalCanvas.context);
+        for (var keyT in objects) {
+            drawAllLines(objects[keyT], globalCanvas.context);
 
         }
         drawInteractionLines();
@@ -506,9 +584,7 @@ function update(objects) {
 
     //  countEventHandlers()
 
-
     // uiButtons.style.display = disp;
-
 
 }
 
@@ -535,9 +611,8 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
             thisIframe.contentWindow.postMessage(
                 JSON.stringify(
                     {
-                        "visibility": "visible"
+                        visibility: "visible"
                     }), '*');
-
 
             if (generalKey !== thisKey) {
                 document.getElementById(thisKey).style.visibility = 'visible';
@@ -548,7 +623,6 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
                     document.getElementById("canvas" + thisKey).style.display = 'none';
                 }
             }
-
 
             if (generalKey === thisKey) {
                 if (globalStates.editingMode) {
@@ -584,7 +658,6 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
                     //if(globalStates.unconstrainedPositioning===true)
                     thisObject.temp = copyMatrix(thisTransform2);
 
-
                     if (globalMatrix.copyStillFromMatrixSwitch) {
                         globalMatrix.visual = copyMatrix(thisTransform2);
                         if (typeof thisObject.matrix === "object")
@@ -605,7 +678,6 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
                         thisTransform2 = globalMatrix.visual;
 
                 }
-
 
                 if (typeof thisObject.matrix === "object") {
                     if (thisObject.matrix.length > 0) {
@@ -642,7 +714,6 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
             else {
                 thisTransform = multiplyMatrix(finalMatrixTransform2, thisTransform2);
             }
-
             document.getElementById("thisObject" + thisKey).style.webkitTransform = 'matrix3d(' +
                 thisTransform[0] + ',' + thisTransform[1] + ',' + thisTransform[2] + ',' + thisTransform[3] + ',' +
                 thisTransform[4] + ',' + thisTransform[5] + ',' + thisTransform[6] + ',' + thisTransform[7] + ',' +
@@ -660,7 +731,7 @@ function drawTransformed(thisObject, thisKey, thisTransform2, generalKey) {
         if (thisObject.sendMatrix === true) {
             if (generalKey === thisKey) {
                 document.getElementById("iframe" + thisKey).contentWindow.postMessage(
-                    '{"modelViewMatrix":' + JSON.stringify(globalObjects[thisKey]) + "}", '*');
+                    JSON.stringify({modelViewMatrix: globalObjects[thisKey]}), '*');
             }
         }
     }
@@ -686,7 +757,7 @@ function hideTransformed(thisObject, thisKey, generalKey) {
         thisIframe.contentWindow.postMessage(
             JSON.stringify(
                 {
-                    "visibility": "hidden"
+                    visibility: "hidden"
                 }), '*');
 
         //document.getElementById("iframe" + thisKey).style.display = 'none';
@@ -720,33 +791,32 @@ function hideTransformed(thisObject, thisKey, generalKey) {
  **/
 
 function addElementInPreferences() {
-   cout("addedObject");
+    cout("addedObject");
 
     var htmlContent = "";
 
-
     htmlContent += "<div class='Interfaces'" +
-        " style='position: relative;  float: left; height: 20px; width: 35%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell; font-family: Helvetica Neue, Helvetica, Arial;background-color: #a0a0a0; -webkit-transform-style: preserve-3d;'>" +
+        " style='position: relative;  float: left; height: 20px; width: 34%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell; font-family: Helvetica Neue, Helvetica, Arial;background-color: #a0a0a0; -webkit-transform-style: preserve-3d;'>" +
         "Name</div>";
     htmlContent += "<div class='Interfaces'" +
         " style='position: relative;  float: left; height: 20px; width: 30%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial;background-color: #a0a0a0; -webkit-transform-style: preserve-3d;'>" +
         "IP</div>";
 
     htmlContent += "<div class='Interfaces'" +
-        " style='position: relative;  float: left; height: 20px; width: 16%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial;background-color: #a0a0a0; -webkit-transform-style: preserve-3d; '>" +
+        " style='position: relative;  float: left; height: 20px; width: 14%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial;background-color: #a0a0a0; -webkit-transform-style: preserve-3d; '>" +
         "Version</div>";
 
     htmlContent += "<div class='Interfaces'" +
-        " style='position: relative;  float: left; height: 20px; width: 7%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial; background-color: #a0a0a0;-webkit-transform-style: preserve-3d;'>" +
-        "I/O</div>";
+        " style='position: relative;  float: left; height: 20px; width: 11%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial; background-color: #a0a0a0;-webkit-transform-style: preserve-3d;'>" +
+        "Nodes</div>";
 
     htmlContent += "<div class='Interfaces'" +
-        " style='position: relative;  float: left; height: 20px; width: 12%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial; background-color: #a0a0a0;-webkit-transform-style: preserve-3d;'>" +
+        " style='position: relative;  float: left; height: 20px; width: 11%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial; background-color: #a0a0a0;-webkit-transform-style: preserve-3d;'>" +
         "Links</div>";
 
     var bgSwitch = false;
     var bgcolor = "";
-    for (var keyPref in objectExp) {
+    for (var keyPref in objects) {
 
         if (bgSwitch) {
             bgcolor = "background-color: #a0a0a0;";
@@ -759,27 +829,27 @@ function addElementInPreferences() {
         htmlContent += "<div class='Interfaces' id='" +
             "name" + keyPref +
             "' style='position: relative;  float: left; height: 20px; width: 35%; text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell; font-family: Helvetica Neue, Helvetica, Arial;" + bgcolor + " -webkit-transform-style: preserve-3d; " +
-            "'>" ;
+            "'>";
 
-            htmlContent +=    objectExp[keyPref].name;
+        htmlContent += objects[keyPref].name;
 
         htmlContent += "</div><div class='Interfaces' id='" +
             "name" + keyPref +
             "' style='position: relative;  float: left; height: 20px; width: 30%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial;" + bgcolor + " -webkit-transform-style: preserve-3d; " +
             "'>" +
-            objectExp[keyPref].ip
+            objects[keyPref].ip
             + "</div>";
 
         htmlContent += "<div class='Interfaces' id='" +
             "version" + keyPref +
             "' style='position: relative;  float: left; height: 20px; width: 16%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell; font-family: Helvetica Neue, Helvetica, Arial; " + bgcolor + "-webkit-transform-style: preserve-3d;" +
             "'>" +
-            objectExp[keyPref].version
+            objects[keyPref].version
             + "</div>";
 
         var anzahl = 0;
 
-        for (var subkeyPref2 in objectExp[keyPref].objectValues) {
+        for (var subkeyPref2 in objects[keyPref].nodes) {
             anzahl++;
         }
 
@@ -790,10 +860,9 @@ function addElementInPreferences() {
             anzahl
             + "</div>";
 
-
         anzahl = 0;
 
-        for (var subkeyPref in objectExp[keyPref].objectLinks) {
+        for (var subkeyPref in objects[keyPref].links) {
             anzahl++;
         }
 
@@ -824,8 +893,9 @@ function addElementInPreferences() {
  **/
 
 function addElement(thisObject, thisKey, thisUrl, generalObject) {
-    if (globalStates.notLoading !== true && globalStates.notLoading !== thisKey && thisObject.loaded !== true) {
 
+    if (globalStates.notLoading !== true && globalStates.notLoading !== thisKey && thisObject.loaded !== true) {
+        console.log(JSON.stringify(thisObject));
         if (typeof generalObject === 'undefined') {
             generalObject = thisKey;
         }
@@ -833,7 +903,6 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
         thisObject.loaded = true;
         thisObject.visibleEditing = false;
         globalStates.notLoading = thisKey;
-
 
         if (typeof thisObject.begin !== "object") {
             thisObject.begin = [
@@ -857,37 +926,65 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
 
         //  window.location.href = "of://objectloaded_" + globalStates.notLoading;
 
-        var addDoc = document.createElement('div');
-        addDoc.id = "thisObject" + thisKey;
-        addDoc.style.width = globalStates.height + "px";
-        addDoc.style.height = globalStates.width + "px";
-        addDoc.style.display = "none";
-        addDoc.style.border = 0;
-        addDoc.className = "main";
-        document.getElementById("GUI").appendChild(addDoc);
+        var thisDiv = document.createElement('div');
+        thisDiv.id = "thisObject" + thisKey;
+        thisDiv.style.width = globalStates.height + "px";
+        thisDiv.style.height = globalStates.width + "px";
+        thisDiv.style.display = "none";
+        thisDiv.style.border = "0";
+        thisDiv.className = "main";
+        document.getElementById("GUI").appendChild(thisDiv);
 
-        var tempAddContent =
-            "<iframe id='iframe" + thisKey + "' onload='on_load(\"" +
-            generalObject + "\",\"" + thisKey + "\")' frameBorder='0' " +
-            "style='width:0px; height:0px;" +
-            "top:" + ((globalStates.width - thisObject.frameSizeX) / 2) + "px; left:" +
-            ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' " +
-            "src='" + thisUrl + "' class='main' sandbox='allow-forms allow-pointer-lock allow-same-origin allow-scripts'>" +
-            "</iframe>";
+        var thisIframe = document.createElement('iframe');
+        thisIframe.id = "iframe" + thisKey;
+        thisIframe.setAttribute("onload", 'on_load("' + generalObject + '","' + thisKey + '")');
+        //
+        thisIframe.setAttribute("frameBorder", "0");
+        thisIframe.style.width = "0px";
+        thisIframe.style.height = "0px";
+        thisIframe.style.top = ((globalStates.width - thisObject.frameSizeX) / 2) + "px";
+        thisIframe.style.left = ((globalStates.height - thisObject.frameSizeY) / 2) + "px";
+        thisIframe.style.visibility = "hidden";
+        thisIframe.setAttribute("src", thisUrl);
+        thisIframe.setAttribute("class", "main");
+        thisIframe.setAttribute("sandbox", "allow-forms allow-pointer-lock allow-same-origin allow-scripts");
+        thisIframe.integerVersion = thisObject.integerVersion;
 
+        var theObject = document.createElement('div');
+        theObject.id = thisKey;
+        theObject.setAttribute("frameBorder", "0");
+        theObject.style.width = thisObject.frameSizeX + "px";
+        theObject.style.height = thisObject.frameSizeY + "px";
+        theObject.style.top = ((globalStates.width - thisObject.frameSizeX) / 2) + "px";
+        theObject.style.left = ((globalStates.height - thisObject.frameSizeY) / 2) + "px";
+        theObject.style.visibility = "hidden";
+        thisIframe.setAttribute("class", "mainEditing");
 
-        tempAddContent += "<div id='" + thisKey + "' frameBorder='0' style='width:" + thisObject.frameSizeX + "px; height:" + thisObject.frameSizeY + "px;" +
-            "top:" + ((globalStates.width - thisObject.frameSizeX) / 2) + "px; left:" + ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' class='mainEditing'>" +
-            "<canvas id='canvas" + thisKey + "'style='width:100%; height:100%;' class='mainCanvas'></canvas>" +
-            "</div>" +
-            "";
+        var thisCanvas = document.createElement('canvas');
+        thisCanvas.id = "canvas" + thisKey;
+        thisCanvas.style.width = "100%";
+        thisCanvas.style.height = "100%";
+        thisIframe.setAttribute("class", "mainCanvas");
 
-        tempAddContent += "<div id='text" + thisKey + "' frameBorder='0' style='width:5px; height:5px;" +
-            "top:" + ((globalStates.width) / 2 + thisObject.frameSizeX / 2) + "px; left:" + ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' class='mainProgram'><font color='white'>" + thisObject.name + "</font></div>" +
-            "";
+        var textDiv = document.createElement('div');
+        textDiv.id = "text" + thisKey;
+        textDiv.setAttribute("frameBorder", "0");
+        textDiv.style.width = "5px";
+        textDiv.style.height = "5px";
+        textDiv.style.top = ((globalStates.width) / 2 + thisObject.frameSizeX / 2) + "px";
+        textDiv.style.left = ((globalStates.height - thisObject.frameSizeY) / 2) + "px";
+        textDiv.style.visibility = "hidden";
+        thisIframe.setAttribute("class", "mainProgram");
+        textDiv.innerHTML = "<font color='white'>" + thisObject.name + "</font>";
 
-        document.getElementById("thisObject" + thisKey).innerHTML = tempAddContent;
-        var theObject = document.getElementById(thisKey);
+        var secondDIV = document.getElementById("thisObject" + thisKey);
+
+        secondDIV.appendChild(thisIframe);
+        secondDIV.appendChild(theObject);
+        secondDIV.appendChild(textDiv);
+
+        document.getElementById(thisKey).appendChild(thisCanvas);
+
         theObject.style["touch-action"] = "none";
         theObject["handjs_forcePreventDefault"] = true;
         theObject.addEventListener("pointerdown", touchDown, false);
@@ -895,24 +992,22 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
         theObject.addEventListener("pointerup", trueTouchUp, false);
         ec++;
         theObject.addEventListener("pointerenter", function (e) {
-
-
             var contentForFeedback;
 
-            if (globalProgram.locationInA === this.id || globalProgram.locationInA === false) {
+            if (globalProgram.nodeA === this.id || globalProgram.nodeA === false) {
                 contentForFeedback = 3;
             } else {
 
-                if (checkForNetworkLoop(globalProgram.ObjectA, globalProgram.locationInA, this.ObjectId, this.location))
+                if (checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, this.ObjectId, this.nodeId))
                     contentForFeedback = 2; // overlayImg.src = overlayImage[2].src;
                 else
                     contentForFeedback = 0; // overlayImg.src = overlayImage[0].src;
             }
 
-            document.getElementById("iframe" + this.location).contentWindow.postMessage(
+            document.getElementById("iframe" + this.nodeId).contentWindow.postMessage(
                 JSON.stringify(
                     {
-                        "uiActionFeedback": contentForFeedback
+                        uiActionFeedback: contentForFeedback
                     })
                 , "*");
 
@@ -925,20 +1020,18 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
 
             cout("leave");
 
-            document.getElementById("iframe" + this.location).contentWindow.postMessage(
+            document.getElementById("iframe" + this.nodeId).contentWindow.postMessage(
                 JSON.stringify(
                     {
-                        "uiActionFeedback": 1
+                        uiActionFeedback: 1
                     })
                 , "*");
 
-
         }, false);
-
         ec++;
 
         if (globalStates.editingMode) {
-            if (objectExp[generalObject].developer) {
+            if (objects[generalObject].developer) {
                 theObject.addEventListener("touchstart", MultiTouchStart, false);
                 ec++;
                 theObject.addEventListener("touchmove", MultiTouchMove, false);
@@ -949,7 +1042,7 @@ function addElement(thisObject, thisKey, thisUrl, generalObject) {
             }
         }
         theObject.ObjectId = generalObject;
-        theObject.location = thisKey;
+        theObject.nodeId = thisKey;
 
         if (thisKey !== generalObject) {
             theObject.style.visibility = "visible";
@@ -983,14 +1076,14 @@ function killObjects(thisObject, thisKey) {
         var tempElementDiv = document.getElementById("thisObject" + thisKey);
         tempElementDiv.parentNode.removeChild(tempElementDiv);
 
-        for (var subKey in thisObject.objectValues) {
+        for (var subKey in thisObject.nodes) {
             try {
                 tempElementDiv = document.getElementById("thisObject" + subKey);
                 tempElementDiv.parentNode.removeChild(tempElementDiv);
             } catch (err) {
                 cout("could not find any");
             }
-            thisObject.objectValues[subKey].loaded = false;
+            thisObject.nodes[subKey].loaded = false;
         }
         cout("killObjects");
     }
@@ -1011,19 +1104,29 @@ function on_load(generalObject, thisKey) {
     // window.location.href = "of://event_test_"+thisKey;
 
     // cout("posting Msg");
-    var iFrameMessage_ = JSON.stringify({
+    var oldStyle = {
         obj: generalObject,
         pos: thisKey,
-        objectValues: objectExp[generalObject].objectValues
-    });
+        objectValues: objects[generalObject].nodes
+    };
+
+    var newStyle = {
+        object: generalObject,
+        node: thisKey,
+        nodes: objects[generalObject].nodes
+    };
+
+    if (objects[generalObject].integerVersion < 170) {
+        newStyle = oldStyle;
+    }
 
     document.getElementById("iframe" + thisKey).contentWindow.postMessage(
-        iFrameMessage_, '*');
+        JSON.stringify(newStyle), '*');
     cout("on_load");
 }
 
 function fire(thisKey) {
     // globalStates.notLoading = false;
-    window.location.href = "of://event_" + this.location;
+    window.location.href = "of://event_" + this.nodeId;
 
 }

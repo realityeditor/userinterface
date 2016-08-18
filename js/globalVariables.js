@@ -69,7 +69,7 @@ var timeCorrection = { delta:0, now:0, then:0};
 
 
 var globalStates = {
-    debug : false,
+    debug : true,
     overlay : 0,
     device: "",
     // drawWithLines
@@ -98,7 +98,7 @@ var globalStates = {
     newURLText:"",
     platform: navigator.platform,
     lastLoop: 0,
-    notLoading: "yes",
+    notLoading: "",
     drawDotLine: false,
     drawDotLineX: 0,
     drawDotLineY: 0,
@@ -126,13 +126,13 @@ var globalCanvas = {};
 var globalObjects = "";
 
 var globalProgram = {
-    ObjectA: false,
-    locationInA: false,
-    ObjectB: false,
-    locationInB: false
+    objectA: false,
+    nodeA: false,
+    objectB: false,
+    nodeB: false
 };
 
-var objectExp = {};
+var objects = {};
 
 
 var globalMatrix = {
