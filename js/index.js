@@ -65,10 +65,8 @@
 // Functions to fill the data of the object
 
 /**
- * @desc
- * @param
- * @param
- * @return
+ * @desc Adding new objects to the reality editor database via http ajax
+ * @param {String|Array} beat an array in the form {id: "", ip: ""}
  **/
 
 function addHeartbeatObject(beat) {
@@ -108,9 +106,9 @@ function addHeartbeatObject(beat) {
                     if (thisObject.integerVersion < 170) {
 
                         rename(thisObject, "folder", "name");
-                        rename(thisObject, "objectValues", "node");
+                        rename(thisObject, "objectValues", "nodes");
                         rename(thisObject, "objectLinks", "links");
-                        rename(thisObject, "matrix3dMemory", "matrixMemory");
+                        delete thisObject["matrix3dMemory"];
 
                         for (var linkKey in objects[thisKey].links) {
                             thisObject = objects[thisKey].links[linkKey];
@@ -152,15 +150,21 @@ function addHeartbeatObject(beat) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param deviceName
  **/
 
 function setDeviceName(deviceName) {
     globalStates.device = deviceName;
     console.log("The Reality Editor is loaded on a " + globalStates.device);
 }
+
+/**
+ * @desc
+ * @param developerState
+ * @param extendedTrackingState
+ * @param clearSkyState
+ * @param externalState
+ **/
 
 function setStates(developerState, extendedTrackingState, clearSkyState, externalState) {
 
@@ -212,9 +216,7 @@ function setStates(developerState, extendedTrackingState, clearSkyState, externa
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param action
  **/
 
 function action(action) {
@@ -290,8 +292,9 @@ function action(action) {
 
 /**
  * @desc
- * @param
- * @param
+ * @param url
+ * @param thisKey
+ * @param callback
  * @return
  **/
 
@@ -325,9 +328,7 @@ function getData(url, thisKey, callback) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param matrix
  **/
 
 function setProjectionMatrix(matrix) {
@@ -443,23 +444,17 @@ function setProjectionMatrix(matrix) {
 
     globalStates.realProjectionMatrix = matrix;
 
-    //   var thisTransform = multiplyMatrix(scaleZ, matrix);
     globalStates.projectionMatrix = multiplyMatrix(multiplyMatrix(scaleZ, matrix), viewportScaling);
     window.location.href = "of://gotProjectionMatrix";
 
-    //   onceTransform();
 }
 
 /**********************************************************************************************************************
  ******************************************** update and draw the 3D Interface ****************************************
  **********************************************************************************************************************/
-//var conalt = "";
 
 /**
- * @desc
- * @param
- * @param
- * @return
+ * @desc Is called, when there is no new video frame with new transformation data
  **/
 
 function updateReDraw() {
@@ -468,6 +463,11 @@ function updateReDraw() {
     uiButtons.style.display = 'none';
     uiButtons.style.display = disp;
 }
+
+/**
+ * @desc main update loop called 30 fps with an array of found transformation matrices
+ * @param visibleObjects
+ **/
 
 function update(visibleObjects) {
 //    console.log(JSON.stringify(visibleObjects));
@@ -493,8 +493,6 @@ function update(visibleObjects) {
         if (!objects.hasOwnProperty(objectKey)) {
             continue;
         }
-        var htmlKey = objectKey;
-
         var generalObject = objects[objectKey];
 
         // I changed this to has property.
@@ -510,11 +508,11 @@ function update(visibleObjects) {
             //   document.getElementById("controls").innerHTML = (toAxisAngle(tempMatrix2)[0]).toFixed(1)+" "+(toAxisAngle(tempMatrix2)[1]).toFixed(1);
 
             if (globalStates.guiButtonState || Object.keys(generalObject.nodes).length === 0) {
-                drawTransformed(objectKey, objectKey, htmlKey, generalObject, tempMatrix);
-                addElement(objectKey, objectKey, htmlKey, "http://" + generalObject.ip + ":" + httpPort + "/obj/" + generalObject.name + "/", generalObject);
+                drawTransformed(objectKey, objectKey, generalObject, tempMatrix);
+                addElement(objectKey, objectKey, "http://" + generalObject.ip + ":" + httpPort + "/obj/" + generalObject.name + "/", generalObject);
             }
             else {
-                hideTransformed(objectKey, objectKey, htmlKey, generalObject);
+                hideTransformed(objectKey, objectKey, generalObject);
             }
 
             // do this for staying compatible with older versions but use new routing after some time.
@@ -535,16 +533,15 @@ function update(visibleObjects) {
             for (var nodeKey in generalObject.nodes) {
                 // if (!generalObject.nodes.hasOwnProperty(nodeKey)) { continue; }
 
-                var _htmlKey = objectKey + nodeKey;
                 var generalNode = generalObject.nodes[nodeKey];
 
                 if (!globalStates.guiButtonState) {
-                    drawTransformed(objectKey, nodeKey, _htmlKey, generalNode, tempMatrix);
+                    drawTransformed(objectKey, nodeKey, generalNode, tempMatrix);
 
-                    addElement(objectKey, nodeKey, _htmlKey, "http://" + generalObject.ip + ":" + httpPort + destinationString + generalNode.appearance + "/", generalNode);
+                    addElement(objectKey, nodeKey, "http://" + generalObject.ip + ":" + httpPort + destinationString + generalNode.appearance + "/", generalNode);
 
                 } else {
-                    hideTransformed(objectKey, nodeKey, _htmlKey, generalNode);
+                    hideTransformed(objectKey, nodeKey, generalNode);
                 }
             }
         }
@@ -552,15 +549,14 @@ function update(visibleObjects) {
         else {
             generalObject.objectVisible = false;
 
-            hideTransformed(objectKey, objectKey, htmlKey, generalObject);
+            hideTransformed(objectKey, objectKey, generalObject);
 
             for (var nodeKey in generalObject.nodes) {
-                var _htmlKey = objectKey + nodeKey;
                 // if (!generalObject.nodes.hasOwnProperty(nodeKey)) {  continue;  }
-                hideTransformed(objectKey, nodeKey, _htmlKey, generalObject.nodes[nodeKey]);
+                hideTransformed(objectKey, nodeKey, generalObject.nodes[nodeKey]);
             }
 
-            killObjects(objectKey, htmlKey, generalObject);
+            killObjects(objectKey, generalObject);
         }
 
         if (globalStates.logButtonState) {
@@ -583,13 +579,6 @@ function update(visibleObjects) {
     if (globalStates.logButtonState) {
         generalLog(consoleText);
     }
-    //   window.location.href = "of://newframe";
-    // cout("update");
-
-    //  countEventHandlers()
-
-    // uiButtons.style.display = disp;
-
 }
 
 /**********************************************************************************************************************
@@ -598,20 +587,22 @@ function update(visibleObjects) {
 
 /**
  * @desc
- * @param
- * @param
+ * @param objectKey
+ * @param nodeKey
+ * @param thisObject
+ * @param thisTransform2
  * @return
  **/
 
-function drawTransformed(objectKey, nodeKey, htmlKey, thisObject, thisTransform2) {
+function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2) {
 
-    if (globalStates.notLoading !== htmlKey && thisObject.loaded === true) {
+    if (globalStates.notLoading !== nodeKey && thisObject.loaded === true) {
         if (!thisObject.visible) {
             thisObject.visible = true;
 
-            document.getElementById("thisObject" + htmlKey).style.display = 'inline';
+            document.getElementById("thisObject" + nodeKey).style.display = 'inline';
 
-            var thisIframe = document.getElementById("iframe" + htmlKey);
+            var thisIframe = document.getElementById("iframe" + nodeKey);
             thisIframe.style.visibility = 'visible';
             thisIframe.contentWindow.postMessage(
                 JSON.stringify(
@@ -620,12 +611,12 @@ function drawTransformed(objectKey, nodeKey, htmlKey, thisObject, thisTransform2
                     }), '*');
 
             if (objectKey !== nodeKey) {
-                document.getElementById(htmlKey).style.visibility = 'visible';
-                document.getElementById("text" + htmlKey).style.visibility = 'visible';
+                document.getElementById(nodeKey).style.visibility = 'visible';
+                // document.getElementById("text" + nodeKey).style.visibility = 'visible';
                 if (globalStates.editingMode) {
-                    document.getElementById("canvas" + htmlKey).style.display = 'inline';
+                    document.getElementById("canvas" + nodeKey).style.display = 'inline';
                 } else {
-                    document.getElementById("canvas" + htmlKey).style.display = 'none';
+                    document.getElementById("canvas" + nodeKey).style.display = 'none';
                 }
             }
 
@@ -633,14 +624,14 @@ function drawTransformed(objectKey, nodeKey, htmlKey, thisObject, thisTransform2
                 if (globalStates.editingMode) {
                     if (!thisObject.visibleEditing && thisObject.developer) {
                         thisObject.visibleEditing = true;
-                        document.getElementById(htmlKey).style.visibility = 'visible';
-                        // showEditingStripes(htmlKey, true);
-                        document.getElementById("canvas" + htmlKey).style.display = 'inline';
+                        document.getElementById(nodeKey).style.visibility = 'visible';
+                        // showEditingStripes(nodeKey, true);
+                        document.getElementById("canvas" + nodeKey).style.display = 'inline';
 
-                        //document.getElementById(htmlKey).className = "mainProgram";
+                        //document.getElementById(nodeKey).className = "mainProgram";
                     }
                 } else {
-                    document.getElementById("canvas" + htmlKey).style.display = 'none';
+                    document.getElementById("canvas" + nodeKey).style.display = 'none';
                 }
             }
 
@@ -659,7 +650,7 @@ function drawTransformed(objectKey, nodeKey, htmlKey, thisObject, thisTransform2
             var thisTransform = [];
 
             if (globalStates.editingMode) {
-                if (globalMatrix.matrixtouchOn === htmlKey) {
+                if (globalMatrix.matrixtouchOn === nodeKey) {
                     //if(globalStates.unconstrainedPositioning===true)
                     thisObject.temp = copyMatrix(thisTransform2);
 
@@ -689,9 +680,9 @@ function drawTransformed(objectKey, nodeKey, htmlKey, thisObject, thisTransform2
                         if (globalStates.unconstrainedPositioning === false) {
                             thisObject.begin = copyMatrix(multiplyMatrix(thisObject.matrix, thisObject.temp));
                         }
-                        estimateIntersection(htmlKey, multiplyMatrix(finalMatrixTransform2, multiplyMatrix(thisObject.begin, invertMatrix(thisObject.temp))));
+                        estimateIntersection(nodeKey, multiplyMatrix(finalMatrixTransform2, multiplyMatrix(thisObject.begin, invertMatrix(thisObject.temp))));
                     } else {
-                        estimateIntersection(htmlKey, [
+                        estimateIntersection(nodeKey, [
                             1, 0, 0, 0,
                             0, 1, 0, 0,
                             0, 0, 1, 0,
@@ -700,7 +691,7 @@ function drawTransformed(objectKey, nodeKey, htmlKey, thisObject, thisTransform2
                     }
 
                 } else {
-                    estimateIntersection(htmlKey, [
+                    estimateIntersection(nodeKey, [
                         1, 0, 0, 0,
                         0, 1, 0, 0,
                         0, 0, 1, 0,
@@ -719,7 +710,7 @@ function drawTransformed(objectKey, nodeKey, htmlKey, thisObject, thisTransform2
             else {
                 thisTransform = multiplyMatrix(finalMatrixTransform2, thisTransform2);
             }
-            document.getElementById("thisObject" + htmlKey).style.webkitTransform = 'matrix3d(' +
+            document.getElementById("thisObject" + nodeKey).style.webkitTransform = 'matrix3d(' +
                 thisTransform[0] + ',' + thisTransform[1] + ',' + thisTransform[2] + ',' + thisTransform[3] + ',' +
                 thisTransform[4] + ',' + thisTransform[5] + ',' + thisTransform[6] + ',' + thisTransform[7] + ',' +
                 thisTransform[8] + ',' + thisTransform[9] + ',' + thisTransform[10] + ',' + thisTransform[11] + ',' +
@@ -735,7 +726,8 @@ function drawTransformed(objectKey, nodeKey, htmlKey, thisObject, thisTransform2
 
         if (thisObject.sendMatrix === true) {
             if (objectKey === nodeKey) {
-                document.getElementById("iframe" + htmlKey).contentWindow.postMessage(
+                cout(globalObjects[objectKey]);
+                document.getElementById("iframe" + nodeKey).contentWindow.postMessage(
                     JSON.stringify({modelViewMatrix: globalObjects[objectKey]}), '*');
             }
         }
@@ -748,16 +740,17 @@ function drawTransformed(objectKey, nodeKey, htmlKey, thisObject, thisTransform2
 
 /**
  * @desc
- * @param
- * @param
+ * @param objectKey
+ * @param nodeKey
+ * @param thisObject
  * @return
  **/
 
-function hideTransformed(objectKey, nodeKey, htmlKey, thisObject) {
+function hideTransformed(objectKey, nodeKey, thisObject) {
     if (thisObject.visible === true) {
-        document.getElementById("thisObject" + htmlKey).style.display = 'none';
+        document.getElementById("thisObject" + nodeKey).style.display = 'none';
 
-        var thisIframe = document.getElementById("iframe" + htmlKey);
+        var thisIframe = document.getElementById("iframe" + nodeKey);
         thisIframe.style.visibility = 'hidden';
         thisIframe.contentWindow.postMessage(
             JSON.stringify(
@@ -765,24 +758,13 @@ function hideTransformed(objectKey, nodeKey, htmlKey, thisObject) {
                     visibility: "hidden"
                 }), '*');
 
-        //document.getElementById("iframe" + htmlKey).style.display = 'none';
-        document.getElementById("text" + htmlKey).style.visibility = 'hidden';
-        //document.getElementById("text" + htmlKey).style.display = 'none';
         thisObject.visible = false;
         thisObject.visibleEditing = false;
-        document.getElementById(htmlKey).style.visibility = 'hidden';
-        document.getElementById("canvas" + htmlKey).style.display = 'none';
+        document.getElementById(nodeKey).style.visibility = 'hidden';
+        document.getElementById("canvas" + nodeKey).style.display = 'none';
 
-        //document.getElementById(htmlKey).style.display = 'none';
         cout("hideTransformed");
     }
-
-    /*
-     if (thisObject.visibleEditing === true) {
-     //  cout(htmlKey);
-     thisObject.visibleEditing = false;
-     document.getElementById(htmlKey).style.visibility = 'hidden';
-     }*/
 }
 
 /**********************************************************************************************************************
@@ -790,9 +772,6 @@ function hideTransformed(objectKey, nodeKey, htmlKey, thisObject) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
  **/
 
 function addElementInPreferences() {
@@ -884,28 +863,22 @@ function addElementInPreferences() {
 
     cout("addElementInPreferences");
 }
-/*
- <div class='Interfaces'
- style="position: relative; float: left; height: 30px; width: 25%; -webkit-transform-style: preserve-3d;  visibility: visible;
- background-color: #ff3fd4;"></div>
- */
 
 /**
  * @desc
- * @param
- * @param
+ * @param objectKey
+ * @param nodeKey
+ * @param thisUrl
+ * @param thisObject
  * @return
  **/
 
-function addElement(objectKey, nodeKey, htmlKey, thisUrl, thisObject) {
-//console.log(thisUrl);
-    if (globalStates.notLoading !== true && globalStates.notLoading !== htmlKey && thisObject.loaded !== true) {
-        //      console.log(JSON.stringify(thisObject));
+function addElement(objectKey, nodeKey, thisUrl, thisObject) {
+    if (globalStates.notLoading !== true && globalStates.notLoading !== nodeKey && thisObject.loaded !== true) {
 
-//console.log(nodeKey);
         thisObject.loaded = true;
         thisObject.visibleEditing = false;
-        globalStates.notLoading = htmlKey;
+        globalStates.notLoading = nodeKey;
 
         if (typeof thisObject.begin !== "object") {
             thisObject.begin = [
@@ -927,10 +900,8 @@ function addElement(objectKey, nodeKey, htmlKey, thisUrl, thisObject) {
 
         }
 
-        //  window.location.href = "of://objectloaded_" + globalStates.notLoading;
-
         var addDoc = document.createElement('div');
-        addDoc.id = "thisObject" + htmlKey;
+        addDoc.id = "thisObject" + nodeKey;
         addDoc.style.width = globalStates.height + "px";
         addDoc.style.height = globalStates.width + "px";
         addDoc.style.display = "none";
@@ -939,7 +910,7 @@ function addElement(objectKey, nodeKey, htmlKey, thisUrl, thisObject) {
         document.getElementById("GUI").appendChild(addDoc);
 
         var tempAddContent =
-            "<iframe id='iframe" + htmlKey + "' onload='on_load(\"" +
+            "<iframe id='iframe" + nodeKey + "' onload='on_load(\"" +
             objectKey + "\",\"" + nodeKey + "\")' frameBorder='0' " +
             "style='width:0px; height:0px;" +
             "top:" + ((globalStates.width - thisObject.frameSizeX) / 2) + "px; left:" +
@@ -947,18 +918,14 @@ function addElement(objectKey, nodeKey, htmlKey, thisUrl, thisObject) {
             "src='" + thisUrl + "' class='main' sandbox='allow-forms allow-pointer-lock allow-same-origin allow-scripts'>" +
             "</iframe>";
 
-        tempAddContent += "<div id='" + htmlKey + "' frameBorder='0' style='width:" + thisObject.frameSizeX + "px; height:" + thisObject.frameSizeY + "px;" +
+        tempAddContent += "<div id='" + nodeKey + "' frameBorder='0' style='width:" + thisObject.frameSizeX + "px; height:" + thisObject.frameSizeY + "px;" +
             "top:" + ((globalStates.width - thisObject.frameSizeX) / 2) + "px; left:" + ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' class='mainEditing'>" +
-            "<canvas id='canvas" + htmlKey + "'style='width:100%; height:100%;' class='mainCanvas'></canvas>" +
+            "<canvas id='canvas" + nodeKey + "'style='width:100%; height:100%;' class='mainCanvas'></canvas>" +
             "</div>" +
             "";
 
-        tempAddContent += "<div id='text" + htmlKey + "' frameBorder='0' style='width:5px; height:5px;" +
-            "top:" + ((globalStates.width) / 2 + thisObject.frameSizeX / 2) + "px; left:" + ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' class='mainProgram'><font color='white'>" + thisObject.name + "</font></div>" +
-            "";
-
-        document.getElementById("thisObject" + htmlKey).innerHTML = tempAddContent;
-        var theObject = document.getElementById(htmlKey);
+        document.getElementById("thisObject" + nodeKey).innerHTML = tempAddContent;
+        var theObject = document.getElementById(nodeKey);
         theObject.style["touch-action"] = "none";
         theObject["handjs_forcePreventDefault"] = true;
         theObject.addEventListener("pointerdown", touchDown, false);
@@ -978,7 +945,7 @@ function addElement(objectKey, nodeKey, htmlKey, thisUrl, thisObject) {
                     contentForFeedback = 0; // overlayImg.src = overlayImage[0].src;
             }
 
-            document.getElementById("iframe" + this.htmlKey).contentWindow.postMessage(
+            document.getElementById("iframe" + this.nodeId).contentWindow.postMessage(
                 JSON.stringify(
                     {
                         uiActionFeedback: contentForFeedback
@@ -996,7 +963,7 @@ function addElement(objectKey, nodeKey, htmlKey, thisUrl, thisObject) {
 
             cout("leave");
 
-            document.getElementById("iframe" + this.htmlKey).contentWindow.postMessage(
+            document.getElementById("iframe" + this.nodeId).contentWindow.postMessage(
                 JSON.stringify(
                     {
                         uiActionFeedback: 1
@@ -1019,7 +986,6 @@ function addElement(objectKey, nodeKey, htmlKey, thisUrl, thisObject) {
         }
         theObject.objectId = objectKey;
         theObject.nodeId = nodeKey;
-        theObject.htmlKey = htmlKey;
 
         if (nodeKey !== objectKey) {
             theObject.style.visibility = "visible";
@@ -1038,8 +1004,8 @@ function addElement(objectKey, nodeKey, htmlKey, thisUrl, thisObject) {
 
 /**
  * @desc
- * @param
- * @param
+ * @param objectKey
+ * @param thisObject
  * @return
  **/
 
@@ -1055,7 +1021,7 @@ function killObjects(objectKey, thisObject) {
 
         for (var nodeKey in thisObject.nodes) {
             try {
-                tempElementDiv = document.getElementById("thisObject" + objectKey + nodeKey);
+                tempElementDiv = document.getElementById("thisObject" + nodeKey);
                 tempElementDiv.parentNode.removeChild(tempElementDiv);
             } catch (err) {
                 cout("could not find any");
@@ -1071,8 +1037,8 @@ function killObjects(objectKey, thisObject) {
 
 /**
  * @desc
- * @param
- * @param
+ * @param objectKey
+ * @param nodeKey
  * @return
  **/
 
@@ -1097,17 +1063,8 @@ function on_load(objectKey, nodeKey) {
     if (objects[objectKey].integerVersion < 170) {
         newStyle = oldStyle;
     }
-    var _nodeKey;
-    if (objectKey !== nodeKey) _nodeKey = objectKey + nodeKey;
-    else _nodeKey = nodeKey;
 
-    document.getElementById("iframe" + _nodeKey).contentWindow.postMessage(
+    document.getElementById("iframe" + nodeKey).contentWindow.postMessage(
         JSON.stringify(newStyle), '*');
     cout("on_load");
-}
-
-function fire(nodeKey) {
-    // globalStates.notLoading = false;
-    window.location.href = "of://event_" + this.nodeId;
-
 }

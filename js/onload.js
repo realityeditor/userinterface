@@ -57,9 +57,6 @@
 
 /**
  * @desc
- * @param
- * @param
- * @return
  **/
 
 window.onload = function () {
@@ -174,12 +171,11 @@ window.onload = function () {
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param e
+ * @return {}
  **/
 
-var postMessage = function (e) {
+function postMessage(e) {
 
     var msgContent = JSON.parse(e.data);
 
@@ -211,20 +207,14 @@ var postMessage = function (e) {
         }
     } else return;
 
-    if (msgContent.object === msgContent.node) {
-        htmlKey = msgContent.object;
-    } else {
-        htmlKey = msgContent.object + msgContent.node;
-    }
-
     if (msgContent.width && msgContent.height) {
-        var thisMsgNode = document.getElementById(htmlKey);
+        var thisMsgNode = document.getElementById(msgContent.node);
         thisMsgNode.style.width = msgContent.width;
         thisMsgNode.style.height = msgContent.height;
         thisMsgNode.style.top = ((globalStates.width - msgContent.height) / 2);
         thisMsgNode.style.left = ((globalStates.height - msgContent.width) / 2);
 
-        thisMsgNode = document.getElementById("iframe" + htmlKey);
+        thisMsgNode = document.getElementById("iframe" + msgContent.node);
         thisMsgNode.style.width = msgContent.width;
         thisMsgNode.style.height = msgContent.height;
         thisMsgNode.style.top = ((globalStates.width - msgContent.height) / 2);
@@ -232,11 +222,14 @@ var postMessage = function (e) {
 
     }
 
-    if (msgContent.sendMatrix === "boolean") {
+    if (typeof msgContent.sendMatrix !== "undefined") {
+
         if (msgContent.sendMatrix === true) {
-            if (thisVersionNumber >= 32) {
+
+            if (tempThisObject.integerVersion >= 32) {
+
                 tempThisObject.sendMatrix = true;
-                document.getElementById("iframe" + htmlKey).contentWindow.postMessage(
+                document.getElementById("iframe" + msgContent.node).contentWindow.postMessage(
                     '{"projectionMatrix":' + JSON.stringify(globalStates.realProjectionMatrix) + "}", '*');
             }
         }
@@ -264,7 +257,7 @@ var postMessage = function (e) {
             if (msgContent.fullScreen === true) {
                 tempThisObject.fullScreen = true;
 
-                document.getElementById("thisObject" + htmlKey).style.webkitTransform =
+                document.getElementById("thisObject" + msgContent.node).style.webkitTransform =
                     'matrix3d(1, 0, 0, 0,' +
                     '0, 1, 0, 0,' +
                     '0, 0, 1, 0,' +

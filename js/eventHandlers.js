@@ -48,9 +48,7 @@
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param evt
  **/
 
 function touchDown(evt) {
@@ -74,9 +72,6 @@ function touchDown(evt) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
  **/
 
 function falseTouchUp() {
@@ -93,9 +88,6 @@ function falseTouchUp() {
 
 /**
  * @desc
- * @param
- * @param
- * @return
  **/
 
 function trueTouchUp() {
@@ -109,12 +101,12 @@ function trueTouchUp() {
             globalProgram.nodeB = this.nodeId;
             var thisOtherTempObject = objects[globalProgram.objectB];
 
-          var okForNewLink = checkForNetworkLoop( globalProgram.objectA, globalProgram.nodeA,  globalProgram.objectB, globalProgram.nodeB);
+            var okForNewLink = checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, globalProgram.objectB, globalProgram.nodeB);
 
             //  window.location.href = "of://event_" + objects[globalProgram.objectA].visible;
 
             if (okForNewLink) {
-                var thisKeyId =  uuidTimeShort();
+                var thisKeyId = uuidTimeShort();
 
                 thisTempObjectLinks[thisKeyId] = {
                     objectA: globalProgram.objectA,
@@ -141,16 +133,12 @@ function trueTouchUp() {
     cout("trueTouchUp");
 }
 
-
-
 /**********************************************************************************************************************
  **********************************************************************************************************************/
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param evt
  **/
 
 function canvasPointerDown(evt) {
@@ -171,17 +159,15 @@ function canvasPointerDown(evt) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param evt
  **/
 
 function getPossition(evt) {
 
     globalStates.pointerPosition = [evt.clientX, evt.clientY];
 
-    overlayDiv.style.left =  evt.clientX-60;
-    overlayDiv.style.top =   evt.clientY-60;
+    overlayDiv.style.left = evt.clientX - 60;
+    overlayDiv.style.top = evt.clientY - 60;
 
     cout("getPossition");
 
@@ -192,9 +178,7 @@ function getPossition(evt) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param evt
  **/
 
 function documentPointerUp(evt) {
@@ -215,34 +199,27 @@ function documentPointerUp(evt) {
     cout("documentPointerUp");
 };
 
-
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param evt
  **/
 
 function documentPointerDown(evt) {
 
     globalStates.pointerPosition = [evt.clientX, evt.clientY];
 
-   // overlayImg.src = overlayImage[globalStates.overlay].src;
+    // overlayImg.src = overlayImage[globalStates.overlay].src;
 
     overlayDiv.style.display = "inline";
-    overlayDiv.style.left =  evt.clientX-60;
-    overlayDiv.style.top =  evt.clientY-60;
+    overlayDiv.style.left = evt.clientX - 60;
+    overlayDiv.style.top = evt.clientY - 60;
 
     cout("documentPointerDown");
 }
 
-
-
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param evt
  **/
 
 function MultiTouchStart(evt) {
@@ -254,23 +231,14 @@ function MultiTouchStart(evt) {
         globalStates.editingModeLocation = this.nodeId;
         globalStates.editingModeHaveObject = true;
     }
-
-    if (this.objectId !== this.nodeId) {
-        globalMatrix.matrixtouchOn = this.objectId + this.nodeId;
-    } else
-    {
-        globalMatrix.matrixtouchOn = this.objectId;
-    }
-
+    globalMatrix.matrixtouchOn = this.nodeId;
     globalMatrix.copyStillFromMatrixSwitch = true;
     cout("MultiTouchStart");
 }
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param evt
  **/
 
 function MultiTouchMove(evt) {
@@ -280,7 +248,6 @@ function MultiTouchMove(evt) {
     // cout(globalStates.editingModeHaveObject + " " + globalStates.editingMode + " " + globalStates.editingModeHaveObject + " " + globalStates.editingMode);
 
     if (globalStates.editingModeHaveObject && globalStates.editingMode && evt.targetTouches.length === 1) {
-
 
         var touch = evt.touches[0];
 
@@ -294,7 +261,6 @@ function MultiTouchMove(evt) {
             tempThisObject = objects[globalStates.editingModeObject];
         }
 
-
         var tempMatrix = copyMatrix(tempThisObject.begin);
         globalStates.angX = toAxisAngle(tempMatrix)[0];
         globalStates.angY = toAxisAngle(tempMatrix)[1];
@@ -302,10 +268,8 @@ function MultiTouchMove(evt) {
         var screenCoordinateX = tempMatrix[14] * (touch.pageX - globalStates.height / 2);
         var screenCoordinateY = tempMatrix[14] * (touch.pageY - globalStates.width / 2);
 
-
         // this functions are somehow ok.... The Projection Matrix gives funky interverences once the angle is sharp.
         // Also I might not have find the right calucaltions
-
 
         // todo find right calucaltion
         var possitionY = -Math.sqrt(Math.pow(screenCoordinateY, 2) + Math.pow((screenCoordinateY * globalStates.angY / 2), 2));
@@ -330,25 +294,22 @@ function MultiTouchMove(evt) {
         var invertedObjectMatrix = invertMatrix(tempMatrix);
         var resultMatrix = multiplyMatrix(tempObjectMatrix, invertedObjectMatrix);
 
-        if(typeof resultMatrix[12] === "number" && typeof resultMatrix[13] === "number") {
+        if (typeof resultMatrix[12] === "number" && typeof resultMatrix[13] === "number") {
             tempThisObject.x = resultMatrix[12];
             tempThisObject.y = resultMatrix[13];
         }
     }
 
-
     if (globalStates.editingModeHaveObject && globalStates.editingMode && evt.targetTouches.length === 2) {
         scaleEvent(evt.touches[1]);
     }
-    
+
     cout("MultiTouchMove");
 }
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param evt
  **/
 
 function MultiTouchEnd(evt) {
@@ -371,29 +332,26 @@ function MultiTouchEnd(evt) {
         content.y = tempThisObject.y;
         content.scale = tempThisObject.scale;
 
-
-        if(globalStates.unconstrainedPositioning===true) {
+        if (globalStates.unconstrainedPositioning === true) {
             tempThisObject.matrix = copyMatrix(multiplyMatrix(tempThisObject.begin, invertMatrix(tempThisObject.temp)));
             content.matrix = tempThisObject.matrix;
 
         }
 
-if(typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
-    postData('http://' + objects[globalStates.editingModeObject].ip + ':' + httpPort + '/object/' + globalStates.editingModeObject + "/size/" + globalStates.editingModeLocation, content);
-}
+        if (typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
+            postData('http://' + objects[globalStates.editingModeObject].ip + ':' + httpPort + '/object/' + globalStates.editingModeObject + "/size/" + globalStates.editingModeLocation, content);
+        }
 
-    globalStates.editingModeHaveObject = false;
-    globalCanvas.hasContent = true;
-    globalMatrix.matrixtouchOn = "";
+        globalStates.editingModeHaveObject = false;
+        globalCanvas.hasContent = true;
+        globalMatrix.matrixtouchOn = "";
     }
     cout("MultiTouchEnd");
 }
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param evt
  **/
 
 function MultiTouchCanvasStart(evt) {
@@ -422,9 +380,7 @@ function MultiTouchCanvasStart(evt) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param evt
  **/
 
 function MultiTouchCanvasMove(evt) {
@@ -441,12 +397,9 @@ function MultiTouchCanvasMove(evt) {
     cout("MultiTouchCanvasMove");
 }
 
-
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param touch
  **/
 
 function scaleEvent(touch) {
@@ -462,7 +415,7 @@ function scaleEvent(touch) {
         tempThisObject = objects[globalStates.editingModeObject];
     }
     if (thisScale < 0.2)thisScale = 0.2;
-    if(typeof thisScale === "number" && thisScale>0) {
+    if (typeof thisScale === "number" && thisScale > 0) {
         tempThisObject.scale = thisScale;
     }
     globalCanvas.context.clearRect(0, 0, globalCanvas.canvas.width, globalCanvas.canvas.height);
@@ -482,9 +435,8 @@ function scaleEvent(touch) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param url
+ * @param body
  **/
 
 function postData(url, body) {
@@ -502,12 +454,9 @@ function postData(url, body) {
     cout("postData");
 }
 
-
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param url
  **/
 
 function deleteData(url) {
@@ -526,9 +475,10 @@ function deleteData(url) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param ip
+ * @param thisObjectKey
+ * @param thisKey
+ * @param content
  **/
 
 function uploadNewLink(ip, thisObjectKey, thisKey, content) {
@@ -542,8 +492,9 @@ function uploadNewLink(ip, thisObjectKey, thisKey, content) {
 
 /**
  * @desc
- * @param
- * @param
+ * @param ip
+ * @param thisObjectKey
+ * @param thisKey
  * @return
  **/
 
@@ -556,9 +507,6 @@ function deleteLinkFromObject(ip, thisObjectKey, thisKey) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
  **/
 
 function addEventHandlers() {
@@ -568,53 +516,52 @@ function addEventHandlers() {
     globalCanvas.canvas.addEventListener("touchmove", MultiTouchCanvasMove, false);
     ec++;
 
-
     for (var thisKey in objects) {
         var generalObject2 = objects[thisKey];
 
-    if(generalObject2.developer) {
+        if (generalObject2.developer) {
 
-        if (document.getElementById(thisKey)) {
-            var thisObject3 = document.getElementById(thisKey);
-            //  if (globalStates.guiButtonState) {
-            thisObject3.style.visibility = "visible";
+            if (document.getElementById(thisKey)) {
+                var thisObject3 = document.getElementById(thisKey);
+                //  if (globalStates.guiButtonState) {
+                thisObject3.style.visibility = "visible";
 
-            var thisObject4 = document.getElementById("canvas"+thisKey);
-            thisObject4.style.display= "inline";
+                var thisObject4 = document.getElementById("canvas" + thisKey);
+                thisObject4.style.display = "inline";
 
-            // }
+                // }
 
-           // thisObject3.className = "mainProgram";
+                // thisObject3.className = "mainProgram";
 
-            thisObject3.addEventListener("touchstart", MultiTouchStart, false);
-            ec++;
-            thisObject3.addEventListener("touchmove", MultiTouchMove, false);
-            ec++;
-            thisObject3.addEventListener("touchend", MultiTouchEnd, false);
-            ec++;
-            //}
-        }
-
-        for (var thisSubKey in generalObject2.nodes) {
-            if (document.getElementById(thisSubKey)) {
-                var thisObject2 = document.getElementById(thisKey+thisSubKey);
-
-                //thisObject2.className = "mainProgram";
-
-                var thisObject5 = document.getElementById("canvas"+thisKey+thisSubKey);
-                thisObject5.style.display= "inline";
-
-                //if(thisObject.developer) {
-                thisObject2.addEventListener("touchstart", MultiTouchStart, false);
+                thisObject3.addEventListener("touchstart", MultiTouchStart, false);
                 ec++;
-                thisObject2.addEventListener("touchmove", MultiTouchMove, false);
+                thisObject3.addEventListener("touchmove", MultiTouchMove, false);
                 ec++;
-                thisObject2.addEventListener("touchend", MultiTouchEnd, false);
+                thisObject3.addEventListener("touchend", MultiTouchEnd, false);
                 ec++;
                 //}
             }
+
+            for (var thisSubKey in generalObject2.nodes) {
+                if (document.getElementById(thisSubKey)) {
+                    var thisObject2 = document.getElementById(thisSubKey);
+
+                    //thisObject2.className = "mainProgram";
+
+                    var thisObject5 = document.getElementById("canvas" + thisSubKey);
+                    thisObject5.style.display = "inline";
+
+                    //if(thisObject.developer) {
+                    thisObject2.addEventListener("touchstart", MultiTouchStart, false);
+                    ec++;
+                    thisObject2.addEventListener("touchmove", MultiTouchMove, false);
+                    ec++;
+                    thisObject2.addEventListener("touchend", MultiTouchEnd, false);
+                    ec++;
+                    //}
+                }
+            }
         }
-    }
     }
 
     cout("addEventHandlers");
@@ -622,9 +569,6 @@ function addEventHandlers() {
 
 /**
  * @desc
- * @param
- * @param
- * @return
  **/
 
 function removeEventHandlers() {
@@ -635,42 +579,42 @@ function removeEventHandlers() {
     ec--;
     for (var thisKey in objects) {
         var generalObject2 = objects[thisKey];
-         if(generalObject2.developer) {
-        if (document.getElementById(thisKey)) {
-            var thisObject3 = document.getElementById(thisKey);
-            thisObject3.style.visibility = "hidden";
-            // this is a typo but maybe relevant?
-          //  thisObject3.className = "mainEditing";
+        if (generalObject2.developer) {
+            if (document.getElementById(thisKey)) {
+                var thisObject3 = document.getElementById(thisKey);
+                thisObject3.style.visibility = "hidden";
+                // this is a typo but maybe relevant?
+                //  thisObject3.className = "mainEditing";
 
-            document.getElementById("canvas"+thisKey).style.display= "none";
+                document.getElementById("canvas" + thisKey).style.display = "none";
 
-            thisObject3.removeEventListener("touchstart", MultiTouchStart, false);
-            thisObject3.removeEventListener("touchmove", MultiTouchMove, false);
-            thisObject3.removeEventListener("touchend", MultiTouchEnd, false);
-            ec--;
-            ec--;
-            ec--;
-            //  }
-        }
-
-        for (var thisSubKey in generalObject2.nodes) {
-            if (document.getElementById(thisSubKey)) {
-                var thisObject2 = document.getElementById(thisKey+thisSubKey);
-                //thisObject2.className = "mainEditing";
-                document.getElementById("canvas"+thisKey+thisSubKey).style.display= "none";
-
-                //    if(thisObject.developer) {
-                thisObject2.removeEventListener("touchstart", MultiTouchStart, false);
-                thisObject2.removeEventListener("touchmove", MultiTouchMove, false);
-                thisObject2.removeEventListener("touchend", MultiTouchEnd, false);
+                thisObject3.removeEventListener("touchstart", MultiTouchStart, false);
+                thisObject3.removeEventListener("touchmove", MultiTouchMove, false);
+                thisObject3.removeEventListener("touchend", MultiTouchEnd, false);
                 ec--;
                 ec--;
                 ec--;
                 //  }
             }
-        }
 
-    }
+            for (var thisSubKey in generalObject2.nodes) {
+                if (document.getElementById(thisSubKey)) {
+                    var thisObject2 = document.getElementById(+thisSubKey);
+                    //thisObject2.className = "mainEditing";
+                    document.getElementById("canvas" + thisKey + thisSubKey).style.display = "none";
+
+                    //    if(thisObject.developer) {
+                    thisObject2.removeEventListener("touchstart", MultiTouchStart, false);
+                    thisObject2.removeEventListener("touchmove", MultiTouchMove, false);
+                    thisObject2.removeEventListener("touchend", MultiTouchEnd, false);
+                    ec--;
+                    ec--;
+                    ec--;
+                    //  }
+                }
+            }
+
+        }
     }
 
     cout("removeEventHandlers");

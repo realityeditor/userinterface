@@ -52,12 +52,12 @@
     <meta http-equiv="expires" content="0"/>
     <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
     <meta http-equiv="pragma" content="no-cache"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>Hybrid Objects - Editor</title>
 
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="css/index.css">
-    <link rel="stylesheet" href="thirdPartyCode/switchery.css" />
+    <link rel="stylesheet" href="thirdPartyCode/switchery.css"/>
 
     <!-- Javascript -->
     <script src="thirdPartyCode/switchery.js"></script>
@@ -74,19 +74,7 @@
 </head>
 <body text="#ffffff">
 
-<!---<div id="controls" class='Interfaces'
-     style="position: fixed; left:10px; top: 10px; width: 200px; height: 200px;  -webkit-transform-style: preserve-3d;
-             background-color: #333333; visibility: visible"></div>--->
-
-<!-- This is the console terminal -->
 <div class='main' id="GUI"></div>
-
-
-
-<!-- This is the div in which all the interaction will be passed
--->
-
-
 
 <!-- This is the console terminal -->
 
@@ -102,37 +90,37 @@
                background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
         </div>
 
-        <div  id="content11" class='Interfaces'
+        <div id="content11" class='Interfaces'
              style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box;   padding-top: 5px;padding-left: 13px;
                text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
                background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
             <b>Authoring: Position UI</b><br>
         </div>
 
-        <div  id="content12" class='Interfaces'
+        <div id="content12" class='Interfaces'
              style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box; padding: 5px; padding-left: 13px;
                text-align: center; font-family: Helvetica Neue, Helvetica, Arial;
                background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
-            <input type="checkbox" name="editingModeSwitch" id="editingModeSwitch"  class="js-switch"/>
-       </div>
-        <div  id="content13" class='Interfaces'
-              style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box;  padding-top: 5px;padding-left: 13px;
+            <input type="checkbox" name="editingModeSwitch" id="editingModeSwitch" class="js-switch"/>
+        </div>
+        <div id="content13" class='Interfaces'
+             style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box;  padding-top: 5px;padding-left: 13px;
                text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
                background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
             <b>Extended Tracking</b><br>
         </div>
 
-        <div  id="content14" class='Interfaces'
-              style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box;  padding: 5px; padding-left: 13px;
+        <div id="content14" class='Interfaces'
+             style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box;  padding: 5px; padding-left: 13px;
                text-align: center; font-family: Helvetica Neue, Helvetica, Arial;
                background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
-            <input type="checkbox" name="extendedTrackingSwitch" id="extendedTrackingSwitch" class="js-switch" oninput='setExtendetTracking()'/>
+            <input type="checkbox" name="extendedTrackingSwitch" id="extendedTrackingSwitch" class="js-switch"
+                   oninput='setExtendetTracking()'/>
         </div>
 
 
-
-        <div  id="content15" class='Interfaces'
-              style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box;  padding-top: 5px;padding-left: 13px;
+        <div id="content15" class='Interfaces'
+             style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box;  padding-top: 5px;padding-left: 13px;
              vertical-align: middle; text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
                background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
 
@@ -140,45 +128,51 @@
 
         </div>
 
-        <div  id="content16" class='Interfaces'
-              style='position: relative;  float: left; height: 50px; width: 50%; padding-top: 5px; box-sizing: border-box; padding-left: 13px;
+        <div id="content16" class='Interfaces'
+             style='position: relative;  float: left; height: 50px; width: 50%; padding-top: 5px; box-sizing: border-box; padding-left: 13px;
                text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'><img id="loadNewUI" src="png/load.png"  style="width: 99px;height: 40px;"></div>
-
-        <div  id="content20" class='Interfaces'
-              style='position: relative;  float: left; height: 55px; width: 100%;  box-sizing: border-box; padding-left: 13px;  padding-top: 5px; padding-bottom: 10px; margin-bottom: 3px;  padding-right: 13px;
-               text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
-            <input id="newURLText" style='text-align: left; font-family: Helvetica Neue, Helvetica, Arial; font-size: large;   -webkit-user-select: text;'
-                   type="url" name="newURL"  size="15" placeholder="http://..." value="http://" oninput='newURLTextLoad()'><br>
+               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'><img id="loadNewUI" src="png/load.png"
+                                                                                      style="width: 99px;height: 40px;">
         </div>
 
-        <div  id="content30" class='Interfaces'
-              style='position: relative;  float: left; height: 55px; width: 50%;  box-sizing: border-box;  padding-top: 5px;padding-left: 13px;
+        <div id="content20" class='Interfaces'
+             style='position: relative;  float: left; height: 55px; width: 100%;  box-sizing: border-box; padding-left: 13px;  padding-top: 5px; padding-bottom: 10px; margin-bottom: 3px;  padding-right: 13px;
+               text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
+               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
+            <input id="newURLText"
+                   style='text-align: left; font-family: Helvetica Neue, Helvetica, Arial; font-size: large;   -webkit-user-select: text;'
+                   type="url" name="newURL" size="15" placeholder="http://..." value="http://"
+                   oninput='newURLTextLoad()'><br>
+        </div>
+
+        <div id="content30" class='Interfaces'
+             style='position: relative;  float: left; height: 55px; width: 50%;  box-sizing: border-box;  padding-top: 5px;padding-left: 13px;
                text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
                background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
             <b>Clear Sky<br>(No Buttons)</b><br>
         </div>
 
-        <div  id="content31" class='Interfaces'
-              style='position: relative;  float: left; height: 55px; width: 50%;  box-sizing: border-box; right:0px; padding: 5px; padding-left: 0px;
+        <div id="content31" class='Interfaces'
+             style='position: relative;  float: left; height: 55px; width: 50%;  box-sizing: border-box; right:0px; padding: 5px; padding-left: 0px;
                text-align: center; font-family: Helvetica Neue, Helvetica, Arial;
                background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
-            <input type="checkbox" name="extendedTrackingSwitch" id="turnOffUISwitch" class="js-switch" oninput='setTurnOffUISwitch()'/>
+            <input type="checkbox" name="extendedTrackingSwitch" id="turnOffUISwitch" class="js-switch"
+                   oninput='setTurnOffUISwitch()'/>
         </div>
 
 
-        <div  id="content18" class='Interfaces'
-              style='position: relative;  float: left; height: 320px; width: 100%;  box-sizing: border-box; padding-top: 13px;padding-left: 13px; padding-right: 13px;
+        <div id="content18" class='Interfaces'
+             style='position: relative;  float: left; height: 320px; width: 100%;  box-sizing: border-box; padding-top: 13px;padding-left: 13px; padding-right: 13px;
                text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
                background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
 
             <b>Move & Scale UI</b> activate the ability to move and scale virtual user interfaces on developer objects.
             <br><br>
-            <b>Extended Tracking</b> allows you to interact with virtual interfaces that extend the marker size, even if the marker moves outside the video frame.
+            <b>Extended Tracking</b> allows you to interact with virtual interfaces that extend the marker size, even if
+            the marker moves outside the video frame.
             <br><br>
             <b>External User Interface</b> allows you to load a modified Reality Editor from an external web server.
-             Learn more about such modifications here: https://github.com/openhybrid/editor.
+            Learn more about such modifications here: https://github.com/openhybrid/editor.
             <br>
 
         </div>
@@ -189,22 +183,6 @@
                text-align: center; font-family: Helvetica Neue, Helvetica, Arial;
                background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
         </div>
-        <!--  <div class='Interfaces'
-               style='position: relative;  float: left; height: 30px; width: 100%;  box-sizing: border-box; padding: 5px;padding-left: 13px;
-               text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #3c3c3c; -webkit-transform-style: preserve-3d;'>Interface Source URL
-          </div>
-
-          <div class='Interfaces'
-               style='position: relative;  float: left; height: 30px; width: 100%;  box-sizing: border-box; padding: 5px;padding-left: 13px;
-               text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #3c3c3c; -webkit-transform-style: preserve-3d;'>
-              <form>
-                  <input id="interfaceSourceURL" type="text" name="firstname">
-              </form>
-          </div>
--->
-
 
     </div>
 
@@ -269,24 +247,25 @@ position: fixed;
          style="position: fixed; width: 60px;height: 60px;right: 0px; top: 260px;  -webkit-transform-style: preserve-3d; visibility: visible;">
         <img class='Interfaces' id="reloadButton" src="png/reload.png" width="60" height="60" alt=""/></div>
 
-   <div id="logButtonDiv" style="position: fixed; width: 60px;height: 60px;right: 0px; bottom: 176px;  -webkit-transform-style: preserve-3d; display:none; visibility: hidden;">
+    <div id="logButtonDiv"
+         style="position: fixed; width: 60px;height: 60px;right: 0px; bottom: 176px;  -webkit-transform-style: preserve-3d; display:none; visibility: hidden;">
         <img class='Interfaces' id="logButton" src="png/log.png" width="60" height="60" alt=""/></div>
 
-    <div class='Interfaces'  id="preferencesButtonDiv"
+    <div class='Interfaces' id="preferencesButtonDiv"
          style="position: fixed; width: 60px;height: 60px;right: 0px; top: 195px;  -webkit-transform-style: preserve-3d; visibility: visible;">
-        <img class='Interfaces'  id="preferencesButton" src="png/pref.png" width="60"
+        <img class='Interfaces' id="preferencesButton" src="png/pref.png" width="60"
              height="60" alt=""/></div>
 
 
-    <div class='Interfaces'  id="resetButtonDiv"
+    <div class='Interfaces' id="resetButtonDiv"
          style="position: fixed; width: 60px;height: 60px;right: 130px; top: 0px;  -webkit-transform-style: preserve-3d; visibility: hidden;">
-        <img class='Interfaces'  id="resetButton" src="png/reset.png" width="60"
+        <img class='Interfaces' id="resetButton" src="png/reset.png" width="60"
              height="60" alt=""/></div>
 
 
-    <div class='Interfaces'  id="unconstButtonDiv"
+    <div class='Interfaces' id="unconstButtonDiv"
          style="position: fixed; width: 60px;height: 60px;right: 65px; top: 0px;  -webkit-transform-style: preserve-3d; visibility: hidden;">
-        <img class='Interfaces'  id="unconstButton" src="png/unconst.png" width="60"
+        <img class='Interfaces' id="unconstButton" src="png/unconst.png" width="60"
              height="60" alt=""/></div>
     <!-- ontouchmove='eventTest()'-->
 
@@ -310,7 +289,7 @@ position: fixed;
 ">
     <img src="png/overlayNormal.png" id="overlayImg" height="120px" width="120px">
 
-    </div>
+</div>
 
 </body>
 </html>

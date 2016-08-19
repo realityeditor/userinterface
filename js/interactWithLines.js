@@ -49,11 +49,10 @@
 
 /**
  * @desc
- * @param x21 possition x 1
- * @param y21 possition y 1
- * @param x22 possition x 2
- * @param y22 possition y 2
- * @return
+ * @param x21 position x 1
+ * @param y21 position y 1
+ * @param x22 position x 2
+ * @param y22 position y 2
  **/
 
 function deleteLines(x21, y21, x22, y22) {
@@ -93,7 +92,6 @@ function deleteLines(x21, y21, x22, y22) {
  * @desc
  * @param thisObject is a reference to an Hybrid Object
  * @param context is a reference to a html5 canvas object
- * @return
  **/
 
 function drawAllLines(thisObject, context) {
@@ -154,7 +152,6 @@ function drawAllLines(thisObject, context) {
 
 /**
  * @desc
- * @return
  **/
 
 function drawInteractionLines() {
@@ -238,8 +235,11 @@ function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEn
 
 /**
  * @desc
- * @param
- * @param
+ * @param context
+ * @param lineStartPoint
+ * @param lineEndPoint
+ * @param b1
+ * @param b2
  **/
 
 function drawDotLine(context, lineStartPoint, lineEndPoint, b1, b2) {
@@ -255,9 +255,10 @@ function drawDotLine(context, lineStartPoint, lineEndPoint, b1, b2) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param context
+ * @param lineStartPoint
+ * @param lineEndPoint
+ * @param radius
  **/
 
 function drawGreen(context, lineStartPoint, lineEndPoint, radius) {
@@ -273,9 +274,10 @@ function drawGreen(context, lineStartPoint, lineEndPoint, radius) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param context
+ * @param lineStartPoint
+ * @param lineEndPoint
+ * @param radius
  **/
 
 function drawRed(context, lineStartPoint, lineEndPoint, radius) {
@@ -290,9 +292,10 @@ function drawRed(context, lineStartPoint, lineEndPoint, radius) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param context
+ * @param lineStartPoint
+ * @param lineEndPoint
+ * @param radius
  **/
 
 function drawBlue(context, lineStartPoint, lineEndPoint, radius) {
@@ -307,9 +310,10 @@ function drawBlue(context, lineStartPoint, lineEndPoint, radius) {
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param context
+ * @param lineStartPoint
+ * @param lineEndPoint
+ * @param radius
  **/
 
 function drawYellow(context, lineStartPoint, lineEndPoint, radius) {

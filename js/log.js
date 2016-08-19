@@ -49,9 +49,8 @@
 
 /**
  * @desc
- * @param
- * @param
- * @return
+ * @param thisKey
+ * @return {String}
  **/
 
 function objectLog(thisKey) {
@@ -86,8 +85,7 @@ function objectLog(thisKey) {
 
 /**
  * @desc
- * @param
- * @param
+ * @param tempConsoleText
  * @return
  **/
 
