@@ -905,10 +905,51 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject) {
         addDoc.style.width = globalStates.height + "px";
         addDoc.style.height = globalStates.width + "px";
         addDoc.style.display = "none";
-        addDoc.style.border = 0;
+        addDoc.style.border = "0px";
         addDoc.className = "main";
         document.getElementById("GUI").appendChild(addDoc);
 
+        var addIframe = document.createElement('iframe');
+        addIframe.id = "iframe" + nodeKey;
+        addIframe.setAttribute( "onload", 'on_load("'+objectKey+'","'+nodeKey+'")');
+        addIframe.setAttribute( "frameBorder", "0");
+        addIframe.style.width = "0px";
+        addIframe.style.height = "0px";
+        addIframe.style.left = ((globalStates.height - thisObject.frameSizeY) / 2) + "px";
+        addIframe.style.top =  ((globalStates.width - thisObject.frameSizeX) / 2) + "px";
+        addIframe.style.visibility = "hidden";
+        addIframe.setAttribute( "src", thisUrl);
+        addIframe.setAttribute( "class", "main");
+        addIframe.setAttribute( "sandbox", "allow-forms allow-pointer-lock allow-same-origin allow-scripts");
+        addDoc.appendChild(addIframe);
+
+    /*
+
+        var addOverlay = document.createElement('div');
+        addOverlay.setAttribute( "style:background-color", "yellow;");
+        addOverlay.id = nodeKey;
+        addIframe.setAttribute( "frameBorder", "0");
+        addIframe.style.width = thisObject.frameSizeX +"px";
+        addIframe.style.height = thisObject.frameSizeY +"px";
+        addIframe.style.left = ((globalStates.height - thisObject.frameSizeY) / 2) + "px";
+        addIframe.style.top =  ((globalStates.width - thisObject.frameSizeX) / 2) + "px";
+        addIframe.style.visibility = "hidden";
+        addIframe.setAttribute( "class", "mainEditing");
+
+        addDoc.appendChild(addOverlay);
+
+
+        var addCanvas = document.createElement('canvas');
+        addCanvas.id = "canvas" + nodeKey;
+       // addIframe.style.width = "100%";
+        //addIframe.style.height = "100%";
+        addIframe.setAttribute( "class", "mainCanvas");
+        addOverlay.appendChild(addCanvas);
+
+
+*/
+
+/*
         var tempAddContent =
             "<iframe id='iframe" + nodeKey + "' onload='on_load(\"" +
             objectKey + "\",\"" + nodeKey + "\")' frameBorder='0' " +
@@ -917,14 +958,23 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject) {
             ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' " +
             "src='" + thisUrl + "' class='main' sandbox='allow-forms allow-pointer-lock allow-same-origin allow-scripts'>" +
             "</iframe>";
+            */
 
-        tempAddContent += "<div id='" + nodeKey + "' frameBorder='0' style='width:" + thisObject.frameSizeX + "px; height:" + thisObject.frameSizeY + "px;" +
+        addDoc.insertAdjacentHTML('beforeend', "<iframe id='iframe" + nodeKey + "' onload='on_load(\"" +
+            objectKey + "\",\"" + nodeKey + "\")' frameBorder='0' " +
+            "style='width:0px; height:0px;" +
+            "top:" + ((globalStates.width - thisObject.frameSizeX) / 2) + "px; left:" +
+            ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' " +
+            "src='" + thisUrl + "' class='main' sandbox='allow-forms allow-pointer-lock allow-same-origin allow-scripts'>" +
+            "</iframe>");
+
+
+        addDoc.insertAdjacentHTML('beforeend',"<div id='" + nodeKey + "' frameBorder='0' style='width:" + thisObject.frameSizeX + "px; height:" + thisObject.frameSizeY + "px;" +
             "top:" + ((globalStates.width - thisObject.frameSizeX) / 2) + "px; left:" + ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' class='mainEditing'>" +
             "<canvas id='canvas" + nodeKey + "'style='width:100%; height:100%;' class='mainCanvas'></canvas>" +
-            "</div>" +
-            "";
+            "</div>");
 
-        document.getElementById("thisObject" + nodeKey).innerHTML = tempAddContent;
+       // addIframe.insertAdjacentHTML('beforeend', tempAddContent);
         var theObject = document.getElementById(nodeKey);
         theObject.style["touch-action"] = "none";
         theObject["handjs_forcePreventDefault"] = true;
@@ -1044,6 +1094,7 @@ function killObjects(objectKey, thisObject) {
 
 function on_load(objectKey, nodeKey) {
 
+    console.log("################## " + objectKey +" "+ nodeKey);
     globalStates.notLoading = false;
     // window.location.href = "of://event_test_"+nodeKey;
 
