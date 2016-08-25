@@ -68,6 +68,9 @@ var timeCorrection = {delta: 0, now: 0, then: 0};
  **********************************************************************************************************************/
 
 
+
+
+
 var globalStates = {
     debug: false,
     overlay: 0,
@@ -118,10 +121,24 @@ var globalStates = {
     editingModeHaveObject: false,
     angX: 0,
     angY: 0,
+    angZ: 0,
     unconstrainedPositioning: false
 };
 
 var globalCanvas = {};
+
+var globalLogic ={
+     size:0,
+ x:0,
+y:0,
+    rectPoints: [],
+    farFrontElement:"",
+    frontDepth: 1000000,
+
+
+};
+
+var globalDOMCach = {};
 
 var globalObjects = "";
 

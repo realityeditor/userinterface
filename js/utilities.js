@@ -171,10 +171,52 @@ var invertMatrix = function (a) {
  **/
 
 function toAxisAngle(matrix) {
-    var rY = Math.atan(matrix[6], matrix[10]);
-    var rX = Math.atan(matrix[2], matrix[10]);
+    var rX = Math.atan(matrix[6], matrix[10]);
+    var rY = Math.atan(matrix[2], matrix[10]);
+    var rZ = Math.atan2(matrix[1], matrix[5]);
 
-    return [rX, rY];
+    return [rX, rY, rZ];
+
+}
+
+function screenCoordinatesToMatrixXY(thisObject, touch){
+
+        var tempMatrix;
+        if (globalStates.unconstrainedPositioning === true)
+            tempMatrix = copyMatrix(thisObject.begin);
+        else
+            tempMatrix = copyMatrix(thisObject.temp);
+
+        // calculate angles
+        var angles = toAxisAngle(tempMatrix);
+
+        var angX = angles[0] * Math.sin(angles[2]) + angles[1] * Math.cos(angles[2]);
+        var angY = angles[0] * Math.cos(angles[2]) - angles[1] * Math.sin(angles[2]);
+
+        // calculate new x and y
+        var possitionX =  thisObject.screenZ * ((touch[0] - globalStates.height / 2) *(Math.abs(angX/2)+1));
+        var possitionY = thisObject.screenZ  * ((touch[1] - globalStates.width / 2)*(Math.abs(angY/2)+1));
+
+        // replace old x and y with new
+
+        var tempObjectMatrix = [
+            tempMatrix[0], tempMatrix[1], tempMatrix[2], tempMatrix[3],
+            tempMatrix[4], tempMatrix[5], tempMatrix[6], tempMatrix[7],
+            tempMatrix[8], tempMatrix[9], tempMatrix[10], tempMatrix[11],
+            possitionX, possitionY, tempMatrix[14], tempMatrix[15]
+        ];
+
+        // and multiply this manipulated matrix with its original inverted.
+
+        var invertedObjectMatrix = invertMatrix(tempMatrix);
+        var resultMatrix = multiplyMatrix(tempObjectMatrix, invertedObjectMatrix);
+
+        // results in the new x and y
+
+        if (typeof resultMatrix[12] === "number" && typeof resultMatrix[13] === "number")
+        return [resultMatrix[12],resultMatrix[13]];
+    else
+        return null;
 
 }
 
@@ -760,3 +802,27 @@ function estimateIntersection(theObject, mCanvas) {
     // Undo the clipping
     ctx.restore();
 }
+
+
+function insidePoly(point, vs) {
+    // ray-casting algorithm based on
+    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+    // Copyright (c) 2016 James Halliday
+    // The MIT License (MIT)
+
+    var x = point[0], y = point[1];
+
+    if(x <=0 || y <= 0) return false;
+
+    var inside = false;
+    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        var xi = vs[i][0], yi = vs[i][1];
+        var xj = vs[j][0], yj = vs[j][1];
+
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+
+    return inside;
+};

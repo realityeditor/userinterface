@@ -135,12 +135,8 @@ function drawAllLines(thisObject, context) {
         }
 
         // linearize a non linear zBuffer
-        var bAScreenZ = (((10001 - (20000 / bA.screenZ)) / 9999) + 1) / 2;
-        var bBScreenZ = (((10001 - (20000 / bB.screenZ)) / 9999) + 1) / 2;
-
-        // map the linearized zBuffer to the final ball size
-        bAScreenZ = map(bAScreenZ, 0.9971, 1, 25, 1);
-        bBScreenZ = map(bBScreenZ, 0.9971, 1, 25, 1);
+        var bAScreenZ =   bA.screenLinearZ;
+        var bBScreenZ = bB.screenLinearZ;
 
         drawLine(context, [bA.screenX, bA.screenY], [bB.screenX, bB.screenY], bAScreenZ, bBScreenZ, l, timeCorrection);
     }
@@ -167,14 +163,14 @@ function drawInteractionLines() {
 
         // this is for making sure that the line is drawn out of the screen... Don't know why this got lost somewhere down the road.
         // linearize a non linear zBuffer
-        tempStart.screenZ = (((10001 - (20000 / tempStart.screenZ)) / 9999) + 1) / 2;
-        // map the linearized zBuffer to the final ball size
-        tempStart.screenZ = map(tempStart.screenZ, 0.9971, 1, 25, 1);
 
+        // map the linearized zBuffer to the final ball size
         if (!oA.objectVisible) {
             tempStart.screenX = globalStates.pointerPosition[0];
             tempStart.screenY = -10;
             tempStart.screenZ = 6;
+        } else {
+            tempStart.screenZ = tempStart.screenLinearZ;
         }
 
         drawLine(globalCanvas.context, [tempStart.screenX, tempStart.screenY], [globalStates.pointerPosition[0], globalStates.pointerPosition[1]], tempStart.screenZ, tempStart.screenZ, globalStates, timeCorrection);
