@@ -59,6 +59,7 @@ var ec = 0;
 var disp = {};
 
 var uiButtons;
+var guiButtonImage;
 var httpPort = 8080;
 var timeForContentLoaded = 240; // temporary set to 1000x with the UI Recording mode for video recording
 var timeCorrection = {delta: 0, now: 0, then: 0};
@@ -138,6 +139,12 @@ y:0,
 
 };
 
+var pocketItem  = {"pocket" : new Objects()};
+var pocketItemId = "";
+
+
+var globalSVGCach = {};
+
 var globalDOMCach = {};
 
 var globalObjects = "";
@@ -170,6 +177,18 @@ var globalMatrix = {
         0, 0, 1, 0,
         0, 0, 0, 1
     ],
+    r: [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    ],
+    r2: [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    ],
     matrixtouchOn: false,
     copyStillFromMatrixSwitch: false
 };
@@ -185,6 +204,6 @@ var rotateX = [
 var testInterlink = {};
 
 var overlayDiv;
-var overlayImg;
-var overlayImage = [];
+//var overlayImg;
+//var overlayImage = [];
 

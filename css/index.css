@@ -174,9 +174,12 @@ body {
     -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 
 }*/
+#consolelog {
+    display: none;
+}
 
 #preferences {
-    display: inline;
+    display: none;
     visibility: hidden;
     -webkit-transform-style: preserve-3d;
     position: fixed;

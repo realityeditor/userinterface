@@ -140,6 +140,7 @@ function drawAllLines(thisObject, context) {
 
         drawLine(context, [bA.screenX, bA.screenY], [bB.screenX, bB.screenY], bAScreenZ, bBScreenZ, l, timeCorrection);
     }
+   // context.fill();
     globalCanvas.hasContent = true;
 }
 

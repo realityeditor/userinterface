@@ -60,7 +60,6 @@ var freezeButtonImage = [];
 var guiButtonImage = [];
 var preferencesButtonImage = [];
 var reloadButtonImage = [];
-var logButtonImage = [];
 var resetButtonImage = [];
 var unconstButtonImage = [];
 var editingButtonImage = [];
@@ -87,10 +86,6 @@ function GUI() {
     preload(reloadButtonImage,
         'png/reloadOver.png', 'png/reload.png', 'png/reloadEmpty.png'
     );
-    preload(logButtonImage,
-        'png/log.png', 'png/logOver.png', 'png/logSelect.png', 'png/logEmpty.png'
-    );
-
     preload(resetButtonImage,
         'png/reset.png', 'png/resetOver.png', 'png/resetSelect.png', 'png/resetEmpty.png'
     );
@@ -101,10 +96,6 @@ function GUI() {
 
     preload(loadNewUiImage,
         'png/load.png', 'png/loadOver.png'
-    );
-
-    preload(overlayImage,
-        'png/overlayNegative.png', 'png/overlayNormal.png', 'png/overlayPositive.png', 'png/overlayAction.png', 'png/empty.png'
     );
 
     document.getElementById("guiButtonImage1").addEventListener("touchstart", function () {
@@ -308,7 +299,7 @@ function GUI() {
     document.getElementById("preferencesButton").addEventListener("touchend", function () {
         if (globalStates.preferencesButtonState === true) {
             preferencesHide();
-            overlayDiv.style.visibility = "visible";
+            overlayDiv.style.display = "none";
 
             if (globalStates.editingMode) {
                 document.getElementById('resetButton').style.visibility = "visible";
@@ -321,7 +312,6 @@ function GUI() {
                 document.getElementById('preferencesButton').src = preferencesButtonImage[3].src;
                 document.getElementById('feezeButton').src = freezeButtonImage[3].src;
                 document.getElementById('reloadButton').src = reloadButtonImage[2].src;
-                document.getElementById('logButton').src = logButtonImage[3].src;
                 document.getElementById('guiButtonImage').src = guiButtonImage[4].src;
                 document.getElementById('resetButton').src = resetButtonImage[3].src;
                 document.getElementById('unconstButton').src = unconstButtonImage[3].src;
@@ -339,15 +329,12 @@ function GUI() {
 
             preferencesVisible();
 
-            overlayDiv.style.visibility = "hidden";
-
-            consoleHide();
+            overlayDiv.style.display = "inline";
 
             if (globalStates.UIOffMode) {
                 document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
                 document.getElementById('feezeButton').src = freezeButtonImage[0].src;
                 document.getElementById('reloadButton').src = reloadButtonImage[0].src;
-                document.getElementById('logButton').src = logButtonImage[0].src;
                 document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
                 document.getElementById('resetButton').src = resetButtonImage[0].src;
                 document.getElementById('unconstButton').src = unconstButtonImage[0].src;
@@ -388,40 +375,7 @@ function GUI() {
         window.open("index.html?v=" + Math.floor((Math.random() * 100) + 1));
     });
     ec++;
-
-    document.getElementById("logButton").addEventListener("touchstart", function () {
-        if (!globalStates.UIOffMode)    document.getElementById('logButton').src = logButtonImage[1].src;
-    });
-    ec++;
-    document.getElementById("logButton").addEventListener("touchend", function () {
-        if (globalStates.logButtonState === true) {
-            consoleHide();
-        }
-        else {
-            if (!globalStates.UIOffMode)    document.getElementById('logButton').src = logButtonImage[2].src;
-            globalStates.logButtonState = true;
-
-            // set pref. button to off
-            preferencesHide();
-
-        }
-
-    });
     cout("GUI");
-    ec++;
-}
-
-/**
- * @desc
- **/
-
-function consoleHide() {
-    if (!globalStates.UIOffMode)    document.getElementById('logButton').src = logButtonImage[0].src;
-    globalStates.logButtonState = false;
-    document.getElementById("consolelog").style.visibility = "hidden";
-    document.getElementById("consolelog").innerText = "";
-
-    cout("consoleHide");
 }
 
 /**

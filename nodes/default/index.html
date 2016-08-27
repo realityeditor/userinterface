@@ -17,16 +17,17 @@
     </style>
 </head>
 <body>
+
 <div style="width:160px; height:160px; overflow: hidden; position: absolute;top:30px;left:30px;">
     <svg id = "1" height="160" width="160">
-        <circle id = "2" cx="80" cy="80" r="73" stroke="#00ffff" stroke-width="14" fill="#000000" />
+        <circle id = "2" cx="80" cy="80" r="74" stroke="#00ffff" stroke-width="8" fill="#000000" />
     </svg>
 </div>
 <div id="textNote" style="visibility: visible; position: absolute; overflow: hidden;top:190px;left:0px; width:220px; height:30px; text-align: center; font-size:1.6em; font-weight: bold; font-family: Helvetica, Arial, sans-serif;
 color: white"></div>
 
 <script>
-    var objects = parent.objects;
+    var objects = {};
 
     var svgEl = document.getElementById('1');
 
@@ -39,7 +40,8 @@ color: white"></div>
 
         if (typeof msg.node !== "undefined" && typeof msg.object !== "undefined") {
             parent.postMessage(
-                    {data : JSON.stringify({
+                  //  {data :
+                            JSON.stringify({
                         version: 170,
                         node: msg.node,
                         object: msg.object,
@@ -47,13 +49,16 @@ color: white"></div>
                         width: document.body.scrollWidth,
                         sendMatrix: false,
                         fullScreen: false
-                    }) }
+                   // })
+        })
                     // this needs to contain the final interface source
                     , "*");
-           // thisText.innerHTML =msg.nodes[msg.node].name;
+            if(msg.nodes[msg.node])
+           thisText.innerHTML =msg.nodes[msg.node].name;
+            objects.node = msg.node;
+            objects.object = msg.object;
 
-
-            thisText.innerHTML = objects[msg.object].nodes[msg.node].name;
+          //  thisText.innerHTML = objects[msg.object].nodes[msg.node].name;
 
         }
 

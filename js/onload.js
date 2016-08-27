@@ -61,8 +61,9 @@
 
 window.onload = function () {
     uiButtons = document.getElementById("GUI");
+    guiButtonImage= document.getElementById("guiButtonImage");
     overlayDiv = document.getElementById('overlay');
-    overlayImg = document.getElementById('overlayImg');
+    globalSVGCach["overlayImgRing"] = document.getElementById('overlayImg').getElementById('overlayImgRing');
 
     GUI();
 
@@ -177,8 +178,15 @@ window.onload = function () {
 
 function postMessage(e) {
 
-    var msgContent = JSON.parse(e.data);
 
+    var msgContent ={};
+    if(e.data){
+        msgContent = JSON.parse(e.data);
+
+    } else {
+        msgContent = JSON.parse(e);
+    }
+    
     var tempThisObject = {};
     var thisVersionNumber;
 
@@ -200,11 +208,23 @@ function postMessage(e) {
     if (msgContent.object in objects) {
         if (msgContent.node === msgContent.object) {
             tempThisObject = objects[msgContent.object];
-        } else {
+        } else
             if (msgContent.node in objects[msgContent.object].nodes) {
                 tempThisObject = objects[msgContent.object].nodes[msgContent.node];
+            } else
+            if (msgContent.node in objects[msgContent.object].logic) {
+                tempThisObject = objects[msgContent.object].logic[msgContent.node];
+            } else return;
+
+    } else if(msgContent.object in pocketItem){
+        if (msgContent.node === msgContent.object) {
+            tempThisObject = pocketItem[msgContent.object];
+        } else {
+            if (msgContent.node in pocketItem[msgContent.object].logic) {
+                tempThisObject = pocketItem[msgContent.object].logic[msgContent.node];
             } else return;
         }
+
     } else return;
 
     if (msgContent.width && msgContent.height) {

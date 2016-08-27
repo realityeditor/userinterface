@@ -62,11 +62,11 @@
     <!-- Javascript -->
     <script src="thirdPartyCode/switchery.js"></script>
     <script src="thirdPartyCode/hand.1.3.8.js"></script>
+    <script src="js/constructors.js"></script>
     <script src="js/globalVariables.js"></script>
     <script src="js/utilities.js"></script>
     <script src="js/index.js"></script>
     <script src="js/gui.js"></script>
-    <script src="js/log.js"></script>
     <script src="js/eventHandlers.js"></script>
     <script src="js/interactWithLines.js"></script>
     <script src="js/onload.js"></script>
@@ -272,8 +272,6 @@ position: fixed;
 </div>
 <canvas class="Canvas" id="canvas"></canvas>
 
-<div class='Interfaces' id="consolelog"></div>
-
 <div class='Interfaces' id="overlay" style="
   -webkit-transform-style: preserve-3d;
    display: none;
@@ -286,10 +284,9 @@ position: fixed;
 
    /* this is a hack for adding the interface in front of the transformed web interface */
 -webkit-transform: translateZ(2px);
-">
-    <img src="png/overlayNormal.png" id="overlayImg" height="120px" width="120px">
-
-</div>
+"><svg id = "overlayImg" height="120" width="120">
+        <circle id="overlayImgRing" cx="60" cy="60" r="30" stroke="#00ffff" stroke-width="4" fill="none" />
+    </svg></div>
 
 </body>
 </html>

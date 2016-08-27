@@ -67,8 +67,8 @@ var newURLTextLoad = function () {
  * @return {Number|Array} m16 matrix result of the muliplication
  **/
 
-function multiplyMatrix(m2, m1) {
-    var r = [];
+function multiplyMatrix(m2, m1, r) {
+   // var r = [];
     // Cm1che only the current line of the second mm1trix
     r[0] = m2[0] * m1[0] + m2[1] * m1[4] + m2[2] * m1[8] + m2[3] * m1[12];
     r[1] = m2[0] * m1[1] + m2[1] * m1[5] + m2[2] * m1[9] + m2[3] * m1[13];
@@ -89,7 +89,7 @@ function multiplyMatrix(m2, m1) {
     r[13] = m2[12] * m1[1] + m2[13] * m1[5] + m2[14] * m1[9] + m2[15] * m1[13];
     r[14] = m2[12] * m1[2] + m2[13] * m1[6] + m2[14] * m1[10] + m2[15] * m1[14];
     r[15] = m2[12] * m1[3] + m2[13] * m1[7] + m2[14] * m1[11] + m2[15] * m1[15];
-    return r;
+   // return r;
 }
 
 /**
@@ -208,8 +208,9 @@ function screenCoordinatesToMatrixXY(thisObject, touch){
 
         // and multiply this manipulated matrix with its original inverted.
 
-        var invertedObjectMatrix = invertMatrix(tempMatrix);
-        var resultMatrix = multiplyMatrix(tempObjectMatrix, invertedObjectMatrix);
+       // var invertedObjectMatrix = invertMatrix(tempMatrix);
+        var resultMatrix = [];
+    multiplyMatrix(tempObjectMatrix, invertMatrix(tempMatrix), resultMatrix);
 
         // results in the new x and y
 
@@ -662,9 +663,30 @@ function addCornerPairToOppositeCornerPairs(cornerPair, oppositeCornerPairs) {
  * @return
  **/
 
-function estimateIntersection(theObject, mCanvas) {
+function estimateIntersection(theObject, mCanvas, thisObject) {
+    var thisCanvas = globalDOMCach["canvas" + theObject];
+    if(!mCanvas){
 
-    var thisCanvas = document.getElementById("canvas" + theObject);
+
+        if(!thisObject.hasCTXContent) {
+            thisObject.hasCTXContent = true;
+            var ctx = thisCanvas.getContext("2d");
+            var diagonalLineWidth = 22;
+            ctx.lineWidth = diagonalLineWidth;
+            ctx.strokeStyle = '#01FFFC';
+            for (var i = -thisCanvas.height; i < thisCanvas.width; i += 2.5 * diagonalLineWidth) {
+                ctx.beginPath();
+                ctx.moveTo(i, -diagonalLineWidth / 2);
+                ctx.lineTo(i + thisCanvas.height + diagonalLineWidth / 2, thisCanvas.height + diagonalLineWidth / 2);
+                ctx.stroke();
+            }
+        }
+     return null;
+    } else {
+        thisObject.hasCTXContent = false;
+    }
+
+    if (globalStates.pointerPosition[0] === -1) return null;
 
     // var newMatrix = copyMatrix(multiplyMatrix(globalMatrix.begin, invertMatrix(globalMatrix.temp)));
 

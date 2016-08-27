@@ -113,8 +113,8 @@ function trueTouchUp() {
                     objectB: globalProgram.objectB,
                     nodeA: globalProgram.nodeA,
                     nodeB: globalProgram.nodeB,
-                    nameA: thisTempObject.name,
-                    nameB: thisOtherTempObject.name
+                    namesA: [thisTempObject.name, thisTempObject.nodes[globalProgram.nodeA].name],
+                    namesB: [thisOtherTempObject.name, thisOtherTempObject.nodes[globalProgram.nodeB].name]
                 };
 
                 // push new connection to objectA
@@ -169,6 +169,34 @@ function getPossition(evt) {
     overlayDiv.style.left = evt.clientX - 60;
     overlayDiv.style.top = evt.clientY - 60;
 
+
+    if(pocketItem.pocket.logic[pocketItemId]){
+
+        var thisItem = pocketItem.pocket.logic[pocketItemId];
+
+        if(globalLogic.farFrontElement==="") {
+            thisItem.x = evt.clientX - (globalStates.height / 2);
+            thisItem.y = evt.clientY - (globalStates.width / 2);
+        }
+        else {
+            if(thisItem.screenZ !==2 && thisItem.screenZ) {
+               // console.log(screenCoordinatesToMatrixXY(thisItem, [evt.clientX, evt.clientY]));
+             var matrixTouch = screenCoordinatesToMatrixXY(thisItem, [evt.clientX, evt.clientY]);
+
+                thisItem.x = matrixTouch[0];
+                thisItem.y = matrixTouch[1];
+            }
+        }
+
+
+      //  pocketItem.pocket.x = evt.clientX;
+       // pocketItem.pocket.y = evt.clientY;
+
+
+
+    }
+
+
     cout("getPossition");
 
 }
@@ -184,6 +212,22 @@ function getPossition(evt) {
 function documentPointerUp(evt) {
 
     globalStates.pointerPosition = [-1, -1];
+
+    pocketItem.pocket.objectVisible = false;
+
+
+
+    if(pocketItem.pocket.logic[pocketItemId]) {
+
+        var thisItem = pocketItem.pocket.logic[pocketItemId];
+
+        if (globalLogic.farFrontElement !== "" && thisItem.screenZ !== 2 && thisItem.screenZ) {
+            objects[globalLogic.farFrontElement].logic[pocketItemId] = thisItem;
+        }
+    }
+
+    hideTransformed("pocket", pocketItemId, pocketItem.pocket.logic[pocketItemId], "logic");
+    delete pocketItem.pocket.logic[pocketItemId];
 
     globalStates.overlay = 0;
 
@@ -215,6 +259,57 @@ function documentPointerDown(evt) {
     overlayDiv.style.display = "inline";
     overlayDiv.style.left = evt.clientX - 60;
     overlayDiv.style.top = evt.clientY - 60;
+
+
+
+    // todo for testing only
+
+    pocketItemId = uuidTime();
+
+
+   var thisItem = pocketItem.pocket.logic[pocketItemId] = new Logic();
+
+
+    var thisItem = pocketItem.pocket.logic[pocketItemId];
+
+
+    if(globalLogic.farFrontElement==="") {
+        thisItem.x = evt.clientX - (globalStates.height / 2);
+        thisItem.y = evt.clientY - (globalStates.width / 2);
+    }
+   /* else {
+        var matrixTouch =  screenCoordinatesToMatrixXY(thisItem, [evt.clientX,evt.clientY]);
+        thisItem.x = matrixTouch[0];
+        thisItem.y = matrixTouch[1];
+    }*/
+    thisItem.scale = 1;
+    thisItem.loaded = false;
+
+    var thisObject = pocketItem.pocket;
+    // this is a work around to set the state of an objects to not being visible.
+    thisObject.objectId = "pocket";
+    thisObject.name =  "pocket";
+    thisObject.objectVisible = false;
+    thisObject.screenZ = 1000;
+    thisObject.fullScreen = false;
+    thisObject.sendMatrix = false;
+    thisObject.loaded = false;
+    thisObject.integerVersion = 170;
+        thisObject.matrix = [];
+       // thisObject.logic = {};
+        thisObject.protocol = "R1";
+
+
+
+
+
+
+    thisObject.visibleCounter = timeForContentLoaded;
+    thisObject.objectVisible = true;
+
+    //addElement("pocket", pocketItemId, "nodes/" + thisItem.appearance + "/index.html",  pocketItem.pocket, "logic",globalStates);
+
+
 
     cout("documentPointerDown");
 }
@@ -306,7 +401,7 @@ function MultiTouchEnd(evt) {
         content.scale = tempThisObject.scale;
 
         if (globalStates.unconstrainedPositioning === true) {
-            tempThisObject.matrix = copyMatrix(multiplyMatrix(tempThisObject.begin, invertMatrix(tempThisObject.temp)));
+            multiplyMatrix(tempThisObject.begin, invertMatrix(tempThisObject.temp),tempThisObject.matrix);
             content.matrix = tempThisObject.matrix;
 
         }
@@ -334,7 +429,10 @@ function MultiTouchCanvasStart(evt) {
     evt.preventDefault();
 // generate action for all links to be reloaded after upload
     if (globalStates.editingModeHaveObject && globalStates.editingMode && evt.targetTouches.length === 1) {
+
+//todo this will move in to the virtual pocket.
         var touch = evt.touches[1];
+
 
         globalStates.editingScaleX = touch.pageX;
         globalStates.editingScaleY = touch.pageY;
