@@ -459,7 +459,6 @@ function setProjectionMatrix(matrix) {
  ******************************************** update and draw the 3D Interface ****************************************
  **********************************************************************************************************************/
 
-
 /**
  * @desc main update loop called 30 fps with an array of found transformation matrices
  * @param visibleObjects
@@ -511,9 +510,9 @@ function update(visibleObjects) {
             generalObject.visibleCounter = timeForContentLoaded;
             generalObject.objectVisible = true;
 
-           // tempMatrix = multiplyMatrix(rotateX, multiplyMatrix(globalObjects[objectKey], globalStates.projectionMatrix));
+            // tempMatrix = multiplyMatrix(rotateX, multiplyMatrix(globalObjects[objectKey], globalStates.projectionMatrix));
 
-           var  tempMatrix = [];
+            var tempMatrix = [];
             var r = globalMatrix.r;
             multiplyMatrix(globalObjects[objectKey], globalStates.projectionMatrix, r);
             multiplyMatrix(rotateX, r, tempMatrix);
@@ -523,8 +522,8 @@ function update(visibleObjects) {
             //   document.getElementById("controls").innerHTML = (toAxisAngle(tempMatrix2)[0]).toFixed(1)+" "+(toAxisAngle(tempMatrix2)[1]).toFixed(1);
 
             if (globalStates.guiButtonState || Object.keys(generalObject.nodes).length === 0) {
-                drawTransformed(objectKey, objectKey, generalObject, tempMatrix, "ui",  thisGlobalStates , thisGlobalCanvas,thisGlobalLogic,thisGlobalDOMCach,thisGlobalMatrix);
-                addElement(objectKey, objectKey, "http://" + generalObject.ip + ":" + httpPort + "/obj/" + generalObject.name + "/", generalObject, "ui",thisGlobalStates);
+                drawTransformed(objectKey, objectKey, generalObject, tempMatrix, "ui", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
+                addElement(objectKey, objectKey, "http://" + generalObject.ip + ":" + httpPort + "/obj/" + generalObject.name + "/", generalObject, "ui", thisGlobalStates);
             }
             else {
                 hideTransformed(objectKey, objectKey, generalObject, "ui");
@@ -550,9 +549,9 @@ function update(visibleObjects) {
                 generalNode = generalObject.nodes[nodeKey];
 
                 if (!globalStates.guiButtonState) {
-                    drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, "node", thisGlobalStates , thisGlobalCanvas,thisGlobalLogic,thisGlobalDOMCach,thisGlobalMatrix);
+                    drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, "node", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
 
-                    addElement(objectKey, nodeKey, "nodes/" + generalNode.appearance + "/index.html", generalNode, "node",thisGlobalStates);
+                    addElement(objectKey, nodeKey, "nodes/" + generalNode.appearance + "/index.html", generalNode, "node", thisGlobalStates);
 
                 } else {
                     hideTransformed(objectKey, nodeKey, generalNode, "node");
@@ -565,9 +564,9 @@ function update(visibleObjects) {
                 generalNode = generalObject.logic[nodeKey];
 
                 if (!globalStates.guiButtonState) {
-                    drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, "logic", thisGlobalStates , thisGlobalCanvas,thisGlobalLogic,thisGlobalDOMCach,thisGlobalMatrix);
+                    drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, "logic", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
 
-                    addElement(objectKey, nodeKey, "nodes/" + generalNode.appearance + "/index.html", generalNode, "logic",thisGlobalStates);
+                    addElement(objectKey, nodeKey, "nodes/" + generalNode.appearance + "/index.html", generalNode, "logic", thisGlobalStates);
 
                 } else {
                     hideTransformed(objectKey, nodeKey, generalNode, "logic");
@@ -590,7 +589,6 @@ function update(visibleObjects) {
                 hideTransformed(objectKey, nodeKey, generalObject.logic[nodeKey], "logic");
             }
 
-
             killObjects(objectKey, generalObject);
         }
 
@@ -606,15 +604,12 @@ function update(visibleObjects) {
         //  cout("drawlines");
     }
 
-
     // todo this is a test for the pocket
 
     // todo finishing up this
 
-
-
     var generalObject = pocketItem["pocket"];
-   // if(  globalStates.pointerPosition[0]>0)
+    // if(  globalStates.pointerPosition[0]>0)
     //console.log(generalObject);
     generalObject.visibleCounter = timeForContentLoaded;
     generalObject.objectVisible = true;
@@ -622,17 +617,17 @@ function update(visibleObjects) {
     var generalNode;
     objectKey = "pocket";
 
-var thisMatrix =[];
+    var thisMatrix = [];
 
-    if(globalLogic.farFrontElement in globalObjects){
+    if (globalLogic.farFrontElement in globalObjects) {
 
         var r = globalMatrix.r;
         multiplyMatrix(globalObjects[globalLogic.farFrontElement], globalStates.projectionMatrix, r);
         multiplyMatrix(rotateX, r, thisMatrix);
 
-    }else{
+    } else {
 
-        thisMatrix =  [
+        thisMatrix = [
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
@@ -640,23 +635,19 @@ var thisMatrix =[];
         ]
     }
 
-
     for (var nodeKey in generalObject.logic) {
         //console.log(document.getElementById("iframe"+ nodeKey));
-         generalNode = generalObject.logic[nodeKey];
+        generalNode = generalObject.logic[nodeKey];
 
         drawTransformed(objectKey, nodeKey, generalNode,
-            thisMatrix , "logic", globalStates , globalCanvas,globalLogic,globalDOMCach,globalMatrix);
+            thisMatrix, "logic", globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix);
 
-        addElement(objectKey, nodeKey, "nodes/" + generalNode.appearance + "/index.html", generalNode, "logic",globalStates);
+        addElement(objectKey, nodeKey, "nodes/" + generalNode.appearance + "/index.html", generalNode, "logic", globalStates);
 
         /* } else {
          hideTransformed("pocket", nodeKey, generalNode, "logic");
          }*/
     }
-
-
-
 
     /// todo Test
 
@@ -680,21 +671,18 @@ var thisTransform = [];
 var thisKey;
 var thisSubKey;
 
-function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, globalStates,globalCanvas,globalLogic,globalDOMCach,globalMatrix) {
+function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix) {
     var objectKey = objectKey;
     var nodeKey = nodeKey;
     var thisObject = thisObject;
     var thisTransform2 = thisTransform2;
     var kind = kind;
+    var globalCanvas = globalCanvas;
     var globalStates = globalStates;
     var globalLogic = globalLogic;
     var globalDOMCach = globalDOMCach;
     var globalMatrix = globalMatrix;
     //console.log(JSON.stringify(thisTransform2));
-
-    if(kind === "logic"){
-        thisObject.temp = copyMatrix(thisTransform2);
-    }
 
     if (globalStates.notLoading !== nodeKey && thisObject.loaded === true) {
         if (!thisObject.visible) {
@@ -715,9 +703,21 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                 } else {
                     globalDOMCach["canvas" + nodeKey].style.display = 'none';
                 }
-            }
+            } else if (kind === "ui") {
+                if (globalStates.editingMode) {
+                    if (!thisObject.visibleEditing && thisObject.developer) {
+                        thisObject.visibleEditing = true;
+                        globalDOMCach[nodeKey].style.visibility = 'visible';
+                        // showEditingStripes(nodeKey, true);
+                        globalDOMCach["canvas" + nodeKey].style.display = 'inline';
 
-            if (kind === "ui") {
+                        //document.getElementById(nodeKey).className = "mainProgram";
+                    }
+                } else {
+                    globalDOMCach["canvas" + nodeKey].style.display = 'none';
+                }
+            } else if (kind === "logic") {
+                thisObject.temp = copyMatrix(thisTransform2);
                 if (globalStates.editingMode) {
                     if (!thisObject.visibleEditing && thisObject.developer) {
                         thisObject.visibleEditing = true;
@@ -732,164 +732,142 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                 }
             }
 
-            if (kind === "logic") {
+        } else {
+            // this needs a better solution
+            if (thisObject.fullScreen !== true) {
+
+                finalMatrixTransform2 = [
+                    thisObject.scale, 0, 0, 0,
+                    0, thisObject.scale, 0, 0,
+                    0, 0, 1, 0,
+                    thisObject.x, thisObject.y, 0, 1
+                ];
 
                 if (globalStates.editingMode) {
-                    if (!thisObject.visibleEditing && thisObject.developer) {
-                        thisObject.visibleEditing = true;
-                        globalDOMCach[nodeKey].style.visibility = 'visible';
-                        // showEditingStripes(nodeKey, true);
-                        globalDOMCach["canvas" + nodeKey].style.display = 'inline';
+                    if (globalMatrix.matrixtouchOn === nodeKey) {
+                        //if(globalStates.unconstrainedPositioning===true)
+                        thisObject.temp = copyMatrix(thisTransform2);
 
-                        //document.getElementById(nodeKey).className = "mainProgram";
-                    }
-                } else {
-                    globalDOMCach["canvas" + nodeKey].style.display = 'none';
-                }
-            }
+                        if (globalMatrix.copyStillFromMatrixSwitch) {
+                            globalMatrix.visual = copyMatrix(thisTransform2);
+                            if (typeof thisObject.matrix === "object")
+                                if (thisObject.matrix.length > 0)
+                                // thisObject.begin = copyMatrix(multiplyMatrix(thisObject.matrix, thisObject.temp));
+                                    multiplyMatrix(thisObject.matrix, thisObject.temp, thisObject.begin);
 
-        }
-
-        // this needs a better solution
-        if (thisObject.fullScreen !== true) {
-
-            finalMatrixTransform2 = [
-                thisObject.scale, 0, 0, 0,
-                0, thisObject.scale, 0, 0,
-                0, 0, 1, 0,
-                thisObject.x, thisObject.y, 0, 1
-            ];
-
-            if (globalStates.editingMode) {
-                if (globalMatrix.matrixtouchOn === nodeKey) {
-                    //if(globalStates.unconstrainedPositioning===true)
-                    thisObject.temp = copyMatrix(thisTransform2);
-
-                    if (globalMatrix.copyStillFromMatrixSwitch) {
-                        globalMatrix.visual = copyMatrix(thisTransform2);
-                        if (typeof thisObject.matrix === "object")
-                            if (thisObject.matrix.length > 0)
-                               // thisObject.begin = copyMatrix(multiplyMatrix(thisObject.matrix, thisObject.temp));
-                        multiplyMatrix(thisObject.matrix, thisObject.temp, thisObject.begin);
-
+                                else
+                                    thisObject.begin = copyMatrix(thisObject.temp);
                             else
                                 thisObject.begin = copyMatrix(thisObject.temp);
-                        else
-                            thisObject.begin = copyMatrix(thisObject.temp);
 
-                        if (globalStates.unconstrainedPositioning === true)
-                           // thisObject.matrix = copyMatrix(multiplyMatrix(thisObject.begin, invertMatrix(thisObject.temp)));
+                            if (globalStates.unconstrainedPositioning === true)
+                            // thisObject.matrix = copyMatrix(multiplyMatrix(thisObject.begin, invertMatrix(thisObject.temp)));
 
-                        multiplyMatrix(thisObject.begin, invertMatrix(thisObject.temp), thisObject.matrix);
+                                multiplyMatrix(thisObject.begin, invertMatrix(thisObject.temp), thisObject.matrix);
 
-                        globalMatrix.copyStillFromMatrixSwitch = false;
-                    }
-
-                    if (globalStates.unconstrainedPositioning === true)
-                        thisTransform2 = globalMatrix.visual;
-
-                }
-
-                if (typeof thisObject.matrix[1] !== "undefined") {
-                    if (thisObject.matrix.length > 0) {
-                        if (globalStates.unconstrainedPositioning === false) {
-                            //thisObject.begin = copyMatrix(multiplyMatrix(thisObject.matrix, thisObject.temp));
-                            multiplyMatrix(thisObject.matrix, thisObject.temp, thisObject.begin);
+                            globalMatrix.copyStillFromMatrixSwitch = false;
                         }
 
-                        var r = globalMatrix.r ,r2 = globalMatrix.r2;
-                        multiplyMatrix(thisObject.begin, invertMatrix(thisObject.temp),r);
-                        multiplyMatrix(finalMatrixTransform2, r, r2);
-                        estimateIntersection(nodeKey, r2,thisObject);
-                    } else {
-                        estimateIntersection(nodeKey, null,thisObject);
+                        if (globalStates.unconstrainedPositioning === true)
+                            thisTransform2 = globalMatrix.visual;
+
                     }
 
-                } else {
+                    if (typeof thisObject.matrix[1] !== "undefined") {
+                        if (thisObject.matrix.length > 0) {
+                            if (globalStates.unconstrainedPositioning === false) {
+                                //thisObject.begin = copyMatrix(multiplyMatrix(thisObject.matrix, thisObject.temp));
+                                multiplyMatrix(thisObject.matrix, thisObject.temp, thisObject.begin);
+                            }
 
-                    estimateIntersection(nodeKey, null,thisObject);
+                            var r = globalMatrix.r, r2 = globalMatrix.r2;
+                            multiplyMatrix(thisObject.begin, invertMatrix(thisObject.temp), r);
+                            multiplyMatrix(finalMatrixTransform2, r, r2);
+                            estimateIntersection(nodeKey, r2, thisObject);
+                        } else {
+                            estimateIntersection(nodeKey, null, thisObject);
+                        }
+
+                    } else {
+
+                        estimateIntersection(nodeKey, null, thisObject);
+                    }
                 }
-            }
 
-            if (typeof thisObject.matrix[1] !== "undefined") {
-                if (thisObject.matrix.length > 0) {
+                if (thisObject.matrix.length < 13) {
 
+                    multiplyMatrix(finalMatrixTransform2, thisTransform2, thisTransform);
+                } else {
                     var r = globalMatrix.r;
                     multiplyMatrix(thisObject.matrix, thisTransform2, r);
-                    multiplyMatrix(finalMatrixTransform2,r, thisTransform);
+                    multiplyMatrix(finalMatrixTransform2, r, thisTransform);
 
-                   // thisTransform = multiplyMatrix(finalMatrixTransform2, multiplyMatrix(thisObject.matrix, thisTransform2));
-                } else {
-                     multiplyMatrix(finalMatrixTransform2, thisTransform2,thisTransform);
+                    // thisTransform = multiplyMatrix(finalMatrixTransform2, multiplyMatrix(thisObject.matrix, thisTransform2));
                 }
+
+                //    else {
+                //        multiplyMatrix(finalMatrixTransform2, thisTransform2,thisTransform);
+                //   }
+
+                // console.log(nodeKey);
+                // console.log(globalDOMCach["thisObject" + nodeKey]);
+                // console.log(globalDOMCach["thisObject" + nodeKey].visibility);
+
+                webkitTransformMatrix3d(globalDOMCach["thisObject" + nodeKey], thisTransform);
+
+                // this is for later
+                // The matrix has been changed from Vuforia 3 to 4 and 5. Instead of  thisTransform[3][2] it is now thisTransform[3][3]
+                thisObject.screenX = thisTransform[12] / thisTransform[15] + (globalStates.height / 2);
+                thisObject.screenY = thisTransform[13] / thisTransform[15] + (globalStates.width / 2);
+                thisObject.screenZ = thisTransform[14];
+
             }
-            else {
-                 multiplyMatrix(finalMatrixTransform2, thisTransform2,thisTransform);
-            }
+            if (kind === "ui") {
+                if (thisObject.sendMatrix === true) {
+                    cout(globalObjects[objectKey]);
+                    globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
+                        JSON.stringify({modelViewMatrix: globalObjects[objectKey]}), '*');
+                }
+            } else if ("node") {
 
+                thisObject.screenLinearZ = (((10001 - (20000 / thisObject.screenZ)) / 9999) + 1) / 2;
+                // map the linearized zBuffer to the final ball size
+                thisObject.screenLinearZ = map(thisObject.screenLinearZ, 0.996, 1, 25, 1);
 
-           // console.log(nodeKey);
-          // console.log(globalDOMCach["thisObject" + nodeKey]);
-           // console.log(globalDOMCach["thisObject" + nodeKey].visibility);
+                if (globalStates.pointerPosition[0] > -1) {
 
+                    var size = (thisObject.screenLinearZ * 20) * thisObject.scale;
+                    var x = thisObject.screenX;
+                    var y = thisObject.screenY;
 
-            webkitTransformMatrix3d(globalDOMCach["thisObject" + nodeKey], thisTransform);
+                    globalCanvas.hasContent = true;
 
-            // this is for later
-            // The matrix has been changed from Vuforia 3 to 4 and 5. Instead of  thisTransform[3][2] it is now thisTransform[3][3]
-            thisObject.screenX = thisTransform[12] / thisTransform[15] + (globalStates.height / 2);
-            thisObject.screenY = thisTransform[13] / thisTransform[15] + (globalStates.width / 2);
-            thisObject.screenZ = thisTransform[14];
+                    globalLogic.rectPoints = [
+                        [x - (-1 * size), y - (-0.42 * size)],
+                        [x - (-1 * size), y - (0.42 * size)],
+                        [x - (-0.42 * size), y - (size)],
+                        [x - (0.42 * size), y - (size)],
+                        [x - (size), y - (0.42 * size)],
+                        [x - (size), y - (-0.42 * size)],
+                        [x - (0.42 * size), y - (-1 * size)],
+                        [x - (-0.42 * size), y - (-1 * size)]
+                    ];
+                    var context = globalCanvas.context;
+                    context.setLineDash([]);
+                    // context.restore();
+                    context.beginPath();
+                    context.moveTo(globalLogic.rectPoints[0][0], globalLogic.rectPoints[0][1]);
+                    context.lineTo(globalLogic.rectPoints[1][0], globalLogic.rectPoints[1][1]);
+                    context.lineTo(globalLogic.rectPoints[2][0], globalLogic.rectPoints[2][1]);
+                    context.lineTo(globalLogic.rectPoints[3][0], globalLogic.rectPoints[3][1]);
+                    context.lineTo(globalLogic.rectPoints[4][0], globalLogic.rectPoints[4][1]);
+                    context.lineTo(globalLogic.rectPoints[5][0], globalLogic.rectPoints[5][1]);
+                    context.lineTo(globalLogic.rectPoints[6][0], globalLogic.rectPoints[6][1]);
+                    context.lineTo(globalLogic.rectPoints[7][0], globalLogic.rectPoints[7][1]);
+                    context.closePath();
 
-        }
-        if (kind === "ui") {
-            if (thisObject.sendMatrix === true) {
-                cout(globalObjects[objectKey]);
-                globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
-                    JSON.stringify({modelViewMatrix: globalObjects[objectKey]}), '*');
-            }
-        } else if("node")
-            {
-
-            thisObject.screenLinearZ = (((10001 - (20000 / thisObject.screenZ)) / 9999) + 1) / 2;
-            // map the linearized zBuffer to the final ball size
-            thisObject.screenLinearZ = map(thisObject.screenLinearZ, 0.996, 1, 25, 1);
-
-            if (globalStates.pointerPosition[0] > -1) {
-
-                var size = (thisObject.screenLinearZ * 20) * thisObject.scale;
-                var x = thisObject.screenX;
-                var y = thisObject.screenY;
-
-                globalCanvas.hasContent = true;
-
-                globalLogic.rectPoints = [
-                    [x - (-1 * size), y - (-0.42 * size)],
-                    [x - (-1 * size), y - (0.42 * size)],
-                    [x - (-0.42 * size), y - (size)],
-                    [x - (0.42 * size), y - (size)],
-                    [x - (size), y - (0.42 * size)],
-                    [x - (size), y - (-0.42 * size)],
-                    [x - (0.42 * size), y - (-1 * size)],
-                    [x - (-0.42 * size), y - (-1 * size)]
-                ];
-                var context = globalCanvas.context;
-                context.setLineDash([]);
-                // context.restore();
-                context.beginPath();
-                context.moveTo(globalLogic.rectPoints[0][0], globalLogic.rectPoints[0][1]);
-                context.lineTo(globalLogic.rectPoints[1][0], globalLogic.rectPoints[1][1]);
-                context.lineTo(globalLogic.rectPoints[2][0], globalLogic.rectPoints[2][1]);
-                context.lineTo(globalLogic.rectPoints[3][0], globalLogic.rectPoints[3][1]);
-                context.lineTo(globalLogic.rectPoints[4][0], globalLogic.rectPoints[4][1]);
-                context.lineTo(globalLogic.rectPoints[5][0], globalLogic.rectPoints[5][1]);
-                context.lineTo(globalLogic.rectPoints[6][0], globalLogic.rectPoints[6][1]);
-                context.lineTo(globalLogic.rectPoints[7][0], globalLogic.rectPoints[7][1]);
-                context.closePath();
-
-                 globalLogic.farFrontElement = "";
-                globalLogic.frontDepth = 10000000000;
-
+                    globalLogic.farFrontElement = "";
+                    globalLogic.frontDepth = 10000000000;
 
                     for (thisKey in globalObjects) {
                         if (objects[thisKey].screenZ < globalLogic.frontDepth) {
@@ -898,45 +876,46 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                         }
                     }
 
-                //console.log(globalLogic.farFrontElement);
+                    //console.log(globalLogic.farFrontElement);
 
-                /*if (kind === "node") {
-                    for (var thisKey in globalObjects) {
-                        if (objects[thisKey]) {
-                            //console.log(objects[thisKey]);
-                            //console.log(objects[thisKey].screenZ);
-                            for (var thisSubKey in objects[thisKey].nodes) {
-                                // console.log(objects[thisKey].nodes[thisSubKey].screenZ);
-                                if (objects[thisKey].nodes[thisSubKey].screenZ < globalLogic.frontDepth) {
-                                    globalLogic.frontDepth = objects[thisKey].nodes[thisSubKey].screenZ;
-                                    globalLogic.farFrontElement = thisSubKey;
+                    /*if (kind === "node") {
+                     for (var thisKey in globalObjects) {
+                     if (objects[thisKey]) {
+                     //console.log(objects[thisKey]);
+                     //console.log(objects[thisKey].screenZ);
+                     for (var thisSubKey in objects[thisKey].nodes) {
+                     // console.log(objects[thisKey].nodes[thisSubKey].screenZ);
+                     if (objects[thisKey].nodes[thisSubKey].screenZ < globalLogic.frontDepth) {
+                     globalLogic.frontDepth = objects[thisKey].nodes[thisSubKey].screenZ;
+                     globalLogic.farFrontElement = thisSubKey;
 
-                                }
-                            }
+                     }
+                     }
 
-                        }
+                     }
 
+                     }
+
+
+                     }*/
+
+                    if (globalLogic.farFrontElement === nodeKey) {
+                        context.strokeStyle = "#ff0000";
+                    } else {
+                        context.strokeStyle = "#f0f0f0";
                     }
 
+                    if (insidePoly(globalStates.pointerPosition, globalLogic.rectPoints))
+                        context.strokeStyle = "#ff00ff";
 
-                }*/
+                    context.stroke();
 
-                if (globalLogic.farFrontElement === nodeKey) {
-                    context.strokeStyle = "#ff0000";
-                } else {
-                    context.strokeStyle = "#f0f0f0";
+                    //console.log(globalStates.pointerPosition);
+
                 }
-
-                if (insidePoly(globalStates.pointerPosition, globalLogic.rectPoints))
-                    context.strokeStyle = "#ff00ff";
-
-                context.stroke();
-
-                //console.log(globalStates.pointerPosition);
-
             }
-        }
 
+        }
     }
 
 }
@@ -944,21 +923,20 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
 /**********************************************************************************************************************
  **********************************************************************************************************************/
 
-function webkitTransformMatrix3d(thisDom, thisTransform){
-
+function webkitTransformMatrix3d(thisDom, thisTransform) {
     thisDom.style.webkitTransform = 'matrix3d(' +
         thisTransform.toString() + ')';
 }
 /*
-function renderText(thisTransform){
+ function renderText(thisTransform){
 
-    return thisTransform[0] + ',' + thisTransform[1] + ',' + thisTransform[2] + ',' + thisTransform[3] + ',' +
-        thisTransform[4] + ',' + thisTransform[5] + ',' + thisTransform[6] + ',' + thisTransform[7] + ',' +
-        thisTransform[8] + ',' + thisTransform[9] + ',' + thisTransform[10] + ',' + thisTransform[11] + ',' +
-        thisTransform[12] + ',' + thisTransform[13] + ',' + thisTransform[14] + ',' + thisTransform[15];
-}
+ return thisTransform[0] + ',' + thisTransform[1] + ',' + thisTransform[2] + ',' + thisTransform[3] + ',' +
+ thisTransform[4] + ',' + thisTransform[5] + ',' + thisTransform[6] + ',' + thisTransform[7] + ',' +
+ thisTransform[8] + ',' + thisTransform[9] + ',' + thisTransform[10] + ',' + thisTransform[11] + ',' +
+ thisTransform[12] + ',' + thisTransform[13] + ',' + thisTransform[14] + ',' + thisTransform[15];
+ }
 
-*/
+ */
 // thisDom.style.webkitTransform = 'matrix3d('+thisTransform.toString()+')';
 /**
  * @desc
@@ -1146,7 +1124,7 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
         addIframe.setAttribute("sandbox", "allow-forms allow-pointer-lock allow-same-origin allow-scripts");
 
         var addOverlay = document.createElement('div');
-       // addOverlay.style.backgroundColor = "red";
+        // addOverlay.style.backgroundColor = "red";
         addOverlay.id = nodeKey;
         addOverlay.frameBorder = 0;
         addOverlay.style.width = thisObject.frameSizeX + "px";
@@ -1210,9 +1188,7 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
                     })
                 , "*");
 
-         //   document.getElementById('overlayImg').src = overlayImage[contentForFeedback].src;
-
-
+            //   document.getElementById('overlayImg').src = overlayImage[contentForFeedback].src;
 
         }, false);
         ec++;
@@ -1221,7 +1197,7 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
             globalSVGCach["overlayImgRing"].setAttribute("r", "30");
             globalSVGCach["overlayImgRing"].setAttribute("stroke", '#00ffff');
 
-           // document.getElementById('overlayImg').src = overlayImage[1].src;
+            // document.getElementById('overlayImg').src = overlayImage[1].src;
 
             cout("leave");
 
@@ -1237,15 +1213,15 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
 
         if (globalStates.editingMode) {
             // todo this needs to be changed backword
-           // if (objects[objectKey].developer) {
-                theObject.addEventListener("touchstart", MultiTouchStart, false);
-                ec++;
-                theObject.addEventListener("touchmove", MultiTouchMove, false);
-                ec++;
-                theObject.addEventListener("touchend", MultiTouchEnd, false);
-                ec++;
-                theObject.className = "mainProgram";
-          //  }
+            // if (objects[objectKey].developer) {
+            theObject.addEventListener("touchstart", MultiTouchStart, false);
+            ec++;
+            theObject.addEventListener("touchmove", MultiTouchMove, false);
+            ec++;
+            theObject.addEventListener("touchend", MultiTouchEnd, false);
+            ec++;
+            theObject.className = "mainProgram";
+            //  }
         }
         theObject.objectId = objectKey;
         theObject.nodeId = nodeKey;
@@ -1254,7 +1230,8 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
             theObject.style.visibility = "visible";
             // theObject.style.display = "initial";
         } else if (kind === "logic") {
-            theObject.style.visibility = "visible";}
+            theObject.style.visibility = "visible";
+        }
         else {
             theObject.style.visibility = "hidden";
             //theObject.style.display = "none";
@@ -1281,14 +1258,12 @@ function killObjects(objectKey, thisObject) {
         thisObject.loaded = false;
 
         globalDOMCach["thisObject" + objectKey].parentNode.removeChild(globalDOMCach["thisObject" + objectKey]);
-       delete globalDOMCach["thisObject" + objectKey];
+        delete globalDOMCach["thisObject" + objectKey];
         delete globalDOMCach["iframe" + objectKey];
         delete globalDOMCach[objectKey];
         delete globalDOMCach["canvas" + objectKey];
 
-
-
-       delete  globalDOMCach[objectKey];
+        delete  globalDOMCach[objectKey];
 
         for (var nodeKey in thisObject.nodes) {
             try {
@@ -1327,7 +1302,7 @@ function on_load(objectKey, nodeKey) {
     // cout("posting Msg");
     var nodes;
     var version = 170;
-    if(!objects[objectKey]){
+    if (!objects[objectKey]) {
         nodes = {};
     } else {
         nodes = objects[objectKey].nodes;
