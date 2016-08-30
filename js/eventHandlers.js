@@ -267,7 +267,7 @@ function documentPointerDown(evt) {
     pocketItemId = uuidTime();
 
 
-   var thisItem = pocketItem.pocket.logic[pocketItemId] = new Logic();
+  pocketItem.pocket.logic[pocketItemId] = new Logic();
 
 
     var thisItem = pocketItem.pocket.logic[pocketItemId];
