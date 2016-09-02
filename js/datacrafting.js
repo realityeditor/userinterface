@@ -1,3 +1,29 @@
+/**
+ * Created by Benjamin Reynolds on 9/02/16.
+ *
+ * Copyright (c) 2016 Benjamin Reynolds
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/*
+ * This file contains the backend for the grid-based routing system used in the
+ * datacrafting environment.
+ * 
+ * To use, instantiate a new Grid object with a given
+ * size (only size = 7 has been tested), and pixel dimensions for rows and
+ * columns. Blocks and Links can be added to the Grid.
+ * 
+ * Calling recalculateAllRoutes computes routes for each link. Then calling 
+ * getPointsForLink for each link returns x,y coordinates for drawing.
+ */
+
+/*
+ * TODO: expose only the public methods using a module exports, and keep internal utilities private
+ */
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   Data Structures - Definitions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
