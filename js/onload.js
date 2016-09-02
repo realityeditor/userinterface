@@ -166,6 +166,9 @@ window.onload = function () {
         e.preventDefault();
     });
 
+    initializeDatacraftingGrid();
+    datacraftingVisible();
+
     cout("onload");
 
 };

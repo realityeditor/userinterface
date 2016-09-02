@@ -108,6 +108,7 @@ function GUI() {
         if (globalStates.guiButtonState === false) {
             if (!globalStates.UIOffMode)      document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
             globalStates.guiButtonState = true;
+            datacraftingVisible();
         }
         else {
             if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
@@ -125,6 +126,7 @@ function GUI() {
         if (globalStates.guiButtonState === true) {
             if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
             globalStates.guiButtonState = false;
+            datacraftingHide();
         }
         else {
             if (!globalStates.UIOffMode)    document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
@@ -401,6 +403,114 @@ function preferencesVisible() {
     document.getElementById("preferences").style.display = "inline"; //= "hidden";
     cout("preferencesVisible");
 }
+
+/**********************************************************************************************************************
+ ******************************************* datacrafting GUI  *******************************************************
+ **********************************************************************************************************************/
+
+function datacraftingVisible() {
+    globalStates.datacraftingVisible = true;
+    document.getElementById("datacrafting-container").style.display = 'inline';
+    addDatacraftingEventListeners();
+}
+
+function datacraftingHide() {
+    globalStates.datacraftingVisible = false;
+    document.getElementById("datacrafting-container").style.display = 'none';
+    removeDatacraftingEventListeners();
+}
+
+function addDatacraftingEventListeners() {
+    grid.cells.forEach( function(cell) {
+        if (cell.domElement) {
+            cell.domElement.addEventListener("pointerdown", blockPointerDown);
+            cell.domElement.addEventListener("pointerenter", blockPointerEnter);
+            cell.domElement.addEventListener("pointerleave", blockPointerLeave);
+            cell.domElement.addEventListener("pointerup", blockPointerUp);            
+        }
+    });
+    var blocksContainer = document.getElementById('blocks');
+    blocksContainer.addEventListener("pointerup", datacraftingContainerPointerUp);
+    blocksContainer.addEventListener("pointerdown", datacraftingContainerPointerDown);
+    blocksContainer.addEventListener("pointermove", datacraftingContainerPointerMove);
+}
+
+function removeDatacraftingEventListeners() {
+    grid.cells.forEach( function(cell) {
+        if (cell.domElement) {
+            cell.domElement.removeEventListener("pointerdown", blockPointerDown);
+            cell.domElement.removeEventListener("pointerenter", blockPointerEnter);
+            cell.domElement.removeEventListener("pointerleave", blockPointerLeave);
+            cell.domElement.removeEventListener("pointerup", blockPointerUp);
+        }
+    });
+    var blocksContainer = document.getElementById('blocks');
+    blocksContainer.removeEventListener("pointerup", datacraftingContainerPointerUp);
+    blocksContainer.removeEventListener("pointerdown", datacraftingContainerPointerDown);
+    blocksContainer.removeEventListener("pointermove", datacraftingContainerPointerMove);
+}
+
+// should only be called once to initialize a blank datacrafting interface and data model
+function initializeDatacraftingGrid() {
+    var container = document.getElementById('datacrafting-container');
+    var containerWidth = container.clientWidth;
+    var containerHeight = container.clientHeight;
+
+    var blockWidth = 2 * (containerWidth / 11);
+    var blockHeight = (containerHeight / 7);
+    var marginWidth = (containerWidth / 11);
+    var marginHeight = blockHeight;
+
+    grid = new Grid(gridSize, blockWidth, blockHeight, marginWidth, marginHeight); //130, 65, 65, 65);
+    var datacraftingCanvas = document.getElementById("datacraftingCanvas");
+    var dimensions = grid.getPixelDimensions();
+
+    datacraftingCanvas.width = dimensions.width;
+    datacraftingCanvas.style.width = dimensions.width;
+    datacraftingCanvas.height = dimensions.height;
+    datacraftingCanvas.style.height = dimensions.height;
+
+    ///////////
+    // debugging only... shouldn't have blocks by default
+    grid.cells.forEach(function(cell) {
+        if (cell.canHaveBlock()) {
+            cell.block = new Block(cell);
+        }
+    });
+    ///////////
+
+    // initialize by adding a grid of images for the blocks
+    // and associating them with the data model and assigning event handlers
+    var blocksContainer = document.getElementById('blocks');
+    blocksContainer.setAttribute("touch-action", "none");
+
+    for (var rowNum = 0; rowNum < grid.size; rowNum+=2) {
+
+        var rowDiv = document.createElement('div');
+        rowDiv.setAttribute("class", "row");
+        rowDiv.setAttribute("id", "row" + rowNum);
+        blocksContainer.appendChild(rowDiv);
+
+        for (var colNum = 0; colNum < grid.size; colNum+=2) {
+
+            var blockImg = document.createElement('img');
+            blockImg.setAttribute("class", "block");
+            if (colNum === grid.size - 1) {
+                blockImg.setAttribute("class", "blockRight");
+            }
+            blockImg.setAttribute("id", "block" + colNum);
+            blockImg.setAttribute("src", blockImgMap["filled"][colNum/2]);
+            blockImg.setAttribute("touch-action", "none");
+            //var block = new Block(colNum, rowNum, true, blockImg);
+            var thisCell = grid.getCell(colNum, rowNum);
+            thisCell.domElement = blockImg;
+            blockImg.cell = thisCell;
+
+            rowDiv.appendChild(blockImg);
+        }
+    }
+}
+
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/

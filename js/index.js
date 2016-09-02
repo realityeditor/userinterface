@@ -473,6 +473,10 @@ function update(visibleObjects) {
     //disp = uiButtons.style.display;
     //uiButtons.style.display = 'none';
 
+    if (globalStates.datacraftingVisible) {
+        updateDatacrafting();
+    }
+
     if (globalStates.feezeButtonState == false) {
         globalObjects = visibleObjects;
     }
@@ -964,6 +968,113 @@ function hideTransformed(objectKey, nodeKey, thisObject, kind) {
 
         cout("hideTransformed");
     }
+}
+
+/**********************************************************************************************************************
+ ****************************************** datacrafting update  ******************************************************
+ **********************************************************************************************************************/
+
+function updateGrid(grid) {
+    // *** this does all the backend work ***
+    grid.recalculateAllRoutes();
+
+    // updates the visuals for the blocks
+    grid.forEachPossibleBlockCell( function(cell) {
+        if (cell.block !== null) {
+            displayCellBlock(cell);
+        } else {
+            hideCellBlock(cell);
+        }
+    });
+}
+
+// updates the visuals for the datacrafting each frame
+function updateDatacrafting() {
+    window.requestAnimationFrame(redrawDatacrafting);
+}
+
+// renders all the links for a datacrafting grid, and draws a cut line if present
+function redrawDatacrafting() {
+    var canvas = document.getElementById("datacraftingCanvas");
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    grid.forEachLink( function(link) {
+        drawDatacraftingLine(ctx, link, 5, link.startBlock.cell.getColorHSL(), link.endBlock.cell.getColorHSL(), timeCorrection);
+    });
+
+    if (cutLine.start !== null && cutLine.end !== null) {
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.moveTo(cutLine.start.x, cutLine.start.y);
+        ctx.lineTo(cutLine.end.x, cutLine.end.y);
+        ctx.stroke();
+    }
+}
+
+function checkForCutIntersections() {
+    var didRemoveAnyLinks = false;
+    for (var i = grid.links.length-1; i >= 0; i--) {
+        var didIntersect = false;
+        var points = grid.getPointsForLink(grid.links[i]);
+        for (var j = 1; j < points.length; j++) {
+            var start = points[j - 1];
+            var end = points[j];
+            if (checkLineCross(start.screenX, start.screenY, end.screenX, end.screenY, cutLine.start.x, cutLine.start.y, cutLine.end.x, cutLine.end.y)) {
+                didIntersect = true;
+            }
+        }
+        if (didIntersect) {
+            grid.links.splice(i, 1);
+            didRemoveAnyLinks = true;
+        }
+    }
+    if (didRemoveAnyLinks) {
+        updateGrid(grid);
+    }
+}
+
+function removeBlockAtCell(col, row) {
+    grid.getCell(col,row).block = null;
+}
+
+// add or remove the block
+function toggleCellBlock(cell) {
+    // remove a block if it's already there
+    if (cell.block !== null) {
+
+        // remove any links connected to this block
+        grid.forEachLink( function(link) {
+            if (link.startBlock === cell.block || link.endBlock === cell.block) {
+                grid.removeLink(link);
+            }
+        });
+
+        // remove any links connected to the block being removed // TODO: is this redundant? is this doing anything? which is better - this or before?
+        grid.links = grid.links.filter(function(link) {
+            return (link.startBlock !== cell.block && link.endBlock !== cell.block);
+        });
+
+        cell.block = null;
+        hideCellBlock(cell);
+        updateGrid(grid); // need to recalculate routes if block removed
+
+        // add a block if it's not there
+    } else {
+        cell.block = new Block(cell);
+        displayCellBlock(cell);
+        updateGrid(grid); // need to recalculate routes if block added
+    }
+}
+
+function displayCellBlock(cell) {
+    cell.domElement.setAttribute("src", blockImgMap["filled"][cell.location.col/2]);
+    cell.domElement.style.opacity = '1.00';
+}
+
+function hideCellBlock(cell) {
+    cell.domElement.setAttribute("src", blockImgMap["empty"][cell.location.col/2]);
+    cell.domElement.style.opacity = '0.50';
 }
 
 /**********************************************************************************************************************

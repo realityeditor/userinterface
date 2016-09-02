@@ -43,6 +43,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 /**********************************************************************************************************************
  **********************************************************************************************************************/
 
@@ -690,3 +691,131 @@ function removeEventHandlers() {
 
     cout("removeEventHandlers");
 }
+
+/**********************************************************************************************************************
+ ************************************** datacrafting event handlers  *************************************************
+ **********************************************************************************************************************/
+
+// clicking down on a block enables drawing a temporary link from this block
+// (this behavior continues in the blockPointerLeave method)
+function blockPointerDown(e) {
+    e.preventDefault();
+
+    if (e.target.cell.block !== null) {
+        isPointerDown = true;
+    }
+}
+
+// if your pointer leaves a filled block and the pointer is down, start drawing temp link from this source
+function blockPointerLeave(e) {
+    e.preventDefault();
+    isPointerInActiveBlock = false;
+    if (e.target.cell.block === null) return;
+
+    if (isPointerDown && !isTempLinkBeingDrawn) {
+        isTempLinkBeingDrawn = true;
+        tempStartBlock = e.target.cell.block;
+        console.log("left block, isTempLinkBeingDrawn");
+    }
+}
+
+// if your pointer enters a different block while temp link is being drawn, render a new link to that destination
+function blockPointerEnter(e) {
+    e.preventDefault();
+    if (e.target.cell.block === null) return;
+
+    isPointerInActiveBlock = true;
+    if (isTempLinkBeingDrawn) {
+        tempEndBlock = e.target.cell.block;
+
+        // create temp link if you can
+        if (tempStartBlock === null || tempEndBlock === null) { return; }
+        // erases temp link if you enter the start block again
+        if (tempStartBlock === tempEndBlock) {
+            grid.tempLink = null;
+            //renderLinks();
+            updateGrid(grid); // need to recalculate routes without temp link
+            console.log("entered same block, remove temp link");
+            return;
+        }
+
+        grid.setTempLink(new Link(tempStartBlock, tempEndBlock));
+        updateGrid(grid); // need to recalculate routes with new temp link
+        console.log("entered new block, new temp link");
+    }
+}
+
+// if you release the pointer over a block, the temporary link becomes permanent
+function blockPointerUp(e) {
+    e.preventDefault();
+    if (e.target.cell.block === null) return;
+
+    isPointerDown = false;
+    isTempLinkBeingDrawn = false;
+
+    if (grid.tempLink !== null) {
+        //only create link if identical link doesn't already exist
+        if (!grid.doesLinkAlreadyExist(grid.tempLink)) {
+            // add link to data structure
+            var startLocation = grid.tempLink.startBlock.cell.location;
+            var endLocation = grid.tempLink.endBlock.cell.location;
+            var addedLink = grid.addLinkFromTo(startLocation.col, startLocation.row, endLocation.col, endLocation.row);
+            if (addedLink !== null) {
+                addedLink.route = grid.tempLink.route; // copy over the route rather than recalculating everything
+                addedLink.pointData = grid.tempLink.pointData; // copy over rather than recalculate
+                addedLink.ballAnimationCount = grid.tempLink.ballAnimationCount;
+            }
+        }
+        grid.tempLink = null;
+    }
+}
+
+// releasing pointer anywhere on datacrafting container deletes a temp link
+// if drawing one, or executes a cut line to delete links it crosses
+function datacraftingContainerPointerUp(e) {
+    e.preventDefault();
+
+    if (isCutLineBeingDrawn) {
+        isCutLineBeingDrawn = false;
+        if (cutLine.start !== null && cutLine.end !== null){
+            checkForCutIntersections();
+        }
+        cutLine.start = null;
+        cutLine.end = null;
+    }
+
+    if (!isPointerInActiveBlock) {
+        isPointerDown = false;
+        isTempLinkBeingDrawn = false;
+        if (grid.tempLink !== null) {
+            grid.tempLink = null;
+        }
+    }
+}
+
+// clicking down in datacrafting container outside of blocks creates a new cut line
+function datacraftingContainerPointerDown(e) {
+    e.preventDefault();
+
+    if (!isCutLineBeingDrawn && !isPointerInActiveBlock) {
+        isCutLineBeingDrawn = true;
+        cutLine.start = {
+            x: e.pageX,
+            y: e.pageY
+        };
+    }
+}
+
+// moving pointer in datacrafting container updates endpoint of cut line
+function datacraftingContainerPointerMove(e) {
+    e.preventDefault();
+
+    if (isCutLineBeingDrawn) {
+        cutLine.end = {
+            x: e.pageX,
+            y: e.pageY
+        };
+    }
+}
+
+
