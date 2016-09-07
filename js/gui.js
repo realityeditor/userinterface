@@ -421,7 +421,7 @@ function datacraftingHide() {
 }
 
 function addDatacraftingEventListeners() {
-    grid.cells.forEach( function(cell) {
+    logic1.grid.cells.forEach( function(cell) {
         if (cell.domElement) {
             cell.domElement.addEventListener("pointerdown", blockPointerDown);
             cell.domElement.addEventListener("pointerenter", blockPointerEnter);
@@ -436,7 +436,7 @@ function addDatacraftingEventListeners() {
 }
 
 function removeDatacraftingEventListeners() {
-    grid.cells.forEach( function(cell) {
+    logic1.grid.cells.forEach( function(cell) {
         if (cell.domElement) {
             cell.domElement.removeEventListener("pointerdown", blockPointerDown);
             cell.domElement.removeEventListener("pointerenter", blockPointerEnter);
@@ -461,9 +461,12 @@ function initializeDatacraftingGrid() {
     var marginWidth = (containerWidth / 11);
     var marginHeight = blockHeight;
 
-    grid = new Grid(gridSize, blockWidth, blockHeight, marginWidth, marginHeight); //130, 65, 65, 65);
+    logic1 = new Logic();
+
+    // grid = new Grid(gridSize, blockWidth, blockHeight, marginWidth, marginHeight); //130, 65, 65, 65);
+    logic1.grid = new Grid(blockWidth, blockHeight, marginWidth, marginHeight); //130, 65, 65, 65);
     var datacraftingCanvas = document.getElementById("datacraftingCanvas");
-    var dimensions = grid.getPixelDimensions();
+    var dimensions = logic1.grid.getPixelDimensions();
 
     datacraftingCanvas.width = dimensions.width;
     datacraftingCanvas.style.width = dimensions.width;
@@ -472,9 +475,13 @@ function initializeDatacraftingGrid() {
 
     ///////////
     // debugging only... shouldn't have blocks by default
-    grid.cells.forEach(function(cell) {
+    logic1.grid.cells.forEach(function(cell) {
         if (cell.canHaveBlock()) {
-            cell.block = new Block(cell);
+            // cell.block = new Block(cell);
+            var blockPos = convertGridPosToBlockPos(cell.location.col, cell.location.row);
+            var block = createBlock(blockPos.x, blockPos.y, 1, "test");
+            var blockKey = "block_" + blockPos.x + "_" + blockPos.y + "_" + getTimestamp();
+            logic1.blocks[blockKey] = block;
         }
     });
     ///////////
@@ -484,25 +491,25 @@ function initializeDatacraftingGrid() {
     var blocksContainer = document.getElementById('blocks');
     blocksContainer.setAttribute("touch-action", "none");
 
-    for (var rowNum = 0; rowNum < grid.size; rowNum+=2) {
+    for (var rowNum = 0; rowNum < logic1.grid.size; rowNum+=2) {
 
         var rowDiv = document.createElement('div');
         rowDiv.setAttribute("class", "row");
         rowDiv.setAttribute("id", "row" + rowNum);
         blocksContainer.appendChild(rowDiv);
 
-        for (var colNum = 0; colNum < grid.size; colNum+=2) {
+        for (var colNum = 0; colNum < logic1.grid.size; colNum+=2) {
 
             var blockImg = document.createElement('img');
             blockImg.setAttribute("class", "block");
-            if (colNum === grid.size - 1) {
+            if (colNum === logic1.grid.size - 1) {
                 blockImg.setAttribute("class", "blockRight");
             }
             blockImg.setAttribute("id", "block" + colNum);
             blockImg.setAttribute("src", blockImgMap["filled"][colNum/2]);
             blockImg.setAttribute("touch-action", "none");
             //var block = new Block(colNum, rowNum, true, blockImg);
-            var thisCell = grid.getCell(colNum, rowNum);
+            var thisCell = logic1.grid.getCell(colNum, rowNum);
             thisCell.domElement = blockImg;
             blockImg.cell = thisCell;
 

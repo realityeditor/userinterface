@@ -23,8 +23,8 @@ function createBlock(x,y,blockSize,name) {
 }
 
 function getBlock(x,y) {
-    for (var blockKey in logic.blocks) {
-        var block = logic.blocks[blockKey];
+    for (var blockKey in logic1.blocks) {
+        var block = logic1.blocks[blockKey];
         if (block.x === x && block.y === y) {
             return block;
         }
@@ -37,7 +37,7 @@ function getCellForBlock(grid, block) {
 }
 
 Grid.prototype.getCellXY = function(x, y) {
-    var gridPos = this.convertBlockPosToGridPos(x,y);
+    var gridPos = convertBlockPosToGridPos(x,y);
     return this.getCell(gridPos.col, gridPos.row);
 };
 
@@ -119,7 +119,7 @@ function Cell(location) {
     this.location = location; // CellLocation
     this.routeTrackers = []; // [RouteTracker]
     // this.block = null;
-    // this.domElement = null; // <IMG> element //TODO: remove DOM element to decouple frontend from backend
+    this.domElement = null; // <IMG> element //TODO: remove DOM element to decouple frontend from backend
 }
 
 function CellLocation(col,row) {
@@ -345,26 +345,33 @@ function addBlockLink(blockA, blockB, itemA, itemB) {
         blockLink.itemB = itemB;
         blockLinkKey = "blockLink" + getTimestamp();
         if (!doesLinkAlreadyExist(blockLink)) {
-            logic.links[blockLinkKey] = blockLink;
+            logic1.links[blockLinkKey] = blockLink;
             return blockLink;
         }
     }
     return null;
 }
 
-function removeBlockLink(blockLinkKey) {
-    delete logic.links(blockLinkKey);
-}
-
-function clearAllBlockLinks() {
-    for (var blockLinkKey in logic.blocks) {
-        removeBlockLink(blockLinkKey);
+function setTempLink(newTempLink) {
+    if (!doesLinkAlreadyExist(newTempLink)) {
+        logic1.tempLink = newTempLink;
     }
 }
 
+function removeBlockLink(blockLinkKey) {
+    delete logic1.links[blockLinkKey];
+}
+
+function clearAllBlockLinks() {
+    for (var blockLinkKey in logic1.blocks) {
+        removeBlockLink(blockLinkKey);
+    }
+    logic1.tempLink = null;
+}
+
 function doesLinkAlreadyExist(blockLink) {
-    for (var blockLinkKey in logic.links) {
-        var thatBlockLink = logic.links[blockLink];
+    for (var blockLinkKey in logic1.links) {
+        var thatBlockLink = logic1.links[blockLinkKey];
         if (areBlockLinksEqual(blockLink, thatBlockLink)) {
             return true;
         }
@@ -485,8 +492,11 @@ Grid.prototype.getRowCenterY = function(row) {
 };
 
 Grid.prototype.forEachLink = function(action) { // TODO: this doesn't need to be in Grid anymore
-    for (var blockLinkKey in logic.links) {
-        action(logic.links[blockLinkKey]);
+    for (var blockLinkKey in logic1.links) {
+        action(logic1.links[blockLinkKey]);
+    }
+    if (logic1.tempLink) {
+        action(logic1.tempLink);
     }
 }
 
@@ -640,7 +650,8 @@ Grid.prototype.calculateLinkRoute = function(link) {
             var firstBlockBelow = this.getFirstBlockBelow(startLocation.col, startLocation.row);
             var rowToDrawDownTo = endLocation.row-1;
             if (firstBlockBelow !== null) {
-                rowToDrawDownTo = Math.min(firstBlockBelow.cell.location.row-1, rowToDrawDownTo);
+                var firstBlockRowBelow = convertBlockPosToGridPos(firstBlockBelow.x, firstBlockBelow.y).row;
+                rowToDrawDownTo = Math.min(firstBlockRowBelow-1, rowToDrawDownTo); //Math.min(firstBlockBelow.cell.location.row-1, rowToDrawDownTo);
             }
             route.addLocation(startLocation.col, rowToDrawDownTo);
 
@@ -675,7 +686,10 @@ Grid.prototype.calculateLinkRoute = function(link) {
 
             // if there's nothing blocking the line from getting to the side of the end block, last point goes there
             var cellsBetween = this.getCellsBetween(this.getCell(startLocation.col, 0), this.getCell(endLocation.col, endLocation.row)); //new CellLocation(startLocation.col,0), endLocation);
-            var blocksBetween = cellsBetween.filter(function(cell){return cell.block !== null;});
+            var blocksBetween = cellsBetween.filter(function(cell){
+                return cell.blockAtThisLocation() !== null;
+                // return cell.block !== null;
+            });
             if (blocksBetween.length === 0) {
                 route.addLocation(startLocation.col + sideToApproachOn, 0);
 

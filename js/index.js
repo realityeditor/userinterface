@@ -995,12 +995,17 @@ function updateDatacrafting() {
 
 // renders all the links for a datacrafting grid, and draws a cut line if present
 function redrawDatacrafting() {
+    var grid = logic1.grid;
+
     var canvas = document.getElementById("datacraftingCanvas");
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     grid.forEachLink( function(link) {
-        drawDatacraftingLine(ctx, link, 5, link.startBlock.cell.getColorHSL(), link.endBlock.cell.getColorHSL(), timeCorrection);
+        var startCell =  grid.getCellXY(link.blockA.x, link.blockA.y);
+        var endCell =  grid.getCellXY(link.blockB.x, link.blockB.y);
+
+        drawDatacraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
     });
 
     if (cutLine.start !== null && cutLine.end !== null) {
@@ -1012,21 +1017,48 @@ function redrawDatacrafting() {
     }
 }
 
+// function checkForCutIntersections() {
+//     var grid = logic1.grid;
+
+//     var didRemoveAnyLinks = false;
+//     for (var i = grid.links.length-1; i >= 0; i--) {
+//         var didIntersect = false;
+//         var points = grid.getPointsForLink(grid.links[i]);
+//         for (var j = 1; j < points.length; j++) {
+//             var start = points[j - 1];
+//             var end = points[j];
+//             if (checkLineCross(start.screenX, start.screenY, end.screenX, end.screenY, cutLine.start.x, cutLine.start.y, cutLine.end.x, cutLine.end.y)) {
+//                 didIntersect = true;
+//             }
+//         }
+//         if (didIntersect) {
+//             grid.links.splice(i, 1);
+//             didRemoveAnyLinks = true;
+//         }
+//     }
+//     if (didRemoveAnyLinks) {
+//         updateGrid(grid);
+//     }
+// }
+
 function checkForCutIntersections() {
+    var grid = logic1.grid;
     var didRemoveAnyLinks = false;
-    for (var i = grid.links.length-1; i >= 0; i--) {
+    for (var blockLinkKey in logic1.links) {
         var didIntersect = false;
-        var points = grid.getPointsForLink(grid.links[i]);
+        var blockLink = logic1.links[blockLinkKey];
+        var points = grid.getPointsForLink(blockLink);
         for (var j = 1; j < points.length; j++) {
             var start = points[j - 1];
             var end = points[j];
             if (checkLineCross(start.screenX, start.screenY, end.screenX, end.screenY, cutLine.start.x, cutLine.start.y, cutLine.end.x, cutLine.end.y)) {
                 didIntersect = true;
             }
-        }
-        if (didIntersect) {
-            grid.links.splice(i, 1);
-            didRemoveAnyLinks = true;
+            if (didIntersect) {
+                // grid.links.splice(i, 1);
+                removeBlockLink(blockLinkKey);
+                didRemoveAnyLinks = true;
+            }
         }
     }
     if (didRemoveAnyLinks) {
@@ -1034,6 +1066,7 @@ function checkForCutIntersections() {
     }
 }
 
+// TODO: reimplement
 function removeBlockAtCell(col, row) {
     grid.getCell(col,row).block = null;
 }

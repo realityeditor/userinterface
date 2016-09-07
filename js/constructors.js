@@ -201,6 +201,7 @@ function Logic() {
 
     this.links = {};
     this.blocks = {};
+    this.tempLink = null;
 
 }
 

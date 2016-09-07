@@ -701,7 +701,7 @@ function removeEventHandlers() {
 function blockPointerDown(e) {
     e.preventDefault();
 
-    if (e.target.cell.block !== null) {
+    if (e.target.cell.blockAtThisLocation() !== null) {
         isPointerDown = true;
     }
 }
@@ -710,36 +710,42 @@ function blockPointerDown(e) {
 function blockPointerLeave(e) {
     e.preventDefault();
     isPointerInActiveBlock = false;
-    if (e.target.cell.block === null) return;
+    if (e.target.cell.blockAtThisLocation() === null) return;
 
     if (isPointerDown && !isTempLinkBeingDrawn) {
         isTempLinkBeingDrawn = true;
-        tempStartBlock = e.target.cell.block;
+        tempStartBlock = e.target.cell.blockAtThisLocation();
         console.log("left block, isTempLinkBeingDrawn");
     }
 }
 
 // if your pointer enters a different block while temp link is being drawn, render a new link to that destination
 function blockPointerEnter(e) {
+    var grid = logic1.grid;
     e.preventDefault();
-    if (e.target.cell.block === null) return;
+    if (e.target.cell.blockAtThisLocation() === null) return;
 
     isPointerInActiveBlock = true;
     if (isTempLinkBeingDrawn) {
-        tempEndBlock = e.target.cell.block;
+        tempEndBlock = e.target.cell.blockAtThisLocation();
 
         // create temp link if you can
         if (tempStartBlock === null || tempEndBlock === null) { return; }
         // erases temp link if you enter the start block again
         if (tempStartBlock === tempEndBlock) {
-            grid.tempLink = null;
+            logic1.tempLink = null;
             //renderLinks();
             updateGrid(grid); // need to recalculate routes without temp link
             console.log("entered same block, remove temp link");
             return;
         }
 
-        grid.setTempLink(new Link(tempStartBlock, tempEndBlock));
+        var newTempLink = new BlockLink();
+        newTempLink.blockA = tempStartBlock;
+        newTempLink.blockB = tempEndBlock;
+        newTempLink.itemA = 0;
+        newTempLink.itemB = 0;
+        setTempLink(newTempLink);
         updateGrid(grid); // need to recalculate routes with new temp link
         console.log("entered new block, new temp link");
     }
@@ -747,32 +753,37 @@ function blockPointerEnter(e) {
 
 // if you release the pointer over a block, the temporary link becomes permanent
 function blockPointerUp(e) {
+    var grid = logic1.grid;
     e.preventDefault();
-    if (e.target.cell.block === null) return;
+    if (e.target.cell.blockAtThisLocation() === null) return;
 
     isPointerDown = false;
     isTempLinkBeingDrawn = false;
 
-    if (grid.tempLink !== null) {
+    if (logic1.tempLink !== null) {
         //only create link if identical link doesn't already exist
-        if (!grid.doesLinkAlreadyExist(grid.tempLink)) {
+        if (!doesLinkAlreadyExist(logic1.tempLink)) {
             // add link to data structure
-            var startLocation = grid.tempLink.startBlock.cell.location;
-            var endLocation = grid.tempLink.endBlock.cell.location;
-            var addedLink = grid.addLinkFromTo(startLocation.col, startLocation.row, endLocation.col, endLocation.row);
+            // var startLocation = logic1.tempLink.blockA;//.cell.location;
+            // var endLocation = logic1.tempLink.blockB;//.cell.location;
+            // var addedLink = grid.addLinkFromTo(startLocation.col, startLocation.row, endLocation.col, endLocation.row);
+
+            var addedLink = addBlockLink(logic1.tempLink.blockA, logic1.tempLink.blockB, 0, 0);
+
             if (addedLink !== null) {
-                addedLink.route = grid.tempLink.route; // copy over the route rather than recalculating everything
-                addedLink.pointData = grid.tempLink.pointData; // copy over rather than recalculate
-                addedLink.ballAnimationCount = grid.tempLink.ballAnimationCount;
+                addedLink.route = logic1.tempLink.route; // copy over the route rather than recalculating everything
+                // addedLink.pointData = logic1.tempLink.pointData; // copy over rather than recalculate
+                // addedLink.ballAnimationCount = logic1.tempLink.ballAnimationCount;
             }
         }
-        grid.tempLink = null;
+        logic1.tempLink = null;
     }
 }
 
 // releasing pointer anywhere on datacrafting container deletes a temp link
 // if drawing one, or executes a cut line to delete links it crosses
 function datacraftingContainerPointerUp(e) {
+    var grid = logic1.grid;
     e.preventDefault();
 
     if (isCutLineBeingDrawn) {
@@ -787,8 +798,8 @@ function datacraftingContainerPointerUp(e) {
     if (!isPointerInActiveBlock) {
         isPointerDown = false;
         isTempLinkBeingDrawn = false;
-        if (grid.tempLink !== null) {
-            grid.tempLink = null;
+        if (logic1.tempLink !== null) {
+            logic1.tempLink = null;
         }
     }
 }

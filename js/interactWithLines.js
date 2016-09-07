@@ -234,15 +234,15 @@ function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEn
     var mathPI = 2*Math.PI;
     var spacer = 2.3;
 
-    var pointData = linkObject.pointData;
+    var pointData = linkObject.route.pointData;
 
     var blueToRed = (startColor.h === 180) && (endColor.h === 333);
     var redToBlue = (startColor.h === 333) && (endColor.h === 180);
 
     var percentIncrement = (lineStartWeight * spacer)/pointData.totalLength;
 
-    if (linkObject.ballAnimationCount >= percentIncrement) {
-        linkObject.ballAnimationCount = 0;
+    if (linkObject.route.ballAnimationCount >= percentIncrement) {
+        linkObject.route.ballAnimationCount = 0;
     }
 
     var hue = startColor;
@@ -251,8 +251,8 @@ function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEn
     var color;
 
     for (var i = 0; i < 1.0; i += percentIncrement) {
-        var percentage = i + linkObject.ballAnimationCount;
-        var position = linkObject.getXYPositionAtPercentage(percentage);
+        var percentage = i + linkObject.route.ballAnimationCount;
+        var position = linkObject.route.getXYPositionAtPercentage(percentage);
         if (position !== null) {
             if (transitionColorRight) {
                 // looks better to go down rather than up
@@ -271,7 +271,7 @@ function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEn
     }
 
     var numFramesForAnimationLoop = 30;
-    linkObject.ballAnimationCount += percentIncrement/numFramesForAnimationLoop;
+    linkObject.route.ballAnimationCount += percentIncrement/numFramesForAnimationLoop;
 }
 
 /**********************************************************************************************************************

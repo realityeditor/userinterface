@@ -221,7 +221,8 @@ body {
   -webkit-transform-style: preserve-3d;
   width: -webkit-calc(100% - 60px);
   width: calc(100% - 60px);
-  height: 100%;
+  /*height: 100%;*/
+  height: 320px;
    /* this is a hack for adding the interface in front of the transformed web interface */
   -webkit-transform: translateZ(3px);
 }

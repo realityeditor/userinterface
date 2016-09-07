@@ -212,8 +212,9 @@ var overlayDiv;
  ***************************************** datacrafting variables  ****************************************************
  **********************************************************************************************************************/
 
-const gridSize = 7;
-var grid = null;
+// const gridSize = 7;
+// var grid = null;
+var logic1 = null;
 
 var tempStartBlock = null; // the block you started dragging from
 var tempEndBlock = null; // the block you dragged onto
