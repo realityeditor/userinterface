@@ -88,6 +88,7 @@ var globalStates = {
     preferencesButtonState: false,
     extendedTracking: false,
     datacraftingVisible: true,
+    currentLogic: null,
 
     extendedTrackingState: false,
     developerState: false,
@@ -219,7 +220,7 @@ var overlayDiv;
 
 // const gridSize = 7;
 // var grid = null;
-var logic1 = null;
+// var globalStates.currentLogic = null;
 
 var tempStartBlock = null; // the block you started dragging from
 var tempEndBlock = null; // the block you dragged onto

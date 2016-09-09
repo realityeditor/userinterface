@@ -259,7 +259,7 @@ function addBlockLink(blockA, blockB, itemA, itemB) {
         blockLink.itemB = itemB;
         blockLinkKey = "blockLink" + getTimestamp();
         if (!doesLinkAlreadyExist(blockLink)) {
-            logic1.links[blockLinkKey] = blockLink;
+            globalStates.currentLogic.links[blockLinkKey] = blockLink;
             return blockLink;
         }
     }
@@ -268,24 +268,24 @@ function addBlockLink(blockA, blockB, itemA, itemB) {
 
 function setTempLink(newTempLink) {
     if (!doesLinkAlreadyExist(newTempLink)) {
-        logic1.tempLink = newTempLink;
+        globalStates.currentLogic.tempLink = newTempLink;
     }
 }
 
 function removeBlockLink(blockLinkKey) {
-    delete logic1.links[blockLinkKey];
+    delete globalStates.currentLogic.links[blockLinkKey];
 }
 
 function clearAllBlockLinks() {
-    for (var blockLinkKey in logic1.blocks) {
+    for (var blockLinkKey in globalStates.currentLogic.blocks) {
         removeBlockLink(blockLinkKey);
     }
-    logic1.tempLink = null;
+    globalStates.currentLogic.tempLink = null;
 }
 
 function doesLinkAlreadyExist(blockLink) {
-    for (var blockLinkKey in logic1.links) {
-        var thatBlockLink = logic1.links[blockLinkKey];
+    for (var blockLinkKey in globalStates.currentLogic.links) {
+        var thatBlockLink = globalStates.currentLogic.links[blockLinkKey];
         if (areBlockLinksEqual(blockLink, thatBlockLink)) {
             return true;
         }
@@ -406,11 +406,11 @@ Grid.prototype.getRowCenterY = function(row) {
 };
 
 Grid.prototype.forEachLink = function(action) { // TODO: this doesn't need to be in Grid anymore
-    for (var blockLinkKey in logic1.links) {
-        action(logic1.links[blockLinkKey]);
+    for (var blockLinkKey in globalStates.currentLogic.links) {
+        action(globalStates.currentLogic.links[blockLinkKey]);
     }
-    if (logic1.tempLink) {
-        action(logic1.tempLink);
+    if (globalStates.currentLogic.tempLink) {
+        action(globalStates.currentLogic.tempLink);
     }
 }
 
@@ -917,8 +917,8 @@ function createBlock(x,y,blockSize,name) {
 }
 
 function getBlock(x,y) {
-    for (var blockKey in logic1.blocks) {
-        var block = logic1.blocks[blockKey];
+    for (var blockKey in globalStates.currentLogic.blocks) {
+        var block = globalStates.currentLogic.blocks[blockKey];
         if (block.x === x && block.y === y) {
             return block;
         }

@@ -64,6 +64,12 @@
 
 // Functions to fill the data of the object
 
+function testCommunication(filepath) {
+    console.log("test communication");
+    console.log(filepath);
+    // document.getElementById('testImg').setAttribute('src', filepath);
+}
+
 /**
  * @desc Adding new objects to the reality editor database via http ajax
  * @param {String|Array} beat an array in the form {id: "", ip: ""}
@@ -474,9 +480,11 @@ function update(visibleObjects) {
     //disp = uiButtons.style.display;
     //uiButtons.style.display = 'none';
 
+
     if (globalStates.datacraftingVisible) {
         updateDatacrafting();
     }
+
 
     if (globalStates.feezeButtonState == false) {
         globalObjects = visibleObjects;
@@ -1015,7 +1023,8 @@ function updateDatacrafting() {
 
 // renders all the links for a datacrafting grid, and draws a cut line if present
 function redrawDatacrafting() {
-    var grid = logic1.grid;
+    if (!globalStates.currentLogic) return;
+    var grid = globalStates.currentLogic.grid;
 
     var canvas = document.getElementById("datacraftingCanvas");
     var ctx = canvas.getContext('2d');
@@ -1038,7 +1047,7 @@ function redrawDatacrafting() {
 }
 
 // function checkForCutIntersections() {
-//     var grid = logic1.grid;
+//     var grid = globalStates.currentLogic.grid;
 
 //     var didRemoveAnyLinks = false;
 //     for (var i = grid.links.length-1; i >= 0; i--) {
@@ -1062,11 +1071,11 @@ function redrawDatacrafting() {
 // }
 
 function checkForCutIntersections() {
-    var grid = logic1.grid;
+    var grid = globalStates.currentLogic.grid;
     var didRemoveAnyLinks = false;
-    for (var blockLinkKey in logic1.links) {
+    for (var blockLinkKey in globalStates.currentLogic.links) {
         var didIntersect = false;
-        var blockLink = logic1.links[blockLinkKey];
+        var blockLink = globalStates.currentLogic.links[blockLinkKey];
         var points = grid.getPointsForLink(blockLink);
         for (var j = 1; j < points.length; j++) {
             var start = points[j - 1];

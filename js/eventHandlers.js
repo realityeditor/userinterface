@@ -858,7 +858,6 @@ function blockPointerLeave(e) {
 
 // if your pointer enters a different block while temp link is being drawn, render a new link to that destination
 function blockPointerEnter(e) {
-    var grid = logic1.grid;
     e.preventDefault();
     if (e.target.cell.blockAtThisLocation() === null) return;
 
@@ -870,9 +869,9 @@ function blockPointerEnter(e) {
         if (tempStartBlock === null || tempEndBlock === null) { return; }
         // erases temp link if you enter the start block again
         if (tempStartBlock === tempEndBlock) {
-            logic1.tempLink = null;
+            globalStates.currentLogic.tempLink = null;
             //renderLinks();
-            updateGrid(grid); // need to recalculate routes without temp link
+            updateGrid(globalStates.currentLogic.grid); // need to recalculate routes without temp link
             console.log("entered same block, remove temp link");
             return;
         }
@@ -883,44 +882,42 @@ function blockPointerEnter(e) {
         newTempLink.itemA = 0;
         newTempLink.itemB = 0;
         setTempLink(newTempLink);
-        updateGrid(grid); // need to recalculate routes with new temp link
+        updateGrid(globalStates.currentLogic.grid); // need to recalculate routes with new temp link
         console.log("entered new block, new temp link");
     }
 }
 
 // if you release the pointer over a block, the temporary link becomes permanent
 function blockPointerUp(e) {
-    var grid = logic1.grid;
     e.preventDefault();
     if (e.target.cell.blockAtThisLocation() === null) return;
 
     isPointerDown = false;
     isTempLinkBeingDrawn = false;
 
-    if (logic1.tempLink !== null) {
+    if (globalStates.currentLogic.tempLink !== null) {
         //only create link if identical link doesn't already exist
-        if (!doesLinkAlreadyExist(logic1.tempLink)) {
+        if (!doesLinkAlreadyExist(globalStates.currentLogic.tempLink)) {
             // add link to data structure
-            // var startLocation = logic1.tempLink.blockA;//.cell.location;
-            // var endLocation = logic1.tempLink.blockB;//.cell.location;
+            // var startLocation = globalStates.currentLogic.tempLink.blockA;//.cell.location;
+            // var endLocation = globalStates.currentLogic.tempLink.blockB;//.cell.location;
             // var addedLink = grid.addLinkFromTo(startLocation.col, startLocation.row, endLocation.col, endLocation.row);
 
-            var addedLink = addBlockLink(logic1.tempLink.blockA, logic1.tempLink.blockB, 0, 0);
+            var addedLink = addBlockLink(globalStates.currentLogic.tempLink.blockA, globalStates.currentLogic.tempLink.blockB, 0, 0);
 
             if (addedLink !== null) {
-                addedLink.route = logic1.tempLink.route; // copy over the route rather than recalculating everything
-                // addedLink.pointData = logic1.tempLink.pointData; // copy over rather than recalculate
-                addedLink.ballAnimationCount = logic1.tempLink.ballAnimationCount;
+                addedLink.route = globalStates.currentLogic.tempLink.route; // copy over the route rather than recalculating everything
+                // addedLink.pointData = globalStates.currentLogic.tempLink.pointData; // copy over rather than recalculate
+                addedLink.ballAnimationCount = globalStates.currentLogic.tempLink.ballAnimationCount;
             }
         }
-        logic1.tempLink = null;
+        globalStates.currentLogic.tempLink = null;
     }
 }
 
 // releasing pointer anywhere on datacrafting container deletes a temp link
 // if drawing one, or executes a cut line to delete links it crosses
 function datacraftingContainerPointerUp(e) {
-    var grid = logic1.grid;
     e.preventDefault();
 
     if (isCutLineBeingDrawn) {
@@ -935,8 +932,8 @@ function datacraftingContainerPointerUp(e) {
     if (!isPointerInActiveBlock) {
         isPointerDown = false;
         isTempLinkBeingDrawn = false;
-        if (logic1.tempLink !== null) {
-            logic1.tempLink = null;
+        if (globalStates.currentLogic.tempLink !== null) {
+            globalStates.currentLogic.tempLink = null;
         }
     }
 }
