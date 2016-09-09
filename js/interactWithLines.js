@@ -241,8 +241,8 @@ function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEn
 
     var percentIncrement = (lineStartWeight * spacer)/pointData.totalLength;
 
-    if (linkObject.route.ballAnimationCount >= percentIncrement) {
-        linkObject.route.ballAnimationCount = 0;
+    if (linkObject.ballAnimationCount >= percentIncrement) {
+        linkObject.ballAnimationCount = 0;
     }
 
     var hue = startColor;
@@ -251,7 +251,7 @@ function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEn
     var color;
 
     for (var i = 0; i < 1.0; i += percentIncrement) {
-        var percentage = i + linkObject.route.ballAnimationCount;
+        var percentage = i + linkObject.ballAnimationCount;
         var position = linkObject.route.getXYPositionAtPercentage(percentage);
         if (position !== null) {
             if (transitionColorRight) {
@@ -271,7 +271,7 @@ function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEn
     }
 
     var numFramesForAnimationLoop = 30;
-    linkObject.route.ballAnimationCount += percentIncrement/numFramesForAnimationLoop;
+    linkObject.ballAnimationCount += percentIncrement/numFramesForAnimationLoop;
 }
 
 /**********************************************************************************************************************

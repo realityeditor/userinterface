@@ -1,86 +1,3 @@
-/*
-var logic = new Logic();
-logic.grid = new Grid(130, 65, 65, 65);
-
-var newBlock1 = createBlock(0,0,1,"test"); //new Block();//x,y,blockSize,name);
-var logicBlockKey1 = "block1_" + getTimestamp();
-logic.blocks[logicBlockKey1] = newBlock1;
-
-var newBlock2 = createBlock(1,2,1,"test"); //new Block();//x,y,blockSize,name);
-var logicBlockKey2 = "block2_" + getTimestamp();
-logic.blocks[logicBlockKey2] = newBlock2;
-
-addBlockLink(newBlock1, newBlock2, 0, 0);
-*/
-
-function createBlock(x,y,blockSize,name) {
-    var block = new Block();
-    block.x = x;
-    block.y = y;
-    block.blockSize = blockSize;
-    block.name = name;
-    return block;
-}
-
-function getBlock(x,y) {
-    for (var blockKey in logic1.blocks) {
-        var block = logic1.blocks[blockKey];
-        if (block.x === x && block.y === y) {
-            return block;
-        }
-    }
-    return null;
-}
-
-function getCellForBlock(grid, block) {
-    return grid.getCellXY(block.x, block.y);
-}
-
-Grid.prototype.getCellXY = function(x, y) {
-    var gridPos = convertBlockPosToGridPos(x,y);
-    return this.getCell(gridPos.col, gridPos.row);
-};
-
-// gets a block overlapping the cell at this x,y location
-function getBlockXY(x, y) {
-    // check if block of size >= 1 is at (x, y)
-    var block = null;
-    block = getBlock(x,y);
-    if (block && block.blockSize >= 1) {
-        return block;
-    }
-    // else check if block of size >= 2 is at (x-1, y)
-    block = getBlock(x-1,y);
-    if (block && block.blockSize >= 2) {
-        return block;
-    }
-    // else check if block of size >= 3 is at (x-2, y)
-    block = getBlock(x-2,y);
-    if (block && block.blockSize >= 3) {
-        return block;
-    }
-
-    // else check if block of size == 4 is at (x-3, y)
-    block = getBlock(x-3,y);
-    if (block && block.blockSize >= 4) {
-        return block;
-    }
-    return null;
-}
-
-function convertGridPosToBlockPos(col, row) {
-// Grid.prototype.convertGridPosToBlockPos = function(col, row) {
-    return {
-        x: Math.floor(col/2),
-        y: Math.floor(row/2)
-    };
-}
-
-function convertBlockPosToGridPos(x, y) {
-//Grid.prototype.convertBlockPosToGridPos = function(x, y) {
-    return new CellLocation(x * 2, y * 2);
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   Data Structures - Definitions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,10 +57,7 @@ function Route(initialCellLocations) {
             that.addLocation(location.col,location.row);
         });
     }
-
     this.pointData = null; // list of [{screenX, screenY}]
-    this.ballAnimationCount = 0;
-    this.linkKey = null;
 }
 
 // TODO: poorly named / designed
@@ -989,8 +903,74 @@ Grid.prototype.calculateOffsets = function(overlaps) {
 };
 
 
+////////////////////////////////////////////////////////////////////////////////
+//      misc functions for working with blocks and grids
+////////////////////////////////////////////////////////////////////////////////
 
+function createBlock(x,y,blockSize,name) {
+    var block = new Block();
+    block.x = x;
+    block.y = y;
+    block.blockSize = blockSize;
+    block.name = name;
+    return block;
+}
 
+function getBlock(x,y) {
+    for (var blockKey in logic1.blocks) {
+        var block = logic1.blocks[blockKey];
+        if (block.x === x && block.y === y) {
+            return block;
+        }
+    }
+    return null;
+}
 
+function getCellForBlock(grid, block) {
+    return grid.getCellXY(block.x, block.y);
+}
 
+Grid.prototype.getCellXY = function(x, y) {
+    var gridPos = convertBlockPosToGridPos(x,y);
+    return this.getCell(gridPos.col, gridPos.row);
+};
 
+// gets a block overlapping the cell at this x,y location
+function getBlockXY(x, y) {
+    // check if block of size >= 1 is at (x, y)
+    var block = null;
+    block = getBlock(x,y);
+    if (block && block.blockSize >= 1) {
+        return block;
+    }
+    // else check if block of size >= 2 is at (x-1, y)
+    block = getBlock(x-1,y);
+    if (block && block.blockSize >= 2) {
+        return block;
+    }
+    // else check if block of size >= 3 is at (x-2, y)
+    block = getBlock(x-2,y);
+    if (block && block.blockSize >= 3) {
+        return block;
+    }
+
+    // else check if block of size == 4 is at (x-3, y)
+    block = getBlock(x-3,y);
+    if (block && block.blockSize >= 4) {
+        return block;
+    }
+    return null;
+}
+
+function convertGridPosToBlockPos(col, row) {
+// Grid.prototype.convertGridPosToBlockPos = function(col, row) {
+    return {
+        x: Math.floor(col/2),
+        y: Math.floor(row/2)
+    };
+}
+
+function convertBlockPosToGridPos(x, y) {
+//Grid.prototype.convertBlockPosToGridPos = function(x, y) {
+    return new CellLocation(x * 2, y * 2);
+}

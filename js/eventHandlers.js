@@ -773,7 +773,7 @@ function blockPointerUp(e) {
             if (addedLink !== null) {
                 addedLink.route = logic1.tempLink.route; // copy over the route rather than recalculating everything
                 // addedLink.pointData = logic1.tempLink.pointData; // copy over rather than recalculate
-                // addedLink.ballAnimationCount = logic1.tempLink.ballAnimationCount;
+                addedLink.ballAnimationCount = logic1.tempLink.ballAnimationCount;
             }
         }
         logic1.tempLink = null;
