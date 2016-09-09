@@ -63,6 +63,7 @@ var reloadButtonImage = [];
 var resetButtonImage = [];
 var unconstButtonImage = [];
 var editingButtonImage = [];
+var pocketButtonImage = [];
 var loadNewUiImage = [];
 
 /**********************************************************************************************************************
@@ -78,10 +79,15 @@ function GUI() {
         'png/freeze.png', 'png/freezeOver.png', 'png/freezeSelect.png', 'png/freezeEmpty.png'
     );
     preload(guiButtonImage,
-        'png/intOneOver.png', 'png/intOneSelect.png', 'png/intTwoOver.png', 'png/intTwoSelect.png', 'png/intEmpty.png'
+        'png/intOneOver.png', 'png/intOneSelect.png', 'png/intTwoOver.png', 'png/intTwoSelect.png', 'png/intEmpty.png', 'png/intThree.png'
     );
+
+    preload(pocketButtonImage,
+        'png/pocket.png', 'png/pocketOver.png', 'png/pocketSelect.png', 'png/pocketEmpty.png', 'png/blockPocket.png', 'png/blockPocketOver.png', 'png/blockPocketSelect.png'
+    );
+
     preload(preferencesButtonImage,
-        'png/pref.png', 'png/prefOver.png', 'png/prefSelect.png', 'png/prefEmpty.png'
+        'png/pref.png', 'png/prefOver.png', 'png/prefSelect.png', 'png/prefEmpty.png', 'png/blockPref.png', 'png/blockPrefOver.png', 'png/blockPrefSelect.png'
     );
     preload(reloadButtonImage,
         'png/reloadOver.png', 'png/reload.png', 'png/reloadEmpty.png'
@@ -105,15 +111,8 @@ function GUI() {
     ec++;
 
     document.getElementById("guiButtonImage1").addEventListener("touchend", function () {
-        if (globalStates.guiButtonState === false) {
-            if (!globalStates.UIOffMode)      document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
-            globalStates.guiButtonState = true;
-            datacraftingVisible();
-        }
-        else {
-            if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
-        }
-
+        if (!globalStates.UIOffMode)      document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
+        craftingBoardHide();
     });
     ec++;
 
@@ -123,14 +122,10 @@ function GUI() {
     ec++;
 
     document.getElementById("guiButtonImage2").addEventListener("touchend", function () {
-        if (globalStates.guiButtonState === true) {
-            if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
-            globalStates.guiButtonState = false;
-            datacraftingHide();
-        }
-        else {
-            if (!globalStates.UIOffMode)    document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
-        }
+
+        if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
+        globalStates.guiState = "node";
+        craftingBoardHide();
     });
     ec++;
 
@@ -193,7 +188,7 @@ function GUI() {
 
             var tempResetObject = objects[key];
 
-            if (globalStates.guiButtonState) {
+            if (globalStates.guiState ==="ui") {
                 tempResetObject.matrix = [];
 
                 tempResetObject.x = 0;
@@ -206,7 +201,7 @@ function GUI() {
             for (var subKey in tempResetObject.nodes) {
                 var tempResetValue = tempResetObject.nodes[subKey];
 
-                if (!globalStates.guiButtonState) {
+                if (globalStates.guiState ==="node") {
 
                     tempResetValue.matrix = [];
 
@@ -317,6 +312,7 @@ function GUI() {
                 document.getElementById('guiButtonImage').src = guiButtonImage[4].src;
                 document.getElementById('resetButton').src = resetButtonImage[3].src;
                 document.getElementById('unconstButton').src = unconstButtonImage[3].src;
+                document.getElementById('pocketButton').src = pocketButtonImage[3].src;
             }
 
         }
@@ -340,12 +336,17 @@ function GUI() {
                 document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
                 document.getElementById('resetButton').src = resetButtonImage[0].src;
                 document.getElementById('unconstButton').src = unconstButtonImage[0].src;
+                document.getElementById('pocketButton').src = pocketButtonImage[0].src;
             }
 
         }
 
     });
     ec++;
+
+    /**
+    * Freeze Button
+     */
 
     document.getElementById("feezeButton").addEventListener("touchstart", function () {
         if (!globalStates.UIOffMode) document.getElementById('feezeButton').src = freezeButtonImage[1].src;
@@ -364,6 +365,143 @@ function GUI() {
         }
 
     });
+
+
+    /**
+     * Pocket Button
+     */
+    var thisPocket =  document.getElementById("pocketButton");
+ /*
+
+    document.getElementById("pocketButton").addEventListener("touchstart", function () {
+        if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1].src;
+    });
+    ec++;
+    document.getElementById("pocketButton").addEventListener("touchend", function () {
+        if (globalStates.pocketButtonState === true) {
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+            globalStates.pocketButtonState = false;
+
+        }
+        else {
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2].src;
+        }
+
+    });
+
+*/
+    thisPocket.addEventListener("pointerdown", function () {console.log("pointerdown");
+        globalStates.pocketButtonDown = true;
+
+    }, false);
+
+    thisPocket.addEventListener("pointerup", function () { console.log("pointerup");
+       if(globalStates.pocketButtonDown){
+           pocketButtonAction()
+       }
+        globalStates.pocketButtonDown = false;
+        globalStates.pocketButtonUp = true;
+    }, false);
+
+    thisPocket.addEventListener("pointerenter", function () { console.log("pointerenter");
+
+
+        if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1].src;
+
+        // this is where the virtual point disapears!
+
+
+        if (pocketItem.pocket.logic[pocketItemId]) {
+            pocketItem.pocket.objectVisible = false;
+
+
+                hideTransformed("pocket", pocketItemId, pocketItem.pocket.logic[pocketItemId], "logic");
+                delete pocketItem.pocket.logic[pocketItemId];
+            }
+
+
+
+    }, false);
+
+
+    thisPocket.addEventListener("pointerleave", function (evt) { console.log("pointerleave");
+
+        if (globalStates.pocketButtonState === true) {
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+        }
+        else {
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2].src;
+        }
+
+        // this is where the virtual point creates object
+
+
+
+        // todo for testing only
+        if (globalStates.pocketButtonDown === true && globalStates.guiState ==="node") {
+
+            pocketItemId = uuidTime();
+            console.log(pocketItemId);
+            pocketItem.pocket.logic[pocketItemId] = new Logic();
+
+            var thisItem = pocketItem.pocket.logic[pocketItemId];
+
+            thisItem.x = globalStates.pointerPosition[0] - (globalStates.height / 2);
+            thisItem.y = globalStates.pointerPosition[1] - (globalStates.width / 2);
+
+            // else {
+            // var matrixTouch =  screenCoordinatesToMatrixXY(thisItem, [evt.clientX,evt.clientY]);
+            // thisItem.x = matrixTouch[0];
+            // thisItem.y = matrixTouch[1];
+            //}
+            thisItem.loaded = false;
+
+            var thisObject = pocketItem.pocket;
+            // this is a work around to set the state of an objects to not being visible.
+            thisObject.objectId = "pocket";
+            thisObject.name = "pocket";
+            thisObject.objectVisible = false;
+            thisObject.screenZ = 1000;
+            thisObject.fullScreen = false;
+            thisObject.sendMatrix = false;
+            thisObject.loaded = false;
+            thisObject.integerVersion = 170;
+            thisObject.matrix = [];
+            // thisObject.logic = {};
+            thisObject.protocol = "R1";
+
+           //
+            //thisObject.visibleCounter = timeForContentLoaded;
+
+            //addElement("pocket", pocketItemId, "nodes/" + thisItem.appearance + "/index.html",  pocketItem.pocket, "logic",globalStates);
+
+        }
+        setPocketPossition(evt);
+
+        // globalStates.pocketButtonDown = false;
+       // globalStates.pocketButtonUp = false;
+    }, false);
+
+
+
+
+    function pocketButtonAction() {
+
+        if (globalStates.pocketButtonState === true) {
+            console.log("buttonon");
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+            globalStates.pocketButtonState = false;
+        }
+        else {
+            console.log("buttonoff");
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2].src;
+            globalStates.pocketButtonState = true;
+        }
+
+    }
+
+
+
 
     ec++;
     document.getElementById("reloadButton").addEventListener("touchstart", function () {
@@ -404,21 +542,36 @@ function preferencesVisible() {
     cout("preferencesVisible");
 }
 
+
+/**
+ * @desc
+ **/
+
+function craftingBoardVisible(objectKey, nodeKey) {
+    document.getElementById('guiButtonImage').src = guiButtonImage[5].src;
+    document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
+    document.getElementById('pocketButton').src = pocketButtonImage[4].src;
+globalStates.guiState ="logic";
+    document.getElementById("craftingBoard").style.visibility = "visible"; //
+    document.getElementById("craftingBoard").style.display = "inline"; //= "hidden";
+    cout("craftingBoardVisible");
+}
+
+/**
+ * @desc
+ **/
+
+function craftingBoardHide() {
+    document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
+    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+    document.getElementById("craftingBoard").style.visibility = "hidden"; //= "hidden";
+    document.getElementById("craftingBoard").style.dispaly = "none"; //= "hidden";
+    cout("craftingBoardHide");
+}
+
 /**********************************************************************************************************************
  ******************************************* datacrafting GUI  *******************************************************
  **********************************************************************************************************************/
-
-function datacraftingVisible() {
-    globalStates.datacraftingVisible = true;
-    document.getElementById("datacrafting-container").style.display = 'inline';
-    addDatacraftingEventListeners();
-}
-
-function datacraftingHide() {
-    globalStates.datacraftingVisible = false;
-    document.getElementById("datacrafting-container").style.display = 'none';
-    removeDatacraftingEventListeners();
-}
 
 function addDatacraftingEventListeners() {
     logic1.grid.cells.forEach( function(cell) {

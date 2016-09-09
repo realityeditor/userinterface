@@ -197,7 +197,7 @@ function Logic() {
      [[null, 0], [null, 0], [null, 0], [null, 0]]
      ];*/
 
-    this.appearance = "default";
+    this.appearance = "logicNode";
 
     this.links = {};
     this.blocks = {};

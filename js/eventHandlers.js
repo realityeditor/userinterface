@@ -54,10 +54,12 @@
 
 function touchDown(evt) {
     if (!globalStates.editingMode) {
-        if (!globalStates.guiButtonState) {
+        if (globalStates.guiState ==="node") {
             if (!globalProgram.objectA) {
                 globalProgram.objectA = this.objectId;
                 globalProgram.nodeA = this.nodeId;
+                if(this.kind === "logic")
+                    globalProgram.logicA = 0;
             }
         }
     } else {
@@ -76,9 +78,10 @@ function touchDown(evt) {
  **/
 
 function falseTouchUp() {
-    if (!globalStates.guiButtonState) {
+    if (globalStates.guiState ==="node") {
         globalProgram.objectA = false;
         globalProgram.nodeA = false;
+        globalProgram.logicA = false;
     }
     globalCanvas.hasContent = true;
     cout("falseTouchUp");
@@ -92,46 +95,129 @@ function falseTouchUp() {
  **/
 
 function trueTouchUp() {
-    if (!globalStates.guiButtonState) {
+    if (globalStates.guiState ==="node") {
         if (globalProgram.objectA) {
+
+            if(this.nodeId === globalProgram.nodeA && this.kind === "logic"){
+                craftingBoardVisible(this.objectId, this.nodeId);
+            }
 
             var thisTempObject = objects[globalProgram.objectA];
             var thisTempObjectLinks = thisTempObject.links;
 
             globalProgram.objectB = this.objectId;
             globalProgram.nodeB = this.nodeId;
+            if(this.kind === "logic")
+                globalProgram.logicB = 0;
+
             var thisOtherTempObject = objects[globalProgram.objectB];
 
-            var okForNewLink = checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, globalProgram.objectB, globalProgram.nodeB);
+            var okForNewLink = checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, globalProgram.logicA, globalProgram.objectB, globalProgram.nodeB, globalProgram.logicB);
 
             //  window.location.href = "of://event_" + objects[globalProgram.objectA].visible;
 
             if (okForNewLink) {
                 var thisKeyId = uuidTimeShort();
 
+                var namesA, namesB;
+
+                    if(globalProgram.logicA !== false){
+                        namesA = "";
+                    } else {
+                        namesA =  [thisTempObject.name, thisTempObject.nodes[globalProgram.nodeA].name];
+                    }
+
+                    if(globalProgram.logicB !== false){
+                        namesB = "";
+                    } else {
+                        namesB =  [thisOtherTempObject.name, thisOtherTempObject.nodes[globalProgram.nodeB].name];
+                    }
+
+
+
+
                 thisTempObjectLinks[thisKeyId] = {
                     objectA: globalProgram.objectA,
                     objectB: globalProgram.objectB,
                     nodeA: globalProgram.nodeA,
                     nodeB: globalProgram.nodeB,
-                    namesA: [thisTempObject.name, thisTempObject.nodes[globalProgram.nodeA].name],
-                    namesB: [thisOtherTempObject.name, thisOtherTempObject.nodes[globalProgram.nodeB].name]
+                    logicA: globalProgram.logicA,
+                    logicB: globalProgram.logicB,
+                    namesA: namesA,
+                    namesB: namesB
                 };
 
                 // push new connection to objectA
-                uploadNewLink(thisTempObject.ip, globalProgram.objectA, thisKeyId, thisTempObjectLinks[thisKeyId]);
+                //todo this is a work around to not crash the server. only temporarly for testing
+                if(globalProgram.logicA === false && globalProgram.logicB === false) {
+                    uploadNewLink(thisTempObject.ip, globalProgram.objectA, thisKeyId, thisTempObjectLinks[thisKeyId]);
+                }
             }
 
             // set everything back to false
             globalProgram.objectA = false;
             globalProgram.nodeA = false;
+            globalProgram.logicA = false;
             globalProgram.objectB = false;
             globalProgram.nodeB = false;
+            globalProgram.logicB = false;
         }
     }
     globalCanvas.hasContent = true;
 
     cout("trueTouchUp");
+}
+
+
+function touchEnter () {
+    var contentForFeedback;
+
+    if (globalProgram.nodeA === this.id || globalProgram.nodeA === false) {
+        contentForFeedback = 3;
+        globalSVGCach["overlayImgRing"].setAttribute("r", "58");
+        globalSVGCach["overlayImgRing"].setAttribute("stroke", '#f9f90a');
+
+    } else {
+
+        if (checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, globalProgram.logicA, this.objectId, this.nodeId, 0)) {
+            contentForFeedback = 2; // overlayImg.src = overlayImage[2].src;
+            globalSVGCach["overlayImgRing"].setAttribute("r", "58");
+            globalSVGCach["overlayImgRing"].setAttribute("stroke", '#3af431');
+        }
+
+        else {
+            contentForFeedback = 0; // overlayImg.src = overlayImage[0].src;
+            globalSVGCach["overlayImgRing"].setAttribute("r", "58");
+            globalSVGCach["overlayImgRing"].setAttribute("stroke", '#ff019f');
+        }
+    }
+
+    globalDOMCach["iframe" + this.nodeId].contentWindow.postMessage(
+        JSON.stringify(
+            {
+                uiActionFeedback: contentForFeedback
+            })
+        , "*");
+
+    //   document.getElementById('overlayImg').src = overlayImage[contentForFeedback].src;
+}
+
+
+function touchLeave () {
+        globalSVGCach["overlayImgRing"].setAttribute("r", "30");
+        globalSVGCach["overlayImgRing"].setAttribute("stroke", '#00ffff');
+
+        // document.getElementById('overlayImg').src = overlayImage[1].src;
+
+        cout("leave");
+
+        globalDOMCach["iframe" + this.nodeId].contentWindow.postMessage(
+            JSON.stringify(
+                {
+                    uiActionFeedback: 1
+                })
+            , "*");
+
 }
 
 /**********************************************************************************************************************
@@ -143,7 +229,7 @@ function trueTouchUp() {
  **/
 
 function canvasPointerDown(evt) {
-    if (!globalStates.guiButtonState && !globalStates.editingMode) {
+    if (globalStates.guiState ==="node" && !globalStates.editingMode) {
         if (!globalProgram.objectA) {
             globalStates.drawDotLine = true;
             globalStates.drawDotLineX = evt.clientX;
@@ -171,34 +257,48 @@ function getPossition(evt) {
     overlayDiv.style.top = evt.clientY - 60;
 
 
+    setPocketPossition(evt);
+
+
+    cout("getPossition");
+
+}
+
+
+function setPocketPossition (evt){
+
+
     if(pocketItem.pocket.logic[pocketItemId]){
+
 
         var thisItem = pocketItem.pocket.logic[pocketItemId];
 
         if(globalLogic.farFrontElement==="") {
             thisItem.x = evt.clientX - (globalStates.height / 2);
             thisItem.y = evt.clientY - (globalStates.width / 2);
+
         }
         else {
             if(thisItem.screenZ !==2 && thisItem.screenZ) {
-               // console.log(screenCoordinatesToMatrixXY(thisItem, [evt.clientX, evt.clientY]));
-             var matrixTouch = screenCoordinatesToMatrixXY(thisItem, [evt.clientX, evt.clientY]);
 
+                //  console.log(thisItem.screenZ);
+                // console.log(screenCoordinatesToMatrixXY(thisItem, [evt.clientX, evt.clientY]));
+                var matrixTouch = screenCoordinatesToMatrixXY(thisItem, [evt.clientX, evt.clientY]);
+               // console.log(thisItem);
                 thisItem.x = matrixTouch[0];
                 thisItem.y = matrixTouch[1];
+
             }
         }
 
 
-      //  pocketItem.pocket.x = evt.clientX;
-       // pocketItem.pocket.y = evt.clientY;
+        //  pocketItem.pocket.x = evt.clientX;
+        // pocketItem.pocket.y = evt.clientY;
 
 
 
     }
 
-
-    cout("getPossition");
 
 }
 
@@ -214,25 +314,41 @@ function documentPointerUp(evt) {
 
     globalStates.pointerPosition = [-1, -1];
 
-    pocketItem.pocket.objectVisible = false;
 
 
 
-    if(pocketItem.pocket.logic[pocketItemId]) {
+    if (globalStates.pocketButtonDown) {
+        pocketItem.pocket.objectVisible = false;
 
-        var thisItem = pocketItem.pocket.logic[pocketItemId];
+        if (pocketItem.pocket.logic[pocketItemId]) {
 
-        if (globalLogic.farFrontElement !== "" && thisItem.screenZ !== 2 && thisItem.screenZ) {
-            objects[globalLogic.farFrontElement].logic[pocketItemId] = thisItem;
+            globalLogic.farFrontElement = "";
+            globalLogic.frontDepth = 10000000000;
+
+            for (var thisOtherKey in globalObjects) {
+                if (globalObjects[thisOtherKey][14] < globalLogic.frontDepth) {
+                    globalLogic.frontDepth = globalObjects[thisOtherKey][14];
+                    globalLogic.farFrontElement = thisOtherKey;
+                }
+            }
+
+            var thisItem = pocketItem.pocket.logic[pocketItemId];
+
+            if (globalLogic.farFrontElement !== "" && thisItem.screenZ !== 2 && thisItem.screenZ) {
+                objects[globalLogic.farFrontElement].logic[pocketItemId] = thisItem;
+
+                globalDOMCach[pocketItemId].objectId = globalLogic.farFrontElement;
+
+            }
+            hideTransformed("pocket", pocketItemId, pocketItem.pocket.logic[pocketItemId], "logic");
+            delete pocketItem.pocket.logic[pocketItemId];
         }
     }
 
-    hideTransformed("pocket", pocketItemId, pocketItem.pocket.logic[pocketItemId], "logic");
-    delete pocketItem.pocket.logic[pocketItemId];
 
     globalStates.overlay = 0;
 
-    if (!globalStates.guiButtonState) {
+    if (globalStates.guiState ==="node") {
         falseTouchUp();
         if (!globalProgram.objectA && globalStates.drawDotLine) {
             deleteLines(globalStates.drawDotLineX, globalStates.drawDotLineY, evt.clientX, evt.clientY);
@@ -244,6 +360,13 @@ function documentPointerUp(evt) {
     overlayDiv.style.display = "none";
 
     cout("documentPointerUp");
+
+
+// this is relevant for the pocket button to be interact with
+    globalStates.pocketButtonDown = false;
+    globalStates.pocketButtonUp = false;
+
+
 };
 
 /**
@@ -262,7 +385,7 @@ function documentPointerDown(evt) {
     overlayDiv.style.top = evt.clientY - 60;
 
 
-
+/*
     // todo for testing only
 
     pocketItemId = uuidTime();
@@ -278,11 +401,11 @@ function documentPointerDown(evt) {
         thisItem.x = evt.clientX - (globalStates.height / 2);
         thisItem.y = evt.clientY - (globalStates.width / 2);
     }
-   /* else {
-        var matrixTouch =  screenCoordinatesToMatrixXY(thisItem, [evt.clientX,evt.clientY]);
-        thisItem.x = matrixTouch[0];
-        thisItem.y = matrixTouch[1];
-    }*/
+   // else {
+       // var matrixTouch =  screenCoordinatesToMatrixXY(thisItem, [evt.clientX,evt.clientY]);
+       // thisItem.x = matrixTouch[0];
+       // thisItem.y = matrixTouch[1];
+    //}
     thisItem.scale = 1;
     thisItem.loaded = false;
 
@@ -311,7 +434,7 @@ function documentPointerDown(evt) {
     //addElement("pocket", pocketItemId, "nodes/" + thisItem.appearance + "/index.html",  pocketItem.pocket, "logic",globalStates);
 
 
-
+*/
     cout("documentPointerDown");
 }
 
@@ -325,8 +448,10 @@ function MultiTouchStart(evt) {
 // generate action for all links to be reloaded after upload
 
     if (globalStates.editingMode && evt.targetTouches.length === 1) {
+        console.log("--------------------------------"+this.objectId);
         globalStates.editingModeObject = this.objectId;
         globalStates.editingModeLocation = this.nodeId;
+        globalStates.editingModeKind = this.kind;
         globalStates.editingModeHaveObject = true;
     }
     globalMatrix.matrixtouchOn = this.nodeId;
@@ -354,7 +479,11 @@ function MultiTouchMove(evt) {
 
         var tempThisObject = {};
         if (globalStates.editingModeObject !== globalStates.editingModeLocation) {
+            if(globalStates.editingModeKind=== "node")
             tempThisObject = objects[globalStates.editingModeObject].nodes[globalStates.editingModeLocation];
+            if(globalStates.editingModeKind=== "logic")
+              tempThisObject = objects[globalStates.editingModeObject].logic[globalStates.editingModeLocation];
+           // console.log(objects[globalStates.editingModeObject]);
         } else {
             tempThisObject = objects[globalStates.editingModeObject];
         }
@@ -391,7 +520,12 @@ function MultiTouchEnd(evt) {
 
         var tempThisObject = {};
         if (globalStates.editingModeObject != globalStates.editingModeLocation) {
-            tempThisObject = objects[globalStates.editingModeObject].nodes[globalStates.editingModeLocation];
+
+            if(globalStates.editingModeKind=== "node")
+                tempThisObject = objects[globalStates.editingModeObject].nodes[globalStates.editingModeLocation];
+            if(globalStates.editingModeKind=== "logic")
+                tempThisObject = objects[globalStates.editingModeObject].logic[globalStates.editingModeLocation];
+
         } else {
             tempThisObject = objects[globalStates.editingModeObject];
         }
@@ -407,8 +541,11 @@ function MultiTouchEnd(evt) {
 
         }
 
-        if (typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
-            postData('http://' + objects[globalStates.editingModeObject].ip + ':' + httpPort + '/object/' + globalStates.editingModeObject + "/size/" + globalStates.editingModeLocation, content);
+        // todo for now we just send nodes but no logic locations.
+        if(globalStates.editingModeKind=== "node") {
+            if (typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
+                postData('http://' + objects[globalStates.editingModeObject].ip + ':' + httpPort + '/object/' + globalStates.editingModeObject + "/size/" + globalStates.editingModeLocation, content);
+            }
         }
 
         globalStates.editingModeHaveObject = false;
@@ -595,7 +732,7 @@ function addEventHandlers() {
 
             if (document.getElementById(thisKey)) {
                 var thisObject3 = document.getElementById(thisKey);
-                //  if (globalStates.guiButtonState) {
+                //  if (globalStates.guiState) {
                 thisObject3.style.visibility = "visible";
 
                 var thisObject4 = document.getElementById("canvas" + thisKey);

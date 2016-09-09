@@ -81,6 +81,9 @@
 
 <!-- This is the console terminal -->
 
+<div class='Interfaces' id="craftingBoard"></div>
+
+
 <div class='Interfaces' id="preferences">
 
     <div id="content1" class='Interfaces'
@@ -234,38 +237,48 @@ position: fixed;
    /* this is a hack for adding the interface in front of the transformed web interface */
 -webkit-transform: translateZ(1px);
 ">
+    <!-- guiButtonImage    -->
     <div class='Interfaces'
          style="position: fixed; width: 60px;height: 125px;right: 0px; top: 0px;  -webkit-transform-style: preserve-3d;  visibility: visible;">
         <img class='Interfaces' id="guiButtonImage" src="png/intOneSelect.png" width="60" height="125" alt=""></div>
-    <div class='Interfaces' id="feezeButtonDiv"
+
+
+    <!-- pocketButton    -->
+    <div class='Interfaces' id="pocketButtonDiv"
          style="position: fixed; width: 60px;height: 60px;right: 0px; top: 130px;  -webkit-transform-style: preserve-3d; visibility: visible;">
+        <img class='Interfaces' id="pocketButton" src="png/pocket.png" width="60" height="60" alt=""/></div>
+
+    <!-- feezeButton    -->
+    <div class='Interfaces' id="feezeButtonDiv"
+         style="position: fixed; width: 60px;height: 60px;right: 0px; top: 260px;  -webkit-transform-style: preserve-3d; visibility: visible;">
         <img class='Interfaces' id="feezeButton" src="png/freeze.png" width="60" height="60" alt=""/></div>
+    <!--  guiButtonImage1   -->
     <div class='Interfaces' id="guiButtonImage1"
          style="position: fixed; width: 60px;height: 60px;right: 0px; top:0px;  -webkit-transform-style: preserve-3d; visibility: visible;">
     </div>
+    <!--  guiButtonImage2   -->
     <div class='Interfaces' id="guiButtonImage2"
          style="position: fixed; width: 60px;height: 60px;right: 0px; top:62px;  -webkit-transform-style: preserve-3d; visibility: visible;">
     </div>
+    <!--   reloadButtonDiv -- only visible in ipad -->
     <div class='Interfaces' id="reloadButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; top: 260px;  -webkit-transform-style: preserve-3d; visibility: visible;">
+         style="position: fixed; width: 60px;height: 60px;right: 0px; top: 325px;  -webkit-transform-style: preserve-3d; visibility: visible;">
         <img class='Interfaces' id="reloadButton" src="png/reload.png" width="60" height="60" alt=""/></div>
-
+    <!--  logButtonDiv -- Outdated   -->
     <div id="logButtonDiv"
          style="position: fixed; width: 60px;height: 60px;right: 0px; bottom: 176px;  -webkit-transform-style: preserve-3d; display:none; visibility: hidden;">
         <img class='Interfaces' id="logButton" src="png/log.png" width="60" height="60" alt=""/></div>
-
+    <!--   preferencesButton  -->
     <div class='Interfaces' id="preferencesButtonDiv"
          style="position: fixed; width: 60px;height: 60px;right: 0px; top: 195px;  -webkit-transform-style: preserve-3d; visibility: visible;">
         <img class='Interfaces' id="preferencesButton" src="png/pref.png" width="60"
              height="60" alt=""/></div>
-
-
+    <!--  resetButton - this is for editing mode only  -->
     <div class='Interfaces' id="resetButtonDiv"
          style="position: fixed; width: 60px;height: 60px;right: 130px; top: 0px;  -webkit-transform-style: preserve-3d; visibility: hidden;">
         <img class='Interfaces' id="resetButton" src="png/reset.png" width="60"
              height="60" alt=""/></div>
-
-
+    <!--  unconstButton - this is for editing mode only   -->
     <div class='Interfaces' id="unconstButtonDiv"
          style="position: fixed; width: 60px;height: 60px;right: 65px; top: 0px;  -webkit-transform-style: preserve-3d; visibility: hidden;">
         <img class='Interfaces' id="unconstButton" src="png/unconst.png" width="60"
@@ -306,12 +319,6 @@ position: fixed;
 "><svg id = "overlayImg2" height="120" width="120">
     <circle id="overlayImgRing2" cx="60" cy="60" r="30" stroke="#00ffff" stroke-width="4" fill="none" />
 </svg></div> -->
-
-<div class="Interfaces" id="datacrafting-container" style>
-    <!-- <img id="background" src="png/datacrafting/back.png" /> -->
-    <canvas id="datacraftingCanvas"></canvas>
-    <div id="blocks"></div>
-</div>
 
 </body>
 </html>

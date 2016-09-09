@@ -73,7 +73,7 @@ var timeCorrection = {delta: 0, now: 0, then: 0};
 
 
 var globalStates = {
-    debug: false,
+    debug: true,
     overlay: 0,
     device: "",
     // drawWithLines
@@ -83,7 +83,7 @@ var globalStates = {
 
     width: window.screen.width,
     height: window.screen.height,
-    guiButtonState: true,
+    guiState: "ui",
     UIOffMode: false,
     preferencesButtonState: false,
     extendedTracking: false,
@@ -96,6 +96,9 @@ var globalStates = {
     sendMatrix3d: false,
     sendAcl: false,
 
+    pocketButtonState: false,
+    pocketButtonDown: false,
+    pocketButtonUp: false,
     feezeButtonState: false,
     logButtonState: false,
     editingMode: false,
@@ -135,7 +138,7 @@ var globalLogic ={
 y:0,
     rectPoints: [],
     farFrontElement:"",
-    frontDepth: 1000000,
+    frontDepth: 1000000
 
 
 };
@@ -153,8 +156,10 @@ var globalObjects = "";
 var globalProgram = {
     objectA: false,
     nodeA: false,
+    logicA:false,
     objectB: false,
-    nodeB: false
+    nodeB: false,
+    logicB:false
 };
 
 var objects = {};

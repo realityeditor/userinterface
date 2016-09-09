@@ -309,8 +309,9 @@ function getData(url, thisKey, callback) {
         // Just like regular ol' XHR
         req.onreadystatechange = function () {
             if (req.readyState === 4) {
-                if (req.status >= 200 && req.status < 400) {
+                if (req.status === 200) {
                     // JSON.parse(req.responseText) etc.
+                    if(req.responseText)
                     callback(JSON.parse(req.responseText), thisKey)
                 } else {
                     // Handle error case
@@ -525,7 +526,7 @@ function update(visibleObjects) {
 
             //   document.getElementById("controls").innerHTML = (toAxisAngle(tempMatrix2)[0]).toFixed(1)+" "+(toAxisAngle(tempMatrix2)[1]).toFixed(1);
 
-            if (globalStates.guiButtonState || Object.keys(generalObject.nodes).length === 0) {
+            if (globalStates.guiState ==="ui" || Object.keys(generalObject.nodes).length === 0) {
                 drawTransformed(objectKey, objectKey, generalObject, tempMatrix, "ui", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
                 addElement(objectKey, objectKey, "http://" + generalObject.ip + ":" + httpPort + "/obj/" + generalObject.name + "/", generalObject, "ui", thisGlobalStates);
             }
@@ -552,7 +553,7 @@ function update(visibleObjects) {
 
                 generalNode = generalObject.nodes[nodeKey];
 
-                if (!globalStates.guiButtonState) {
+                if (globalStates.guiState ==="node") {
                     drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, "node", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
 
                     addElement(objectKey, nodeKey, "nodes/" + generalNode.appearance + "/index.html", generalNode, "node", thisGlobalStates);
@@ -567,7 +568,7 @@ function update(visibleObjects) {
 
                 generalNode = generalObject.logic[nodeKey];
 
-                if (!globalStates.guiButtonState) {
+                if (globalStates.guiState ==="node") {
                     drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, "logic", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
 
                     addElement(objectKey, nodeKey, "nodes/" + generalNode.appearance + "/index.html", generalNode, "logic", thisGlobalStates);
@@ -599,7 +600,7 @@ function update(visibleObjects) {
     }
 
     // draw all lines
-    if (!globalStates.guiButtonState && !globalStates.editingMode) {
+    if (globalStates.guiState ==="node" && !globalStates.editingMode) {
         for (var objectKey in objects) {
             drawAllLines(objects[objectKey], thisGlobalCanvas.context);
 
@@ -612,32 +613,45 @@ function update(visibleObjects) {
 
     // todo finishing up this
 
-    var generalObject = pocketItem["pocket"];
-    // if(  globalStates.pointerPosition[0]>0)
-    //console.log(generalObject);
-    generalObject.visibleCounter = timeForContentLoaded;
-    generalObject.objectVisible = true;
+    if(pocketItem.pocket.logic[pocketItemId]) {
+        var generalObject = pocketItem["pocket"];
+        // if(  globalStates.pointerPosition[0]>0)
+        //console.log(generalObject);
+        generalObject.visibleCounter = timeForContentLoaded;
+        generalObject.objectVisible = true;
 
-    var generalNode;
-    objectKey = "pocket";
+        var generalNode;
+        objectKey = "pocket";
 
-    var thisMatrix = [];
+        var thisMatrix = [];
 
-    if (globalLogic.farFrontElement in globalObjects) {
+        globalLogic.farFrontElement = "";
+        globalLogic.frontDepth = 10000000000;
 
-        var r = globalMatrix.r;
-        multiplyMatrix(globalObjects[globalLogic.farFrontElement], globalStates.projectionMatrix, r);
-        multiplyMatrix(rotateX, r, thisMatrix);
+        for (var thisOtherKey in globalObjects) {
+            if (globalObjects[thisOtherKey][14] < globalLogic.frontDepth) {
+                globalLogic.frontDepth = globalObjects[thisOtherKey][14];
+                globalLogic.farFrontElement = thisOtherKey;
+            }
+        }
 
-    } else {
+        if (globalLogic.farFrontElement in globalObjects) {
+            // console.log(globalLogic.farFrontElement);
 
-        thisMatrix = [
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 2, 1
-        ]
-    }
+            var r = globalMatrix.r;
+            multiplyMatrix(globalObjects[globalLogic.farFrontElement], globalStates.projectionMatrix, r);
+            multiplyMatrix(rotateX, r, thisMatrix);
+
+        } else {
+
+            thisMatrix = [
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+            ]
+        }
+
 
     for (var nodeKey in generalObject.logic) {
         //console.log(document.getElementById("iframe"+ nodeKey));
@@ -651,6 +665,7 @@ function update(visibleObjects) {
         /* } else {
          hideTransformed("pocket", nodeKey, generalNode, "logic");
          }*/
+    }
     }
 
     /// todo Test
@@ -676,6 +691,8 @@ var thisKey;
 var thisSubKey;
 
 function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix) {
+
+
     var objectKey = objectKey;
     var nodeKey = nodeKey;
     var thisObject = thisObject;
@@ -686,6 +703,7 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
     var globalLogic = globalLogic;
     var globalDOMCach = globalDOMCach;
     var globalMatrix = globalMatrix;
+
     //console.log(JSON.stringify(thisTransform2));
 
     if (globalStates.notLoading !== nodeKey && thisObject.loaded === true) {
@@ -720,8 +738,26 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                 } else {
                     globalDOMCach["canvas" + nodeKey].style.display = 'none';
                 }
-            } else if (kind === "logic") {
+            }
+
+
+            else if (kind === "logic") {
                 thisObject.temp = copyMatrix(thisTransform2);
+                globalDOMCach[nodeKey].style.visibility = 'visible';
+                // document.getElementById("text" + nodeKey).style.visibility = 'visible';
+                if (globalStates.editingMode) {
+                    globalDOMCach["canvas" + nodeKey].style.display = 'inline';
+                } else {
+                    globalDOMCach["canvas" + nodeKey].style.display = 'none';
+                }
+            }
+
+            /*
+            else if (kind === "logic") {
+
+
+                    thisObject.temp = copyMatrix(thisTransform2);
+
                 if (globalStates.editingMode) {
                     if (!thisObject.visibleEditing && thisObject.developer) {
                         thisObject.visibleEditing = true;
@@ -734,9 +770,10 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                 } else {
                     globalDOMCach["canvas" + nodeKey].style.display = 'none';
                 }
-            }
+            }*/
 
-        } else {
+        }
+        if (thisObject.visible) {
             // this needs a better solution
             if (thisObject.fullScreen !== true) {
 
@@ -748,9 +785,18 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                 ];
 
                 if (globalStates.editingMode) {
+
+                    // todo test if this can be made touch related
+                    if (kind === "logic") {
+                        thisObject.temp = copyMatrix(thisTransform2);
+                    }
+
+
                     if (globalMatrix.matrixtouchOn === nodeKey) {
                         //if(globalStates.unconstrainedPositioning===true)
                         thisObject.temp = copyMatrix(thisTransform2);
+
+                      //  console.log(thisObject.temp);
 
                         if (globalMatrix.copyStillFromMatrixSwitch) {
                             globalMatrix.visual = copyMatrix(thisTransform2);
@@ -831,12 +877,19 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                     cout(globalObjects[objectKey]);
                     globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
                         JSON.stringify({modelViewMatrix: globalObjects[objectKey]}), '*');
+                  //  console.log("I am here");
+
                 }
-            } else if ("node") {
+            } else {
 
                 thisObject.screenLinearZ = (((10001 - (20000 / thisObject.screenZ)) / 9999) + 1) / 2;
                 // map the linearized zBuffer to the final ball size
                 thisObject.screenLinearZ = map(thisObject.screenLinearZ, 0.996, 1, 25, 1);
+
+            }
+
+
+            if (kind === "logic"){
 
                 if (globalStates.pointerPosition[0] > -1) {
 
@@ -870,39 +923,6 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                     context.lineTo(globalLogic.rectPoints[7][0], globalLogic.rectPoints[7][1]);
                     context.closePath();
 
-                    globalLogic.farFrontElement = "";
-                    globalLogic.frontDepth = 10000000000;
-
-                    for (thisKey in globalObjects) {
-                        if (objects[thisKey].screenZ < globalLogic.frontDepth) {
-                            globalLogic.frontDepth = objects[thisKey].screenZ;
-                            globalLogic.farFrontElement = thisKey;
-                        }
-                    }
-
-                    //console.log(globalLogic.farFrontElement);
-
-                    /*if (kind === "node") {
-                     for (var thisKey in globalObjects) {
-                     if (objects[thisKey]) {
-                     //console.log(objects[thisKey]);
-                     //console.log(objects[thisKey].screenZ);
-                     for (var thisSubKey in objects[thisKey].nodes) {
-                     // console.log(objects[thisKey].nodes[thisSubKey].screenZ);
-                     if (objects[thisKey].nodes[thisSubKey].screenZ < globalLogic.frontDepth) {
-                     globalLogic.frontDepth = objects[thisKey].nodes[thisSubKey].screenZ;
-                     globalLogic.farFrontElement = thisSubKey;
-
-                     }
-                     }
-
-                     }
-
-                     }
-
-
-                     }*/
-
                     if (globalLogic.farFrontElement === nodeKey) {
                         context.strokeStyle = "#ff0000";
                     } else {
@@ -913,11 +933,11 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                         context.strokeStyle = "#ff00ff";
 
                     context.stroke();
-
-                    //console.log(globalStates.pointerPosition);
-
                 }
+
             }
+
+
 
         }
     }
@@ -1302,57 +1322,10 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
         ec++;
         theObject.addEventListener("pointerup", trueTouchUp, false);
         ec++;
-        theObject.addEventListener("pointerenter", function (e) {
-            var contentForFeedback;
-
-            if (globalProgram.nodeA === this.id || globalProgram.nodeA === false) {
-                contentForFeedback = 3;
-                globalSVGCach["overlayImgRing"].setAttribute("r", "58");
-                globalSVGCach["overlayImgRing"].setAttribute("stroke", '#f9f90a');
-
-            } else {
-
-                if (checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, this.objectId, this.nodeId)) {
-                    contentForFeedback = 2; // overlayImg.src = overlayImage[2].src;
-                    globalSVGCach["overlayImgRing"].setAttribute("r", "58");
-                    globalSVGCach["overlayImgRing"].setAttribute("stroke", '#3af431');
-                }
-
-                else {
-                    contentForFeedback = 0; // overlayImg.src = overlayImage[0].src;
-                    globalSVGCach["overlayImgRing"].setAttribute("r", "58");
-                    globalSVGCach["overlayImgRing"].setAttribute("stroke", '#ff019f');
-                }
-            }
-
-            globalDOMCach["iframe" + this.nodeId].contentWindow.postMessage(
-                JSON.stringify(
-                    {
-                        uiActionFeedback: contentForFeedback
-                    })
-                , "*");
-
-            //   document.getElementById('overlayImg').src = overlayImage[contentForFeedback].src;
-
-        }, false);
+        theObject.addEventListener("pointerenter", touchEnter, false);
         ec++;
 
-        theObject.addEventListener("pointerleave", function () {
-            globalSVGCach["overlayImgRing"].setAttribute("r", "30");
-            globalSVGCach["overlayImgRing"].setAttribute("stroke", '#00ffff');
-
-            // document.getElementById('overlayImg').src = overlayImage[1].src;
-
-            cout("leave");
-
-            globalDOMCach["iframe" + this.nodeId].contentWindow.postMessage(
-                JSON.stringify(
-                    {
-                        uiActionFeedback: 1
-                    })
-                , "*");
-
-        }, false);
+        theObject.addEventListener("pointerleave", touchLeave, false);
         ec++;
 
         if (globalStates.editingMode) {
@@ -1369,6 +1342,7 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
         }
         theObject.objectId = objectKey;
         theObject.nodeId = nodeKey;
+        theObject.kind = kind;
 
         if (kind === "node") {
             theObject.style.visibility = "visible";
