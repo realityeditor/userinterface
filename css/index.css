@@ -60,6 +60,7 @@
     -webkit-transform-style: preserve-3d;
     -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
    -webkit-user-select: none;  /*   Disable selection/Copy of UIWebView */
+    -webkit-touch-callout:none;
 }
 
 body {
@@ -191,6 +192,22 @@ body {
 
     -webkit-transform: translateZ(1px);
 }
+
+
+#craftingBoard {
+    display: none;
+    visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #969696;
+
+    -webkit-transform: translateZ(1px);
+}
+
 
 .Interfaces {
     -webkit-transform-style: preserve-3d;

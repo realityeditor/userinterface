@@ -194,8 +194,8 @@ function screenCoordinatesToMatrixXY(thisObject, touch){
         var angY = angles[0] * Math.cos(angles[2]) - angles[1] * Math.sin(angles[2]);
 
         // calculate new x and y
-        var possitionX =  thisObject.screenZ * ((touch[0] - globalStates.height / 2) *(Math.abs(angX/2)+1));
-        var possitionY = thisObject.screenZ  * ((touch[1] - globalStates.width / 2)*(Math.abs(angY/2)+1));
+        var possitionX =  tempMatrix[14] * ((touch[0] - globalStates.height / 2) *(Math.abs(angX/2)+1));
+        var possitionY = tempMatrix[14]  * ((touch[1] - globalStates.width / 2)*(Math.abs(angY/2)+1));
 
         // replace old x and y with new
 
