@@ -52,11 +52,13 @@
  **/
 
 function touchDown(evt) {
-    if (globalStates.editingMode) {
+    if (!globalStates.editingMode) {
         if (globalStates.guiState ==="node") {
             if (!globalProgram.objectA) {
                 globalProgram.objectA = this.objectId;
                 globalProgram.nodeA = this.nodeId;
+                if(this.kind === "logic")
+                    globalProgram.logicA = 0;
             }
         }
     } else {
@@ -78,6 +80,7 @@ function falseTouchUp() {
     if (globalStates.guiState ==="node") {
         globalProgram.objectA = false;
         globalProgram.nodeA = false;
+        globalProgram.logicA = false;
     }
     globalCanvas.hasContent = true;
     cout("falseTouchUp");
@@ -103,33 +106,60 @@ function trueTouchUp() {
 
             globalProgram.objectB = this.objectId;
             globalProgram.nodeB = this.nodeId;
+            if(this.kind === "logic")
+                globalProgram.logicB = 0;
+
             var thisOtherTempObject = objects[globalProgram.objectB];
 
-            var okForNewLink = checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, globalProgram.objectB, globalProgram.nodeB);
+            var okForNewLink = checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, globalProgram.logicA, globalProgram.objectB, globalProgram.nodeB, globalProgram.logicB);
 
             //  window.location.href = "of://event_" + objects[globalProgram.objectA].visible;
 
             if (okForNewLink) {
                 var thisKeyId = uuidTimeShort();
 
+                var namesA, namesB;
+
+                    if(globalProgram.logicA !== false){
+                        namesA = "";
+                    } else {
+                        namesA =  [thisTempObject.name, thisTempObject.nodes[globalProgram.nodeA].name];
+                    }
+
+                    if(globalProgram.logicB !== false){
+                        namesB = "";
+                    } else {
+                        namesB =  [thisOtherTempObject.name, thisOtherTempObject.nodes[globalProgram.nodeB].name];
+                    }
+
+
+
+
                 thisTempObjectLinks[thisKeyId] = {
                     objectA: globalProgram.objectA,
                     objectB: globalProgram.objectB,
                     nodeA: globalProgram.nodeA,
                     nodeB: globalProgram.nodeB,
-                    namesA: [thisTempObject.name, thisTempObject.nodes[globalProgram.nodeA].name],
-                    namesB: [thisOtherTempObject.name, thisOtherTempObject.nodes[globalProgram.nodeB].name]
+                    logicA: globalProgram.logicA,
+                    logicB: globalProgram.logicB,
+                    namesA: namesA,
+                    namesB: namesB
                 };
 
                 // push new connection to objectA
-                uploadNewLink(thisTempObject.ip, globalProgram.objectA, thisKeyId, thisTempObjectLinks[thisKeyId]);
+                //todo this is a work around to not crash the server. only temporarly for testing
+                if(globalProgram.logicA === false && globalProgram.logicB === false) {
+                    uploadNewLink(thisTempObject.ip, globalProgram.objectA, thisKeyId, thisTempObjectLinks[thisKeyId]);
+                }
             }
 
             // set everything back to false
             globalProgram.objectA = false;
             globalProgram.nodeA = false;
+            globalProgram.logicA = false;
             globalProgram.objectB = false;
             globalProgram.nodeB = false;
+            globalProgram.logicB = false;
         }
     }
     globalCanvas.hasContent = true;
@@ -148,7 +178,7 @@ function touchEnter () {
 
     } else {
 
-        if (checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, this.objectId, this.nodeId)) {
+        if (checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, globalProgram.logicA, this.objectId, this.nodeId, 0)) {
             contentForFeedback = 2; // overlayImg.src = overlayImage[2].src;
             globalSVGCach["overlayImgRing"].setAttribute("r", "58");
             globalSVGCach["overlayImgRing"].setAttribute("stroke", '#3af431');

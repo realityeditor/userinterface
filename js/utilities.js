@@ -433,7 +433,7 @@ function rename(object, before, after) {
  * @return {Boolean}
  **/
 
-function checkForNetworkLoop(globalObjectA, globalLocationInA, globalObjectB, globalLocationInB) {
+function checkForNetworkLoop(globalObjectA, globalLocationInA, globalLogicA, globalObjectB, globalLocationInB,globalLogicB) {
 
     var signalIsOk = true;
     var thisTempObject = objects[globalObjectA];

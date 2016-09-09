@@ -83,11 +83,11 @@ function GUI() {
     );
 
     preload(pocketButtonImage,
-        'png/pocket.png', 'png/pocketOver.png', 'png/pocketSelect.png', 'png/pocketEmpty.png'
+        'png/pocket.png', 'png/pocketOver.png', 'png/pocketSelect.png', 'png/pocketEmpty.png', 'png/blockPocket.png', 'png/blockPocketOver.png', 'png/blockPocketSelect.png'
     );
 
     preload(preferencesButtonImage,
-        'png/pref.png', 'png/prefOver.png', 'png/prefSelect.png', 'png/prefEmpty.png'
+        'png/pref.png', 'png/prefOver.png', 'png/prefSelect.png', 'png/prefEmpty.png', 'png/blockPref.png', 'png/blockPrefOver.png', 'png/blockPrefSelect.png'
     );
     preload(reloadButtonImage,
         'png/reloadOver.png', 'png/reload.png', 'png/reloadEmpty.png'
@@ -111,14 +111,11 @@ function GUI() {
     ec++;
 
     document.getElementById("guiButtonImage1").addEventListener("touchend", function () {
-        if (globalStates.guiState ==="node") {
+
             if (!globalStates.UIOffMode)      document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
             globalStates.guiState = "ui";
-        }
-        else {
-            if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
-        }
 
+        craftingBoardHide();
     });
     ec++;
 
@@ -128,13 +125,11 @@ function GUI() {
     ec++;
 
     document.getElementById("guiButtonImage2").addEventListener("touchend", function () {
-        if (globalStates.guiState ==="ui") {
+
             if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
             globalStates.guiState = "node";
-        }
-        else {
-            if (!globalStates.UIOffMode)    document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
-        }
+
+        craftingBoardHide();
     });
     ec++;
 
@@ -543,14 +538,27 @@ function preferencesHide() {
  * @desc
  **/
 
-function craftingBoardVisible() {
+function preferencesVisible() {
     if (!globalStates.UIOffMode)    document.getElementById('preferencesButton').src = preferencesButtonImage[2].src;
+    globalStates.preferencesButtonState = true;
+    document.getElementById("preferences").style.visibility = "visible"; //
+    document.getElementById("preferences").style.display = "inline"; //= "hidden";
+    cout("preferencesVisible");
+}
 
-    if (!globalStates.UIOffMode)    document.getElementById('guiButtonImage').src = guiButtonImage[5].src;
 
+/**
+ * @desc
+ **/
+
+function craftingBoardVisible(objectKey, nodeKey) {
+    document.getElementById('guiButtonImage').src = guiButtonImage[5].src;
+    document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
+    document.getElementById('pocketButton').src = pocketButtonImage[4].src;
+globalStates.guiState ="logic";
     document.getElementById("craftingBoard").style.visibility = "visible"; //
     document.getElementById("craftingBoard").style.display = "inline"; //= "hidden";
-    cout("pcraftingBoardVisible");
+    cout("craftingBoardVisible");
 }
 
 /**
@@ -558,7 +566,8 @@ function craftingBoardVisible() {
  **/
 
 function craftingBoardHide() {
-    if (!globalStates.UIOffMode)    document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
+    document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
+    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
     document.getElementById("craftingBoard").style.visibility = "hidden"; //= "hidden";
     document.getElementById("craftingBoard").style.dispaly = "none"; //= "hidden";
     cout("craftingBoardHide");

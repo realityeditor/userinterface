@@ -782,6 +782,7 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
 
                 if (globalStates.editingMode) {
 
+                    // todo test if this can be made touch related
                     if (kind === "logic") {
                         thisObject.temp = copyMatrix(thisTransform2);
                     }
@@ -876,8 +877,6 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
 
                 }
             } else {
-
-
 
                 thisObject.screenLinearZ = (((10001 - (20000 / thisObject.screenZ)) / 9999) + 1) / 2;
                 // map the linearized zBuffer to the final ball size

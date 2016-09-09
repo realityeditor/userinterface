@@ -155,8 +155,10 @@ var globalObjects = "";
 var globalProgram = {
     objectA: false,
     nodeA: false,
+    logicA:false,
     objectB: false,
-    nodeB: false
+    nodeB: false,
+    logicB:false
 };
 
 var objects = {};
