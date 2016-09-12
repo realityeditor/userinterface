@@ -481,6 +481,27 @@ function GUI() {
         }
         setPocketPossition(evt);
 
+        if (globalStates.pocketButtonDown === true && globalStates.guiState === "logic") {
+            console.log("create new block from pocket");
+            var tempBlock = document.createElement('img');
+
+            var newBlockImg = document.createElement('img');
+            newBlockImg.setAttribute("class", "newBlock");
+            newBlockImg.setAttribute("id", "newBlockTest");
+            newBlockImg.setAttribute("src", "png/datacrafting/new-block.png");
+            newBlockImg.setAttribute("touch-action", "none");
+
+            newBlockImg.style.left = (evt.pageX - newBlockImg.width/2) + "px";
+            newBlockImg.style.top = (evt.pageY - newBlockImg.height/2) + "px";
+
+            globalStates.currentLogic.tempBlock = newBlockImg;
+
+            // tempBlock = newBlockImg;
+            var blocksContainer = document.getElementById('blocks');
+            blocksContainer.appendChild(newBlockImg);
+
+        }
+
         // globalStates.pocketButtonDown = false;
        // globalStates.pocketButtonUp = false;
     }, false);
@@ -646,6 +667,10 @@ function initializeDatacraftingGrid(logic) {
     datacraftingCanvas.setAttribute("touch-action", "none");
     container.appendChild(datacraftingCanvas);
 
+    var sidebarBackground = document.createElement('div');
+    sidebarBackground.setAttribute('id', 'sidebarBackground');
+    container.appendChild(sidebarBackground);
+
     var dimensions = logic.grid.getPixelDimensions();
 
     datacraftingCanvas.width = dimensions.width;
@@ -653,6 +678,7 @@ function initializeDatacraftingGrid(logic) {
     datacraftingCanvas.height = dimensions.height;
     datacraftingCanvas.style.height = dimensions.height;
 
+    /*
     ///////////
     // debugging only... shouldn't have blocks by default
     logic.grid.cells.forEach(function(cell) {
@@ -665,6 +691,7 @@ function initializeDatacraftingGrid(logic) {
         }
     });
     ///////////
+    */
 
     // initialize by adding a grid of images for the blocks
     // and associating them with the data model and assigning event handlers

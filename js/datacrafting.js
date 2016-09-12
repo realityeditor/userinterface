@@ -935,6 +935,31 @@ Grid.prototype.getCellXY = function(x, y) {
     return this.getCell(gridPos.col, gridPos.row);
 };
 
+Grid.prototype.getCellFromPointerPosition = function(xCoord, yCoord) {
+    var col;
+    var row;
+
+    var colPairIndex = xCoord / (this.blockColWidth + this.marginColWidth);
+    var fraction = colPairIndex - Math.floor(colPairIndex);
+
+    if (fraction <= this.blockColWidth / (this.blockColWidth + this.marginColWidth)) {
+        col = Math.floor(colPairIndex) * 2;
+    } else {
+        col = Math.floor(colPairIndex) * 2 + 1;
+    }
+
+    var rowPairIndex = yCoord / (this.blockRowHeight + this.marginRowHeight);
+    var fraction = rowPairIndex - Math.floor(rowPairIndex);
+
+    if (fraction <= this.blockRowHeight / (this.blockRowHeight + this.marginRowHeight)) {
+        row = Math.floor(rowPairIndex) * 2;
+    } else {
+        row = Math.floor(rowPairIndex) * 2 + 1;
+    }
+
+    return this.getCell(col, row);
+}
+
 // gets a block overlapping the cell at this x,y location
 function getBlockXY(x, y) {
     // check if block of size >= 1 is at (x, y)

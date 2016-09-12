@@ -207,7 +207,7 @@ body {
     -webkit-user-select: none;
     user-select: none;
 
-    -webkit-transform: translateZ(3px);
+    -webkit-transform: translateZ(1px);
 }
 
 
@@ -250,20 +250,18 @@ body {
     top: 0;
     left: 0;
 }
-/*.block {
-    margin-right: 65px;
-    margin-bottom: 61px;
-}*/
+
 .block {
-  width: 92px;
-  height: 46px;
-  margin-right: 46px;
-  margin-bottom: 46px;
+    width: 92px;
+    height: 46px;
+    margin-right: 46px;
+    margin-bottom: 46px;
 }
+
 .blockRight {
-  width: 92px;
-  height: 46px;
-  margin-bottom: 46px;
+    width: 92px;
+    height: 46px;
+    margin-bottom: 46px;
 }
 
 #datacraftingCanvas {
@@ -272,7 +270,19 @@ body {
     top: 0;
     background-color: #B7B7B7;
 }
-#background {
-    width: 100%;
+
+#sidebarBackground {
+    position: absolute;;
+    right: -70px;
+    top: 0;
+    background-color: #B7B7B7;
     height: 100%;
+    width: 70px;
 }
+
+.newBlock {
+    position: absolute;
+    width: 92px;
+    height: 46px;
+}
+

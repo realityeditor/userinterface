@@ -936,6 +936,23 @@ function datacraftingContainerPointerUp(e) {
             globalStates.currentLogic.tempLink = null;
         }
     }
+
+    if (globalStates.currentLogic.tempBlock) {
+        globalStates.currentLogic.tempBlock.parentNode.removeChild(globalStates.currentLogic.tempBlock);
+
+        var cellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+
+        if (cellOver && cellOver.canHaveBlock() && !cellOver.blockAtThisLocation()) {
+            console.log("placing block in cell: " + cellOver.location.col, + "," + cellOver.location.row);
+            var blockPos = convertGridPosToBlockPos(cellOver.location.col, cellOver.location.row);
+            var block = createBlock(blockPos.x, blockPos.y, 1, "test");
+            var blockKey = "block_" + blockPos.x + "_" + blockPos.y + "_" + getTimestamp();
+            globalStates.currentLogic.blocks[blockKey] = block;
+            updateGrid(globalStates.currentLogic.grid);
+        }
+
+        globalStates.currentLogic.tempBlock = null;
+    }
 }
 
 // clicking down in datacrafting container outside of blocks creates a new cut line
@@ -960,7 +977,15 @@ function datacraftingContainerPointerMove(e) {
             x: e.pageX,
             y: e.pageY
         };
+    
     }
+
+    if (globalStates.currentLogic.tempBlock) {
+        globalStates.currentLogic.tempBlock.style.left = e.pageX - globalStates.currentLogic.tempBlock.width/2;
+        globalStates.currentLogic.tempBlock.style.top = e.pageY - globalStates.currentLogic.tempBlock.height/2;
+    }
+
+
 }
 
 

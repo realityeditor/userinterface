@@ -1002,7 +1002,7 @@ function updateGrid(grid) {
 
     // updates the visuals for the blocks
     grid.forEachPossibleBlockCell( function(cell) {
-        if (cell.block !== null) {
+        if (cell.blockAtThisLocation() !== null) {
             displayCellBlock(cell);
         } else {
             hideCellBlock(cell);
@@ -1040,30 +1040,6 @@ function redrawDatacrafting() {
     }
 }
 
-// function checkForCutIntersections() {
-//     var grid = globalStates.currentLogic.grid;
-
-//     var didRemoveAnyLinks = false;
-//     for (var i = grid.links.length-1; i >= 0; i--) {
-//         var didIntersect = false;
-//         var points = grid.getPointsForLink(grid.links[i]);
-//         for (var j = 1; j < points.length; j++) {
-//             var start = points[j - 1];
-//             var end = points[j];
-//             if (checkLineCross(start.screenX, start.screenY, end.screenX, end.screenY, cutLine.start.x, cutLine.start.y, cutLine.end.x, cutLine.end.y)) {
-//                 didIntersect = true;
-//             }
-//         }
-//         if (didIntersect) {
-//             grid.links.splice(i, 1);
-//             didRemoveAnyLinks = true;
-//         }
-//     }
-//     if (didRemoveAnyLinks) {
-//         updateGrid(grid);
-//     }
-// }
-
 function checkForCutIntersections() {
     var grid = globalStates.currentLogic.grid;
     var didRemoveAnyLinks = false;
@@ -1086,40 +1062,6 @@ function checkForCutIntersections() {
     }
     if (didRemoveAnyLinks) {
         updateGrid(grid);
-    }
-}
-
-// TODO: reimplement
-function removeBlockAtCell(col, row) {
-    grid.getCell(col,row).block = null;
-}
-
-// add or remove the block
-function toggleCellBlock(cell) {
-    // remove a block if it's already there
-    if (cell.block !== null) {
-
-        // remove any links connected to this block
-        grid.forEachLink( function(link) {
-            if (link.startBlock === cell.block || link.endBlock === cell.block) {
-                grid.removeLink(link);
-            }
-        });
-
-        // remove any links connected to the block being removed // TODO: is this redundant? is this doing anything? which is better - this or before?
-        grid.links = grid.links.filter(function(link) {
-            return (link.startBlock !== cell.block && link.endBlock !== cell.block);
-        });
-
-        cell.block = null;
-        hideCellBlock(cell);
-        updateGrid(grid); // need to recalculate routes if block removed
-
-        // add a block if it's not there
-    } else {
-        cell.block = new Block(cell);
-        displayCellBlock(cell);
-        updateGrid(grid); // need to recalculate routes if block added
     }
 }
 
