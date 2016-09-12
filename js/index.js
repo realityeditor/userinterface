@@ -64,12 +64,6 @@
 
 // Functions to fill the data of the object
 
-function testCommunication(filepath) {
-    console.log("test communication");
-    console.log(filepath);
-    // document.getElementById('testImg').setAttribute('src', filepath);
-}
-
 /**
  * @desc Adding new objects to the reality editor database via http ajax
  * @param {String|Array} beat an array in the form {id: "", ip: ""}
