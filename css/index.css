@@ -602,6 +602,10 @@ body {
     -webkit-transform: translateZ(6px);
 }
 
+#overlay.overlayMemoryInstant {
+    transition: width 0.01s linear, height 0.01s linear, border-radius 0.01s linear, border-width 0.01s linear;
+}
+
 #overlay.overlayMemory {
   margin-top: -37.5px;
   margin-left: -67px;

@@ -187,6 +187,7 @@ MemoryContainer.prototype.onPointerUp = function() {
 
         overlayDiv.style.backgroundImage = 'none';
         overlayDiv.classList.remove('overlayMemory');
+        overlayDiv.classList.remove('overlayMemoryInstant');
         overlayDiv.style.visibility = 'hidden';
         activeThumbnail = '';
         var potentialObjects = Object.keys(globalObjects);

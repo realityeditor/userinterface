@@ -15,7 +15,7 @@ var uiButtons;
 var button;
 var bigPocketButton;
 var bigTrashButton;
-
+var pointerOverPocketButton = false;
 
 function pocketInit() {
     preload(buttonImages,
@@ -35,25 +35,42 @@ function pocketInit() {
     bigTrashButton = document.getElementById('bigTrashButton');
 
     button.addEventListener('pointerenter', function() {
-        toggleShown();
+        if (!pointerOverPocketButton) {
+            toggleShown();
+        }
+        pointerOverPocketButton = true;
         // Show hover
         button.src = buttonImages[1].src;
+
+        if (pocketShown() && !overlayDiv.classList.contains('overlayMemory')) {
+            overlayDiv.classList.add('overlayMemoryInstant');
+            overlayDiv.classList.add('overlayMemory');
+        }
     });
     ec++;
 
     button.addEventListener('pointerleave', function() {
+        if (!uiButtons.classList.contains('bigPocket')) {
+            pointerOverPocketButton = false;
+        }
         // Undo the hover state
         updateButtons();
     });
     ec++;
 
     bigPocketButton.addEventListener('pointerenter', function() {
-        toggleShown();
+        if (!pointerOverPocketButton) {
+            toggleShown();
+        }
+        pointerOverPocketButton = true;
         bigPocketButton.src = bigPocketImages[1].src;
     });
     ec++;
 
     bigPocketButton.addEventListener('pointerleave', function() {
+        if (uiButtons.classList.contains('bigPocket')) {
+            pointerOverPocketButton = false;
+        }
         // Undo the hover state
         updateButtons();
     });

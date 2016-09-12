@@ -395,6 +395,7 @@ function documentPointerUp(evt) {
     overlayDiv.style.visibility = "hidden";
 
     overlayDiv.classList.remove('overlayMemory');
+    overlayDiv.classList.remove('overlayMemoryInstant');
     if (overlayDiv.style.backgroundImage !== 'none') {
         overlayDiv.style.backgroundImage = 'none';
         pocketOnMemoryCreationStop();
