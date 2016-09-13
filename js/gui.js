@@ -112,10 +112,8 @@ function GUI() {
 
     document.getElementById("guiButtonImage1").addEventListener("touchend", function () {
         if (!globalStates.UIOffMode)      document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
-        craftingBoardHide();
-        // window.location.href = "http://openhybrid.org/images/muse.jpg";
-        // window.location.href = "http://openhybrid.org/images/cj95ytiuoaaaumo-crop-u6789.jpg";
-        // window.location.href = "https://github.com/Benolds/webhook-push-test/archive/master.zip";
+        // craftingBoardHide();
+        craftingBoardVisible(); // TODO: BEN DEBUG - revert to previous line
     });
     ec++;
 
@@ -481,20 +479,34 @@ function GUI() {
         }
         setPocketPossition(evt);
 
-        if (globalStates.pocketButtonDown === true && globalStates.guiState === "logic") {
+        if (globalStates.pocketButtonDown === true && globalStates.guiState === "logic" && !globalStates.currentLogic.tempBlock) {
             console.log("create new block from pocket");
+
+            // Returns a random integer between min (included) and max (excluded)
+            // Using Math.round() will give you a non-uniform distribution!
+            function getRandomInt(min, max) {
+              min = Math.ceil(min);
+              max = Math.floor(max);
+              return Math.floor(Math.random() * (max - min)) + min;
+            }
+
+            var blockWidth = getRandomInt(1,5); //1;
+
             var tempBlock = document.createElement('img');
 
             var newBlockImg = document.createElement('img');
-            newBlockImg.setAttribute("class", "newBlock");
+            newBlockImg.setAttribute("class", "newBlock"+blockWidth);
             newBlockImg.setAttribute("id", "newBlockTest");
-            newBlockImg.setAttribute("src", "png/datacrafting/new-block.png");
+            newBlockImg.setAttribute("src", "png/datacrafting/new-block-"+blockWidth+".png");
             newBlockImg.setAttribute("touch-action", "none");
 
-            newBlockImg.style.left = (evt.pageX - newBlockImg.width/2) + "px";
-            newBlockImg.style.top = (evt.pageY - newBlockImg.height/2) + "px";
+            newBlockImg.style.left = (evt.pageX - globalStates.currentLogic.grid.blockColWidth/2) + "px";
+            newBlockImg.style.top = (evt.pageY - globalStates.currentLogic.grid.blockRowHeight/2) + "px";
 
-            globalStates.currentLogic.tempBlock = newBlockImg;
+            globalStates.currentLogic.tempBlock = {
+                domElement: newBlockImg,
+                width: blockWidth
+            }; //= newBlockImg;
 
             // tempBlock = newBlockImg;
             var blocksContainer = document.getElementById('blocks');
@@ -580,7 +592,8 @@ function craftingBoardVisible(objectKey, nodeKey) {
     document.getElementById("craftingBoard").style.display = "inline"; //= "hidden";
     cout("craftingBoardVisible");
 
-    initializeDatacraftingGrid(objects[objectKey].logic[nodeKey]);
+    // initializeDatacraftingGrid(objects[objectKey].logic[nodeKey]);
+    initializeDatacraftingGrid(new Logic()); // TODO: BEN DEBUG - revert to previous line
 }
 
 /**

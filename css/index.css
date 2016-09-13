@@ -280,9 +280,27 @@ body {
     width: 70px;
 }
 
-.newBlock {
+.newBlock1 {
     position: absolute;
     width: 92px;
+    height: 46px;
+}
+
+.newBlock2 {
+    position: absolute;
+    width: 230px;
+    height: 46px;
+}
+
+.newBlock3 {
+    position: absolute;
+    width: 368px;
+    height: 46px;
+}
+
+.newBlock4 {
+    position: absolute;
+    width: 506px;
     height: 46px;
 }
 

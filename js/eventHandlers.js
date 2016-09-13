@@ -938,14 +938,23 @@ function datacraftingContainerPointerUp(e) {
     }
 
     if (globalStates.currentLogic.tempBlock) {
-        globalStates.currentLogic.tempBlock.parentNode.removeChild(globalStates.currentLogic.tempBlock);
+        globalStates.currentLogic.tempBlock.domElement.parentNode.removeChild(globalStates.currentLogic.tempBlock.domElement);
 
-        var cellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+        var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+        var cellsOver = globalStates.currentLogic.grid.getCellsOver(firstCellOver,globalStates.currentLogic.tempBlock.width);
+        
+        var canAddBlock = true;
+        cellsOver.forEach(function(cell) {
+            if (!cell || !cell.canHaveBlock() || cell.blockAtThisLocation()) {
+                canAddBlock = false;
+            }
+        });
 
-        if (cellOver && cellOver.canHaveBlock() && !cellOver.blockAtThisLocation()) {
-            console.log("placing block in cell: " + cellOver.location.col, + "," + cellOver.location.row);
-            var blockPos = convertGridPosToBlockPos(cellOver.location.col, cellOver.location.row);
-            var block = createBlock(blockPos.x, blockPos.y, 1, "test");
+        if (canAddBlock) {
+            console.log("placing block in cell: " + firstCellOver.location.col, + "," + firstCellOver.location.row);
+            var blockPos = convertGridPosToBlockPos(firstCellOver.location.col, firstCellOver.location.row);
+            var blockWidth = globalStates.currentLogic.tempBlock.width;
+            var block = createBlock(blockPos.x, blockPos.y, blockWidth, "test");
             var blockKey = "block_" + blockPos.x + "_" + blockPos.y + "_" + getTimestamp();
             globalStates.currentLogic.blocks[blockKey] = block;
             updateGrid(globalStates.currentLogic.grid);
@@ -981,8 +990,8 @@ function datacraftingContainerPointerMove(e) {
     }
 
     if (globalStates.currentLogic.tempBlock) {
-        globalStates.currentLogic.tempBlock.style.left = e.pageX - globalStates.currentLogic.tempBlock.width/2;
-        globalStates.currentLogic.tempBlock.style.top = e.pageY - globalStates.currentLogic.tempBlock.height/2;
+        globalStates.currentLogic.tempBlock.domElement.style.left = e.pageX - globalStates.currentLogic.grid.blockColWidth/2; //globalStates.currentLogic.tempBlock.domElement.width/2;
+        globalStates.currentLogic.tempBlock.domElement.style.top = e.pageY - globalStates.currentLogic.grid.blockRowHeight/2; //globalStates.currentLogic.tempBlock.domElement.height/2;
     }
 
 

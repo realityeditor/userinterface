@@ -1025,8 +1025,8 @@ function redrawDatacrafting() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     grid.forEachLink( function(link) {
-        var startCell =  grid.getCellXY(link.blockA.x, link.blockA.y);
-        var endCell =  grid.getCellXY(link.blockB.x, link.blockB.y);
+        var startCell =  getCellForBlock(grid, link.blockA); // grid.getCellXY(link.blockA.x, link.blockA.y);
+        var endCell =  getCellForBlock(grid, link.blockB); // grid.getCellXY(link.blockB.x, link.blockB.y);
 
         drawDatacraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
     });

@@ -927,13 +927,20 @@ function getBlock(x,y) {
 }
 
 function getCellForBlock(grid, block) {
-    return grid.getCellXY(block.x, block.y);
+    var gridPos = convertBlockPosToGridPos(block.x,block.y);
+    return grid.getCell(gridPos.col, gridPos.row);
 }
 
-Grid.prototype.getCellXY = function(x, y) {
-    var gridPos = convertBlockPosToGridPos(x,y);
-    return this.getCell(gridPos.col, gridPos.row);
-};
+Grid.prototype.getCellsOver = function (firstCell,blockWidth) {
+    var cells = [];
+    // if (blockWidth === 1) {
+    //     return [firstCell];
+    // }
+    for (var col = firstCell.location.col; col < firstCell.location.col + 2*blockWidth; col += 2) {
+        cells.push(this.getCell(col, firstCell.location.row))
+    }
+    return cells;
+}
 
 Grid.prototype.getCellFromPointerPosition = function(xCoord, yCoord) {
     var col;

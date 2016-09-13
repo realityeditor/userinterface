@@ -202,7 +202,7 @@ function Logic() {
     this.links = {};
     this.blocks = {};
     this.tempLink = null;
-    this.tempBlock = null;
+    this.tempBlock = null; // {domElement: <img>, width: 1}
 
 }
 
