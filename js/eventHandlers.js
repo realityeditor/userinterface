@@ -43,6 +43,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 /**********************************************************************************************************************
  **********************************************************************************************************************/
 
@@ -52,13 +53,14 @@
  **/
 
 function touchDown(evt) {
+    console.log(this.nodeId);
     if (!globalStates.editingMode) {
         if (globalStates.guiState ==="node") {
             if (!globalProgram.objectA) {
                 globalProgram.objectA = this.objectId;
                 globalProgram.nodeA = this.nodeId;
-                if(this.kind === "logic")
-                    globalProgram.logicA = 0;
+               // if(this.kind === "logic")
+                 //   globalProgram.logicA = globalProgram.logicSelector;
             }
         }
     } else {
@@ -106,8 +108,8 @@ function trueTouchUp() {
 
             globalProgram.objectB = this.objectId;
             globalProgram.nodeB = this.nodeId;
-            if(this.kind === "logic")
-                globalProgram.logicB = 0;
+          //  if(this.kind === "logic")
+            //    globalProgram.logicB = globalProgram.logicSelector;
 
             var thisOtherTempObject = objects[globalProgram.objectB];
 
@@ -257,9 +259,6 @@ function getPossition(evt) {
 
 
     setPocketPossition(evt);
-
-
-    cout("getPossition");
 
 }
 
@@ -769,6 +768,27 @@ function addEventHandlers() {
                     //}
                 }
             }
+
+            for (var thisSubKey in generalObject2.logic) {
+                if (document.getElementById(thisSubKey)) {
+                    var thisObject2 = document.getElementById(thisSubKey);
+
+                    //thisObject2.className = "mainProgram";
+
+                    var thisObject5 = document.getElementById("canvas" + thisSubKey);
+                    thisObject5.style.display = "inline";
+
+                    //if(thisObject.developer) {
+                    thisObject2.addEventListener("touchstart", MultiTouchStart, false);
+                    ec++;
+                    thisObject2.addEventListener("touchmove", MultiTouchMove, false);
+                    ec++;
+                    thisObject2.addEventListener("touchend", MultiTouchEnd, false);
+                    ec++;
+                    //}
+                }
+            }
+
         }
     }
 
@@ -822,8 +842,186 @@ function removeEventHandlers() {
                 }
             }
 
+            for (var thisSubKey in generalObject2.logic) {
+                if (document.getElementById(thisSubKey)) {
+                    var thisObject2 = document.getElementById(thisSubKey);
+                    //thisObject2.className = "mainEditing";
+                    document.getElementById("canvas" + thisSubKey).style.display = "none";
+
+                    //    if(thisObject.developer) {
+                    thisObject2.removeEventListener("touchstart", MultiTouchStart, false);
+                    thisObject2.removeEventListener("touchmove", MultiTouchMove, false);
+                    thisObject2.removeEventListener("touchend", MultiTouchEnd, false);
+                    ec--;
+                    ec--;
+                    ec--;
+                    //  }
+                }
+            }
+
         }
     }
 
     cout("removeEventHandlers");
 }
+
+/**********************************************************************************************************************
+ ************************************** datacrafting event handlers  *************************************************
+ **********************************************************************************************************************/
+
+// clicking down on a block enables drawing a temporary link from this block
+// (this behavior continues in the blockPointerLeave method)
+function blockPointerDown(e) {
+    e.preventDefault();
+
+    if (e.target.cell.blockAtThisLocation() !== null) {
+        isPointerDown = true;
+    }
+}
+
+// if your pointer leaves a filled block and the pointer is down, start drawing temp link from this source
+function blockPointerLeave(e) {
+    e.preventDefault();
+    isPointerInActiveBlock = false;
+    if (e.target.cell.blockAtThisLocation() === null) return;
+
+    if (isPointerDown && !isTempLinkBeingDrawn) {
+        isTempLinkBeingDrawn = true;
+        tempStartBlock = e.target.cell.blockAtThisLocation();
+        console.log("left block, isTempLinkBeingDrawn");
+    }
+}
+
+// if your pointer enters a different block while temp link is being drawn, render a new link to that destination
+function blockPointerEnter(e) {
+    e.preventDefault();
+    if (e.target.cell.blockAtThisLocation() === null) return;
+
+    isPointerInActiveBlock = true;
+    if (isTempLinkBeingDrawn) {
+        tempEndBlock = e.target.cell.blockAtThisLocation();
+
+        // create temp link if you can
+        if (tempStartBlock === null || tempEndBlock === null) { return; }
+        // erases temp link if you enter the start block again
+        if (tempStartBlock === tempEndBlock) {
+            globalStates.currentLogic.tempLink = null;
+            //renderLinks();
+            updateGrid(globalStates.currentLogic.grid); // need to recalculate routes without temp link
+            console.log("entered same block, remove temp link");
+            return;
+        }
+
+        var newTempLink = new BlockLink();
+        newTempLink.blockA = tempStartBlock;
+        newTempLink.blockB = tempEndBlock;
+        newTempLink.itemA = 0;
+        newTempLink.itemB = 0;
+        setTempLink(newTempLink);
+        updateGrid(globalStates.currentLogic.grid); // need to recalculate routes with new temp link
+        console.log("entered new block, new temp link");
+    }
+}
+
+// if you release the pointer over a block, the temporary link becomes permanent
+function blockPointerUp(e) {
+    e.preventDefault();
+    if (e.target.cell.blockAtThisLocation() === null) return;
+
+    isPointerDown = false;
+    isTempLinkBeingDrawn = false;
+
+    if (globalStates.currentLogic.tempLink !== null) {
+        //only create link if identical link doesn't already exist
+        if (!doesLinkAlreadyExist(globalStates.currentLogic.tempLink)) {
+            // add link to data structure
+            // var startLocation = globalStates.currentLogic.tempLink.blockA;//.cell.location;
+            // var endLocation = globalStates.currentLogic.tempLink.blockB;//.cell.location;
+            // var addedLink = grid.addLinkFromTo(startLocation.col, startLocation.row, endLocation.col, endLocation.row);
+
+            var addedLink = addBlockLink(globalStates.currentLogic.tempLink.blockA, globalStates.currentLogic.tempLink.blockB, 0, 0);
+
+            if (addedLink !== null) {
+                addedLink.route = globalStates.currentLogic.tempLink.route; // copy over the route rather than recalculating everything
+                // addedLink.pointData = globalStates.currentLogic.tempLink.pointData; // copy over rather than recalculate
+                addedLink.ballAnimationCount = globalStates.currentLogic.tempLink.ballAnimationCount;
+            }
+        }
+        globalStates.currentLogic.tempLink = null;
+    }
+}
+
+// releasing pointer anywhere on datacrafting container deletes a temp link
+// if drawing one, or executes a cut line to delete links it crosses
+function datacraftingContainerPointerUp(e) {
+    e.preventDefault();
+
+    if (isCutLineBeingDrawn) {
+        isCutLineBeingDrawn = false;
+        if (cutLine.start !== null && cutLine.end !== null){
+            checkForCutIntersections();
+        }
+        cutLine.start = null;
+        cutLine.end = null;
+    }
+
+    if (!isPointerInActiveBlock) {
+        isPointerDown = false;
+        isTempLinkBeingDrawn = false;
+        if (globalStates.currentLogic.tempLink !== null) {
+            globalStates.currentLogic.tempLink = null;
+        }
+    }
+
+    if (globalStates.currentLogic.tempBlock) {
+        globalStates.currentLogic.tempBlock.parentNode.removeChild(globalStates.currentLogic.tempBlock);
+
+        var cellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+
+        if (cellOver && cellOver.canHaveBlock() && !cellOver.blockAtThisLocation()) {
+            console.log("placing block in cell: " + cellOver.location.col, + "," + cellOver.location.row);
+            var blockPos = convertGridPosToBlockPos(cellOver.location.col, cellOver.location.row);
+            var block = createBlock(blockPos.x, blockPos.y, 1, "test");
+            var blockKey = "block_" + blockPos.x + "_" + blockPos.y + "_" + getTimestamp();
+            globalStates.currentLogic.blocks[blockKey] = block;
+            updateGrid(globalStates.currentLogic.grid);
+        }
+
+        globalStates.currentLogic.tempBlock = null;
+    }
+}
+
+// clicking down in datacrafting container outside of blocks creates a new cut line
+function datacraftingContainerPointerDown(e) {
+    e.preventDefault();
+
+    if (!isCutLineBeingDrawn && !isPointerInActiveBlock) {
+        isCutLineBeingDrawn = true;
+        cutLine.start = {
+            x: e.pageX,
+            y: e.pageY
+        };
+    }
+}
+
+// moving pointer in datacrafting container updates endpoint of cut line
+function datacraftingContainerPointerMove(e) {
+    e.preventDefault();
+
+    if (isCutLineBeingDrawn) {
+        cutLine.end = {
+            x: e.pageX,
+            y: e.pageY
+        };
+    
+    }
+
+    if (globalStates.currentLogic.tempBlock) {
+        globalStates.currentLogic.tempBlock.style.left = e.pageX - globalStates.currentLogic.tempBlock.width/2;
+        globalStates.currentLogic.tempBlock.style.top = e.pageY - globalStates.currentLogic.tempBlock.height/2;
+    }
+
+
+}
+
+

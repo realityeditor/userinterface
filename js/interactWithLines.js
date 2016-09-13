@@ -178,7 +178,21 @@ function drawAllLines(thisObject, context) {
         var bAScreenZ =   bA.screenLinearZ;
         var bBScreenZ = bB.screenLinearZ;
 
-        drawLine(context, [bA.screenX, bA.screenY], [bB.screenX, bB.screenY], bAScreenZ, bBScreenZ, l, timeCorrection);
+        var logicA;
+            if (l.logicA == null || l.logicA === false) {
+                logicA = 4;
+            } else {
+                logicA = l.logicA;
+            }
+
+        var logicB;
+        if (l.logicB == null || l.logicB === false) {
+            logicB = 4;
+        } else {
+            logicB = l.logicB;
+        }
+
+        drawLine(context, [bA.screenX, bA.screenY], [bB.screenX, bB.screenY], bAScreenZ, bBScreenZ, l, timeCorrection,logicA,logicB);
     }
    // context.fill();
     globalCanvas.hasContent = true;
@@ -215,10 +229,18 @@ function drawInteractionLines() {
             tempStart.screenY = -10;
             tempStart.screenZ = 6;
         } else {
+            if(tempStart.screenLinearZ)
             tempStart.screenZ = tempStart.screenLinearZ;
         }
 
-        drawLine(globalCanvas.context, [tempStart.screenX, tempStart.screenY], [globalStates.pointerPosition[0], globalStates.pointerPosition[1]], tempStart.screenZ, tempStart.screenZ, globalStates, timeCorrection);
+        var logicA;
+        if (globalProgram.logicA == null || globalProgram.logicA === false) {
+            logicA = 4;
+        } else {
+            logicA = globalProgram.logicA;
+        }
+
+        drawLine(globalCanvas.context, [tempStart.screenX, tempStart.screenY], [globalStates.pointerPosition[0], globalStates.pointerPosition[1]], tempStart.screenZ, tempStart.screenZ, globalStates, timeCorrection, logicA, globalProgram.logicSelector);
     }
 
     if (globalStates.drawDotLine) {
@@ -240,11 +262,12 @@ function drawInteractionLines() {
  * @param lineEndWeight is a number indicating the weight of a line at end
  * @param linkObject that contains ballAnimationCount
  * @param timeCorrector is a number that is regulating the animation speed according to the frameRate
+ * @param startColor beinning color
+ * @param endColor end color
  * @return
  **/
 
-function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEndWeight, linkObject, timeCorrector) {
-
+function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEndWeight, linkObject, timeCorrector, startColor, endColor) {
     var angle = Math.atan2((lineStartPoint[1] - lineEndPoint[1]), (lineStartPoint[0] - lineEndPoint[0]));
     var possitionDelta = 0;
     var length1 = lineEndPoint[0] - lineStartPoint[0];
@@ -252,23 +275,83 @@ function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEn
     var lineVectorLength = Math.sqrt(length1 * length1 + length2 * length2);
     var keepColor = lineVectorLength / 6;
     var spacer = 2.3;
+    var ratio = 0;
     var mathPI = 2*Math.PI;
+    var newColor = [255,255,255];
+    var colors = [[0,255,255], // Blue
+                  [0,255,0],   // Green
+                  [255,255,0], // Yellow
+                  [255,0,124],
+                  [255,255,255]];// Red
 
     if (linkObject.ballAnimationCount >= lineStartWeight * spacer)  linkObject.ballAnimationCount = 0;
 
     while (possitionDelta + linkObject.ballAnimationCount < lineVectorLength) {
         var ballPossition = possitionDelta + linkObject.ballAnimationCount;
-        var color = "hsl(" + map(ballPossition, keepColor, lineVectorLength - keepColor, 180, 59) + ", 100%, 50%)";
+
+        ratio = map(ballPossition, 0, lineVectorLength, 0, 1);
+        for (var i = 0; i < 3; i++) {
+            newColor[i] = (Math.floor(parseInt(colors[startColor][i], 10) + (colors[endColor][i] - colors[startColor][i]) * ratio));
+        }
+
         var ballSize = map(ballPossition, 0, lineVectorLength, lineStartWeight, lineEndWeight);
+
         var x__ = lineStartPoint[0] - Math.cos(angle) * ballPossition;
         var y__ = lineStartPoint[1] - Math.sin(angle) * ballPossition;
         possitionDelta += ballSize * spacer;
         context.beginPath();
-        context.fillStyle = color;
+        context.fillStyle = "rgb("+newColor+")";
         context.arc(x__, y__, ballSize, 0, mathPI);
         context.fill();
     }
-    linkObject.ballAnimationCount += (lineStartWeight * timeCorrector.delta);
+    linkObject.ballAnimationCount += (lineStartWeight * timeCorrector.delta)+1;
+}
+
+/**********************************************************************************************************************
+ **********************************************************************************************************************/
+
+ function drawDatacraftingLine(context, linkObject, lineStartWeight, startColor, endColor, timeCorrector ) {
+    var mathPI = 2*Math.PI;
+    var spacer = 2.3;
+
+    var pointData = linkObject.route.pointData;
+
+    var blueToRed = (startColor.h === 180) && (endColor.h === 333);
+    var redToBlue = (startColor.h === 333) && (endColor.h === 180);
+
+    var percentIncrement = (lineStartWeight * spacer)/pointData.totalLength;
+
+    if (linkObject.ballAnimationCount >= percentIncrement) {
+        linkObject.ballAnimationCount = 0;
+    }
+
+    var hue = startColor;
+    var transitionColorRight = (endColor.h - startColor.h > 180 || blueToRed);
+    var transitionColorLeft = (endColor.h - startColor.h < -180 || redToBlue);
+    var color;
+
+    for (var i = 0; i < 1.0; i += percentIncrement) {
+        var percentage = i + linkObject.ballAnimationCount;
+        var position = linkObject.route.getXYPositionAtPercentage(percentage);
+        if (position !== null) {
+            if (transitionColorRight) {
+                // looks better to go down rather than up
+                hue = ((1.0 - percentage) * startColor.h + percentage * (endColor.h - 360)) % 360;
+            } else if (transitionColorLeft) {
+                // looks better to go up rather than down
+                hue = ((1.0 - percentage) * startColor.h + percentage * (endColor.h + 360)) % 360;
+            } else {
+                hue = (1.0 - percentage) * startColor.h + percentage * endColor.h;
+            }
+            context.beginPath();
+            context.fillStyle = 'hsl(' + hue + ', 100%, 60%)';
+            context.arc(position.screenX, position.screenY, lineStartWeight, 0, mathPI);
+            context.fill();
+        }
+    }
+
+    var numFramesForAnimationLoop = 30;
+    linkObject.ballAnimationCount += percentIncrement/numFramesForAnimationLoop;
 }
 
 /**********************************************************************************************************************

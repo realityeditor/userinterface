@@ -199,21 +199,32 @@ function GUI() {
                 tempResetObject.y = 0;
                 tempResetObject.scale = 1;
 
-                sendResetContent(key, key);
+                sendResetContent(key, key, "ui");
             }
 
+            if (globalStates.guiState ==="node") {
             for (var subKey in tempResetObject.nodes) {
                 var tempResetValue = tempResetObject.nodes[subKey];
 
-                if (globalStates.guiState ==="node") {
+
 
                     tempResetValue.matrix = [];
 
-                    tempResetValue.x = randomIntInc(0, 200) - 100;
-                    tempResetValue.y = randomIntInc(0, 200) - 100;
+                   // tempResetValue.x = randomIntInc(0, 200) - 100;
+                   // tempResetValue.y = randomIntInc(0, 200) - 100;
                     tempResetValue.scale = 1;
 
-                    sendResetContent(key, subKey);
+                    sendResetContent(key, subKey, "node");
+                }
+
+
+
+            for (var subKey in tempResetObject.logic) {
+                var tempResetValue = tempResetObject.logic[subKey];
+
+                    tempResetValue.matrix = [];
+
+                    sendResetContent(key, subKey, "logic");
                 }
 
             }
@@ -229,16 +240,18 @@ function GUI() {
      * @param node
      **/
 
-    function sendResetContent(object, node) {
+    function sendResetContent(object, node, kind) {
 // generate action for all links to be reloaded after upload
 
         var tempThisObject = {};
-        if (object != node) {
+        if (kind === "node") {
             tempThisObject = objects[object].nodes[node];
-        } else {
+        } else if(kind === "logic"){
+            // This needs to be filled once the UI is cleared
+        }
+        else if (kind === "ui"){
             tempThisObject = objects[object];
         }
-
         var content = {};
         content.x = tempThisObject.x;
         content.y = tempThisObject.y;
@@ -558,7 +571,7 @@ function craftingBoardVisible(objectKey, nodeKey) {
 globalStates.guiState ="logic";
     document.getElementById("craftingBoard").style.visibility = "visible"; //
     document.getElementById("craftingBoard").style.display = "inline"; //= "hidden";
-    cout("craftingBoardVisible");
+    cout("craftingBoardVisible for object: " + objectKey + " and node: "+nodeKey);
 }
 
 /**

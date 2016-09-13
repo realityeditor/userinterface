@@ -201,6 +201,8 @@ function Logic() {
 
     this.links = {};
     this.blocks = {};
+    this.tempLink = null;
+    this.tempBlock = null;
 
 }
 
@@ -223,6 +225,9 @@ function BlockLink() {
     // Will be used to test if a link is still able to find its destination.
     // It needs to be discussed what to do if a link is not able to find the destination and for what time span.
     this.health = 0; // todo use this to test if link is still valid. If not able to send for some while, kill link.
+    // keeps track of the path from the start block to end block and how to draw it
+    this.route = null;
+    this.ballAnimationCount = 0;
 }
 
 /**

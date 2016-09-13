@@ -474,6 +474,12 @@ function update(visibleObjects) {
     //disp = uiButtons.style.display;
     //uiButtons.style.display = 'none';
 
+
+    if (globalStates.datacraftingVisible) {
+        updateDatacrafting();
+    }
+
+
     if (globalStates.feezeButtonState == false) {
         globalObjects = visibleObjects;
     }
@@ -880,16 +886,16 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
 
                 thisObject.screenLinearZ = (((10001 - (20000 / thisObject.screenZ)) / 9999) + 1) / 2;
                 // map the linearized zBuffer to the final ball size
-                thisObject.screenLinearZ = map(thisObject.screenLinearZ, 0.996, 1, 25, 1);
+                thisObject.screenLinearZ = map(thisObject.screenLinearZ, 0.996, 1, 50, 1);
 
             }
 
 
-            if (kind === "logic"){
+            if (kind === "logic" && objectKey!=="pocket"){
 
-                if (globalStates.pointerPosition[0] > -1) {
+                if (globalStates.pointerPosition[0] > -1 && globalProgram.objectA) {
 
-                    var size = (thisObject.screenLinearZ * 20) * thisObject.scale;
+                    var size = (thisObject.screenLinearZ * 40) * thisObject.scale;
                     var x = thisObject.screenX;
                     var y = thisObject.screenY;
 
@@ -905,7 +911,7 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                         [x - (0.42 * size), y - (-1 * size)],
                         [x - (-0.42 * size), y - (-1 * size)]
                     ];
-                    var context = globalCanvas.context;
+                   /* var context = globalCanvas.context;
                     context.setLineDash([]);
                     // context.restore();
                     context.beginPath();
@@ -923,12 +929,24 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                         context.strokeStyle = "#ff0000";
                     } else {
                         context.strokeStyle = "#f0f0f0";
+                    }*/
+                    if (insidePoly(globalStates.pointerPosition, globalLogic.rectPoints)) {
+                       if(thisObject.animationScale ===0 && !globalStates.editingMode)
+                        globalDOMCach["logic" + nodeKey].className = "mainEditing scaleIn";
+                        thisObject.animationScale =1;
+                    }
+                    else {
+                        if(thisObject.animationScale ===1)
+                        globalDOMCach["logic" + nodeKey].className = "mainEditing scaleOut";
+                        thisObject.animationScale =0;
                     }
 
-                    if (insidePoly(globalStates.pointerPosition, globalLogic.rectPoints))
-                        context.strokeStyle = "#ff00ff";
-
-                    context.stroke();
+                   // context.stroke();
+                } else{
+                    if(thisObject.animationScale ===1) {
+                        globalDOMCach["logic" + nodeKey].className = "mainEditing scaleOut";
+                        thisObject.animationScale =0;
+                    }
                 }
 
             }
@@ -984,6 +1002,89 @@ function hideTransformed(objectKey, nodeKey, thisObject, kind) {
 
         cout("hideTransformed");
     }
+}
+
+/**********************************************************************************************************************
+ ****************************************** datacrafting update  ******************************************************
+ **********************************************************************************************************************/
+
+function updateGrid(grid) {
+    // *** this does all the backend work ***
+    grid.recalculateAllRoutes();
+
+    // updates the visuals for the blocks
+    grid.forEachPossibleBlockCell( function(cell) {
+        if (cell.blockAtThisLocation() !== null) {
+            displayCellBlock(cell);
+        } else {
+            hideCellBlock(cell);
+        }
+    });
+}
+
+// updates the visuals for the datacrafting each frame
+function updateDatacrafting() {
+    window.requestAnimationFrame(redrawDatacrafting);
+}
+
+// renders all the links for a datacrafting grid, and draws a cut line if present
+function redrawDatacrafting() {
+    if (!globalStates.currentLogic) return;
+    var grid = globalStates.currentLogic.grid;
+
+    var canvas = document.getElementById("datacraftingCanvas");
+    var ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    grid.forEachLink( function(link) {
+        var startCell =  grid.getCellXY(link.blockA.x, link.blockA.y);
+        var endCell =  grid.getCellXY(link.blockB.x, link.blockB.y);
+
+        drawDatacraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
+    });
+
+    if (cutLine.start !== null && cutLine.end !== null) {
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.moveTo(cutLine.start.x, cutLine.start.y);
+        ctx.lineTo(cutLine.end.x, cutLine.end.y);
+        ctx.stroke();
+    }
+}
+
+function checkForCutIntersections() {
+    var grid = globalStates.currentLogic.grid;
+    var didRemoveAnyLinks = false;
+    for (var blockLinkKey in globalStates.currentLogic.links) {
+        var didIntersect = false;
+        var blockLink = globalStates.currentLogic.links[blockLinkKey];
+        var points = grid.getPointsForLink(blockLink);
+        for (var j = 1; j < points.length; j++) {
+            var start = points[j - 1];
+            var end = points[j];
+            if (checkLineCross(start.screenX, start.screenY, end.screenX, end.screenY, cutLine.start.x, cutLine.start.y, cutLine.end.x, cutLine.end.y)) {
+                didIntersect = true;
+            }
+            if (didIntersect) {
+                // grid.links.splice(i, 1);
+                removeBlockLink(blockLinkKey);
+                didRemoveAnyLinks = true;
+            }
+        }
+    }
+    if (didRemoveAnyLinks) {
+        updateGrid(grid);
+    }
+}
+
+function displayCellBlock(cell) {
+    cell.domElement.setAttribute("src", blockImgMap["filled"][cell.location.col/2]);
+    cell.domElement.style.opacity = '1.00';
+}
+
+function hideCellBlock(cell) {
+    cell.domElement.setAttribute("src", blockImgMap["empty"][cell.location.col/2]);
+    cell.domElement.style.opacity = '0.50';
 }
 
 /**********************************************************************************************************************
@@ -1096,6 +1197,7 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
 
     if (globalStates.notLoading !== true && globalStates.notLoading !== nodeKey && thisObject.loaded !== true) {
 
+        thisObject.animationScale =0;
         thisObject.loaded = true;
         thisObject.visibleEditing = false;
         globalStates.notLoading = nodeKey;
@@ -1154,6 +1256,69 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
         addOverlay.style.visibility = "hidden";
         addOverlay.className = "mainEditing";
 
+        // todo the event handlers need to be bound to non animated ui elements for fast movements.
+        // todo the lines need to end at the center of the square.
+
+
+        if(kind=== "logic") {
+            var addLogic;
+            var size = 200;
+            addLogic = document.createElement('div');
+            // addOverlay.style.backgroundColor = "red";
+            addLogic.id = "logic" + nodeKey;
+            addLogic.style.width = size + "px";
+            // addOverlay.style.height = thisObject.frameSizeY + "px";
+            addLogic.style.height = size + "px";
+            addLogic.style.left = ((thisObject.frameSizeX - size) / 2) + "px";
+            addLogic.style.top = ((thisObject.frameSizeY- size) / 2) + "px";
+            addLogic.style.visibility = "hidden";
+            addLogic.className = "mainEditing";
+           /* addLogic.innerHTML =
+                '<svg id="SVG'+nodeKey+'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' +
+                '<path id="logic4" fill="#00ffff" d="M50,0V50H0V30A30,30,0,0,1,30,0Z"/>' +
+                '<path id="logic3" fill="#00ff00" d="M100,30V50H50V0H70A30,30,0,0,1,100,30Z"/>' +
+                '<path id="logic2" fill="#ff007c" d="M100,50V70a30,30,0,0,1-30,30H50V50Z"/>>' +
+                '<path id="logic1" fill="#ffff00" d="M50,50v50H30A30,30,0,0,1,0,70V50Z"/>' +
+                '</svg>';*/
+
+            var svgContainer = document.createElementNS('http://www.w3.org/2000/svg', "svg");
+            svgContainer.setAttributeNS(null,"viewBox", "0 0 100 100");
+
+            var svgElement=[];
+             svgElement.push(document.createElementNS("http://www.w3.org/2000/svg","path"));
+            svgElement[0].setAttributeNS(null,"fill","#00ffff");
+            svgElement[0].setAttributeNS(null,"d","M50,0V50H0V30A30,30,0,0,1,30,0Z");
+            svgElement.push(document.createElementNS("http://www.w3.org/2000/svg","path"));
+            svgElement[1].setAttributeNS(null,"fill","#00ff00");
+            svgElement[1].setAttributeNS(null,"d","M100,30V50H50V0H70A30,30,0,0,1,100,30Z");
+            svgElement.push(document.createElementNS("http://www.w3.org/2000/svg","path"));
+            svgElement[2].setAttributeNS(null,"fill","#ffff00");
+            svgElement[2].setAttributeNS(null,"d","M100,50V70a30,30,0,0,1-30,30H50V50Z");
+            svgElement.push(document.createElementNS("http://www.w3.org/2000/svg","path"));
+            svgElement[3].setAttributeNS(null,"fill","#ff007c");
+            svgElement[3].setAttributeNS(null,"d","M50,50v50H30A30,30,0,0,1,0,70V50Z");
+
+            for (var i=0;i<svgElement.length;i++){
+                svgContainer.appendChild(svgElement[i]);
+                svgElement[i].number = i;
+                svgElement[i].addEventListener('pointerenter', function(){
+                    globalProgram.logicSelector = this.number;
+
+                    if(globalProgram.nodeA === nodeKey)
+                        globalProgram.logicA = this.number;
+                    else
+                        globalProgram.logicB = this.number;
+
+                    console.log(globalProgram.logicSelector);
+                });
+            }
+            addLogic.appendChild(svgContainer);
+
+            addOverlay.appendChild(addLogic);
+            globalDOMCach["logic" + nodeKey] = addLogic;
+
+        };
+
         var addCanvas = document.createElement('canvas');
         addCanvas.id = "canvas" + nodeKey;
         addCanvas.style.width = "100%";
@@ -1172,17 +1337,19 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
         globalDOMCach["canvas" + nodeKey] = addCanvas;
 
         var theObject = addOverlay;
-        theObject.style["touch-action"] = "none";
-        theObject["handjs_forcePreventDefault"] = true;
-        theObject.addEventListener("pointerdown", touchDown, false);
+        globalDOMCach[nodeKey].style["touch-action"] = "none";
+        globalDOMCach[nodeKey]["handjs_forcePreventDefault"] = true;
+
+        globalDOMCach[nodeKey].addEventListener("pointerdown", touchDown, false);
         ec++;
-        theObject.addEventListener("pointerup", trueTouchUp, false);
+        globalDOMCach[nodeKey].addEventListener("pointerup", trueTouchUp, false);
         ec++;
         theObject.addEventListener("pointerenter", touchEnter, false);
         ec++;
 
         theObject.addEventListener("pointerleave", touchLeave, false);
         ec++;
+
 
         if (globalStates.editingMode) {
             // todo this needs to be changed backword

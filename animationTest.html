@@ -1,0 +1,82 @@
+<html>
+<head>
+    <style type="text/css">
+        @keyframes scaleIn {
+            0% {
+                visibility: visible;
+                -webkit-transform: scale(0);
+            }
+            100% {
+                -webkit-transform: scale(1.0);
+                visibility: visible;
+            }
+        }
+
+        @keyframes scaleOut {
+            0% {
+                -webkit-transform: scale(1.0);
+                visibility: visible;
+            }
+            100% {
+                -webkit-transform: scale(0);
+                visibility: hidden;
+            }
+        }
+
+        .scaleIn {
+            visibility: visible;
+            animation-name: scaleIn;
+            animation-duration: 100ms;
+            -webkit-animation-fill-mode: forwards; /* Chrome, Safari, Opera */
+        }
+
+        .scaleOut {
+            visibility: hidden;
+            animation-name: scaleOut;
+            animation-duration: 100ms;
+            -webkit-animation-fill-mode: forwards;
+        }
+
+    </style>
+
+</head>
+<body>
+<div id="x1" style=" width:300px;  height:300px; visibility: hidden">
+    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <path class="cls-1" fill="aqua" d="M50,0V50H0V30A30,30,0,0,1,30,0Z"/>
+        <path class="cls-2" fill="lime" d="M100,30V50H50V0H70A30,30,0,0,1,100,30Z"/>
+        <path class="cls-3" fill="#ff0" d="M100,50V70a30,30,0,0,1-30,30H50V50Z"/>
+        <path class="cls-4" fill="#ff007c" d="M50,50v50H30A30,30,0,0,1,0,70V50Z"/>
+    </svg>
+</div>
+<div id="x2" style=" width:483px;  height:298px;  background:#676470;"></div>
+<script>
+    document.getElementById("x2").addEventListener("mouseenter", function () {
+
+        //   document.getElementById("x1").style.visibility = "visible";
+        //  document.getElementById("x1").style.transform = "scale(1.0)";
+
+        document.getElementById("x1").className = "scaleIn";
+
+        console.log("test2");
+    });
+
+    document.getElementById("x2").addEventListener("mouseleave", function () {
+
+        //  document.getElementById("x1").style.visibility = "hidden";
+        //  document.getElementById("x1").style.transform = "scale(0.01)";
+
+        document.getElementById("x1").className = "scaleOut";
+
+        console.log("test2");
+    });
+
+    document.getElementById("x1").addEventListener("transitionend", function () {
+
+        console.log("transitionend");
+    });
+
+
+</script>
+</body>
+</html>

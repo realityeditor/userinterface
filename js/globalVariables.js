@@ -73,7 +73,7 @@ var timeCorrection = {delta: 0, now: 0, then: 0};
 
 
 var globalStates = {
-    debug: true,
+    debug: false,
     overlay: 0,
     device: "",
     // drawWithLines
@@ -87,6 +87,8 @@ var globalStates = {
     UIOffMode: false,
     preferencesButtonState: false,
     extendedTracking: false,
+    datacraftingVisible: true,
+    currentLogic: null,
 
     extendedTrackingState: false,
     developerState: false,
@@ -158,7 +160,8 @@ var globalProgram = {
     logicA:false,
     objectB: false,
     nodeB: false,
-    logicB:false
+    logicB:false,
+    logicSelector:0
 };
 
 var objects = {};
@@ -211,4 +214,30 @@ var testInterlink = {};
 var overlayDiv;
 //var overlayImg;
 //var overlayImage = [];
+
+/**********************************************************************************************************************
+ ***************************************** datacrafting variables  ****************************************************
+ **********************************************************************************************************************/
+
+// const gridSize = 7;
+// var grid = null;
+// var globalStates.currentLogic = null;
+
+var tempStartBlock = null; // the block you started dragging from
+var tempEndBlock = null; // the block you dragged onto
+var isPointerDown = false; // always tells you whether the pointer is currently down or up
+var isTempLinkBeingDrawn = false; // becomes true when you start dragging out of a block
+var isPointerInActiveBlock = false; // always tells you whether the pointer is over a filled block
+var isCutLineBeingDrawn = false;
+
+// stores the images for the blocks in each column
+var blockImgMap = {
+    "filled":["png/datacrafting/blue.png", "png/datacrafting/green.png", "png/datacrafting/yellow.png", "png/datacrafting/red.png"],
+    "empty":["png/datacrafting/blue-empty.png", "png/datacrafting/green-empty.png", "png/datacrafting/yellow-empty.png", "png/datacrafting/red-empty.png"]
+};
+
+var cutLine = {
+    start: null,
+    end: null
+};
 

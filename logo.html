@@ -84,7 +84,6 @@
        shadow = map(shadow, 0, 1785, 0, logoSize.W);
    }
 
-
    //ctx.scale(0.5,0.5);
 
    function logo() {
@@ -92,7 +91,7 @@
            ctx.clearRect(0, 0, c.width, c.height);
 
        for(var i1 = 0; i1<line.length; i1++){
-           drawLine(ctx, line[i1].p1, line[i1].p2, line[i1].l1, line[i1].l2, line[i1],timeCorrection);
+           drawLine(ctx, line[i1].p1, line[i1].p2, line[i1].l1, line[i1].l2, line[i1],timeCorrection,0,2);
        }
 
        for(var e1 = 0; e1<thePoint.length; e1++){
