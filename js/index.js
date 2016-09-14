@@ -1080,15 +1080,33 @@ function checkForCutIntersections() {
     }
 }
 
+/// VISUAL BLOCK SCHEMA 1
 function displayCellBlock(cell) {
-    cell.domElement.setAttribute("src", blockImgMap["filled"][cell.location.col/2]);
+    cell.domElement.setAttribute("src", "png/datacrafting/new-block-1.png");
     cell.domElement.style.opacity = '1.00';
 }
 
 function hideCellBlock(cell) {
+    if (cell.location.row === 0 || cell.location.row === 6) {
+        cell.domElement.setAttribute("src", blockImgMap["filled"][cell.location.col/2]);
+    } else {
+        cell.domElement.setAttribute("src", blockImgMap["empty"][cell.location.col/2]);
+    }
+    cell.domElement.style.opacity = '0.75';
+}
+
+/// VISUAL BLOCK SCHEMA 2
+/*
+function hideCellBlock(cell) {
     cell.domElement.setAttribute("src", blockImgMap["empty"][cell.location.col/2]);
     cell.domElement.style.opacity = '0.50';
 }
+
+function displayCellBlock(cell) {
+    cell.domElement.setAttribute("src", blockImgMap["filled"][cell.location.col/2]);
+    cell.domElement.style.opacity = '1.00';
+}
+*/
 
 function displayMargin(cell) {
     cell.domElement.style.display = "inline";
