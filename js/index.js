@@ -1082,7 +1082,19 @@ function checkForCutIntersections() {
 
 /// VISUAL BLOCK SCHEMA 1
 function displayCellBlock(cell) {
-    cell.domElement.setAttribute("src", "png/datacrafting/new-block-1.png");
+    // cell.domElement.setAttribute("src", "png/datacrafting/new-closed-sides.png");
+    var isFirst = cell.isFirstItem();
+    var isLast = cell.isLastItem();
+    if (isFirst && !isLast) {
+        cell.domElement.setAttribute("src", logicBlockCellImage[1].src);
+    } else if (!isFirst && isLast) {
+        cell.domElement.setAttribute("src", logicBlockCellImage[2].src);
+    } else if (isFirst && isLast) {
+        cell.domElement.setAttribute("src", logicBlockCellImage[0].src);
+    } else {
+        cell.domElement.setAttribute("src", logicBlockCellImage[3].src);
+    }
+
     cell.domElement.style.opacity = '1.00';
 }
 

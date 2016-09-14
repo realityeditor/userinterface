@@ -65,6 +65,8 @@ var unconstButtonImage = [];
 var editingButtonImage = [];
 var pocketButtonImage = [];
 var loadNewUiImage = [];
+var logicBlockCellImage = [];
+var newLogicBlockImage = [];
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
@@ -103,6 +105,12 @@ function GUI() {
     preload(loadNewUiImage,
         'png/load.png', 'png/loadOver.png'
     );
+
+    preload(logicBlockCellImage,
+        'png/datacrafting/block-closed-sides.png', 'png/datacrafting/block-open-right.png', 'png/datacrafting/block-open-left.png', 'png/datacrafting/block-open-sides.png');
+
+    preload(newLogicBlockImage,
+        'png/datacrafting/new-block-1.png', 'png/datacrafting/new-block-2.png', 'png/datacrafting/new-block-3.png', 'png/datacrafting/new-block-4.png');
 
     document.getElementById("guiButtonImage1").addEventListener("touchstart", function () {
         if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[0].src;
@@ -497,7 +505,7 @@ function GUI() {
             var newBlockImg = document.createElement('img');
             newBlockImg.setAttribute("class", "newBlock"+blockWidth);
             newBlockImg.setAttribute("id", "newBlockTest");
-            newBlockImg.setAttribute("src", "png/datacrafting/new-block-"+blockWidth+".png");
+            newBlockImg.setAttribute("src", newLogicBlockImage[blockWidth-1].src); // "png/datacrafting/new-block-"+blockWidth+".png"
             newBlockImg.setAttribute("touch-action", "none");
 
             newBlockImg.style.left = (evt.pageX - globalStates.currentLogic.grid.blockColWidth/2) + "px";
@@ -751,11 +759,14 @@ function initializeDatacraftingGrid(logic) {
                 var marginImg = document.createElement('img');
                 marginImg.setAttribute("class", "blockMargin");
                 marginImg.setAttribute("id", "margin" + colNum);
-                marginImg.setAttribute("src", "png/datacrafting/block-margin.png");
+                marginImg.setAttribute("src", logicBlockCellImage[3].src);
                 marginImg.setAttribute("touch-action", "none");
                 var thisCell = logic.grid.getCell(colNum, rowNum);
-                marginImg.style.top = (1 + logic.grid.getCellCenterY(thisCell) - logic.grid.marginColWidth/2) + "px";
-                marginImg.style.left = (1 + logic.grid.getCellCenterX(thisCell) - logic.grid.blockRowHeight/2) + "px";
+                marginImg.style.top = (rowDiv.getBoundingClientRect().top) + "px"; //(logic.grid.getCellCenterY(thisCell) - logic.grid.marginColWidth/2) + "px";
+                marginImg.style.left = (logic.grid.getCellCenterX(thisCell) - logic.grid.blockRowHeight/2) + "px";
+
+                
+
                 thisCell.domElement = marginImg;
                 marginContainer.appendChild(marginImg);
 

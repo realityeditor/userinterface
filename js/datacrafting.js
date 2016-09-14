@@ -180,6 +180,16 @@ Cell.prototype.itemAtThisLocation = function() {
     return convertGridPosToBlockPos(itemCol, blockGridPos.row).x;
 }
 
+Cell.prototype.isFirstItem = function() {
+    return this.itemAtThisLocation() === 0;
+}
+
+Cell.prototype.isLastItem = function() {
+    var block = this.blockAtThisLocation();
+    var item = this.itemAtThisLocation();
+    return item === (block.blockSize-1);
+}
+
 /////////////////////
 //  ROUTE METHODS  //
 /////////////////////
