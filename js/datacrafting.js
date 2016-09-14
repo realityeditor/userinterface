@@ -173,6 +173,13 @@ Cell.prototype.blockAtThisLocation = function() {
     return getBlockXY(blockPos.x, blockPos.y);
 }
 
+Cell.prototype.itemAtThisLocation = function() {
+    var block = this.blockAtThisLocation();
+    var blockGridPos = convertBlockPosToGridPos(block.x, block.y);
+    var itemCol = this.location.col - blockGridPos.col;
+    return convertGridPosToBlockPos(itemCol, blockGridPos.row).x;
+}
+
 /////////////////////
 //  ROUTE METHODS  //
 /////////////////////
@@ -431,6 +438,14 @@ Grid.prototype.forEachPossibleBlockCell = function(action) {
     });
 };
 
+Grid.prototype.forEachPossibleBlockMarginCell = function(action) {
+    this.cells.filter( function(cell) {
+        return (cell.location.row % 2 === 0 && cell.location.col % 2 === 1);
+    }).forEach( function(cell) {
+        action(cell);
+    });
+}
+
 // utility - true iff cells are in same row
 Grid.prototype.areCellsHorizontal = function(cell1, cell2) {
     if (cell1 && cell2) {
@@ -544,8 +559,8 @@ Grid.prototype.recalculateAllRoutes = function() {
 // and sets the route of the link to contain the corner points and all the cells between
 Grid.prototype.calculateLinkRoute = function(link) {
     //TODO: need to account for itemA, itemB in this algorithm
-    var startLocation = convertBlockPosToGridPos(link.blockA.x, link.blockA.y); //link.startBlock.cell.location;
-    var endLocation = convertBlockPosToGridPos(link.blockB.x, link.blockB.y); //link.endBlock.cell.location;
+    var startLocation = convertBlockPosToGridPos(link.blockA.x + link.itemA, link.blockA.y); //link.startBlock.cell.location;
+    var endLocation = convertBlockPosToGridPos(link.blockB.x + link.itemB, link.blockB.y); //link.endBlock.cell.location;
     var route = new Route([startLocation]);
 
     // by default lines loop around the right of blocks, except for last column or if destination is to left of start
@@ -926,8 +941,8 @@ function getBlock(x,y) {
     return null;
 }
 
-function getCellForBlock(grid, block) {
-    var gridPos = convertBlockPosToGridPos(block.x,block.y);
+function getCellForBlock(grid, block, item) {
+    var gridPos = convertBlockPosToGridPos(block.x + item, block.y);
     return grid.getCell(gridPos.col, gridPos.row);
 }
 

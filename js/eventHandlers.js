@@ -852,6 +852,7 @@ function blockPointerLeave(e) {
     if (isPointerDown && !isTempLinkBeingDrawn) {
         isTempLinkBeingDrawn = true;
         tempStartBlock = e.target.cell.blockAtThisLocation();
+        tempStartItem = e.target.cell.itemAtThisLocation();
         console.log("left block, isTempLinkBeingDrawn");
     }
 }
@@ -864,6 +865,7 @@ function blockPointerEnter(e) {
     isPointerInActiveBlock = true;
     if (isTempLinkBeingDrawn) {
         tempEndBlock = e.target.cell.blockAtThisLocation();
+        tempEndItem = e.target.cell.itemAtThisLocation();
 
         // create temp link if you can
         if (tempStartBlock === null || tempEndBlock === null) { return; }
@@ -879,8 +881,8 @@ function blockPointerEnter(e) {
         var newTempLink = new BlockLink();
         newTempLink.blockA = tempStartBlock;
         newTempLink.blockB = tempEndBlock;
-        newTempLink.itemA = 0;
-        newTempLink.itemB = 0;
+        newTempLink.itemA = tempStartItem;
+        newTempLink.itemB = tempEndItem;
         setTempLink(newTempLink);
         updateGrid(globalStates.currentLogic.grid); // need to recalculate routes with new temp link
         console.log("entered new block, new temp link");
@@ -903,7 +905,7 @@ function blockPointerUp(e) {
             // var endLocation = globalStates.currentLogic.tempLink.blockB;//.cell.location;
             // var addedLink = grid.addLinkFromTo(startLocation.col, startLocation.row, endLocation.col, endLocation.row);
 
-            var addedLink = addBlockLink(globalStates.currentLogic.tempLink.blockA, globalStates.currentLogic.tempLink.blockB, 0, 0);
+            var addedLink = addBlockLink(globalStates.currentLogic.tempLink.blockA, globalStates.currentLogic.tempLink.blockB,  globalStates.currentLogic.tempLink.itemA, globalStates.currentLogic.tempLink.itemB);
 
             if (addedLink !== null) {
                 addedLink.route = globalStates.currentLogic.tempLink.route; // copy over the route rather than recalculating everything

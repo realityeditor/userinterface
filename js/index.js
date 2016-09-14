@@ -1000,10 +1000,25 @@ function updateGrid(grid) {
     // *** this does all the backend work ***
     grid.recalculateAllRoutes();
 
+    // remove margins between multi-column blocks
+    grid.forEachPossibleBlockMarginCell( function(cell) {
+        hideMargin(cell);
+    });
+
     // updates the visuals for the blocks
     grid.forEachPossibleBlockCell( function(cell) {
-        if (cell.blockAtThisLocation() !== null) {
+        var thisBlock = cell.blockAtThisLocation();
+        if (thisBlock) {
             displayCellBlock(cell);
+            // add margin between cells within the same multi-column block
+            var cellToLeft = globalStates.currentLogic.grid.getCell(cell.location.col-2,cell.location.row);
+            if (cellToLeft) {
+                var blockToLeft = cellToLeft.blockAtThisLocation();
+                if (blockToLeft && (blockToLeft === thisBlock)) {
+                    var cellInBetween = globalStates.currentLogic.grid.getCell(cell.location.col-1,cell.location.row);
+                    displayMargin(cellInBetween);
+                }
+            }
         } else {
             hideCellBlock(cell);
         }
@@ -1025,8 +1040,8 @@ function redrawDatacrafting() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     grid.forEachLink( function(link) {
-        var startCell =  getCellForBlock(grid, link.blockA); // grid.getCellXY(link.blockA.x, link.blockA.y);
-        var endCell =  getCellForBlock(grid, link.blockB); // grid.getCellXY(link.blockB.x, link.blockB.y);
+        var startCell =  getCellForBlock(grid, link.blockA, link.itemA); // grid.getCellXY(link.blockA.x, link.blockA.y);
+        var endCell =  getCellForBlock(grid, link.blockB, link.itemB); // grid.getCellXY(link.blockB.x, link.blockB.y);
 
         drawDatacraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
     });
@@ -1073,6 +1088,14 @@ function displayCellBlock(cell) {
 function hideCellBlock(cell) {
     cell.domElement.setAttribute("src", blockImgMap["empty"][cell.location.col/2]);
     cell.domElement.style.opacity = '0.50';
+}
+
+function displayMargin(cell) {
+    cell.domElement.style.display = "inline";
+}
+
+function hideMargin(cell) {
+    cell.domElement.style.display = "none";
 }
 
 /**********************************************************************************************************************

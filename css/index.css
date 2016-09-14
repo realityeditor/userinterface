@@ -258,6 +258,14 @@ body {
     margin-bottom: 46px;
 }
 
+.blockMargin {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 46px;
+    height: 46px;
+}
+
 .blockRight {
     width: 92px;
     height: 46px;

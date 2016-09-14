@@ -709,6 +709,11 @@ function initializeDatacraftingGrid(logic) {
     // initialize by adding a grid of images for the blocks
     // and associating them with the data model and assigning event handlers
     //var blocksContainer = document.getElementById('blocks');
+
+    var marginContainer = document.createElement('div');
+    marginContainer.setAttribute('id', 'margins');
+    container.appendChild(marginContainer);
+
     var blocksContainer = document.createElement('div');
     blocksContainer.setAttribute('id', 'blocks');
     container.appendChild(blocksContainer);
@@ -722,22 +727,39 @@ function initializeDatacraftingGrid(logic) {
         rowDiv.setAttribute("id", "row" + rowNum);
         blocksContainer.appendChild(rowDiv);
 
-        for (var colNum = 0; colNum < logic.grid.size; colNum+=2) {
+        for (var colNum = 0; colNum < logic.grid.size; colNum++) {
 
-            var blockImg = document.createElement('img');
-            blockImg.setAttribute("class", "block");
-            if (colNum === logic.grid.size - 1) {
-                blockImg.setAttribute("class", "blockRight");
+            if (colNum % 2 === 0) {
+
+                var blockImg = document.createElement('img');
+                blockImg.setAttribute("class", "block");
+                if (colNum === logic.grid.size - 1) {
+                    blockImg.setAttribute("class", "blockRight");
+                }
+                blockImg.setAttribute("id", "block" + colNum);
+                blockImg.setAttribute("src", blockImgMap["filled"][colNum/2]);
+                blockImg.setAttribute("touch-action", "none");
+                //var block = new Block(colNum, rowNum, true, blockImg);
+                var thisCell = logic.grid.getCell(colNum, rowNum);
+                thisCell.domElement = blockImg;
+                blockImg.cell = thisCell;
+
+                rowDiv.appendChild(blockImg);
+
+            } else {
+
+                var marginImg = document.createElement('img');
+                marginImg.setAttribute("class", "blockMargin");
+                marginImg.setAttribute("id", "margin" + colNum);
+                marginImg.setAttribute("src", "png/datacrafting/block-margin.png");
+                marginImg.setAttribute("touch-action", "none");
+                var thisCell = logic.grid.getCell(colNum, rowNum);
+                marginImg.style.top = (1 + logic.grid.getCellCenterY(thisCell) - logic.grid.marginColWidth/2) + "px";
+                marginImg.style.left = (1 + logic.grid.getCellCenterX(thisCell) - logic.grid.blockRowHeight/2) + "px";
+                thisCell.domElement = marginImg;
+                marginContainer.appendChild(marginImg);
+
             }
-            blockImg.setAttribute("id", "block" + colNum);
-            blockImg.setAttribute("src", blockImgMap["filled"][colNum/2]);
-            blockImg.setAttribute("touch-action", "none");
-            //var block = new Block(colNum, rowNum, true, blockImg);
-            var thisCell = logic.grid.getCell(colNum, rowNum);
-            thisCell.domElement = blockImg;
-            blockImg.cell = thisCell;
-
-            rowDiv.appendChild(blockImg);
         }
     }
 

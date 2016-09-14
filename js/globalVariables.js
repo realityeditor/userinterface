@@ -224,6 +224,8 @@ var overlayDiv;
 
 var tempStartBlock = null; // the block you started dragging from
 var tempEndBlock = null; // the block you dragged onto
+var tempStartItem = 0;
+var tempEndItem = 0;
 var isPointerDown = false; // always tells you whether the pointer is currently down or up
 var isTempLinkBeingDrawn = false; // becomes true when you start dragging out of a block
 var isPointerInActiveBlock = false; // always tells you whether the pointer is over a filled block
