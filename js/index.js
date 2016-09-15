@@ -1107,6 +1107,14 @@ function hideCellBlock(cell) {
     cell.domElement.style.opacity = '0.75';
 }
 
+function highlightCellBlockForMove(cell) {
+    cell.domElement.style.opacity = '0.50';
+}
+
+function unhighlightCellBlockForMove(cell) {
+    cell.domElement.style.opacity = '1.00';
+}
+
 /// VISUAL BLOCK SCHEMA 2
 /*
 function hideCellBlock(cell) {

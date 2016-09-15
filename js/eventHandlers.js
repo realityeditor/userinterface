@@ -840,6 +840,13 @@ function blockPointerDown(e) {
 
     if (e.target.cell.blockAtThisLocation() !== null) {
         isPointerDown = true;
+        setTimeout( function() {
+            console.log("start move, not link");
+            if (isPointerDown && !isTempLinkBeingDrawn) {
+                cellToMoveBlockFrom = e.target.cell;
+                highlightCellBlockForMove(e.target.cell);
+            }
+        }, 2000);
     }
 }
 
@@ -849,12 +856,53 @@ function blockPointerLeave(e) {
     isPointerInActiveBlock = false;
     if (e.target.cell.blockAtThisLocation() === null) return;
 
-    if (isPointerDown && !isTempLinkBeingDrawn) {
+    if (isPointerDown && cellToMoveBlockFrom) {
+
+        console.log("left cell", cellToMoveBlockFrom);
+
+        // remove block from cellToMoveBlockFrom
+        var blockToMove = cellToMoveBlockFrom.blockAtThisLocation();
+        var blockSize = blockToMove.blockSize;
+        var itemSelected = cellToMoveBlockFrom.itemAtThisLocation();
+        removeBlock(globalStates.currentLogic, blockToMove);
+        updateGrid(globalStates.currentLogic.grid);
+        
+        // add temp block to pointer
+        createTempBlockOnPointer(blockSize, e.pageX, e.pageY, itemSelected);
+
+        cellToMoveBlockFrom = null;
+    
+    } else if (isPointerDown && !isTempLinkBeingDrawn) {
+
         isTempLinkBeingDrawn = true;
         tempStartBlock = e.target.cell.blockAtThisLocation();
         tempStartItem = e.target.cell.itemAtThisLocation();
         console.log("left block, isTempLinkBeingDrawn");
+
     }
+}
+
+function createTempBlockOnPointer(blockSize, centerX, centerY, itemSelected) {
+    var tempBlock = document.createElement('img');
+
+    var newBlockImg = document.createElement('img');
+    newBlockImg.setAttribute("class", "newBlock"+blockSize);
+    newBlockImg.setAttribute("id", "newBlockTest");
+    newBlockImg.setAttribute("src", newLogicBlockImage[blockSize-1].src); // "png/datacrafting/new-block-"+blockSize+".png"
+    newBlockImg.setAttribute("touch-action", "none");
+
+    newBlockImg.style.left = (centerX - globalStates.currentLogic.grid.blockColWidth/2 - itemSelected * (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth)) + "px";
+    newBlockImg.style.top = (centerY - globalStates.currentLogic.grid.blockRowHeight/2) + "px";
+
+    globalStates.currentLogic.tempBlock = {
+        domElement: newBlockImg,
+        width: blockSize,
+        itemSelected: itemSelected
+    }; //= newBlockImg;
+
+    // tempBlock = newBlockImg;
+    var blocksContainer = document.getElementById('blocks');
+    blocksContainer.appendChild(newBlockImg);
 }
 
 // if your pointer enters a different block while temp link is being drawn, render a new link to that destination
@@ -896,6 +944,10 @@ function blockPointerUp(e) {
 
     isPointerDown = false;
     isTempLinkBeingDrawn = false;
+    if (cellToMoveBlockFrom) {
+        unhighlightCellBlockForMove(cellToMoveBlockFrom);        
+    }
+    cellToMoveBlockFrom = null;
 
     if (globalStates.currentLogic.tempLink !== null) {
         //only create link if identical link doesn't already exist
@@ -943,7 +995,7 @@ function datacraftingContainerPointerUp(e) {
         globalStates.currentLogic.tempBlock.domElement.parentNode.removeChild(globalStates.currentLogic.tempBlock.domElement);
 
         var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
-        var cellsOver = globalStates.currentLogic.grid.getCellsOver(firstCellOver,globalStates.currentLogic.tempBlock.width);
+        var cellsOver = globalStates.currentLogic.grid.getCellsOver(firstCellOver,globalStates.currentLogic.tempBlock.width, globalStates.currentLogic.tempBlock.itemSelected);
         
         var canAddBlock = true;
         cellsOver.forEach(function(cell) {
@@ -955,6 +1007,7 @@ function datacraftingContainerPointerUp(e) {
         if (canAddBlock) {
             console.log("placing block in cell: " + firstCellOver.location.col, + "," + firstCellOver.location.row);
             var blockPos = convertGridPosToBlockPos(firstCellOver.location.col, firstCellOver.location.row);
+            blockPos.x -= globalStates.currentLogic.tempBlock.itemSelected;
             var blockWidth = globalStates.currentLogic.tempBlock.width;
             var block = createBlock(blockPos.x, blockPos.y, blockWidth, "test");
             var blockKey = "block_" + blockPos.x + "_" + blockPos.y + "_" + getTimestamp();
@@ -992,7 +1045,9 @@ function datacraftingContainerPointerMove(e) {
     }
 
     if (globalStates.currentLogic.tempBlock) {
-        globalStates.currentLogic.tempBlock.domElement.style.left = e.pageX - globalStates.currentLogic.grid.blockColWidth/2; //globalStates.currentLogic.tempBlock.domElement.width/2;
+        var itemSelected = globalStates.currentLogic.tempBlock.itemSelected;
+
+        globalStates.currentLogic.tempBlock.domElement.style.left = e.pageX - globalStates.currentLogic.grid.blockColWidth/2 - itemSelected * (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth); //globalStates.currentLogic.tempBlock.domElement.width/2;
         globalStates.currentLogic.tempBlock.domElement.style.top = e.pageY - globalStates.currentLogic.grid.blockRowHeight/2; //globalStates.currentLogic.tempBlock.domElement.height/2;
     }
 

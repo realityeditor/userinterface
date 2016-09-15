@@ -230,6 +230,7 @@ var isPointerDown = false; // always tells you whether the pointer is currently 
 var isTempLinkBeingDrawn = false; // becomes true when you start dragging out of a block
 var isPointerInActiveBlock = false; // always tells you whether the pointer is over a filled block
 var isCutLineBeingDrawn = false;
+var cellToMoveBlockFrom = null;
 
 // stores the images for the blocks in each column
 var blockImgMap = {

@@ -499,7 +499,11 @@ function GUI() {
             }
 
             var blockWidth = getRandomInt(1,5); //1;
+            var itemToCarryBy = 0;
 
+            createTempBlockOnPointer(blockWidth, evt.pageX, evt.pageY, itemToCarryBy);
+
+            /*
             var tempBlock = document.createElement('img');
 
             var newBlockImg = document.createElement('img');
@@ -519,6 +523,7 @@ function GUI() {
             // tempBlock = newBlockImg;
             var blocksContainer = document.getElementById('blocks');
             blocksContainer.appendChild(newBlockImg);
+            */
 
         }
 

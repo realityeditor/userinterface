@@ -300,6 +300,24 @@ function clearAllBlockLinks() {
     globalStates.currentLogic.tempLink = null;
 }
 
+function removeBlock(logic, block) {
+    removeLinksForBlock(logic, block);
+    for (var blockKey in logic.blocks) {
+        if (logic.blocks[blockKey] === block) {
+            delete logic.blocks[blockKey];
+        }
+    }
+}
+
+function removeLinksForBlock(logic, block) {
+    for (var linkKey in logic.links) {
+        var link = logic.links[linkKey];
+        if (link.blockA === block || link.blockB === block) {
+            delete logic.links[linkKey];
+        }
+    }
+}
+
 function doesLinkAlreadyExist(blockLink) {
     for (var blockLinkKey in globalStates.currentLogic.links) {
         var thatBlockLink = globalStates.currentLogic.links[blockLinkKey];
@@ -956,13 +974,13 @@ function getCellForBlock(grid, block, item) {
     return grid.getCell(gridPos.col, gridPos.row);
 }
 
-Grid.prototype.getCellsOver = function (firstCell,blockWidth) {
+Grid.prototype.getCellsOver = function (firstCell,blockWidth,itemSelected) {
     var cells = [];
     // if (blockWidth === 1) {
     //     return [firstCell];
     // }
-    for (var col = firstCell.location.col; col < firstCell.location.col + 2*blockWidth; col += 2) {
-        cells.push(this.getCell(col, firstCell.location.row))
+    for (var col = firstCell.location.col; col < firstCell.location.col + 2 * blockWidth; col += 2) {
+        cells.push(this.getCell(col - (itemSelected * 2), firstCell.location.row))
     }
     return cells;
 }
