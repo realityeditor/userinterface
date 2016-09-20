@@ -844,6 +844,7 @@ function blockPointerDown(e) {
             console.log("start move, not link");
             if (isPointerDown && !isTempLinkBeingDrawn) {
                 cellToMoveBlockFrom = e.target.cell;
+                isMarginSelected = false;
                 // var allCellsForThisBlock = [e.target.cell];
                 
                 // var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
@@ -937,7 +938,12 @@ function createTempBlockOnPointer(blockSize, centerX, centerY, itemSelected, inc
     newBlockImg.setAttribute("id", "newBlockTest");
     newBlockImg.setAttribute("touch-action", "none");
     newBlockImg.style.opacity = 0.75;
-    newBlockImg.style.left = (centerX - globalStates.currentLogic.grid.blockColWidth/2 - itemSelected * (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth)) + "px";
+
+    var marginOffset = isMarginSelected ? (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth)/2 : 0;
+
+    var leftPositionWithoutMargin = (centerX - globalStates.currentLogic.grid.blockColWidth/2 - itemSelected * (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth));
+
+    newBlockImg.style.left = (leftPositionWithoutMargin - marginOffset) + "px";
     newBlockImg.style.top = (centerY - globalStates.currentLogic.grid.blockRowHeight/2) + "px";
 
     globalStates.currentLogic.tempBlock = {
@@ -1001,6 +1007,7 @@ function blockPointerUp(e) {
         unhighlightCellsBlocksForMove(allCellsForThisBlock);
     }
     cellToMoveBlockFrom = null;
+    isMarginSelected = false;
 
     if (globalStates.currentLogic.tempLink !== null) {
         //only create link if identical link doesn't already exist
@@ -1049,12 +1056,29 @@ function datacraftingContainerPointerUp(e) {
         }
     }
 
+    // if (cellToMoveBlockFrom) {
+        var cellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+        var marginBlockOver = cellOver.blockOverlappingThisMargin();
+        if (marginBlockOver) {
+            var cellToMoveFrom = globalStates.currentLogic.grid.getCell(cellOver.location.col-1,cellOver.location.row);
+            var blockWidth = marginBlockOver.blockSize;
+            var itemSelected = cellToMoveFrom.itemAtThisLocation();
+            var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(cellToMoveFrom,blockWidth,itemSelected,true);
+            unhighlightCellsBlocksForMove(allCellsForThisBlock);
+        }
+        // var firstCell = e.target.cell;
+        // var blockWidth = e.target.cell.blockAtThisLocation().blockSize;
+        // var itemSelected = e.target.cell.itemAtThisLocation();
+        // var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(firstCell,blockWidth,itemSelected,true);
+        // unhighlightCellsBlocksForMove(allCellsForThisBlock);
+    // }
     cellToMoveBlockFrom = null;
 
     if (globalStates.currentLogic.tempBlock) {
         globalStates.currentLogic.tempBlock.domElement.parentNode.removeChild(globalStates.currentLogic.tempBlock.domElement);
 
-        var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+        var marginOffset = isMarginSelected ? (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth)/2 : 0;
+        var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX-marginOffset, e.pageY);
         var canAddBlock = canAddBlockAtCell(firstCellOver, globalStates.currentLogic.tempBlock);
 
         if (canAddBlock) {
@@ -1083,6 +1107,8 @@ function datacraftingContainerPointerUp(e) {
 
         globalStates.currentLogic.tempBlock = null;
     }
+
+    isMarginSelected = false;
 }
 
 function canAddBlockAtCell(firstCellOver, tempBlock) {
@@ -1113,6 +1139,7 @@ function datacraftingContainerPointerDown(e) {
                 // var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
                 // var firstCell = e.target.cell;
                 cellToMoveBlockFrom = globalStates.currentLogic.grid.getCell(cellOver.location.col-1,cellOver.location.row);
+                isMarginSelected = true;
                 var blockWidth = marginBlockOver.blockSize;
                 var itemSelected = cellToMoveBlockFrom.itemAtThisLocation();
 
@@ -1152,12 +1179,14 @@ function datacraftingContainerPointerMove(e) {
     if (globalStates.currentLogic.tempBlock) {
         var itemSelected = globalStates.currentLogic.tempBlock.itemSelected;
 
-        globalStates.currentLogic.tempBlock.domElement.style.left = e.pageX - globalStates.currentLogic.grid.blockColWidth/2 - itemSelected * (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth); //globalStates.currentLogic.tempBlock.domElement.width/2;
+        var marginOffset = isMarginSelected ? (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth)/2 : 0;
+
+        globalStates.currentLogic.tempBlock.domElement.style.left = e.pageX - globalStates.currentLogic.grid.blockColWidth/2 - itemSelected * (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth) - marginOffset; //globalStates.currentLogic.tempBlock.domElement.width/2;
         globalStates.currentLogic.tempBlock.domElement.style.top = e.pageY - globalStates.currentLogic.grid.blockRowHeight/2; //globalStates.currentLogic.tempBlock.domElement.height/2;
 
         // check if we are over a valid set of cells - if so, opacity=1, if not opacity=0.75
 
-        var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+        var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX-marginOffset, e.pageY);
         var canAddBlock = canAddBlockAtCell(firstCellOver, globalStates.currentLogic.tempBlock);
         if (canAddBlock) {
             globalStates.currentLogic.tempBlock.domElement.style.opacity = 1.00;

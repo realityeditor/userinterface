@@ -227,6 +227,7 @@ var isTempLinkBeingDrawn = false; // becomes true when you start dragging out of
 var isPointerInActiveBlock = false; // always tells you whether the pointer is over a filled block
 var isCutLineBeingDrawn = false;
 var cellToMoveBlockFrom = null;
+var isMarginSelected = false;
 
 var blockColorMap = {
     "filled":["#2DFFFE", "#29FD2F", "#FFFD38", "#FC157D"],

@@ -201,6 +201,10 @@ Cell.prototype.isLastItem = function() {
     return item === (block.blockSize-1);
 }
 
+Cell.prototype.isMarginCell = function() {
+    return this.location.row % 2 === 0 && this.location.col % 2 === 1;
+}
+
 /////////////////////
 //  ROUTE METHODS  //
 /////////////////////
