@@ -838,15 +838,25 @@ function removeEventHandlers() {
 function blockPointerDown(e) {
     e.preventDefault();
 
-    if (e.target.cell.blockAtThisLocation() !== null) {
+    if (e.target.cell.blockAtThisLocation()) {
         isPointerDown = true;
         setTimeout( function() {
             console.log("start move, not link");
             if (isPointerDown && !isTempLinkBeingDrawn) {
                 cellToMoveBlockFrom = e.target.cell;
-                highlightCellBlockForMove(e.target.cell);
+                // var allCellsForThisBlock = [e.target.cell];
+                
+                // var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+
+                var firstCell = e.target.cell;
+                var blockWidth = e.target.cell.blockAtThisLocation().blockSize;
+                var itemSelected = e.target.cell.itemAtThisLocation();
+
+                var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(firstCell,blockWidth,itemSelected,true);
+
+                highlightCellsBlocksForMove(allCellsForThisBlock);
             }
-        }, 2000);
+        }, 500);
     }
 }
 
@@ -857,20 +867,7 @@ function blockPointerLeave(e) {
     if (e.target.cell.blockAtThisLocation() === null) return;
 
     if (isPointerDown && cellToMoveBlockFrom) {
-
-        console.log("left cell", cellToMoveBlockFrom);
-
-        // remove block from cellToMoveBlockFrom
-        var blockToMove = cellToMoveBlockFrom.blockAtThisLocation();
-        var blockSize = blockToMove.blockSize;
-        var itemSelected = cellToMoveBlockFrom.itemAtThisLocation();
-        removeBlock(globalStates.currentLogic, blockToMove);
-        updateGrid(globalStates.currentLogic.grid);
-        
-        // add temp block to pointer
-        createTempBlockOnPointer(blockSize, e.pageX, e.pageY, itemSelected);
-
-        cellToMoveBlockFrom = null;
+        removeBlockFromCellAndCreateTempBlockAt(cellToMoveBlockFrom, e.pageX, e.pageY);
     
     } else if (isPointerDown && !isTempLinkBeingDrawn) {
 
@@ -879,28 +876,78 @@ function blockPointerLeave(e) {
         tempStartItem = e.target.cell.itemAtThisLocation();
         console.log("left block, isTempLinkBeingDrawn");
 
+        tempLine.start = {
+            x: globalStates.currentLogic.grid.getCellCenterX(e.target.cell),
+            y: globalStates.currentLogic.grid.getCellCenterY(e.target.cell)
+        }
+        var startColor = e.target.cell.getColorHSL();
+        tempLine.color = 'hsl('+startColor.h+','+startColor.s+'%,'+startColor.l+'%)';
     }
 }
 
-function createTempBlockOnPointer(blockSize, centerX, centerY, itemSelected) {
-    var tempBlock = document.createElement('img');
+function removeBlockFromCellAndCreateTempBlockAt(cellToMove, pageX, pageY) {
 
-    var newBlockImg = document.createElement('img');
+    console.log("left cell", cellToMove);
+
+    // remove block from cellToMoveBlockFrom
+    var blockToMove = cellToMove.blockAtThisLocation();
+    if (blockToMove) {
+        var blockSize = blockToMove.blockSize;
+        var itemSelected = cellToMove.itemAtThisLocation();
+
+        if (cellToMove) {
+            var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(cellToMoveBlockFrom,blockSize,itemSelected,true);
+            unhighlightCellsBlocksForMove(allCellsForThisBlock);
+        }
+
+        var incomingLinks = [];
+        var outgoingLinks = [];
+
+        for (var linkKey in globalStates.currentLogic.links) {
+            var link = globalStates.currentLogic.links[linkKey];
+            if (link.blockB === blockToMove) {
+                incomingLinks.push({
+                    blockA: link.blockA,
+                    itemA: link.itemA,
+                    itemB: link.itemB
+                });
+            
+            } else if (link.blockA === blockToMove) {
+                outgoingLinks.push({
+                    itemA: link.itemA,
+                    blockB: link.blockB,
+                    itemB: link.itemB
+                });
+            }
+        }
+
+        removeBlock(globalStates.currentLogic, blockToMove);
+        updateGrid(globalStates.currentLogic.grid);
+        
+        // add temp block to pointer
+        createTempBlockOnPointer(blockSize, pageX, pageY, itemSelected, incomingLinks, outgoingLinks);
+    }
+
+    cellToMoveBlockFrom = null;
+}
+
+function createTempBlockOnPointer(blockSize, centerX, centerY, itemSelected, incomingLinks, outgoingLinks) {
+    var newBlockImg = document.createElement('div');
     newBlockImg.setAttribute("class", "newBlock"+blockSize);
     newBlockImg.setAttribute("id", "newBlockTest");
-    newBlockImg.setAttribute("src", newLogicBlockImage[blockSize-1].src); // "png/datacrafting/new-block-"+blockSize+".png"
     newBlockImg.setAttribute("touch-action", "none");
-
+    newBlockImg.style.opacity = 0.75;
     newBlockImg.style.left = (centerX - globalStates.currentLogic.grid.blockColWidth/2 - itemSelected * (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth)) + "px";
     newBlockImg.style.top = (centerY - globalStates.currentLogic.grid.blockRowHeight/2) + "px";
 
     globalStates.currentLogic.tempBlock = {
         domElement: newBlockImg,
         width: blockSize,
-        itemSelected: itemSelected
-    }; //= newBlockImg;
+        itemSelected: itemSelected,
+        incomingLinks: incomingLinks,
+        outgoingLinks: outgoingLinks
+    };
 
-    // tempBlock = newBlockImg;
     var blocksContainer = document.getElementById('blocks');
     blocksContainer.appendChild(newBlockImg);
 }
@@ -944,8 +991,14 @@ function blockPointerUp(e) {
 
     isPointerDown = false;
     isTempLinkBeingDrawn = false;
+    tempLine.start = null;
+    tempLine.end = null;
     if (cellToMoveBlockFrom) {
-        unhighlightCellBlockForMove(cellToMoveBlockFrom);        
+        var firstCell = e.target.cell;
+        var blockWidth = e.target.cell.blockAtThisLocation().blockSize;
+        var itemSelected = e.target.cell.itemAtThisLocation();
+        var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(firstCell,blockWidth,itemSelected,true);
+        unhighlightCellsBlocksForMove(allCellsForThisBlock);
     }
     cellToMoveBlockFrom = null;
 
@@ -983,6 +1036,11 @@ function datacraftingContainerPointerUp(e) {
         cutLine.end = null;
     }
 
+    if (isTempLinkBeingDrawn) {
+        tempLine.start = null;
+        tempLine.end = null;
+    }
+
     if (!isPointerInActiveBlock) {
         isPointerDown = false;
         isTempLinkBeingDrawn = false;
@@ -991,18 +1049,13 @@ function datacraftingContainerPointerUp(e) {
         }
     }
 
+    cellToMoveBlockFrom = null;
+
     if (globalStates.currentLogic.tempBlock) {
         globalStates.currentLogic.tempBlock.domElement.parentNode.removeChild(globalStates.currentLogic.tempBlock.domElement);
 
         var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
-        var cellsOver = globalStates.currentLogic.grid.getCellsOver(firstCellOver,globalStates.currentLogic.tempBlock.width, globalStates.currentLogic.tempBlock.itemSelected);
-        
-        var canAddBlock = true;
-        cellsOver.forEach(function(cell) {
-            if (!cell || !cell.canHaveBlock() || cell.blockAtThisLocation()) {
-                canAddBlock = false;
-            }
-        });
+        var canAddBlock = canAddBlockAtCell(firstCellOver, globalStates.currentLogic.tempBlock);
 
         if (canAddBlock) {
             console.log("placing block in cell: " + firstCellOver.location.col, + "," + firstCellOver.location.row);
@@ -1010,8 +1063,21 @@ function datacraftingContainerPointerUp(e) {
             blockPos.x -= globalStates.currentLogic.tempBlock.itemSelected;
             var blockWidth = globalStates.currentLogic.tempBlock.width;
             var block = createBlock(blockPos.x, blockPos.y, blockWidth, "test");
-            var blockKey = "block_" + blockPos.x + "_" + blockPos.y + "_" + getTimestamp();
+            var blockKey = "block_" + blockPos.x + "_" + blockPos.y + "_" + uuidTime(); //getTimestamp();
             globalStates.currentLogic.blocks[blockKey] = block;
+
+            if (globalStates.currentLogic.tempBlock.incomingLinks) {
+                globalStates.currentLogic.tempBlock.incomingLinks.forEach( function(linkData) {
+                    addBlockLink(linkData.blockA, block, linkData.itemA, linkData.itemB);
+                });
+            }
+
+            if (globalStates.currentLogic.tempBlock.outgoingLinks) {
+                globalStates.currentLogic.tempBlock.outgoingLinks.forEach( function(linkData) {
+                    addBlockLink(block, linkData.blockB, linkData.itemA, linkData.itemB);
+                });
+            }
+
             updateGrid(globalStates.currentLogic.grid);
         }
 
@@ -1019,11 +1085,44 @@ function datacraftingContainerPointerUp(e) {
     }
 }
 
+function canAddBlockAtCell(firstCellOver, tempBlock) {
+    var cellsOver = globalStates.currentLogic.grid.getCellsOver(firstCellOver,tempBlock.width, tempBlock.itemSelected);
+    var canAddBlock = true;
+    cellsOver.forEach(function(cell) {
+        if (!cell || !cell.canHaveBlock() || cell.blockAtThisLocation()) {
+            canAddBlock = false;
+        }
+    });
+    return canAddBlock;
+}
+
 // clicking down in datacrafting container outside of blocks creates a new cut line
 function datacraftingContainerPointerDown(e) {
     e.preventDefault();
 
-    if (!isCutLineBeingDrawn && !isPointerInActiveBlock) {
+    var cellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+    var marginBlockOver = cellOver.blockOverlappingThisMargin();
+    if (marginBlockOver) {
+        isPointerDown = true;
+        setTimeout( function() {
+            console.log("start move, not link");
+            if (isPointerDown && !isTempLinkBeingDrawn) {
+                // cellToMoveBlockFrom = e.target.cell;
+                var cellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+                // var allCellsForThisBlock = [e.target.cell];
+                // var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+                // var firstCell = e.target.cell;
+                cellToMoveBlockFrom = globalStates.currentLogic.grid.getCell(cellOver.location.col-1,cellOver.location.row);
+                var blockWidth = marginBlockOver.blockSize;
+                var itemSelected = cellToMoveBlockFrom.itemAtThisLocation();
+
+                var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(cellToMoveBlockFrom,blockWidth,itemSelected,true);
+
+                highlightCellsBlocksForMove(allCellsForThisBlock);
+            }
+        }, 500);
+    
+    } else if (!isCutLineBeingDrawn && !isPointerInActiveBlock) {
         isCutLineBeingDrawn = true;
         cutLine.start = {
             x: e.pageX,
@@ -1041,7 +1140,13 @@ function datacraftingContainerPointerMove(e) {
             x: e.pageX,
             y: e.pageY
         };
-    
+    }
+
+    if (isTempLinkBeingDrawn) {
+        tempLine.end = {
+            x: e.pageX,
+            y: e.pageY
+        };
     }
 
     if (globalStates.currentLogic.tempBlock) {
@@ -1049,9 +1154,22 @@ function datacraftingContainerPointerMove(e) {
 
         globalStates.currentLogic.tempBlock.domElement.style.left = e.pageX - globalStates.currentLogic.grid.blockColWidth/2 - itemSelected * (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth); //globalStates.currentLogic.tempBlock.domElement.width/2;
         globalStates.currentLogic.tempBlock.domElement.style.top = e.pageY - globalStates.currentLogic.grid.blockRowHeight/2; //globalStates.currentLogic.tempBlock.domElement.height/2;
+
+        // check if we are over a valid set of cells - if so, opacity=1, if not opacity=0.75
+
+        var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+        var canAddBlock = canAddBlockAtCell(firstCellOver, globalStates.currentLogic.tempBlock);
+        if (canAddBlock) {
+            globalStates.currentLogic.tempBlock.domElement.style.opacity = 1.00;
+        } else {
+            globalStates.currentLogic.tempBlock.domElement.style.opacity = 0.50;
+        }
+    
+    } else {
+        var cellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
+        if (isPointerDown && cellToMoveBlockFrom && cellToMoveBlockFrom !== cellOver) {
+            removeBlockFromCellAndCreateTempBlockAt(cellToMoveBlockFrom, e.pageX, e.pageY);
+        }
     }
 
-
 }
-
-

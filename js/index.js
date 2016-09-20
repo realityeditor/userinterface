@@ -1048,11 +1048,66 @@ function redrawDatacrafting() {
 
     if (cutLine.start !== null && cutLine.end !== null) {
         ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(cutLine.start.x, cutLine.start.y);
         ctx.lineTo(cutLine.end.x, cutLine.end.y);
         ctx.stroke();
     }
+
+    if (tempLine.start !== null && tempLine.end !== null) {
+        // ctx.strokeStyle = "#00FFFF";
+        ctx.strokeStyle = tempLine.color;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(tempLine.start.x, tempLine.start.y);
+        ctx.lineTo(tempLine.end.x, tempLine.end.y);
+        ctx.stroke();
+    }
+
+    if (globalStates.currentLogic.tempBlock) {
+        if (globalStates.currentLogic.tempBlock.incomingLinks) {
+            globalStates.currentLogic.tempBlock.incomingLinks.forEach( function(linkData) {
+                var startCell = getCellForBlock(globalStates.currentLogic.grid, linkData.blockA, linkData.itemA);
+                var startX = globalStates.currentLogic.grid.getCellCenterX(startCell);
+                var startY = globalStates.currentLogic.grid.getCellCenterY(startCell);
+
+                var xOffset =  0.5 * globalStates.currentLogic.grid.blockColWidth + (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth) * linkData.itemB;
+                var endX = parseInt(globalStates.currentLogic.tempBlock.domElement.style.left) + xOffset;
+                var endY = parseInt(globalStates.currentLogic.tempBlock.domElement.style.top) + globalStates.currentLogic.tempBlock.domElement.clientHeight/2;
+
+                var startColor = startCell.getColorHSL();
+                ctx.strokeStyle = 'hsl('+startColor.h+','+startColor.s+'%,'+startColor.l+'%)'; //'white';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            });
+        }
+
+        if (globalStates.currentLogic.tempBlock.outgoingLinks) {
+            globalStates.currentLogic.tempBlock.outgoingLinks.forEach( function(linkData) {
+
+                var xOffset =  0.5 * globalStates.currentLogic.grid.blockColWidth + (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth) * linkData.itemA;
+                var startX = parseInt(globalStates.currentLogic.tempBlock.domElement.style.left) + xOffset;
+                var startY = parseInt(globalStates.currentLogic.tempBlock.domElement.style.top) + globalStates.currentLogic.tempBlock.domElement.clientHeight/2;
+
+                var endCell = getCellForBlock(globalStates.currentLogic.grid, linkData.blockB, linkData.itemB);
+                var endX = globalStates.currentLogic.grid.getCellCenterX(endCell);
+                var endY = globalStates.currentLogic.grid.getCellCenterY(endCell);
+
+                var endColor = endCell.getColorHSL();
+                ctx.strokeStyle = 'hsl('+endColor.h+','+endColor.s+'%,'+endColor.l+'%)'; //'white';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            });
+        }
+    }
+    
 }
 
 function checkForCutIntersections() {
@@ -1080,60 +1135,59 @@ function checkForCutIntersections() {
     }
 }
 
-/// VISUAL BLOCK SCHEMA 1
 function displayCellBlock(cell) {
-    // cell.domElement.setAttribute("src", "png/datacrafting/new-closed-sides.png");
+
     var isFirst = cell.isFirstItem();
     var isLast = cell.isLastItem();
-    if (isFirst && !isLast) {
-        cell.domElement.setAttribute("src", logicBlockCellImage[1].src);
-    } else if (!isFirst && isLast) {
-        cell.domElement.setAttribute("src", logicBlockCellImage[2].src);
-    } else if (isFirst && isLast) {
-        cell.domElement.setAttribute("src", logicBlockCellImage[0].src);
-    } else {
-        cell.domElement.setAttribute("src", logicBlockCellImage[3].src);
-    }
 
+    cell.domElement.style.borderTop = '1px black solid';
+    cell.domElement.style.borderBottom = '1px black solid';
+    if (isFirst) {
+        cell.domElement.style.borderLeft = '1px black solid';
+    }
+    if (isLast) {
+        cell.domElement.style.borderRight = '1px black solid';
+    }
+    
+    cell.domElement.style.backgroundColor = activeBlockColor;
     cell.domElement.style.opacity = '1.00';
 }
 
 function hideCellBlock(cell) {
     if (cell.location.row === 0 || cell.location.row === 6) {
-        cell.domElement.setAttribute("src", blockImgMap["filled"][cell.location.col/2]);
+        cell.domElement.style.backgroundColor = blockColorMap["filled"][cell.location.col/2];
     } else {
-        cell.domElement.setAttribute("src", blockImgMap["empty"][cell.location.col/2]);
+        cell.domElement.style.backgroundColor = blockColorMap["empty"][cell.location.col/2];
     }
-    cell.domElement.style.opacity = '0.75';
+
+    cell.domElement.style.borderTop = '';
+    cell.domElement.style.borderBottom = '';
+    cell.domElement.style.borderLeft = '';
+    cell.domElement.style.borderRight = '';
+
+    cell.domElement.style.opacity = 0.75;
 }
 
-function highlightCellBlockForMove(cell) {
-    cell.domElement.style.opacity = '0.50';
+function highlightCellsBlocksForMove(cells) {
+    cells.forEach( function(cell) {
+        cell.domElement.style.backgroundColor = movingBlockColor;   
+    });
 }
 
-function unhighlightCellBlockForMove(cell) {
-    cell.domElement.style.opacity = '1.00';
+function unhighlightCellsBlocksForMove(cells) {
+    cells.forEach( function(cell) {
+        cell.domElement.style.backgroundColor = activeBlockColor;
+    });
 }
-
-/// VISUAL BLOCK SCHEMA 2
-/*
-function hideCellBlock(cell) {
-    cell.domElement.setAttribute("src", blockImgMap["empty"][cell.location.col/2]);
-    cell.domElement.style.opacity = '0.50';
-}
-
-function displayCellBlock(cell) {
-    cell.domElement.setAttribute("src", blockImgMap["filled"][cell.location.col/2]);
-    cell.domElement.style.opacity = '1.00';
-}
-*/
 
 function displayMargin(cell) {
     cell.domElement.style.display = "inline";
+    // cell.domElement.style.border = "1px solid black";
 }
 
 function hideMargin(cell) {
     cell.domElement.style.display = "none";
+    // cell.domElement.style.border = "";
 }
 
 /**********************************************************************************************************************

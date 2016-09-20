@@ -17,8 +17,6 @@ function Grid(blockColWidth, blockRowHeight, marginColWidth, marginRowHeight) {
     this.marginRowHeight = marginRowHeight; // height of cells in rows without blocks (the margins)
 
     this.cells = []; // array of [Cell] objects
-    // this.links = []; // array of [Link] objects
-    // this.tempLink = null; // Link object - null when not drawing a new link
 
     // initialize list of cells using the size of the grid
     for (var row = 0; row < this.size; row++) {
@@ -122,7 +120,7 @@ Cell.prototype.canHaveBlock = function() {
 // utility - gets the hue for cells in a given column
 Cell.prototype.getColorHSL = function() {
     var blockColumn = Math.floor(this.location.col / 2);
-    var colorMap = { blue: {h: 180}, green: {h: 122}, yellow: {h: 59}, red: {h:333} };
+    var colorMap = { blue: {h: 180, s:100, l:60}, green: {h: 122, s:100, l:60}, yellow: {h: 59, s:100, l:60}, red: {h:333, s:100, l:60} };
     var colorName = ['blue','green','yellow','red'][blockColumn];
     return colorMap[colorName];
 };
@@ -171,6 +169,19 @@ Cell.prototype.blockAtThisLocation = function() {
     if (!this.canHaveBlock()) return null;
     var blockPos = convertGridPosToBlockPos(this.location.col, this.location.row);
     return getBlockXY(blockPos.x, blockPos.y);
+}
+
+Cell.prototype.blockOverlappingThisMargin = function() {
+    if (this.location.col % 2 === 0 || this.location.row % 2 === 1) return; // this isn't a margin cell
+    var blockPosBefore = convertGridPosToBlockPos(this.location.col-1, this.location.row);
+    var blockPosAfter = convertGridPosToBlockPos(this.location.col+1, this.location.row);
+    var blockBefore = getBlockXY(blockPosBefore.x, blockPosBefore.y);
+    var blockAfter = getBlockXY(blockPosAfter.x, blockPosAfter.y);
+    if (blockBefore === blockAfter) {
+        return blockBefore;
+    } else {
+        return null;
+    }
 }
 
 Cell.prototype.itemAtThisLocation = function() {
@@ -263,9 +274,6 @@ Route.prototype.getXYPositionAtPercentage = function(percent) {
 //   GRID METHODS
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function getTimestamp() {
-    return Math.round(new Date().getTime());
-}
 
 function addBlockLink(blockA, blockB, itemA, itemB) {
     if (blockA && blockB) {
@@ -274,7 +282,7 @@ function addBlockLink(blockA, blockB, itemA, itemB) {
         blockLink.blockB = blockB;
         blockLink.itemA = itemA;
         blockLink.itemB = itemB;
-        blockLinkKey = "blockLink" + getTimestamp();
+        blockLinkKey = "blockLink" + uuidTime();
         if (!doesLinkAlreadyExist(blockLink)) {
             globalStates.currentLogic.links[blockLinkKey] = blockLink;
             return blockLink;
@@ -360,13 +368,6 @@ function preprocessPointsForDrawing(points) { //putting it in here makes it priv
         percentages: percentages
     };
 };
-
-// TODO: where does temp link live now?
-// function setTempBlockLink = function(newTempBlockLink) {
-//     if (!doesLinkAlreadyExist(newTempBlockLink)) {
-
-//     }
-// }
 
 ////////////////////////////////////////////////////////////////////////////////
 //      GRID UTILITIES     
@@ -974,12 +975,10 @@ function getCellForBlock(grid, block, item) {
     return grid.getCell(gridPos.col, gridPos.row);
 }
 
-Grid.prototype.getCellsOver = function (firstCell,blockWidth,itemSelected) {
+Grid.prototype.getCellsOver = function (firstCell,blockWidth,itemSelected,includeMarginCells) {
     var cells = [];
-    // if (blockWidth === 1) {
-    //     return [firstCell];
-    // }
-    for (var col = firstCell.location.col; col < firstCell.location.col + 2 * blockWidth; col += 2) {
+    var increment = includeMarginCells ? 1 : 2;
+    for (var col = firstCell.location.col; col < firstCell.location.col + 2 * blockWidth - 1; col += increment) {
         cells.push(this.getCell(col - (itemSelected * 2), firstCell.location.row))
     }
     return cells;

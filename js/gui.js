@@ -65,8 +65,6 @@ var unconstButtonImage = [];
 var editingButtonImage = [];
 var pocketButtonImage = [];
 var loadNewUiImage = [];
-var logicBlockCellImage = [];
-var newLogicBlockImage = [];
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
@@ -106,12 +104,6 @@ function GUI() {
         'png/load.png', 'png/loadOver.png'
     );
 
-    preload(logicBlockCellImage,
-        'png/datacrafting/block-closed-sides.png', 'png/datacrafting/block-open-right.png', 'png/datacrafting/block-open-left.png', 'png/datacrafting/block-open-sides.png');
-
-    preload(newLogicBlockImage,
-        'png/datacrafting/new-block-1.png', 'png/datacrafting/new-block-2.png', 'png/datacrafting/new-block-3.png', 'png/datacrafting/new-block-4.png');
-
     document.getElementById("guiButtonImage1").addEventListener("touchstart", function () {
         if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[0].src;
         // kickoff();
@@ -120,8 +112,11 @@ function GUI() {
 
     document.getElementById("guiButtonImage1").addEventListener("touchend", function () {
         if (!globalStates.UIOffMode)      document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
-        // craftingBoardHide();
-        craftingBoardVisible(); // TODO: BEN DEBUG - revert to previous line
+        if (DEBUG_DATACRAFTING) {
+            craftingBoardVisible(); // TODO: BEN DEBUG - revert to previous line
+        } else {
+            craftingBoardHide();
+        }
     });
     ec++;
 
@@ -499,32 +494,9 @@ function GUI() {
             }
 
             var blockWidth = getRandomInt(1,5); //1;
-            var itemToCarryBy = 0;
+            var itemSelected = 0;
 
-            createTempBlockOnPointer(blockWidth, evt.pageX, evt.pageY, itemToCarryBy);
-
-            /*
-            var tempBlock = document.createElement('img');
-
-            var newBlockImg = document.createElement('img');
-            newBlockImg.setAttribute("class", "newBlock"+blockWidth);
-            newBlockImg.setAttribute("id", "newBlockTest");
-            newBlockImg.setAttribute("src", newLogicBlockImage[blockWidth-1].src); // "png/datacrafting/new-block-"+blockWidth+".png"
-            newBlockImg.setAttribute("touch-action", "none");
-
-            newBlockImg.style.left = (evt.pageX - globalStates.currentLogic.grid.blockColWidth/2) + "px";
-            newBlockImg.style.top = (evt.pageY - globalStates.currentLogic.grid.blockRowHeight/2) + "px";
-
-            globalStates.currentLogic.tempBlock = {
-                domElement: newBlockImg,
-                width: blockWidth
-            }; //= newBlockImg;
-
-            // tempBlock = newBlockImg;
-            var blocksContainer = document.getElementById('blocks');
-            blocksContainer.appendChild(newBlockImg);
-            */
-
+            createTempBlockOnPointer(blockWidth, evt.pageX, evt.pageY, itemSelected);
         }
 
         // globalStates.pocketButtonDown = false;
@@ -605,8 +577,11 @@ function craftingBoardVisible(objectKey, nodeKey) {
     document.getElementById("craftingBoard").style.display = "inline"; //= "hidden";
     cout("craftingBoardVisible");
 
-    // initializeDatacraftingGrid(objects[objectKey].logic[nodeKey]);
-    initializeDatacraftingGrid(new Logic()); // TODO: BEN DEBUG - revert to previous line
+    if (DEBUG_DATACRAFTING) {
+        initializeDatacraftingGrid(new Logic()); // TODO: BEN DEBUG - revert to previous line
+    } else {
+        initializeDatacraftingGrid(objects[objectKey].logic[nodeKey]);
+    }
 }
 
 /**
@@ -744,13 +719,14 @@ function initializeDatacraftingGrid(logic) {
 
             if (colNum % 2 === 0) {
 
-                var blockImg = document.createElement('img');
+                var blockImg = document.createElement('div');
                 blockImg.setAttribute("class", "block");
                 if (colNum === logic.grid.size - 1) {
                     blockImg.setAttribute("class", "blockRight");
                 }
                 blockImg.setAttribute("id", "block" + colNum);
-                blockImg.setAttribute("src", blockImgMap["filled"][colNum/2]);
+                // blockImg.setAttribute("src", blockImgMap["filled"][colNum/2]);
+                blockImg.style.backgroundColor = blockColorMap["filled"][colNum/2];
                 blockImg.setAttribute("touch-action", "none");
                 //var block = new Block(colNum, rowNum, true, blockImg);
                 var thisCell = logic.grid.getCell(colNum, rowNum);
@@ -761,16 +737,14 @@ function initializeDatacraftingGrid(logic) {
 
             } else {
 
-                var marginImg = document.createElement('img');
+                var marginImg = document.createElement('div');
                 marginImg.setAttribute("class", "blockMargin");
                 marginImg.setAttribute("id", "margin" + colNum);
-                marginImg.setAttribute("src", logicBlockCellImage[3].src);
+                marginImg.style.backgroundColor = activeBlockColor;
                 marginImg.setAttribute("touch-action", "none");
                 var thisCell = logic.grid.getCell(colNum, rowNum);
                 marginImg.style.top = (rowDiv.getBoundingClientRect().top) + "px"; //(logic.grid.getCellCenterY(thisCell) - logic.grid.marginColWidth/2) + "px";
                 marginImg.style.left = (logic.grid.getCellCenterX(thisCell) - logic.grid.blockRowHeight/2) + "px";
-
-                
 
                 thisCell.domElement = marginImg;
                 marginContainer.appendChild(marginImg);

@@ -256,6 +256,9 @@ body {
     height: 46px;
     margin-right: 46px;
     margin-bottom: 46px;
+    display: inline-block;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    box-sizing: border-box;         /* Opera/IE 8+ */
 }
 
 .blockMargin {
@@ -264,12 +267,19 @@ body {
     left: 0;
     width: 46px;
     height: 46px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 .blockRight {
     width: 92px;
     height: 46px;
     margin-bottom: 46px;
+    display: inline-block;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    box-sizing: border-box;         /* Opera/IE 8+ */
 }
 
 #datacraftingCanvas {
@@ -280,7 +290,7 @@ body {
 }
 
 #sidebarBackground {
-    position: absolute;;
+    position: absolute;
     right: -70px;
     top: 0;
     background-color: #B7B7B7;
@@ -292,23 +302,39 @@ body {
     position: absolute;
     width: 92px;
     height: 46px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    border: 1px solid black;
+    background-color: #E6E6E6;
 }
 
 .newBlock2 {
     position: absolute;
     width: 230px;
     height: 46px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    border: 1px solid black;
+    background-color: #E6E6E6;
 }
 
 .newBlock3 {
     position: absolute;
     width: 368px;
     height: 46px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    border: 1px solid black;
+    background-color: #E6E6E6;
 }
 
 .newBlock4 {
     position: absolute;
     width: 506px;
     height: 46px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    border: 1px solid black;
+    background-color: #E6E6E6;
 }
 
