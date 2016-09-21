@@ -841,20 +841,13 @@ function blockPointerDown(e) {
     if (e.target.cell.blockAtThisLocation()) {
         isPointerDown = true;
         setTimeout( function() {
-            console.log("start move, not link");
             if (isPointerDown && !isTempLinkBeingDrawn) {
                 cellToMoveBlockFrom = e.target.cell;
                 isMarginSelected = false;
-                // var allCellsForThisBlock = [e.target.cell];
-                
-                // var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
-
                 var firstCell = e.target.cell;
                 var blockWidth = e.target.cell.blockAtThisLocation().blockSize;
                 var itemSelected = e.target.cell.itemAtThisLocation();
-
                 var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(firstCell,blockWidth,itemSelected,true);
-
                 highlightCellsBlocksForMove(allCellsForThisBlock);
             }
         }, 500);
@@ -864,19 +857,15 @@ function blockPointerDown(e) {
 // if your pointer leaves a filled block and the pointer is down, start drawing temp link from this source
 function blockPointerLeave(e) {
     e.preventDefault();
+
     isPointerInActiveBlock = false;
     if (e.target.cell.blockAtThisLocation() === null) return;
-
     if (isPointerDown && cellToMoveBlockFrom) {
         removeBlockFromCellAndCreateTempBlockAt(cellToMoveBlockFrom, e.pageX, e.pageY);
-    
     } else if (isPointerDown && !isTempLinkBeingDrawn) {
-
         isTempLinkBeingDrawn = true;
         tempStartBlock = e.target.cell.blockAtThisLocation();
         tempStartItem = e.target.cell.itemAtThisLocation();
-        console.log("left block, isTempLinkBeingDrawn");
-
         tempLine.start = {
             x: globalStates.currentLogic.grid.getCellCenterX(e.target.cell),
             y: globalStates.currentLogic.grid.getCellCenterY(e.target.cell)
@@ -886,24 +875,201 @@ function blockPointerLeave(e) {
     }
 }
 
+// if your pointer enters a different block while temp link is being drawn, render a new link to that destination
+function blockPointerEnter(e) {
+    e.preventDefault();
+
+    if (e.target.cell.blockAtThisLocation() === null) return;
+    isPointerInActiveBlock = true;
+    if (isTempLinkBeingDrawn) {
+        tempEndBlock = e.target.cell.blockAtThisLocation();
+        if (!tempStartBlock || !tempEndBlock) return;
+        // erases temp link if you enter the start block again
+        var newTempLink = null;
+        if (tempStartBlock !== tempEndBlock) {
+            newTempLink = addBlockLink(tempStartBlock, tempEndBlock, tempStartItem, e.target.cell.itemAtThisLocation(), false);
+        }
+        setTempLink(newTempLink);
+        updateGrid(globalStates.currentLogic.grid); // need to recalculate routes with new temp link
+    }
+}
+
+// if you release the pointer over a block, the temporary link becomes permanent
+function blockPointerUp(e) {
+    var tempLink = globalStates.currentLogic.tempLink;
+    e.preventDefault();
+
+    if (e.target.cell.blockAtThisLocation() === null) return;
+    isPointerDown = false;
+    isTempLinkBeingDrawn = false;
+    tempLine.start = null;
+    tempLine.end = null;
+    if (cellToMoveBlockFrom) {
+        var firstCell = e.target.cell;
+        var blockWidth = e.target.cell.blockAtThisLocation().blockSize;
+        var itemSelected = e.target.cell.itemAtThisLocation();
+        var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(firstCell,blockWidth,itemSelected,true);
+        unhighlightCellsBlocksForMove(allCellsForThisBlock);
+    }
+    cellToMoveBlockFrom = null;
+    isMarginSelected = false;
+    if (tempLink) {
+        //only create link if identical link doesn't already exist
+        if (!doesLinkAlreadyExist(tempLink)) {
+            // add link to data structure
+            var addedLink = addBlockLink(tempLink.blockA, tempLink.blockB, tempLink.itemA, tempLink.itemB, true);
+            if (addedLink) {
+                addedLink.route = tempLink.route; // copy over the route rather than recalculating everything
+                addedLink.ballAnimationCount = tempLink.ballAnimationCount;
+            }
+        }
+        setTempLink(null);
+    }
+}
+
+// releasing pointer anywhere on datacrafting container deletes a temp link
+// if drawing one, or executes a cut line to delete links it crosses
+function datacraftingContainerPointerUp(e) {
+    var tempBlock = globalStates.currentLogic.tempBlock;
+    var grid = globalStates.currentLogic.grid;
+    e.preventDefault();
+
+    if (isCutLineBeingDrawn) {
+        isCutLineBeingDrawn = false;
+        if (cutLine.start && cutLine.end){
+            checkForCutIntersections();
+        }
+        cutLine.start = null;
+        cutLine.end = null;
+    }
+    if (isTempLinkBeingDrawn) {
+        tempLine.start = null;
+        tempLine.end = null;
+    }
+    if (!isPointerInActiveBlock) {
+        isPointerDown = false;
+        isTempLinkBeingDrawn = false;
+        setTempLink(null);
+    }
+    var cellOver = grid.getCellFromPointerPosition(e.pageX, e.pageY);
+    if (cellOver) {
+        var marginBlockOver = cellOver.blockOverlappingThisMargin();
+        if (marginBlockOver) {
+            var cellToMoveFrom = grid.getCell(cellOver.location.col-1,cellOver.location.row);
+            var blockWidth = marginBlockOver.blockSize;
+            var itemSelected = cellToMoveFrom.itemAtThisLocation();
+            var allCellsForThisBlock = grid.getCellsOver(cellToMoveFrom,blockWidth,itemSelected,true);
+            unhighlightCellsBlocksForMove(allCellsForThisBlock);
+        }
+    }
+    if (tempBlock) {
+        tempBlock.domElement.parentNode.removeChild(tempBlock.domElement);
+        var marginOffset = isMarginSelected ? (grid.blockColWidth + grid.marginColWidth)/2 : 0;
+        var firstCellOver = grid.getCellFromPointerPosition(e.pageX-marginOffset, e.pageY);
+        var canAddBlock = canAddBlockAtCell(firstCellOver, tempBlock);
+        if (canAddBlock) {
+            var blockPos = convertGridPosToBlockPos(firstCellOver.location.col, firstCellOver.location.row);
+            blockPos.x -= tempBlock.itemSelected; // offset so selected item stays on pointer
+            var block = addBlock(blockPos.x, blockPos.y, tempBlock.width, tempBlock.name);
+            if (tempBlock.incomingLinks) {
+                tempBlock.incomingLinks.forEach( function(linkData) {
+                    addBlockLink(linkData.blockA, block, linkData.itemA, linkData.itemB, true);
+                });
+            }
+            if (tempBlock.outgoingLinks) {
+                tempBlock.outgoingLinks.forEach( function(linkData) {
+                    addBlockLink(block, linkData.blockB, linkData.itemA, linkData.itemB, true);
+                });
+            }
+            updateGrid(grid);
+        }
+        globalStates.currentLogic.tempBlock = null;
+    }
+    cellToMoveBlockFrom = null;
+    isMarginSelected = false;
+}
+
+// clicking down in datacrafting container outside of blocks creates a new cut line
+function datacraftingContainerPointerDown(e) {
+    var grid = globalStates.currentLogic.grid;
+    e.preventDefault();
+
+    var cellOver = grid.getCellFromPointerPosition(e.pageX, e.pageY);
+    var marginBlockOver = cellOver.blockOverlappingThisMargin();
+    if (marginBlockOver) {
+        isPointerDown = true;
+        setTimeout( function() {
+            console.log("start move, not link");
+            if (isPointerDown && !isTempLinkBeingDrawn) {
+                var cellOver = grid.getCellFromPointerPosition(e.pageX, e.pageY);
+                cellToMoveBlockFrom = grid.getCell(cellOver.location.col-1,cellOver.location.row);
+                isMarginSelected = true;
+                var blockWidth = marginBlockOver.blockSize;
+                var itemSelected = cellToMoveBlockFrom.itemAtThisLocation();
+                var allCellsForThisBlock = grid.getCellsOver(cellToMoveBlockFrom,blockWidth,itemSelected,true);
+                highlightCellsBlocksForMove(allCellsForThisBlock);
+            }
+        }, 500);
+    } else if (!isCutLineBeingDrawn && !isPointerInActiveBlock) {
+        isCutLineBeingDrawn = true;
+        cutLine.start = {
+            x: e.pageX,
+            y: e.pageY
+        };
+    }
+}
+
+// moving pointer in datacrafting container updates endpoint of cut line
+function datacraftingContainerPointerMove(e) {
+    var tempBlock = globalStates.currentLogic.tempBlock;
+    var grid = globalStates.currentLogic.grid;
+    e.preventDefault();
+    
+    if (isCutLineBeingDrawn) {
+        cutLine.end = {
+            x: e.pageX,
+            y: e.pageY
+        };
+    }
+    if (isTempLinkBeingDrawn) {
+        tempLine.end = {
+            x: e.pageX,
+            y: e.pageY
+        };
+    }
+    if (tempBlock) {
+        var marginOffset = isMarginSelected ? (grid.blockColWidth + grid.marginColWidth)/2 : 0;
+        tempBlock.domElement.style.left = e.pageX - grid.blockColWidth/2 - tempBlock.itemSelected * (grid.blockColWidth + grid.marginColWidth) - marginOffset;
+        tempBlock.domElement.style.top = e.pageY - grid.blockRowHeight/2;
+        // check if we are over a valid set of cells - if so, opacity=1, if not opacity=0.75
+        var firstCellOver = grid.getCellFromPointerPosition(e.pageX-marginOffset, e.pageY);
+        var canAddBlock = canAddBlockAtCell(firstCellOver, tempBlock);
+        if (canAddBlock) {
+            tempBlock.domElement.style.opacity = 1.00;
+        } else {
+            tempBlock.domElement.style.opacity = 0.50;
+        }
+    } else {
+        var cellOver = grid.getCellFromPointerPosition(e.pageX, e.pageY);
+        if (isPointerDown && cellToMoveBlockFrom && cellToMoveBlockFrom !== cellOver) {
+            removeBlockFromCellAndCreateTempBlockAt(cellToMoveBlockFrom, e.pageX, e.pageY);
+        }
+    }
+
+}
+
 function removeBlockFromCellAndCreateTempBlockAt(cellToMove, pageX, pageY) {
-
-    console.log("left cell", cellToMove);
-
-    // remove block from cellToMoveBlockFrom
+    // remove block from cellToMove
     var blockToMove = cellToMove.blockAtThisLocation();
     if (blockToMove) {
         var blockSize = blockToMove.blockSize;
         var itemSelected = cellToMove.itemAtThisLocation();
-
         if (cellToMove) {
             var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(cellToMoveBlockFrom,blockSize,itemSelected,true);
             unhighlightCellsBlocksForMove(allCellsForThisBlock);
         }
-
         var incomingLinks = [];
         var outgoingLinks = [];
-
         for (var linkKey in globalStates.currentLogic.links) {
             var link = globalStates.currentLogic.links[linkKey];
             if (link.blockB === blockToMove) {
@@ -921,288 +1087,33 @@ function removeBlockFromCellAndCreateTempBlockAt(cellToMove, pageX, pageY) {
                 });
             }
         }
-
         removeBlock(globalStates.currentLogic, blockToMove);
         updateGrid(globalStates.currentLogic.grid);
-        
         // add temp block to pointer
         createTempBlockOnPointer(blockSize, pageX, pageY, itemSelected, incomingLinks, outgoingLinks);
     }
-
     cellToMoveBlockFrom = null;
 }
 
 function createTempBlockOnPointer(blockSize, centerX, centerY, itemSelected, incomingLinks, outgoingLinks) {
+    var grid = globalStates.currentLogic.grid;
     var newBlockImg = document.createElement('div');
     newBlockImg.setAttribute("class", "newBlock"+blockSize);
     newBlockImg.setAttribute("id", "newBlockTest");
     newBlockImg.setAttribute("touch-action", "none");
     newBlockImg.style.opacity = 0.75;
-
-    var marginOffset = isMarginSelected ? (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth)/2 : 0;
-
-    var leftPositionWithoutMargin = (centerX - globalStates.currentLogic.grid.blockColWidth/2 - itemSelected * (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth));
-
+    var marginOffset = isMarginSelected ? (grid.blockColWidth + grid.marginColWidth)/2 : 0;
+    var leftPositionWithoutMargin = (centerX - grid.blockColWidth/2 - itemSelected * (grid.blockColWidth + grid.marginColWidth));
     newBlockImg.style.left = (leftPositionWithoutMargin - marginOffset) + "px";
-    newBlockImg.style.top = (centerY - globalStates.currentLogic.grid.blockRowHeight/2) + "px";
-
+    newBlockImg.style.top = (centerY - grid.blockRowHeight/2) + "px";
     globalStates.currentLogic.tempBlock = {
         domElement: newBlockImg,
+        name: "test", //todo: change this
         width: blockSize,
         itemSelected: itemSelected,
         incomingLinks: incomingLinks,
         outgoingLinks: outgoingLinks
     };
-
     var blocksContainer = document.getElementById('blocks');
     blocksContainer.appendChild(newBlockImg);
-}
-
-// if your pointer enters a different block while temp link is being drawn, render a new link to that destination
-function blockPointerEnter(e) {
-    e.preventDefault();
-    if (e.target.cell.blockAtThisLocation() === null) return;
-
-    isPointerInActiveBlock = true;
-    if (isTempLinkBeingDrawn) {
-        tempEndBlock = e.target.cell.blockAtThisLocation();
-        tempEndItem = e.target.cell.itemAtThisLocation();
-
-        // create temp link if you can
-        if (tempStartBlock === null || tempEndBlock === null) { return; }
-        // erases temp link if you enter the start block again
-        if (tempStartBlock === tempEndBlock) {
-            globalStates.currentLogic.tempLink = null;
-            //renderLinks();
-            updateGrid(globalStates.currentLogic.grid); // need to recalculate routes without temp link
-            console.log("entered same block, remove temp link");
-            return;
-        }
-
-        var newTempLink = new BlockLink();
-        newTempLink.blockA = tempStartBlock;
-        newTempLink.blockB = tempEndBlock;
-        newTempLink.itemA = tempStartItem;
-        newTempLink.itemB = tempEndItem;
-        setTempLink(newTempLink);
-        updateGrid(globalStates.currentLogic.grid); // need to recalculate routes with new temp link
-        console.log("entered new block, new temp link");
-    }
-}
-
-// if you release the pointer over a block, the temporary link becomes permanent
-function blockPointerUp(e) {
-    e.preventDefault();
-    if (e.target.cell.blockAtThisLocation() === null) return;
-
-    isPointerDown = false;
-    isTempLinkBeingDrawn = false;
-    tempLine.start = null;
-    tempLine.end = null;
-    if (cellToMoveBlockFrom) {
-        var firstCell = e.target.cell;
-        var blockWidth = e.target.cell.blockAtThisLocation().blockSize;
-        var itemSelected = e.target.cell.itemAtThisLocation();
-        var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(firstCell,blockWidth,itemSelected,true);
-        unhighlightCellsBlocksForMove(allCellsForThisBlock);
-    }
-    cellToMoveBlockFrom = null;
-    isMarginSelected = false;
-
-    if (globalStates.currentLogic.tempLink !== null) {
-        //only create link if identical link doesn't already exist
-        if (!doesLinkAlreadyExist(globalStates.currentLogic.tempLink)) {
-            // add link to data structure
-            // var startLocation = globalStates.currentLogic.tempLink.blockA;//.cell.location;
-            // var endLocation = globalStates.currentLogic.tempLink.blockB;//.cell.location;
-            // var addedLink = grid.addLinkFromTo(startLocation.col, startLocation.row, endLocation.col, endLocation.row);
-
-            var addedLink = addBlockLink(globalStates.currentLogic.tempLink.blockA, globalStates.currentLogic.tempLink.blockB,  globalStates.currentLogic.tempLink.itemA, globalStates.currentLogic.tempLink.itemB);
-
-            if (addedLink !== null) {
-                addedLink.route = globalStates.currentLogic.tempLink.route; // copy over the route rather than recalculating everything
-                // addedLink.pointData = globalStates.currentLogic.tempLink.pointData; // copy over rather than recalculate
-                addedLink.ballAnimationCount = globalStates.currentLogic.tempLink.ballAnimationCount;
-            }
-        }
-        globalStates.currentLogic.tempLink = null;
-    }
-}
-
-// releasing pointer anywhere on datacrafting container deletes a temp link
-// if drawing one, or executes a cut line to delete links it crosses
-function datacraftingContainerPointerUp(e) {
-    e.preventDefault();
-
-    if (isCutLineBeingDrawn) {
-        isCutLineBeingDrawn = false;
-        if (cutLine.start !== null && cutLine.end !== null){
-            checkForCutIntersections();
-        }
-        cutLine.start = null;
-        cutLine.end = null;
-    }
-
-    if (isTempLinkBeingDrawn) {
-        tempLine.start = null;
-        tempLine.end = null;
-    }
-
-    if (!isPointerInActiveBlock) {
-        isPointerDown = false;
-        isTempLinkBeingDrawn = false;
-        if (globalStates.currentLogic.tempLink !== null) {
-            globalStates.currentLogic.tempLink = null;
-        }
-    }
-
-    // if (cellToMoveBlockFrom) {
-        var cellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
-        if (cellOver) {
-            var marginBlockOver = cellOver.blockOverlappingThisMargin();
-            if (marginBlockOver) {
-                var cellToMoveFrom = globalStates.currentLogic.grid.getCell(cellOver.location.col-1,cellOver.location.row);
-                var blockWidth = marginBlockOver.blockSize;
-                var itemSelected = cellToMoveFrom.itemAtThisLocation();
-                var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(cellToMoveFrom,blockWidth,itemSelected,true);
-                unhighlightCellsBlocksForMove(allCellsForThisBlock);
-            }
-        }
-        // var firstCell = e.target.cell;
-        // var blockWidth = e.target.cell.blockAtThisLocation().blockSize;
-        // var itemSelected = e.target.cell.itemAtThisLocation();
-        // var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(firstCell,blockWidth,itemSelected,true);
-        // unhighlightCellsBlocksForMove(allCellsForThisBlock);
-    // }
-    cellToMoveBlockFrom = null;
-
-    if (globalStates.currentLogic.tempBlock) {
-        globalStates.currentLogic.tempBlock.domElement.parentNode.removeChild(globalStates.currentLogic.tempBlock.domElement);
-
-        var marginOffset = isMarginSelected ? (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth)/2 : 0;
-        var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX-marginOffset, e.pageY);
-        var canAddBlock = canAddBlockAtCell(firstCellOver, globalStates.currentLogic.tempBlock);
-
-        if (canAddBlock) {
-            console.log("placing block in cell: " + firstCellOver.location.col, + "," + firstCellOver.location.row);
-            var blockPos = convertGridPosToBlockPos(firstCellOver.location.col, firstCellOver.location.row);
-            blockPos.x -= globalStates.currentLogic.tempBlock.itemSelected;
-            var blockWidth = globalStates.currentLogic.tempBlock.width;
-            var block = createBlock(blockPos.x, blockPos.y, blockWidth, "test");
-            var blockKey = "block_" + blockPos.x + "_" + blockPos.y + "_" + uuidTime(); //getTimestamp();
-            globalStates.currentLogic.blocks[blockKey] = block;
-
-            if (globalStates.currentLogic.tempBlock.incomingLinks) {
-                globalStates.currentLogic.tempBlock.incomingLinks.forEach( function(linkData) {
-                    addBlockLink(linkData.blockA, block, linkData.itemA, linkData.itemB);
-                });
-            }
-
-            if (globalStates.currentLogic.tempBlock.outgoingLinks) {
-                globalStates.currentLogic.tempBlock.outgoingLinks.forEach( function(linkData) {
-                    addBlockLink(block, linkData.blockB, linkData.itemA, linkData.itemB);
-                });
-            }
-
-            updateGrid(globalStates.currentLogic.grid);
-        }
-
-        globalStates.currentLogic.tempBlock = null;
-    }
-
-    isMarginSelected = false;
-}
-
-function canAddBlockAtCell(firstCellOver, tempBlock) {
-    if (!firstCellOver || !tempBlock) return false;
-    
-    var cellsOver = globalStates.currentLogic.grid.getCellsOver(firstCellOver,tempBlock.width, tempBlock.itemSelected);
-    var canAddBlock = true;
-    cellsOver.forEach(function(cell) {
-        if (!cell || !cell.canHaveBlock() || cell.blockAtThisLocation()) {
-            canAddBlock = false;
-        }
-    });
-    return canAddBlock;
-}
-
-// clicking down in datacrafting container outside of blocks creates a new cut line
-function datacraftingContainerPointerDown(e) {
-    e.preventDefault();
-
-    var cellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
-    var marginBlockOver = cellOver.blockOverlappingThisMargin();
-    if (marginBlockOver) {
-        isPointerDown = true;
-        setTimeout( function() {
-            console.log("start move, not link");
-            if (isPointerDown && !isTempLinkBeingDrawn) {
-                // cellToMoveBlockFrom = e.target.cell;
-                var cellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
-                // var allCellsForThisBlock = [e.target.cell];
-                // var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
-                // var firstCell = e.target.cell;
-                cellToMoveBlockFrom = globalStates.currentLogic.grid.getCell(cellOver.location.col-1,cellOver.location.row);
-                isMarginSelected = true;
-                var blockWidth = marginBlockOver.blockSize;
-                var itemSelected = cellToMoveBlockFrom.itemAtThisLocation();
-
-                var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(cellToMoveBlockFrom,blockWidth,itemSelected,true);
-
-                highlightCellsBlocksForMove(allCellsForThisBlock);
-            }
-        }, 500);
-    
-    } else if (!isCutLineBeingDrawn && !isPointerInActiveBlock) {
-        isCutLineBeingDrawn = true;
-        cutLine.start = {
-            x: e.pageX,
-            y: e.pageY
-        };
-    }
-}
-
-// moving pointer in datacrafting container updates endpoint of cut line
-function datacraftingContainerPointerMove(e) {
-    e.preventDefault();
-
-    if (isCutLineBeingDrawn) {
-        cutLine.end = {
-            x: e.pageX,
-            y: e.pageY
-        };
-    }
-
-    if (isTempLinkBeingDrawn) {
-        tempLine.end = {
-            x: e.pageX,
-            y: e.pageY
-        };
-    }
-
-    if (globalStates.currentLogic.tempBlock) {
-        var itemSelected = globalStates.currentLogic.tempBlock.itemSelected;
-
-        var marginOffset = isMarginSelected ? (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth)/2 : 0;
-
-        globalStates.currentLogic.tempBlock.domElement.style.left = e.pageX - globalStates.currentLogic.grid.blockColWidth/2 - itemSelected * (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth) - marginOffset; //globalStates.currentLogic.tempBlock.domElement.width/2;
-        globalStates.currentLogic.tempBlock.domElement.style.top = e.pageY - globalStates.currentLogic.grid.blockRowHeight/2; //globalStates.currentLogic.tempBlock.domElement.height/2;
-
-        // check if we are over a valid set of cells - if so, opacity=1, if not opacity=0.75
-
-        var firstCellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX-marginOffset, e.pageY);
-        var canAddBlock = canAddBlockAtCell(firstCellOver, globalStates.currentLogic.tempBlock);
-        if (canAddBlock) {
-            globalStates.currentLogic.tempBlock.domElement.style.opacity = 1.00;
-        } else {
-            globalStates.currentLogic.tempBlock.domElement.style.opacity = 0.50;
-        }
-    
-    } else {
-        var cellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
-        if (isPointerDown && cellToMoveBlockFrom && cellToMoveBlockFrom !== cellOver) {
-            removeBlockFromCellAndCreateTempBlockAt(cellToMoveBlockFrom, e.pageX, e.pageY);
-        }
-    }
-
 }

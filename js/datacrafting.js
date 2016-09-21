@@ -27,9 +27,8 @@ function Grid(blockColWidth, blockRowHeight, marginColWidth, marginRowHeight) {
 //  and DOM element, and a list of which routes pass through the cell
 function Cell(location) {
     this.location = location; // CellLocation
-    this.routeTrackers = []; // [RouteTracker]
-    // this.block = null;
-    this.domElement = null; // <IMG> element //TODO: remove DOM element to decouple frontend from backend
+    this.routeSegments = []; // [RouteSegment]
+    this.domElement = null; // <div> element //TODO: remove DOM element to decouple frontend from backend?
 }
 
 function CellLocation(col,row) {
@@ -53,13 +52,11 @@ function Route(initialCellLocations) {
     this.pointData = null; // list of [{screenX, screenY}]
 }
 
-// TODO: poorly named / designed
 // contains useful data for keeping track of how a route passes through a cell
-function RouteTracker(route, params) {
+function RouteSegment(route, containsHorizontal, containsVertical) {
     this.route = route;
-    this.containsVertical = params["vertical"]; // todo: convert all dictionaries to {vertical: vertical} instead of {"vertical":vertical} syntax
-    this.containsHorizontal = params["horizontal"];
-    // todo: add this.isStart and this.isEnd
+    this.containsHorizontal = containsHorizontal;
+    this.containsVertical = containsVertical;
     this.isStart = false;
     this.isEnd = false;
 }
@@ -68,47 +65,17 @@ function RouteTracker(route, params) {
 //   Data Structures - Methods
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////
-//  CELL LOCATION METHODS  //
-/////////////////////////////
-
-// *** Public (to app?)
-// gets the center x coordinate of this cell row/column location
-// varies depending on whether this is in a block row or margin row
-CellLocation.prototype.getCenterX = function(blockColWidth, marginColWidth) {
-    var leftEdgeX = 0;
-    if (this.col % 2 === 0) { // this is a block cell
-        leftEdgeX = (this.col / 2) * (blockColWidth + marginColWidth);
-        return leftEdgeX + blockColWidth/2;
-
-    } else { // this is a margin cell
-        leftEdgeX = Math.ceil(this.col / 2) * blockColWidth + Math.floor(this.col / 2) * marginColWidth;
-        return leftEdgeX + marginColWidth/2;
-    }
-};
-
-// *** Public (to app?)
-// gets the center y coordinate of this cell row/column location
-// varies depending on whether this is in a block row or margin row
-CellLocation.prototype.getCenterY = function(blockRowHeight, marginRowHeight) {
-    var topEdgeY = 0;
-    if (this.row % 2 === 0) { // this is a block cell
-        topEdgeY = (this.row / 2) * (blockRowHeight + marginRowHeight);
-        return topEdgeY + blockRowHeight/2;
-
-    } else { // this is a margin cell
-        topEdgeY = Math.ceil(this.row / 2) * blockRowHeight + Math.floor(this.row / 2) * marginRowHeight;
-        return topEdgeY + marginRowHeight/2;
-    }
-};
-
-////////////////////
-//  CELL METHODS  //
-////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//      CELL METHODS   
+////////////////////////////////////////////////////////////////////////////////
 
 // *** Public to app
 Cell.prototype.canHaveBlock = function() {
     return (this.location.col % 2 === 0) && (this.location.row % 2 === 0);
+}
+
+Cell.prototype.isMarginCell = function() {
+    return this.location.row % 2 === 0 && this.location.col % 2 === 1;
 }
 
 // *** Public to app
@@ -123,7 +90,7 @@ Cell.prototype.getColorHSL = function() {
 // *** Public
 // utility - counts the number of horizontal routes in a cell
 Cell.prototype.countHorizontalRoutes = function() {
-    return this.routeTrackers.filter(function(value) { return value.containsHorizontal; }).length;
+    return this.routeSegments.filter(function(value) { return value.containsHorizontal; }).length;
 };
 
 // *** Public
@@ -131,7 +98,7 @@ Cell.prototype.countHorizontalRoutes = function() {
 // optionally excludes start or endpoints so that routes starting in a
 // block cell don't count as overlapping routes ending in a block cell
 Cell.prototype.countVerticalRoutes = function(excludeStartPoints, excludeEndPoints) {
-    return this.routeTrackers.filter(function(value) {
+    return this.routeSegments.filter(function(value) {
         return value.containsVertical && !((value.isStart && excludeStartPoints) || (value.isEnd && excludeEndPoints));
     }).length;
 };
@@ -140,8 +107,8 @@ Cell.prototype.countVerticalRoutes = function(excludeStartPoints, excludeEndPoin
 // utility - checks whether the cell has a vertical route tracker for the given route
 Cell.prototype.containsVerticalSegmentOfRoute = function(route) {
     var containsVerticalSegment = false;
-    this.routeTrackers.forEach( function(routeTracker) {
-        if (routeTracker.route === route && routeTracker.containsVertical) {
+    this.routeSegments.forEach( function(routeSegment) {
+        if (routeSegment.route === route && routeSegment.containsVertical) {
             containsVerticalSegment = true;
         }
     });
@@ -152,8 +119,8 @@ Cell.prototype.containsVerticalSegmentOfRoute = function(route) {
 // utility - checks whether the cell has a horizontal route tracker for the given route
 Cell.prototype.containsHorizontalSegmentOfRoute = function(route) {
     var containsHorizontalSegment = false;
-    this.routeTrackers.forEach( function(routeTracker) {
-        if (routeTracker.route === route && routeTracker.containsHorizontal) {
+    this.routeSegments.forEach( function(routeSegment) {
+        if (routeSegment.route === route && routeSegment.containsHorizontal) {
             containsHorizontalSegment = true;
         }
     });
@@ -163,15 +130,15 @@ Cell.prototype.containsHorizontalSegmentOfRoute = function(route) {
 Cell.prototype.blockAtThisLocation = function() {
     if (!this.canHaveBlock()) return null;
     var blockPos = convertGridPosToBlockPos(this.location.col, this.location.row);
-    return getBlockXY(blockPos.x, blockPos.y);
+    return getBlockOverlappingPosition(blockPos.x, blockPos.y);
 }
 
 Cell.prototype.blockOverlappingThisMargin = function() {
     if (this.location.col % 2 === 0 || this.location.row % 2 === 1) return; // this isn't a margin cell
     var blockPosBefore = convertGridPosToBlockPos(this.location.col-1, this.location.row);
     var blockPosAfter = convertGridPosToBlockPos(this.location.col+1, this.location.row);
-    var blockBefore = getBlockXY(blockPosBefore.x, blockPosBefore.y);
-    var blockAfter = getBlockXY(blockPosAfter.x, blockPosAfter.y);
+    var blockBefore = getBlockOverlappingPosition(blockPosBefore.x, blockPosBefore.y);
+    var blockAfter = getBlockOverlappingPosition(blockPosAfter.x, blockPosAfter.y);
     if (blockBefore === blockAfter) {
         return blockBefore;
     } else {
@@ -196,13 +163,9 @@ Cell.prototype.isLastItem = function() {
     return item === (block.blockSize-1);
 }
 
-Cell.prototype.isMarginCell = function() {
-    return this.location.row % 2 === 0 && this.location.col % 2 === 1;
-}
-
-/////////////////////
-//  ROUTE METHODS  //
-/////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//      ROUTE METHODS   
+////////////////////////////////////////////////////////////////////////////////
 
 // *** Public
 // adds a new corner location to a route
@@ -229,12 +192,6 @@ Route.prototype.getOrderPreferences = function() {
         vertical: lastCell.row - firstCell.row
     };
 };
-
-// *** Public ?
-// points is an array like [{screenX: x1, screenY: y1}, ...]
-// calculates useful pointData for drawing lines with varying color/weight/etc,
-// by determining how far along the line each corner is located (as a percentage)
-
 
 // *** Public to app
 Route.prototype.getXYPositionAtPercentage = function(percent) {
@@ -273,106 +230,10 @@ Route.prototype.getXYPositionAtPercentage = function(percent) {
 //   GRID METHODS
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-function addBlockLink(blockA, blockB, itemA, itemB) {
-    if (blockA && blockB) {
-        var blockLink = new BlockLink();
-        blockLink.blockA = blockA;
-        blockLink.blockB = blockB;
-        blockLink.itemA = itemA;
-        blockLink.itemB = itemB;
-        blockLinkKey = "blockLink" + uuidTime();
-        if (!doesLinkAlreadyExist(blockLink)) {
-            globalStates.currentLogic.links[blockLinkKey] = blockLink;
-            return blockLink;
-        }
-    }
-    return null;
-}
-
-function setTempLink(newTempLink) {
-    if (!doesLinkAlreadyExist(newTempLink)) {
-        globalStates.currentLogic.tempLink = newTempLink;
-    }
-}
-
-function removeBlockLink(blockLinkKey) {
-    delete globalStates.currentLogic.links[blockLinkKey];
-}
-
-function clearAllBlockLinks() {
-    for (var blockLinkKey in globalStates.currentLogic.blocks) {
-        removeBlockLink(blockLinkKey);
-    }
-    globalStates.currentLogic.tempLink = null;
-}
-
-function removeBlock(logic, block) {
-    removeLinksForBlock(logic, block);
-    for (var blockKey in logic.blocks) {
-        if (logic.blocks[blockKey] === block) {
-            delete logic.blocks[blockKey];
-        }
-    }
-}
-
-function removeLinksForBlock(logic, block) {
-    for (var linkKey in logic.links) {
-        var link = logic.links[linkKey];
-        if (link.blockA === block || link.blockB === block) {
-            delete logic.links[linkKey];
-        }
-    }
-}
-
-function doesLinkAlreadyExist(blockLink) {
-    for (var blockLinkKey in globalStates.currentLogic.links) {
-        var thatBlockLink = globalStates.currentLogic.links[blockLinkKey];
-        if (areBlockLinksEqual(blockLink, thatBlockLink)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function areBlockLinksEqual(blockLink1, blockLink2) {
-    if (blockLink1.blockA === blockLink2.blockA && blockLink1.itemA === blockLink2.itemA) {
-        if (blockLink1.blockB === blockLink2.blockB && blockLink1.itemB === blockLink2.itemB) {
-            return true;
-        }
-    }
-    return false;
-}
-
-
-function preprocessPointsForDrawing(points) { //putting it in here makes it private... only ever used here.. could just inline it
-    // adds up the total length the route points travel
-    var lengths = []; // size = lines.length-1
-    for (var i = 1; i < points.length; i++) {
-        var dx = points[i].screenX - points[i-1].screenX;
-        var dy = points[i].screenY - points[i-1].screenY;
-        lengths.push(Math.sqrt(dx * dx + dy * dy));
-    }
-    var totalLength = lengths.reduce(function(a,b){return a + b;}, 0);
-    // calculates the percentage along the path of each point
-    var prevPercent = 0.0;
-    var percentages = [prevPercent];
-    percentages.push.apply(percentages, lengths.map(function(length){ prevPercent += length/totalLength; return prevPercent; }));
-
-    // TODO: we could just return this data here and assign it to this.point data in another function...
-    return {
-        points: points,
-        totalLength: totalLength,
-        lengths: lengths,
-        percentages: percentages
-    };
-};
-
 ////////////////////////////////////////////////////////////////////////////////
 //      GRID UTILITIES     
 ////////////////////////////////////////////////////////////////////////////////
 
-// *** Public to app
 // utility - returns the x,y coordinates of corners for a link so that they can be rendered
 // (includes the offsets - these are the actual points to draw on the screen exactly as is)
 Grid.prototype.getPointsForLink = function(blockLink) {
@@ -392,7 +253,6 @@ Grid.prototype.getPointsForLink = function(blockLink) {
     return points;
 };
 
-// *** Public to app   // TODO: is this still used?
 // utility - calculates the total width and height of the grid using the sizes of the cells
 Grid.prototype.getPixelDimensions = function() {
     var width = Math.ceil(this.size/2) * this.blockColWidth +  Math.floor(this.size/2) * this.marginColWidth;
@@ -422,12 +282,28 @@ Grid.prototype.getCellHeight = function(row) {
 
 // utility - gets x position of cell
 Grid.prototype.getCellCenterX = function(cell) {
-    return cell.location.getCenterX(this.blockColWidth, this.marginColWidth);
+    var leftEdgeX = 0;
+    if (cell.location.col % 2 === 0) { // this is a block cell
+        leftEdgeX = (cell.location.col / 2) * (this.blockColWidth + this.marginColWidth);
+        return leftEdgeX + this.blockColWidth/2;
+
+    } else { // this is a margin cell
+        leftEdgeX = Math.ceil(cell.location.col / 2) * this.blockColWidth + Math.floor(cell.location.col / 2) * this.marginColWidth;
+        return leftEdgeX + this.marginColWidth/2;
+    }
 };
 
 // utility - gets y position of cell
 Grid.prototype.getCellCenterY = function(cell) {
-    return cell.location.getCenterY(this.blockRowHeight, this.marginRowHeight);
+    var topEdgeY = 0;
+    if (cell.location.row % 2 === 0) { // this is a block cell
+        topEdgeY = (cell.location.row / 2) * (this.blockRowHeight + this.marginRowHeight);
+        return topEdgeY + this.blockRowHeight/2;
+
+    } else { // this is a margin cell
+        topEdgeY = Math.ceil(cell.location.row / 2) * this.blockRowHeight + Math.floor(cell.location.row / 2) * this.marginRowHeight;
+        return topEdgeY + this.marginRowHeight/2;
+    }
 };
 
 // utility - gets x position for a column 
@@ -439,23 +315,6 @@ Grid.prototype.getColumnCenterX = function(col) {
 Grid.prototype.getRowCenterY = function(row) {
     return this.getCellCenterY(this.getCell(0,row));
 };
-
-Grid.prototype.forEachLink = function(action) { // TODO: this doesn't need to be in Grid anymore
-    for (var blockLinkKey in globalStates.currentLogic.links) {
-        action(globalStates.currentLogic.links[blockLinkKey]);
-    }
-    if (globalStates.currentLogic.tempLink) {
-        action(globalStates.currentLogic.tempLink);
-    }
-}
-
-Grid.prototype.allLinks = function(action) { // TODO: change this after figuring out where tempLink goes
-    var linksArray = [];
-    this.forEachLink(function(link) {
-        linksArray.push(link);
-    });
-    return linksArray;
-}
 
 // performs action on all cells that can have a block (not the empty margins)
 Grid.prototype.forEachPossibleBlockCell = function(action) {
@@ -532,7 +391,7 @@ Grid.prototype.getFirstBlockBelow = function(col, row) {
 // resets the number of "horizontal" or "vertical" segments contained to 0 for all cells
 Grid.prototype.resetCellRouteCounts = function() {
     this.cells.forEach(function(cell) {
-        cell.routeTrackers = [];
+        cell.routeSegments = [];
     });
 };
 
@@ -551,8 +410,8 @@ Grid.prototype.getLineSegmentDirections = function(prevCell,currentCell,nextCell
         containsVertical = true;
     }
     return {
-        "horizontal": containsHorizontal,
-        "vertical": containsVertical
+        horizontal: containsHorizontal,
+        vertical: containsVertical
     };
 };
 
@@ -568,16 +427,15 @@ Grid.prototype.getLineSegmentDirections = function(prevCell,currentCell,nextCell
 Grid.prototype.recalculateAllRoutes = function() {
     var that = this;
 
-    that.resetCellRouteCounts(); // step 1 works
+    that.resetCellRouteCounts();
 
-    that.forEachLink( function(link) {
-        that.calculateLinkRoute(link);  // step 2 works
+    forEachLink( function(link) {
+        that.calculateLinkRoute(link);
     });
     var overlaps = that.determineMaxOverlaps();
-//////////// ^ yes
-    that.calculateOffsets(overlaps);
+    that.calculateOffsets(overlaps); // todo: still some minor bugs in the offset function
 
-    that.forEachLink( function(link) {
+    forEachLink( function(link) {
         var points = that.getPointsForLink(link);
         link.route.pointData = preprocessPointsForDrawing(points);
     });
@@ -586,9 +444,8 @@ Grid.prototype.recalculateAllRoutes = function() {
 // given a link, calculates all the corner points between the start block and end block,
 // and sets the route of the link to contain the corner points and all the cells between
 Grid.prototype.calculateLinkRoute = function(link) {
-    //TODO: need to account for itemA, itemB in this algorithm
-    var startLocation = convertBlockPosToGridPos(link.blockA.x + link.itemA, link.blockA.y); //link.startBlock.cell.location;
-    var endLocation = convertBlockPosToGridPos(link.blockB.x + link.itemB, link.blockB.y); //link.endBlock.cell.location;
+    var startLocation = convertBlockPosToGridPos(link.blockA.x + link.itemA, link.blockA.y);
+    var endLocation = convertBlockPosToGridPos(link.blockB.x + link.itemB, link.blockB.y);
     var route = new Route([startLocation]);
 
     // by default lines loop around the right of blocks, except for last column or if destination is to left of start
@@ -599,7 +456,7 @@ Grid.prototype.calculateLinkRoute = function(link) {
 
     if (startLocation.row < endLocation.row) {
         // simplifies edge case when block is directly below by skipping rest of points
-        var areBlocksBetweenInStartColumn = this.areBlocksBetween(this.getCell(startLocation.col, startLocation.row), this.getCell(startLocation.col, endLocation.row));// new CellLocation(startLocation.col, endLocation.row));
+        var areBlocksBetweenInStartColumn = this.areBlocksBetween(this.getCell(startLocation.col, startLocation.row), this.getCell(startLocation.col, endLocation.row));
 
         if (startLocation.col !== endLocation.col || areBlocksBetweenInStartColumn) {
 
@@ -608,7 +465,7 @@ Grid.prototype.calculateLinkRoute = function(link) {
             var rowToDrawDownTo = endLocation.row-1;
             if (firstBlockBelow !== null) {
                 var firstBlockRowBelow = convertBlockPosToGridPos(firstBlockBelow.x, firstBlockBelow.y).row;
-                rowToDrawDownTo = Math.min(firstBlockRowBelow-1, rowToDrawDownTo); //Math.min(firstBlockBelow.cell.location.row-1, rowToDrawDownTo);
+                rowToDrawDownTo = Math.min(firstBlockRowBelow-1, rowToDrawDownTo);
             }
             route.addLocation(startLocation.col, rowToDrawDownTo);
 
@@ -642,10 +499,9 @@ Grid.prototype.calculateLinkRoute = function(link) {
         } else { // if it's going to the top row, approach from the side rather than above it
 
             // if there's nothing blocking the line from getting to the side of the end block, last point goes there
-            var cellsBetween = this.getCellsBetween(this.getCell(startLocation.col, 0), this.getCell(endLocation.col, endLocation.row)); //new CellLocation(startLocation.col,0), endLocation);
+            var cellsBetween = this.getCellsBetween(this.getCell(startLocation.col, 0), this.getCell(endLocation.col, endLocation.row));
             var blocksBetween = cellsBetween.filter(function(cell){
                 return cell.blockAtThisLocation() !== null;
-                // return cell.block !== null;
             });
             if (blocksBetween.length === 0) {
                 route.addLocation(startLocation.col + sideToApproachOn, 0);
@@ -685,22 +541,22 @@ Grid.prototype.calculateAllCellsContainingRoute = function(route) {
         }
         var segmentDirections = this.getLineSegmentDirections(prevCell, currentCell, nextCell);
 
-        var routeTracker = new RouteTracker(route, segmentDirections); // corners have both vertical and horizontal. end point has only vertical //todo: except for top/bottom row
+        var routeSegment = new RouteSegment(route, segmentDirections.horizontal, segmentDirections.vertical); // corners have both vertical and horizontal. end point has only vertical //todo: except for top/bottom row?
         if (prevCell === null) {
-            routeTracker.isStart = true;
+            routeSegment.isStart = true;
         }
         if (nextCell === null) {
-            routeTracker.isEnd = true;
+            routeSegment.isEnd = true;
         }
-        currentCell.routeTrackers.push(routeTracker);
+        currentCell.routeSegments.push(routeSegment);
         allCells.push(currentCell); // add endpoint cell for each segment
 
         var cellsBetween = this.getCellsBetween(currentCell, nextCell);
         var areNextHorizontal = this.areCellsHorizontal(currentCell, nextCell);
         var areNextVertical = !areNextHorizontal; // mutually exclusive
         cellsBetween.forEach( function(cell) {
-            var routeTracker = new RouteTracker(route, {"horizontal": areNextHorizontal, "vertical": areNextVertical});
-            cell.routeTrackers.push(routeTracker);
+            var routeSegment = new RouteSegment(route, areNextHorizontal, areNextVertical);
+            cell.routeSegments.push(routeSegment);
         });
         allCells.push.apply(allCells, cellsBetween);
     }
@@ -719,7 +575,7 @@ Grid.prototype.determineMaxOverlaps = function() {
 
         // decreases future overlaps of links in the grid by sorting them left/right
         // so that links going to the left don't need to cross over links going to the right
-        horizontallySortedLinks = that.allLinks().sort(function(link1, link2){
+        horizontallySortedLinks = allLinks().sort(function(link1, link2){
             var p1 = link1.route.getOrderPreferences();
             var p2 = link2.route.getOrderPreferences();
             var horizontalOrder = p1.horizontal - p2.horizontal;
@@ -777,8 +633,6 @@ Grid.prototype.determineMaxOverlaps = function() {
                 routeCellsInThisCol.forEach(function(cell) {
                     var excludeStartPoints = (cell === lastCellInRoute);
                     var excludeEndPoints = (cell === firstCellInRoute);
-                    //excludeStartPoints = false;
-                    //excludeEndPoints = false;
                     maxOverlappingVertical = Math.max(maxOverlappingVertical, cell.countVerticalRoutes(excludeStartPoints,excludeEndPoints)); //todo: should we also keep references to the routes this overlaps?
                 });
                 // store value in a data structure for that col,route pair
@@ -795,7 +649,7 @@ Grid.prototype.determineMaxOverlaps = function() {
     // for each route in column
     for (var r = 0; r < this.size; r++) {
         var thisRowRouteOverlaps = [];
-        that.allLinks().sort(function(link1, link2){
+        allLinks().sort(function(link1, link2){
             // vertically sorts them so that links starting near horizontal center of block are below those
             // starting near edges, so they don't overlap. requires that we sort horizontally before vertically
             var centerIndex = Math.ceil((horizontallySortedLinks.length-1)/2);
@@ -807,8 +661,6 @@ Grid.prototype.determineMaxOverlaps = function() {
             //return 10 * (p1.vertical - p2.vertical) + 1 * (Math.abs(p2.horizontal) - Math.abs(p1.horizontal));
 
         }).forEach( function(link) {
-
-        //this.forEachLink( function(link) {
             var routeCellsInThisRow = link.route.allCells.filter(function(cell){return cell.location.row === r;});
             if (routeCellsInThisRow.length > 0) { // does this route contain this column?
                 var maxOverlappingHorizontal = 0;
@@ -889,20 +741,18 @@ Grid.prototype.calculateOffsets = function(overlaps) {
                 if (cell !== firstCellInRoute) {
                     // exclude endpoints... use numRoutesProcessedExcludingEnd
                     numRoutesProcessedExcludingStart[cell.location.row] += 1;
-
                 }
+
                 if (cell !== lastCellInRoute) {
                     // exclude startpoints... use numRoutesProcessedExcludingStart
                     numRoutesProcessedExcludingEnd[cell.location.row] += 1;
-
-                } //else {
+                }
 
                 if (cell.containsVerticalSegmentOfRoute(route)) {
                     numRoutesProcessed[cell.location.row] += 1;
                 }
             });
         });
-        //console.log("col numRoutesProcessed", numRoutesProcessed);
     }
 
     for (var r = 0; r < this.size; r++) {
@@ -941,23 +791,12 @@ Grid.prototype.calculateOffsets = function(overlaps) {
                 }
             });
         });
-        //console.log("row numRoutesProcessed", numRoutesProcessed);
     }
 };
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //      misc functions for working with blocks and grids
 ////////////////////////////////////////////////////////////////////////////////
-
-function createBlock(x,y,blockSize,name) {
-    var block = new Block();
-    block.x = x;
-    block.y = y;
-    block.blockSize = blockSize;
-    block.name = name;
-    return block;
-}
 
 function getBlock(x,y) {
     for (var blockKey in globalStates.currentLogic.blocks) {
@@ -1009,7 +848,7 @@ Grid.prototype.getCellFromPointerPosition = function(xCoord, yCoord) {
 }
 
 // gets a block overlapping the cell at this x,y location
-function getBlockXY(x, y) {
+function getBlockOverlappingPosition(x, y) {
     // check if block of size >= 1 is at (x, y)
     var block = null;
     block = getBlock(x,y);
@@ -1036,7 +875,6 @@ function getBlockXY(x, y) {
 }
 
 function convertGridPosToBlockPos(col, row) {
-// Grid.prototype.convertGridPosToBlockPos = function(col, row) {
     return {
         x: Math.floor(col/2),
         y: Math.floor(row/2)
@@ -1044,6 +882,146 @@ function convertGridPosToBlockPos(col, row) {
 }
 
 function convertBlockPosToGridPos(x, y) {
-//Grid.prototype.convertBlockPosToGridPos = function(x, y) {
     return new CellLocation(x * 2, y * 2);
 }
+
+function addBlockLink(blockA, blockB, itemA, itemB, addToLogic) {
+    if (blockA && blockB) {
+        var blockLink = new BlockLink();
+        blockLink.blockA = blockA;
+        blockLink.blockB = blockB;
+        blockLink.itemA = itemA;
+        blockLink.itemB = itemB;
+        if (addToLogic) {
+            var linkKey = "blockLink" + uuidTime();
+            if (!doesLinkAlreadyExist(blockLink)) {
+                globalStates.currentLogic.links[linkKey] = blockLink;
+                return blockLink;
+            }
+        } else {
+            return blockLink;
+        }
+    }
+    return null;
+}
+
+function addBlock(x,y,blockSize,name) {
+    var block = new Block();
+    block.x = x;
+    block.y = y;
+    block.blockSize = blockSize;
+    block.name = name;
+    var blockKey = "block" + uuidTime();
+    globalStates.currentLogic.blocks[blockKey] = block;
+    return block;
+}
+
+function forEachLink(action) {
+    for (var linkKey in globalStates.currentLogic.links) {
+        action(globalStates.currentLogic.links[linkKey]);
+    }
+    if (globalStates.currentLogic.tempLink) {
+        action(globalStates.currentLogic.tempLink);
+    }
+}
+
+function allLinks() {
+    var linksArray = [];
+    forEachLink(function(link) {
+        linksArray.push(link);
+    });
+    return linksArray;
+}
+
+function setTempLink(newTempLink) {
+    if (!doesLinkAlreadyExist(newTempLink)) {
+        globalStates.currentLogic.tempLink = newTempLink;
+    }
+}
+
+function removeBlockLink(linkKey) {
+    delete globalStates.currentLogic.links[linkKey];
+}
+
+function clearAllBlockLinks() {
+    for (var linkKey in globalStates.currentLogic.blocks) {
+        removeBlockLink(linkKey);
+    }
+    globalStates.currentLogic.tempLink = null;
+}
+
+function removeBlock(logic, block) {
+    removeLinksForBlock(logic, block);
+    for (var blockKey in logic.blocks) {
+        if (logic.blocks[blockKey] === block) {
+            delete logic.blocks[blockKey];
+        }
+    }
+}
+
+function removeLinksForBlock(logic, block) {
+    for (var linkKey in logic.links) {
+        var link = logic.links[linkKey];
+        if (link.blockA === block || link.blockB === block) {
+            delete logic.links[linkKey];
+        }
+    }
+}
+
+function doesLinkAlreadyExist(blockLink) {
+    if (!blockLink) return false;
+    for (var linkKey in globalStates.currentLogic.links) {
+        var thatBlockLink = globalStates.currentLogic.links[linkKey];
+        if (areBlockLinksEqual(blockLink, thatBlockLink)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function areBlockLinksEqual(blockLink1, blockLink2) {
+    if (blockLink1.blockA === blockLink2.blockA && blockLink1.itemA === blockLink2.itemA) {
+        if (blockLink1.blockB === blockLink2.blockB && blockLink1.itemB === blockLink2.itemB) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function canAddBlockAtCell(firstCellOver, tempBlock) {
+    if (!firstCellOver || !tempBlock) return false;
+    var cellsOver = globalStates.currentLogic.grid.getCellsOver(firstCellOver,tempBlock.width, tempBlock.itemSelected);
+    var canAddBlock = true;
+    cellsOver.forEach(function(cell) {
+        if (!cell || !cell.canHaveBlock() || cell.blockAtThisLocation()) {
+            canAddBlock = false;
+        }
+    });
+    return canAddBlock;
+}
+
+// points is an array like [{screenX: x1, screenY: y1}, ...]
+// calculates useful pointData for drawing lines with varying color/weight/etc,
+// by determining how far along the line each corner is located (as a percentage)
+
+function preprocessPointsForDrawing(points) { //... only ever used here.. could just inline it
+    // adds up the total length the route points travel
+    var lengths = []; // size = lines.length-1
+    for (var i = 1; i < points.length; i++) {
+        var dx = points[i].screenX - points[i-1].screenX;
+        var dy = points[i].screenY - points[i-1].screenY;
+        lengths.push(Math.sqrt(dx * dx + dy * dy));
+    }
+    var totalLength = lengths.reduce(function(a,b){return a + b;}, 0);
+    // calculates the percentage along the path of each point
+    var prevPercent = 0.0;
+    var percentages = [prevPercent];
+    percentages.push.apply(percentages, lengths.map(function(length){ prevPercent += length/totalLength; return prevPercent; }));
+
+    return {
+        points: points,
+        totalLength: totalLength,
+        lengths: lengths,
+        percentages: percentages
+    };
+};

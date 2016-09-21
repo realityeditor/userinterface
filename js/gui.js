@@ -573,8 +573,8 @@ function craftingBoardVisible(objectKey, nodeKey) {
     document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
     document.getElementById('pocketButton').src = pocketButtonImage[4].src;
     globalStates.guiState ="logic";
-    document.getElementById("craftingBoard").style.visibility = "visible"; //
-    document.getElementById("craftingBoard").style.display = "inline"; //= "hidden";
+    document.getElementById("craftingBoard").style.visibility = "visible";
+    document.getElementById("craftingBoard").style.display = "inline";
     cout("craftingBoardVisible");
 
     if (DEBUG_DATACRAFTING) {
@@ -591,8 +591,8 @@ function craftingBoardVisible(objectKey, nodeKey) {
 function craftingBoardHide() {
     document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
     document.getElementById('pocketButton').src = pocketButtonImage[0].src;
-    document.getElementById("craftingBoard").style.visibility = "hidden"; //= "hidden";
-    document.getElementById("craftingBoard").style.display = "none"; //= "hidden";
+    document.getElementById("craftingBoard").style.visibility = "hidden";
+    document.getElementById("craftingBoard").style.display = "none";
     cout("craftingBoardHide");
     resetCraftingBoard();
 }
@@ -605,7 +605,7 @@ function addDatacraftingEventListeners() {
     if (globalStates.currentLogic) {
         globalStates.currentLogic.grid.cells.forEach( function(cell) {
             if (cell.domElement) {
-                cell.domElement.addEventListener("pointerdown", blockPointerDown);
+                cell.domElement.addEventListener("pointerdown", blockPointerDown); //TODO: eventually remove all these events and just use events on the blocks container?
                 cell.domElement.addEventListener("pointerenter", blockPointerEnter);
                 cell.domElement.addEventListener("pointerleave", blockPointerLeave);
                 cell.domElement.addEventListener("pointerup", blockPointerUp);            
@@ -681,24 +681,8 @@ function initializeDatacraftingGrid(logic) {
     datacraftingCanvas.height = dimensions.height;
     datacraftingCanvas.style.height = dimensions.height;
 
-    /*
-    ///////////
-    // debugging only... shouldn't have blocks by default
-    logic.grid.cells.forEach(function(cell) {
-        if (cell.canHaveBlock()) {
-            // cell.block = new Block(cell);
-            var blockPos = convertGridPosToBlockPos(cell.location.col, cell.location.row);
-            var block = createBlock(blockPos.x, blockPos.y, 1, "test");
-            var blockKey = "block_" + blockPos.x + "_" + blockPos.y + "_" + getTimestamp();
-            logic.blocks[blockKey] = block;
-        }
-    });
-    ///////////
-    */
-
-    // initialize by adding a grid of images for the blocks
+    // initialize by adding a grid of divs for the blocks
     // and associating them with the data model and assigning event handlers
-    //var blocksContainer = document.getElementById('blocks');
 
     var marginContainer = document.createElement('div');
     marginContainer.setAttribute('id', 'margins');
@@ -722,19 +706,13 @@ function initializeDatacraftingGrid(logic) {
             if (colNum % 2 === 0) {
 
                 var blockImg = document.createElement('div');
-                blockImg.setAttribute("class", "block");
-                if (colNum === logic.grid.size - 1) {
-                    blockImg.setAttribute("class", "blockRight");
-                }
+                var className = (colNum === logic.grid.size - 1) ? "blockRight" : "block";
+                blockImg.setAttribute("class", className);
                 blockImg.setAttribute("id", "block" + colNum);
-                // blockImg.setAttribute("src", blockImgMap["filled"][colNum/2]);
-                blockImg.style.backgroundColor = blockColorMap["filled"][colNum/2];
                 blockImg.setAttribute("touch-action", "none");
-                //var block = new Block(colNum, rowNum, true, blockImg);
                 var thisCell = logic.grid.getCell(colNum, rowNum);
                 thisCell.domElement = blockImg;
                 blockImg.cell = thisCell;
-
                 rowDiv.appendChild(blockImg);
 
             } else {
@@ -745,9 +723,8 @@ function initializeDatacraftingGrid(logic) {
                 marginImg.style.backgroundColor = activeBlockColor;
                 marginImg.setAttribute("touch-action", "none");
                 var thisCell = logic.grid.getCell(colNum, rowNum);
-                marginImg.style.top = (rowDiv.getBoundingClientRect().top) + "px"; //(logic.grid.getCellCenterY(thisCell) - logic.grid.marginColWidth/2) + "px";
+                marginImg.style.top = (rowDiv.getBoundingClientRect().top) + "px";
                 marginImg.style.left = (logic.grid.getCellCenterX(thisCell) - logic.grid.blockRowHeight/2) + "px";
-
                 thisCell.domElement = marginImg;
                 marginContainer.appendChild(marginImg);
 
@@ -756,7 +733,6 @@ function initializeDatacraftingGrid(logic) {
     }
 
     updateGrid(logic.grid);
-
     addDatacraftingEventListeners();
 }
 

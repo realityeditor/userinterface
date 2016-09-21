@@ -475,8 +475,8 @@ function update(visibleObjects) {
     //uiButtons.style.display = 'none';
 
 
-    if (globalStates.datacraftingVisible) {
-        updateDatacrafting();
+    if (globalStates.guiState === "logic") {
+        window.requestAnimationFrame(redrawDatacrafting);
     }
 
 
@@ -1025,12 +1025,8 @@ function updateGrid(grid) {
     });
 }
 
-// updates the visuals for the datacrafting each frame
-function updateDatacrafting() {
-    window.requestAnimationFrame(redrawDatacrafting);
-}
-
-// renders all the links for a datacrafting grid, and draws a cut line if present
+// updates datacrafting visuals each frame
+// renders all the links for a datacrafting grid, draws cut line if present, draws temp block if present
 function redrawDatacrafting() {
     if (!globalStates.currentLogic) return;
     var grid = globalStates.currentLogic.grid;
@@ -1039,10 +1035,9 @@ function redrawDatacrafting() {
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    grid.forEachLink( function(link) {
-        var startCell =  getCellForBlock(grid, link.blockA, link.itemA); // grid.getCellXY(link.blockA.x, link.blockA.y);
-        var endCell =  getCellForBlock(grid, link.blockB, link.itemB); // grid.getCellXY(link.blockB.x, link.blockB.y);
-
+    forEachLink( function(link) {
+        var startCell =  getCellForBlock(grid, link.blockA, link.itemA);
+        var endCell =  getCellForBlock(grid, link.blockB, link.itemB);
         drawDatacraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
     });
 
@@ -1056,7 +1051,6 @@ function redrawDatacrafting() {
     }
 
     if (tempLine.start !== null && tempLine.end !== null) {
-        // ctx.strokeStyle = "#00FFFF";
         ctx.strokeStyle = tempLine.color;
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -1065,6 +1059,7 @@ function redrawDatacrafting() {
         ctx.stroke();
     }
 
+    // when moving a block, trace lines for each link to one of its inputs and outputs
     if (globalStates.currentLogic.tempBlock) {
         if (globalStates.currentLogic.tempBlock.incomingLinks) {
             globalStates.currentLogic.tempBlock.incomingLinks.forEach( function(linkData) {
@@ -1088,7 +1083,6 @@ function redrawDatacrafting() {
 
         if (globalStates.currentLogic.tempBlock.outgoingLinks) {
             globalStates.currentLogic.tempBlock.outgoingLinks.forEach( function(linkData) {
-
                 var xOffset =  0.5 * globalStates.currentLogic.grid.blockColWidth + (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth) * linkData.itemA;
                 var startX = parseInt(globalStates.currentLogic.tempBlock.domElement.style.left) + xOffset;
                 var startY = parseInt(globalStates.currentLogic.tempBlock.domElement.style.top) + globalStates.currentLogic.tempBlock.domElement.clientHeight/2;
@@ -1107,16 +1101,14 @@ function redrawDatacrafting() {
             });
         }
     }
-    
 }
 
 function checkForCutIntersections() {
-    var grid = globalStates.currentLogic.grid;
     var didRemoveAnyLinks = false;
-    for (var blockLinkKey in globalStates.currentLogic.links) {
+    for (var linkKey in globalStates.currentLogic.links) {
         var didIntersect = false;
-        var blockLink = globalStates.currentLogic.links[blockLinkKey];
-        var points = grid.getPointsForLink(blockLink);
+        var blockLink = globalStates.currentLogic.links[linkKey];
+        var points = globalStates.currentLogic.grid.getPointsForLink(blockLink);
         for (var j = 1; j < points.length; j++) {
             var start = points[j - 1];
             var end = points[j];
@@ -1124,19 +1116,17 @@ function checkForCutIntersections() {
                 didIntersect = true;
             }
             if (didIntersect) {
-                // grid.links.splice(i, 1);
-                removeBlockLink(blockLinkKey);
+                removeBlockLink(linkKey);
                 didRemoveAnyLinks = true;
             }
         }
     }
     if (didRemoveAnyLinks) {
-        updateGrid(grid);
+        updateGrid(globalStates.currentLogic.grid);
     }
 }
 
 function displayCellBlock(cell) {
-
     var isFirst = cell.isFirstItem();
     var isLast = cell.isLastItem();
 
@@ -1148,23 +1138,20 @@ function displayCellBlock(cell) {
     if (isLast) {
         cell.domElement.style.borderRight = '1px black solid';
     }
-    
     cell.domElement.style.backgroundColor = activeBlockColor;
     cell.domElement.style.opacity = '1.00';
 }
 
 function hideCellBlock(cell) {
     if (cell.location.row === 0 || cell.location.row === 6) {
-        cell.domElement.style.backgroundColor = blockColorMap["filled"][cell.location.col/2];
+        cell.domElement.style.backgroundColor = blockColorMap["bright"][cell.location.col/2];
     } else {
-        cell.domElement.style.backgroundColor = blockColorMap["empty"][cell.location.col/2];
+        cell.domElement.style.backgroundColor = blockColorMap["faded"][cell.location.col/2];
     }
-
     cell.domElement.style.borderTop = '';
     cell.domElement.style.borderBottom = '';
     cell.domElement.style.borderLeft = '';
     cell.domElement.style.borderRight = '';
-
     cell.domElement.style.opacity = 0.75;
 }
 

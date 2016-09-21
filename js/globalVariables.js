@@ -87,7 +87,6 @@ var globalStates = {
     UIOffMode: false,
     preferencesButtonState: false,
     extendedTracking: false,
-    datacraftingVisible: true,
     currentLogic: null,
 
     extendedTrackingState: false,
@@ -221,7 +220,6 @@ var overlayDiv;
 var tempStartBlock = null; // the block you started dragging from
 var tempEndBlock = null; // the block you dragged onto
 var tempStartItem = 0;
-var tempEndItem = 0;
 var isPointerDown = false; // always tells you whether the pointer is currently down or up
 var isTempLinkBeingDrawn = false; // becomes true when you start dragging out of a block
 var isPointerInActiveBlock = false; // always tells you whether the pointer is over a filled block
@@ -230,24 +228,12 @@ var cellToMoveBlockFrom = null;
 var isMarginSelected = false;
 
 var blockColorMap = {
-    "filled":["#2DFFFE", "#29FD2F", "#FFFD38", "#FC157D"],
-    "empty":["#EAFFFF", "#EAFFEB", "#FFFFEB", "#FFE8F2"]
+    bright:["#2DFFFE", "#29FD2F", "#FFFD38", "#FC157D"],
+    faded:["#EAFFFF", "#EAFFEB", "#FFFFEB", "#FFE8F2"]
 }
 
 var activeBlockColor = "#E6E6E6";
 var movingBlockColor = "#FFFFFF";
-
-/*
-blue: #2DFFFE 45,255,254
-green: #29FD2F  41,253,47
-yellow: #FFFD38  255,253,56
-red: #FC157D  252,21,125
-
-blue: #EAFFFF  234,255,255
-green: #EAFFEB  234,255,235
-yellow: #FFFFEB  255,255,235
-red: #FFE8F2   255,232,242
-*/
 
 var cutLine = {
     start: null,
