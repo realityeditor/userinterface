@@ -1058,13 +1058,15 @@ function datacraftingContainerPointerUp(e) {
 
     // if (cellToMoveBlockFrom) {
         var cellOver = globalStates.currentLogic.grid.getCellFromPointerPosition(e.pageX, e.pageY);
-        var marginBlockOver = cellOver.blockOverlappingThisMargin();
-        if (marginBlockOver) {
-            var cellToMoveFrom = globalStates.currentLogic.grid.getCell(cellOver.location.col-1,cellOver.location.row);
-            var blockWidth = marginBlockOver.blockSize;
-            var itemSelected = cellToMoveFrom.itemAtThisLocation();
-            var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(cellToMoveFrom,blockWidth,itemSelected,true);
-            unhighlightCellsBlocksForMove(allCellsForThisBlock);
+        if (cellOver) {
+            var marginBlockOver = cellOver.blockOverlappingThisMargin();
+            if (marginBlockOver) {
+                var cellToMoveFrom = globalStates.currentLogic.grid.getCell(cellOver.location.col-1,cellOver.location.row);
+                var blockWidth = marginBlockOver.blockSize;
+                var itemSelected = cellToMoveFrom.itemAtThisLocation();
+                var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(cellToMoveFrom,blockWidth,itemSelected,true);
+                unhighlightCellsBlocksForMove(allCellsForThisBlock);
+            }
         }
         // var firstCell = e.target.cell;
         // var blockWidth = e.target.cell.blockAtThisLocation().blockSize;
@@ -1112,6 +1114,8 @@ function datacraftingContainerPointerUp(e) {
 }
 
 function canAddBlockAtCell(firstCellOver, tempBlock) {
+    if (!firstCellOver || !tempBlock) return false;
+    
     var cellsOver = globalStates.currentLogic.grid.getCellsOver(firstCellOver,tempBlock.width, tempBlock.itemSelected);
     var canAddBlock = true;
     cellsOver.forEach(function(cell) {

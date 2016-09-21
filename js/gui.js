@@ -615,6 +615,7 @@ function addDatacraftingEventListeners() {
         blocksContainer.addEventListener("pointerup", datacraftingContainerPointerUp);
         blocksContainer.addEventListener("pointerdown", datacraftingContainerPointerDown);
         blocksContainer.addEventListener("pointermove", datacraftingContainerPointerMove);
+        blocksContainer.addEventListener("pointerleave", datacraftingContainerPointerUp);
     }
 }
 
@@ -632,6 +633,7 @@ function removeDatacraftingEventListeners() {
         blocksContainer.removeEventListener("pointerup", datacraftingContainerPointerUp);
         blocksContainer.removeEventListener("pointerdown", datacraftingContainerPointerDown);
         blocksContainer.removeEventListener("pointermove", datacraftingContainerPointerMove);
+        blocksContainer.removeEventListener("pointerleave", datacraftingContainerPointerUp);
     }
 }
 
