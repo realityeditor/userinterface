@@ -927,9 +927,13 @@ function blockPointerUp(e) {
     }
 }
 
+function datacraftingContainerPointerLeave(e) {
+    datacraftingContainerPointerUp(e, true);
+}
+
 // releasing pointer anywhere on datacrafting container deletes a temp link
 // if drawing one, or executes a cut line to delete links it crosses
-function datacraftingContainerPointerUp(e) {
+function datacraftingContainerPointerUp(e, didPointerLeave) {
     var tempBlock = globalStates.currentLogic.tempBlock;
     var grid = globalStates.currentLogic.grid;
     e.preventDefault();
@@ -964,24 +968,33 @@ function datacraftingContainerPointerUp(e) {
     }
     if (tempBlock) {
         tempBlock.domElement.parentNode.removeChild(tempBlock.domElement);
-        var marginOffset = isMarginSelected ? (grid.blockColWidth + grid.marginColWidth)/2 : 0;
-        var firstCellOver = grid.getCellFromPointerPosition(e.pageX-marginOffset, e.pageY);
-        var canAddBlock = canAddBlockAtCell(firstCellOver, tempBlock);
-        if (canAddBlock) {
-            var blockPos = convertGridPosToBlockPos(firstCellOver.location.col, firstCellOver.location.row);
-            blockPos.x -= tempBlock.itemSelected; // offset so selected item stays on pointer
-            var block = addBlock(blockPos.x, blockPos.y, tempBlock.width, tempBlock.name);
-            if (tempBlock.incomingLinks) {
-                tempBlock.incomingLinks.forEach( function(linkData) {
-                    addBlockLink(linkData.blockA, block, linkData.itemA, linkData.itemB, true);
-                });
+        if (!didPointerLeave) { // no possibility of converting temp block to permanent block if event was triggered by dragging out onto the menu
+            var marginOffset = isMarginSelected ? (grid.blockColWidth + grid.marginColWidth)/2 : 0;
+            var firstCellOver = grid.getCellFromPointerPosition(e.pageX-marginOffset, e.pageY);
+            var canAddBlock = canAddBlockAtCell(firstCellOver, tempBlock);
+            var blockPos = null;
+            if (canAddBlock) {
+                // add block to new cell position
+                blockPos = convertGridPosToBlockPos(firstCellOver.location.col, firstCellOver.location.row);
+            } else if (cellToMoveBlockFrom) {
+                // if pointerup while moving a block and you're not on a cell it can be added to, return it to its starting position
+                blockPos = convertGridPosToBlockPos(cellToMoveBlockFrom.location.col, cellToMoveBlockFrom.location.row);
             }
-            if (tempBlock.outgoingLinks) {
-                tempBlock.outgoingLinks.forEach( function(linkData) {
-                    addBlockLink(block, linkData.blockB, linkData.itemA, linkData.itemB, true);
-                });
+            if (blockPos) {
+                blockPos.x -= tempBlock.itemSelected; // offset so selected item stays on pointer
+                var block = addBlock(blockPos.x, blockPos.y, tempBlock.width, tempBlock.name);
+                if (tempBlock.incomingLinks) {
+                    tempBlock.incomingLinks.forEach( function(linkData) {
+                        addBlockLink(linkData.blockA, block, linkData.itemA, linkData.itemB, true);
+                    });
+                }
+                if (tempBlock.outgoingLinks) {
+                    tempBlock.outgoingLinks.forEach( function(linkData) {
+                        addBlockLink(block, linkData.blockB, linkData.itemA, linkData.itemB, true);
+                    });
+                }
+                updateGrid(grid);
             }
-            updateGrid(grid);
         }
         globalStates.currentLogic.tempBlock = null;
     }
@@ -1024,7 +1037,7 @@ function datacraftingContainerPointerMove(e) {
     var tempBlock = globalStates.currentLogic.tempBlock;
     var grid = globalStates.currentLogic.grid;
     e.preventDefault();
-    
+
     if (isCutLineBeingDrawn) {
         cutLine.end = {
             x: e.pageX,
@@ -1046,16 +1059,28 @@ function datacraftingContainerPointerMove(e) {
         var canAddBlock = canAddBlockAtCell(firstCellOver, tempBlock);
         if (canAddBlock) {
             tempBlock.domElement.style.opacity = 1.00;
+
+            // snap block to grid if you can add it at this cell
+            var dX = Math.abs(e.pageX - grid.getCellCenterX(firstCellOver) - marginOffset) / (grid.blockColWidth/2);
+            var dY = Math.abs(e.pageY - grid.getCellCenterY(firstCellOver)) / (grid.blockRowHeight/2);
+            var shouldSnap = (dX * dX + dY * dY) < 0.5; // only snaps to grid if tighter bound is overlapped
+            if (shouldSnap) {
+                var snappedLeft = grid.getCellCenterX(firstCellOver) - grid.blockColWidth/2 - tempBlock.itemSelected * (grid.blockColWidth + grid.marginColWidth);
+                var snappedTop = grid.getCellCenterY(firstCellOver) - grid.blockRowHeight/2;
+                tempBlock.domElement.style.left = snappedLeft;
+                tempBlock.domElement.style.top = snappedTop;
+            }
+
         } else {
             tempBlock.domElement.style.opacity = 0.50;
         }
+
     } else {
         var cellOver = grid.getCellFromPointerPosition(e.pageX, e.pageY);
         if (isPointerDown && cellToMoveBlockFrom && cellToMoveBlockFrom !== cellOver) {
             removeBlockFromCellAndCreateTempBlockAt(cellToMoveBlockFrom, e.pageX, e.pageY);
         }
     }
-
 }
 
 function removeBlockFromCellAndCreateTempBlockAt(cellToMove, pageX, pageY) {
@@ -1092,14 +1117,15 @@ function removeBlockFromCellAndCreateTempBlockAt(cellToMove, pageX, pageY) {
         // add temp block to pointer
         createTempBlockOnPointer(blockSize, pageX, pageY, itemSelected, incomingLinks, outgoingLinks);
     }
-    cellToMoveBlockFrom = null;
+    // cellToMoveBlockFrom = null;
 }
 
 function createTempBlockOnPointer(blockSize, centerX, centerY, itemSelected, incomingLinks, outgoingLinks) {
     var grid = globalStates.currentLogic.grid;
+
     var newBlockImg = document.createElement('div');
     newBlockImg.setAttribute("class", "newBlock"+blockSize);
-    newBlockImg.setAttribute("id", "newBlockTest");
+    newBlockImg.setAttribute("id", "newBlock"+uuidTime());
     newBlockImg.setAttribute("touch-action", "none");
     newBlockImg.style.opacity = 0.75;
     var marginOffset = isMarginSelected ? (grid.blockColWidth + grid.marginColWidth)/2 : 0;
@@ -1108,7 +1134,7 @@ function createTempBlockOnPointer(blockSize, centerX, centerY, itemSelected, inc
     newBlockImg.style.top = (centerY - grid.blockRowHeight/2) + "px";
     globalStates.currentLogic.tempBlock = {
         domElement: newBlockImg,
-        name: "test", //todo: change this
+        name: "test", //todo: change this to represent which block you are adding
         width: blockSize,
         itemSelected: itemSelected,
         incomingLinks: incomingLinks,
