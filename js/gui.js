@@ -512,11 +512,19 @@ function GUI() {
             console.log("buttonon");
             if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
             globalStates.pocketButtonState = false;
+
+            if (globalStates.guiState === 'logic') {
+                blockMenuVisible();
+            }
         }
         else {
             console.log("buttonoff");
             if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2].src;
             globalStates.pocketButtonState = true;
+
+            if (globalStates.guiState === 'logic') {
+                blockMenuHide();
+            }
         }
 
     }
@@ -577,8 +585,10 @@ function craftingBoardVisible(objectKey, nodeKey) {
     document.getElementById("craftingBoard").style.display = "inline";
     cout("craftingBoardVisible");
 
-    if (DEBUG_DATACRAFTING) {
-        initializeDatacraftingGrid(new Logic()); // TODO: BEN DEBUG - revert to previous line
+    if (DEBUG_DATACRAFTING) { // TODO: BEN DEBUG - turn off debugging!
+        var logic = new Logic();
+        initializeDatacraftingGrid(logic); 
+        // initializeBlockMenu(logic);
     } else {
         initializeDatacraftingGrid(objects[objectKey].logic[nodeKey]);
     }
@@ -595,6 +605,23 @@ function craftingBoardHide() {
     document.getElementById("craftingBoard").style.display = "none";
     cout("craftingBoardHide");
     resetCraftingBoard();
+}
+
+function blockMenuVisible() {
+    var existingMenu = document.getElementById('menuContainer');
+    if (existingMenu) {
+        // just show it
+        existingMenu.style.display = 'inline';
+    } else {
+        initializeBlockMenu(globalStates.currentLogic);
+    }
+}
+
+function blockMenuHide() {
+    var existingMenu = document.getElementById('menuContainer');
+    if (existingMenu) {
+        existingMenu.style.display = 'none';
+    }
 }
 
 /**********************************************************************************************************************
@@ -736,6 +763,135 @@ function initializeDatacraftingGrid(logic) {
     addDatacraftingEventListeners();
 }
 
+var menuCurrentMenuState = 1;
+var menuCols = 8;
+var menuRows = 5;
+var menuFullWidth = 506 / menuCols;
+var menuBlockMargin = 3;
+var menuBlockWidth = menuFullWidth - (2 * menuBlockMargin);
+var menuSelectedBlock = null;
+var menuIsPointerDown = false;
+
+function initializeBlockMenu(logic) {
+    var craftingBoard = document.getElementById('craftingBoard');
+    var container = document.createElement('div');
+    container.setAttribute('id', 'menuContainer');
+    craftingBoard.appendChild(container);
+
+    for (var r = 0; r < menuRows; r++) {
+        var row = document.createElement('div');
+        container.appendChild(row);
+        for (var c = 0; c < menuCols; c++) {
+            if (c === menuCols-1 && r > 0) continue;
+                var block = document.createElement('div');
+                block.setAttribute('class', 'menuBlock');
+                block.style.width = menuBlockWidth;
+                block.style.height = menuBlockWidth;
+                block.style.margin = menuBlockMargin;
+
+                if (c === menuCols-1) {
+                    // add 5-row block to last column
+                    var blockCol = document.createElement('div');
+                    blockCol.setAttribute('class', 'menuBlockCol');
+                    blockCol.style.width = menuBlockWidth;
+                    blockCol.style.height = 5 * menuBlockWidth + 4 * (2*menuBlockMargin); //height;
+                    block.appendChild(blockCol);
+                    // create sliding button inside container
+                    var blockColSlider = document.createElement('div');
+                    blockColSlider.setAttribute('class', 'menuBlockColSlider');
+                    blockColSlider.style.width = menuBlockWidth;
+                    blockColSlider.style.height = 2.5 * menuBlockWidth + 2 * (2*menuBlockMargin); //height;
+                    blockColSlider.innerHTML = "1";
+                    blockColSlider.setAttribute("touch-action", "none");
+                    blockColSlider.addEventListener('pointerdown', colMenuPressed);
+                    blockCol.appendChild(blockColSlider);
+
+                } else {
+                    block.setAttribute("touch-action", "none");
+                    block.addEventListener('pointerdown', blockMenuPointerDown);
+                    block.addEventListener('pointerup', blockMenuPointerUp);
+                    block.addEventListener('pointerleave', blockMenuPointerLeave);
+                }
+            row.appendChild(block);
+        }
+    }
+
+}
+
+function blockMenuPointerDown(e) {
+    e.preventDefault();
+
+    menuIsPointerDown = true;
+
+    console.log('pressed block');
+    
+    menuSelectedBlock = {
+      block: e.target,
+      count: 0
+    };
+
+    setTimeout(function() {
+      console.log("press done");
+      if (menuSelectedBlock) {
+        console.log(menuSelectedBlock.block);
+        menuSelectedBlock.block.setAttribute('class', 'menuBlockSelected');        
+      }
+    }, 500);
+  }
+
+  function blockMenuPointerUp(e) {
+    e.preventDefault();
+
+    menuIsPointerDown = false;
+
+    if (menuSelectedBlock) {
+      menuSelectedBlock.block.setAttribute('class', 'menuBlock');
+    }
+
+    menuSelectedBlock = null;
+  }
+
+  function blockMenuPointerLeave(e) {
+    e.preventDefault();
+
+    if (menuIsPointerDown) {
+      if (menuSelectedBlock) {
+        menuSelectedBlock.block.setAttribute('class', 'menuBlock');        
+      }
+    }
+
+    menuSelectedBlock = null;
+  }
+
+  function colMenuPressed(e) {
+    e.preventDefault();
+
+    console.log('col menu pressed');
+    if (menuCurrentMenuState === 1) {
+      menuCurrentMenuState = 1.5;
+      e.target.innerHTML = "2";
+      e.target.setAttribute('class', 'menuBlockColSlider2');
+      e.target.addEventListener("webkitAnimationEnd", endAnimationTo2);
+
+    } else if (menuCurrentMenuState === 2) {
+      menuCurrentMenuState = 1.5;
+      e.target.innerHTML = "1";
+      e.target.setAttribute('class', 'menuBlockColSlider1');
+      e.target.addEventListener("webkitAnimationEnd", endAnimationTo1);
+    }
+  }
+
+  function endAnimationTo2(e) {
+    e.target.removeEventListener("webkitAnimationEnd", endAnimationTo2);
+    menuCurrentMenuState = 2;
+    console.log('fully in state 2');
+  }
+
+  function endAnimationTo1(e) {
+    e.target.removeEventListener("webkitAnimationEnd", endAnimationTo1);
+    menuCurrentMenuState = 1;
+    console.log('fully in state 1');
+  }
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
