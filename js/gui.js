@@ -599,6 +599,7 @@ function craftingBoardVisible(objectKey, nodeKey) {
  **/
 
 function craftingBoardHide() {
+    resetBlockMenu();
     document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
     document.getElementById('pocketButton').src = pocketButtonImage[0].src;
     document.getElementById("craftingBoard").style.visibility = "hidden";
@@ -612,15 +613,25 @@ function blockMenuVisible() {
     if (existingMenu) {
         // just show it
         existingMenu.style.display = 'inline';
+        // menuBlockDivs.forEach(function(blockDiv) {
+        //   blockDiv.style.display = 'inline-block';
+        // });
     } else {
         initializeBlockMenu(globalStates.currentLogic);
     }
+    redisplayTabSelection();
+    redisplayBlockSelection();
 }
 
 function blockMenuHide() {
     var existingMenu = document.getElementById('menuContainer');
     if (existingMenu) {
         existingMenu.style.display = 'none';
+
+        if (!globalStates.pocketButtonState) {
+          globalStates.pocketButtonState = true;
+          document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+        }
     }
 }
 
@@ -764,134 +775,221 @@ function initializeDatacraftingGrid(logic) {
 }
 
 var menuCurrentMenuState = 1;
-var menuCols = 8;
-var menuRows = 5;
-var menuFullWidth = 506 / menuCols;
-var menuBlockMargin = 3;
-var menuBlockWidth = menuFullWidth - (2 * menuBlockMargin);
+var menuCols = 4;
+var menuRows = 6;
 var menuSelectedBlock = null;
 var menuIsPointerDown = false;
 
+var menuNumTabs = 5;
+var menuSelectedTab = 0;
+var menuTabs = [];
+var menuBlockData = menuLoadBlocks();
+var menuBlockDivs = [];
+
 function initializeBlockMenu(logic) {
     var craftingBoard = document.getElementById('craftingBoard');
+
     var container = document.createElement('div');
     container.setAttribute('id', 'menuContainer');
-    craftingBoard.appendChild(container);
+    craftingBoard.appendChild(container);     
 
+    var menuBlockContainer = document.createElement('div');
+    menuBlockContainer.setAttribute('id', 'menuBlockContainer');
+    container.appendChild(menuBlockContainer);
+
+    var menuSideContainer = document.createElement('div');
+    menuSideContainer.setAttribute('id', 'menuSideContainer');
+    container.appendChild(menuSideContainer);
+
+    menuSelectedTab = 0;
+    menuTabs = [];
+    menuBlockData = menuLoadBlocks();
+    menuIsPointerDown = false;
+    menuSelectedBlock = null;
+    menuBlockDivs = [];
+    
     for (var r = 0; r < menuRows; r++) {
         var row = document.createElement('div');
-        container.appendChild(row);
+        menuBlockContainer.appendChild(row);
         for (var c = 0; c < menuCols; c++) {
-            if (c === menuCols-1 && r > 0) continue;
-                var block = document.createElement('div');
-                block.setAttribute('class', 'menuBlock');
-                block.style.width = menuBlockWidth;
-                block.style.height = menuBlockWidth;
-                block.style.margin = menuBlockMargin;
-
-                if (c === menuCols-1) {
-                    // add 5-row block to last column
-                    var blockCol = document.createElement('div');
-                    blockCol.setAttribute('class', 'menuBlockCol');
-                    blockCol.style.width = menuBlockWidth;
-                    blockCol.style.height = 5 * menuBlockWidth + 4 * (2*menuBlockMargin); //height;
-                    block.appendChild(blockCol);
-                    // create sliding button inside container
-                    var blockColSlider = document.createElement('div');
-                    blockColSlider.setAttribute('class', 'menuBlockColSlider');
-                    blockColSlider.style.width = menuBlockWidth;
-                    blockColSlider.style.height = 2.5 * menuBlockWidth + 2 * (2*menuBlockMargin); //height;
-                    blockColSlider.innerHTML = "1";
-                    blockColSlider.setAttribute("touch-action", "none");
-                    blockColSlider.addEventListener('pointerdown', colMenuPressed);
-                    blockCol.appendChild(blockColSlider);
-
-                } else {
-                    block.setAttribute("touch-action", "none");
-                    block.addEventListener('pointerdown', blockMenuPointerDown);
-                    block.addEventListener('pointerup', blockMenuPointerUp);
-                    block.addEventListener('pointerleave', blockMenuPointerLeave);
-                }
+            var block = document.createElement('div');
+            block.setAttribute('class', 'menuBlock');
+            var blockContents = document.createElement('div');
+            blockContents.setAttribute('class', 'menuBlockContents');
+            blockContents.setAttribute("touch-action", "none");
+            blockContents.addEventListener('pointerdown', blockMenuPointerDown);
+            blockContents.addEventListener('pointerup', blockMenuPointerUp);
+            blockContents.addEventListener('pointerleave', blockMenuPointerLeave);
+            block.appendChild(blockContents);
+            menuBlockDivs.push(block);
             row.appendChild(block);
         }
     }
 
+    for (var i = 0; i < menuNumTabs; i++) {
+        var menuTab = document.createElement('div');
+        menuTab.setAttribute('class', 'menuTab');
+        menuTab.setAttribute('tabIndex', i);
+        menuTab.setAttribute('touch-action', 'none');
+        menuTab.addEventListener('pointerdown', menuTabSelected);
+        menuTabs.push(menuTab);
+        menuSideContainer.appendChild(menuTab);
+    }
+}
+
+function resetBlockMenu() {
+  menuBlockDivs.forEach(function(blockDiv) {
+    blockDiv.firstChild.addEventListener('pointerdown', blockMenuPointerDown);
+    blockDiv.firstChild.addEventListener('pointerup', blockMenuPointerUp);
+    blockDiv.firstChild.addEventListener('pointerleave', blockMenuPointerLeave);
+  });
+  var container = document.getElementById('menuContainer');
+  while (container.hasChildNodes()) {
+      container.removeChild(container.lastChild);
+  }
+}
+
+function menuLoadBlocks() {
+  return [
+          [ 'one','two','three','four',
+            'one','two','three','four',
+            'one','two','three','four',
+            'one','two','three','four',
+            'one','two','three','four',
+            'one','two','three','four'
+          ],
+          ['a','b','c'],
+          ['d','e','f'],
+          ['g','h','i'],
+          ['j']
+        ];
+}
+
+function menuTabSelected(e) {
+    e.preventDefault();
+
+    menuSelectedTab = e.target.tabIndex;
+    redisplayTabSelection();
+    redisplayBlockSelection();
+}
+
+function redisplayTabSelection() {
+  menuTabs.forEach(function(tab) {
+    if (menuSelectedTab === tab.tabIndex) {
+      tab.setAttribute('class', 'menuTabSelected');
+    } else {
+      tab.setAttribute('class', 'menuTab');
+    }
+  });
+}
+
+function redisplayBlockSelection() {
+  var blocksInThisSection = menuBlockData[menuSelectedTab];
+  console.log(blocksInThisSection);
+
+  // reassign as many divs as needed to the current set of blocks
+  for (var i = 0; i < blocksInThisSection.length; i++) {
+    var blockDiv = menuBlockDivs[i];
+    blockDiv.firstChild.innerHTML = blocksInThisSection[i];
+    blockDiv.style.display = 'inline-block';
+  }
+  // clear the remaining block divs
+  for (var i = blocksInThisSection.length; i < menuBlockDivs.length; i++) {
+    var blockDiv = menuBlockDivs[i];
+    // blockDiv.firstChild.innerHTML = 'none';
+    blockDiv.style.display = 'none';
+  }
 }
 
 function blockMenuPointerDown(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    menuIsPointerDown = true;
-
-    console.log('pressed block');
-    
-    menuSelectedBlock = {
-      block: e.target,
-      count: 0
-    };
-
-    setTimeout(function() {
-      console.log("press done");
-      if (menuSelectedBlock) {
-        console.log(menuSelectedBlock.block);
-        menuSelectedBlock.block.setAttribute('class', 'menuBlockSelected');        
-      }
-    }, 500);
-  }
-
-  function blockMenuPointerUp(e) {
-    e.preventDefault();
-
-    menuIsPointerDown = false;
-
+  menuIsPointerDown = true;
+  console.log('pressed block');
+  menuSelectedBlock = e.target;
+  setTimeout(function() {
+    console.log("press done");
     if (menuSelectedBlock) {
-      menuSelectedBlock.block.setAttribute('class', 'menuBlock');
+      console.log(menuSelectedBlock);
+      menuSelectedBlock.parentNode.setAttribute('class', 'menuBlockSelected');
+      menuSelectedBlock.parentNode.addEventListener("webkitAnimationEnd", animationEndedBlockSelected);
     }
+  }, 500);
+}
 
-    menuSelectedBlock = null;
+function blockMenuPointerUp(e) {
+  e.preventDefault();
+
+  menuIsPointerDown = false;
+  if (menuSelectedBlock) {
+    menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');
   }
+  menuSelectedBlock = null;
+}
 
-  function blockMenuPointerLeave(e) {
-    e.preventDefault();
+function blockMenuPointerLeave(e) {
+  e.preventDefault();
 
-    if (menuIsPointerDown) {
-      if (menuSelectedBlock) {
-        menuSelectedBlock.block.setAttribute('class', 'menuBlock');        
-      }
-    }
-
-    menuSelectedBlock = null;
-  }
-
-  function colMenuPressed(e) {
-    e.preventDefault();
-
-    console.log('col menu pressed');
-    if (menuCurrentMenuState === 1) {
-      menuCurrentMenuState = 1.5;
-      e.target.innerHTML = "2";
-      e.target.setAttribute('class', 'menuBlockColSlider2');
-      e.target.addEventListener("webkitAnimationEnd", endAnimationTo2);
-
-    } else if (menuCurrentMenuState === 2) {
-      menuCurrentMenuState = 1.5;
-      e.target.innerHTML = "1";
-      e.target.setAttribute('class', 'menuBlockColSlider1');
-      e.target.addEventListener("webkitAnimationEnd", endAnimationTo1);
+  if (menuIsPointerDown) {
+    if (menuSelectedBlock) {
+      menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');        
     }
   }
+  menuSelectedBlock = null;
+}
 
-  function endAnimationTo2(e) {
-    e.target.removeEventListener("webkitAnimationEnd", endAnimationTo2);
-    menuCurrentMenuState = 2;
-    console.log('fully in state 2');
-  }
+function animationEndedBlockSelected(e) {
+  e.target.removeEventListener("webkitAnimationEnd", animationEndedBlockSelected);
+  if (menuIsPointerDown && menuSelectedBlock === e.target.firstChild) {
+    var blockWidth = 1;
+    var blockName = e.target.firstChild.innerHTML;
+    if (blockName === "two") {
+      blockWidth = 2;
+    } else if (blockName === "three") {
+      blockWidth = 3;
+    } else if (blockName === "four") {
+      blockWidth = 4;
+    }
 
-  function endAnimationTo1(e) {
-    e.target.removeEventListener("webkitAnimationEnd", endAnimationTo1);
-    menuCurrentMenuState = 1;
-    console.log('fully in state 1');
+    var itemSelected = 0;
+    var blockRect = e.target.getBoundingClientRect();
+    var pointerX = blockRect.left + blockRect.width/2;
+    var pointerY = blockRect.top + blockRect.height/2;
+    createTempBlockOnPointer(blockWidth, pointerX, pointerY, itemSelected);
+
+    blockMenuHide();
   }
+}
+
+  // function colMenuPressed(e) {
+  //   e.preventDefault();
+
+  //   console.log('col menu pressed');
+  //   if (menuCurrentMenuState === 1) {
+  //     menuCurrentMenuState = 1.5;
+  //     e.target.innerHTML = "2";
+  //     e.target.setAttribute('class', 'menuBlockColSlider2');
+  //     e.target.addEventListener("webkitAnimationEnd", endAnimationTo2);
+
+  //   } else if (menuCurrentMenuState === 2) {
+  //     menuCurrentMenuState = 1.5;
+  //     e.target.innerHTML = "1";
+  //     e.target.setAttribute('class', 'menuBlockColSlider1');
+  //     e.target.addEventListener("webkitAnimationEnd", endAnimationTo1);
+  //   }
+  // }
+
+  // function endAnimationTo2(e) {
+  //   e.target.removeEventListener("webkitAnimationEnd", endAnimationTo2);
+  //   menuCurrentMenuState = 2;
+  //   console.log('fully in state 2');
+  // }
+
+  // function endAnimationTo1(e) {
+  //   e.target.removeEventListener("webkitAnimationEnd", endAnimationTo1);
+  //   menuCurrentMenuState = 1;
+  //   console.log('fully in state 1');
+  // }
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
