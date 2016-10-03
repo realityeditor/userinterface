@@ -1011,11 +1011,11 @@ function updateGrid(grid) {
         if (thisBlock) {
             displayCellBlock(cell);
             // add margin between cells within the same multi-column block
-            var cellToLeft = globalStates.currentLogic.grid.getCell(cell.location.col-2,cell.location.row);
+            var cellToLeft = grid.getCell(cell.location.col-2,cell.location.row);
             if (cellToLeft) {
                 var blockToLeft = cellToLeft.blockAtThisLocation();
                 if (blockToLeft && (blockToLeft === thisBlock)) {
-                    var cellInBetween = globalStates.currentLogic.grid.getCell(cell.location.col-1,cell.location.row);
+                    var cellInBetween = grid.getCell(cell.location.col-1,cell.location.row);
                     displayMargin(cellInBetween);
                 }
             }
@@ -1024,10 +1024,72 @@ function updateGrid(grid) {
         }
     });
 
-    // globalStates.currentLogic.blocks.forEach( function(block) {
-        
-    // });
+    for (var titleKey in blockTitles) {
+        var blockTitle = blockTitles[titleKey];
+        blockTitle.parentNode.removeChild(blockTitle);
+        delete blockTitles[titleKey];
+    }
+
+    for (var blockKey in globalStates.currentLogic.blocks) {
+        var block = globalStates.currentLogic.blocks[blockKey];
+
+        var blockTitle = document.createElement('div');
+        blockTitle.setAttribute('class','blockTitlePlaced');
+        blockTitle.innerHTML = block.name;
+
+        var firstCell = getCellForBlock(grid, block, 0);
+        var lastCell = getCellForBlock(grid, block, block.blockSize-1);
+        var firstCellCenterX = grid.getCellCenterX(firstCell);
+        var lastCellCenterX = grid.getCellCenterX(lastCell);
+
+        blockTitle.style.left = firstCellCenterX - grid.blockColWidth/2;
+        blockTitle.style.top = grid.getCellCenterY(firstCell) - grid.blockRowHeight/2;
+        blockTitle.style.width = (lastCellCenterX - firstCellCenterX) + grid.blockColWidth;
+        blockTitle.style.height = grid.blockRowHeight;
+
+        var blockContainer = document.getElementById('blocks');
+        blockContainer.appendChild(blockTitle);
+
+        blockTitles[blockKey] = blockTitle;
+    }
+
+    // for (var blockKey in globalStates.currentLogic.blocks) {
+    //     resetBlockTitle(block);
+    //     var block = globalStates.currentLogic.blocks[blockKey];
+    //     console.log(block);
+    //     displayTitleForBlock(block);
+    // }
 }
+
+// function resetBlockTitle(block) {
+//     if (block.titleDomElement) {
+//         block.titleDomElement.parentNode.removeChild(block.titleDomElement);
+//         block.titleDomElement = undefined;
+//     }
+// }
+
+// function displayTitleForBlock(block) {
+
+//     if (block.titleDomElement) {
+//         block.titleDomElement.parentNode.removeChild(block.titleDomElement);
+//         delete block.titleDomElement;
+//     }
+
+//     var blockTitle = document.createElement('div');
+//     blockTitle.setAttribute('class','blockTitlePlaced');
+//     blockTitle.innerHTML = block.name;
+//     var firstCell = getCellForBlock(globalStates.currentLogic.grid, block, 0);
+//     var lastCell = getCellForBlock(globalStates.currentLogic.grid, block, block.blockSize-1);
+//     var firstCellCenterX = globalStates.currentLogic.grid.getCellCenterX(firstCell);
+//     var blockCenterY = globalStates.currentLogic.grid.getCellCenterY(firstCell);
+//     var lastCellCenterX = globalStates.currentLogic.grid.getCellCenterX(lastCell);
+//     var blockCenterX = (firstCellCenterX + lastCellCenterX) / 2;
+//     blockTitle.style.left = blockCenterX;
+//     blockTitle.style.top = blockCenterY;
+//     var blockContainer = document.getElementById('blocks');
+//     blockContainer.appendChild(blockTitle);
+//     block.titleDomElement = blockTitle;
+// }
 
 // updates datacrafting visuals each frame
 // renders all the links for a datacrafting grid, draws cut line if present, draws temp block if present

@@ -246,6 +246,8 @@ var tempLine = { // endpoints of visual-feedback line showing you the new link y
     color: null
 }
 
+var blockTitles = {};
+
 // var blockMoveTimeout = null; // adds a delay so that tapping and holding on a block lets you move it
 
 var DEBUG_DATACRAFTING = true; // TRUE -> show crafting board just by tapping on first menu item (DEBUG mode)

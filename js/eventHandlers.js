@@ -987,6 +987,8 @@ function datacraftingContainerPointerUp(e, didPointerLeave) {
             if (blockPos) {
                 blockPos.x -= tempBlock.itemSelected; // offset so selected item stays on pointer
                 var block = addBlock(blockPos.x, blockPos.y, tempBlock.blockJSON);
+                // TODO: add title dom element
+                
                 if (tempBlock.incomingLinks) {
                     tempBlock.incomingLinks.forEach( function(linkData) {
                         addBlockLink(linkData.blockA, block, linkData.itemA, linkData.itemB, true);
@@ -1100,6 +1102,7 @@ function removeBlockFromCellAndCreateTempBlockAt(cellToMove, pageX, pageY) {
             var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(cellToMoveBlockFrom,blockSize,itemSelected,true);
             unhighlightCellsBlocksForMove(allCellsForThisBlock);
         }
+        // resetBlockTitle(blockToMove); // TODO: is there a better place for this that doesn't couple logic and view?
         var incomingLinks = [];
         var outgoingLinks = [];
         for (var linkKey in globalStates.currentLogic.links) {
@@ -1144,6 +1147,14 @@ function createTempBlockOnPointer(blockJSON, centerX, centerY, itemSelected, inc
     var leftPositionWithoutMargin = (centerX - grid.blockColWidth/2 - itemSelected * (grid.blockColWidth + grid.marginColWidth));
     newBlockImg.style.left = (leftPositionWithoutMargin - marginOffset) + "px";
     newBlockImg.style.top = (centerY - grid.blockRowHeight/2) + "px";
+
+    var blockTitleDiv = document.createElement('div');
+    blockTitleDiv.setAttribute('class','blockTitle');
+    blockTitleDiv.innerHTML = blockJSON['name'];
+    // blockTitleDiv.style.left = //globalStates.currentLogic.grid.getCellCenterX(cell);
+    // blockTitleDiv.style.top = //globalStates.currentLogic.grid.getCellCenterY(cell);
+    newBlockImg.appendChild(blockTitleDiv);
+
     globalStates.currentLogic.tempBlock = {
         domElement: newBlockImg,
         blockJSON: blockJSON,

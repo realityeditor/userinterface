@@ -323,23 +323,28 @@ body {
     background-color: #E6E6E6;
 }
 
-.blockTitleContainer {
-  width: 100%;
-  height: 100%;
-  display:-webkit-box;
-  -webkit-box-pack:center;
-  -webkit-box-align:center;
-  user-select:none;
-  -webkit-user-select:none;
-  color: #000000;
-  /*position: absolute;*/
-}
-
 .blockTitle {
   position: absolute;
   color: #000000;
   user-select:none;
   -webkit-user-select:none;
+  display:-webkit-box;
+  -webkit-box-pack:center;
+  -webkit-box-align:center;
+  width: 100%;
+  height: 100%;
+}
+
+.blockTitlePlaced {
+  position: absolute;
+  color: #000000;
+  user-select:none;
+  -webkit-user-select:none;
+  display:-webkit-box;
+  -webkit-box-pack:center;
+  -webkit-box-align:center;
+  /*width: 100%;*/
+  /*height: 100%;*/
 }
 
 /* block menu */
