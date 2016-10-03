@@ -905,14 +905,14 @@ function addBlockLink(blockA, blockB, itemA, itemB, addToLogic) {
     return null;
 }
 
-function addBlock(x,y,blockJSON) {
+function addBlock(x,y,blockJSON,globalId) {
     var block = new Block();
     block.x = x;
     block.y = y;
     block.blockSize = blockJSON['width'];
     block.name = blockJSON['name'];
-    var blockKey = "block" + uuidTime();
-    globalStates.currentLogic.blocks[blockKey] = block;
+    block.globalId = globalId;
+    globalStates.currentLogic.blocks[block.globalId] = block;
     return block;
 }
 

@@ -850,7 +850,8 @@ function blockPointerDown(e) {
                 var blockWidth = e.target.cell.blockAtThisLocation().blockSize;
                 var itemSelected = e.target.cell.itemAtThisLocation();
                 var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(firstCell,blockWidth,itemSelected,true);
-                highlightCellsBlocksForMove(allCellsForThisBlock);
+                // highlightCellsBlocksForMove(allCellsForThisBlock);
+                highlightBlockForMove(e.target.cell.blockAtThisLocation());
             }
         }, 500);
     }
@@ -913,7 +914,8 @@ function blockPointerUp(e) {
         var blockWidth = e.target.cell.blockAtThisLocation().blockSize;
         var itemSelected = e.target.cell.itemAtThisLocation();
         var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(firstCell,blockWidth,itemSelected,true);
-        unhighlightCellsBlocksForMove(allCellsForThisBlock);
+        // unhighlightCellsBlocksForMove(allCellsForThisBlock);
+        unhighlightBlockForMove(e.target.cell.blockAtThisLocation());
     }
     cellToMoveBlockFrom = null;
     isMarginSelected = false;
@@ -967,7 +969,8 @@ function datacraftingContainerPointerUp(e, didPointerLeave) {
             var blockWidth = marginBlockOver.blockSize;
             var itemSelected = cellToMoveFrom.itemAtThisLocation();
             var allCellsForThisBlock = grid.getCellsOver(cellToMoveFrom,blockWidth,itemSelected,true);
-            unhighlightCellsBlocksForMove(allCellsForThisBlock);
+            // unhighlightCellsBlocksForMove(allCellsForThisBlock);
+            unhighlightBlockForMove(marginBlockOver);
         }
     }
     if (tempBlock) {
@@ -986,9 +989,9 @@ function datacraftingContainerPointerUp(e, didPointerLeave) {
             }
             if (blockPos) {
                 blockPos.x -= tempBlock.itemSelected; // offset so selected item stays on pointer
-                var block = addBlock(blockPos.x, blockPos.y, tempBlock.blockJSON);
+                var block = addBlock(blockPos.x, blockPos.y, tempBlock.blockJSON, tempBlock.globalId);
                 // TODO: add title dom element
-                
+
                 if (tempBlock.incomingLinks) {
                     tempBlock.incomingLinks.forEach( function(linkData) {
                         addBlockLink(linkData.blockA, block, linkData.itemA, linkData.itemB, true);
@@ -1028,7 +1031,8 @@ function datacraftingContainerPointerDown(e) {
                 var blockWidth = marginBlockOver.blockSize;
                 var itemSelected = cellToMoveBlockFrom.itemAtThisLocation();
                 var allCellsForThisBlock = grid.getCellsOver(cellToMoveBlockFrom,blockWidth,itemSelected,true);
-                highlightCellsBlocksForMove(allCellsForThisBlock);
+                // highlightCellsBlocksForMove(allCellsForThisBlock);
+                highlightBlockForMove(marginBlockOver);
             }
         }, 500);
     } else if (!isCutLineBeingDrawn && !isPointerInActiveBlock) {
@@ -1097,10 +1101,12 @@ function removeBlockFromCellAndCreateTempBlockAt(cellToMove, pageX, pageY) {
     if (blockToMove) {
         var blockSize = blockToMove.blockSize;
         var blockName = blockToMove.name;
+        var blockGlobalId = blockToMove.globalId;
         var itemSelected = cellToMove.itemAtThisLocation();
         if (cellToMove) {
             var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(cellToMoveBlockFrom,blockSize,itemSelected,true);
-            unhighlightCellsBlocksForMove(allCellsForThisBlock);
+            // unhighlightCellsBlocksForMove(allCellsForThisBlock);
+            unhighlightBlockForMove(blockToMove);
         }
         // resetBlockTitle(blockToMove); // TODO: is there a better place for this that doesn't couple logic and view?
         var incomingLinks = [];
@@ -1126,7 +1132,7 @@ function removeBlockFromCellAndCreateTempBlockAt(cellToMove, pageX, pageY) {
         updateGrid(globalStates.currentLogic.grid);
         // add temp block to pointer
         var blockJSON = toBlockJSON(blockName, blockSize);
-        createTempBlockOnPointer(blockJSON, pageX, pageY, itemSelected, incomingLinks, outgoingLinks);
+        createTempBlockOnPointer(blockJSON, pageX, pageY, itemSelected, incomingLinks, outgoingLinks, blockGlobalId);
     }
     // cellToMoveBlockFrom = null;
 }
@@ -1135,7 +1141,7 @@ function toBlockJSON(name, width) {
     return { name: name, width: width };
 }
 
-function createTempBlockOnPointer(blockJSON, centerX, centerY, itemSelected, incomingLinks, outgoingLinks) {
+function createTempBlockOnPointer(blockJSON, centerX, centerY, itemSelected, incomingLinks, outgoingLinks, existingGlobalId) {
     var grid = globalStates.currentLogic.grid;
 
     var newBlockImg = document.createElement('div');
@@ -1155,12 +1161,15 @@ function createTempBlockOnPointer(blockJSON, centerX, centerY, itemSelected, inc
     // blockTitleDiv.style.top = //globalStates.currentLogic.grid.getCellCenterY(cell);
     newBlockImg.appendChild(blockTitleDiv);
 
+    var globalId = existingGlobalId || "block" + uuidTime();
+
     globalStates.currentLogic.tempBlock = {
         domElement: newBlockImg,
         blockJSON: blockJSON,
         itemSelected: itemSelected,
         incomingLinks: incomingLinks,
-        outgoingLinks: outgoingLinks
+        outgoingLinks: outgoingLinks,
+        globalId: globalId
     };
     var blocksContainer = document.getElementById('blocks');
     blocksContainer.appendChild(newBlockImg);

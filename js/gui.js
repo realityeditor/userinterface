@@ -65,6 +65,7 @@ var unconstButtonImage = [];
 var editingButtonImage = [];
 var pocketButtonImage = [];
 var loadNewUiImage = [];
+var blockTabImage = [];
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
@@ -102,6 +103,10 @@ function GUI() {
 
     preload(loadNewUiImage,
         'png/load.png', 'png/loadOver.png'
+    );
+
+    preload(blockTabImage,
+        'png/iconBlocks.png', 'png/iconEvents.png', 'png/iconSignals.png', 'png/iconMath.png', 'png/iconWeb.png'
     );
 
     document.getElementById("guiButtonImage1").addEventListener("touchstart", function () {
@@ -770,7 +775,7 @@ function initializeDatacraftingGrid(logic) {
                 var marginImg = document.createElement('div');
                 marginImg.setAttribute("class", "blockMargin");
                 marginImg.setAttribute("id", "margin" + colNum);
-                marginImg.style.backgroundColor = activeBlockColor;
+                // marginImg.style.backgroundColor = activeBlockColor;
                 marginImg.setAttribute("touch-action", "none");
                 var thisCell = logic.grid.getCell(colNum, rowNum);
                 marginImg.style.top = (rowDiv.getBoundingClientRect().top) + "px";
@@ -850,6 +855,15 @@ function initializeBlockMenu(logic, callback) {
         menuTab.setAttribute('tabIndex', i);
         menuTab.setAttribute('touch-action', 'none');
         menuTab.addEventListener('pointerdown', menuTabSelected);
+
+        var menuTabIcon = document.createElement('img');
+        menuTabIcon.setAttribute('class', 'menuTabIcon');
+        menuTabIcon.setAttribute('src', blockTabImage[i].src);
+        menuTabIcon.setAttribute('touch-action', 'none');
+        // menuTabIcon.addEventListener('pointerdown', menuTabIconSelected);
+
+        menuTab.appendChild(menuTabIcon);
+
         menuTabs.push(menuTab);
         menuSideContainer.appendChild(menuTab);
     }
@@ -932,14 +946,35 @@ function menuTabSelected(e) {
     e.preventDefault();
 
     menuSelectedTab = e.target.tabIndex;
+    if (menuSelectedTab < 0) menuSelectedTab = e.target.parentNode.tabIndex;
+    if (menuSelectedTab < 0) menuSelectedTab = 0;
     redisplayTabSelection();
     redisplayBlockSelection();
 }
+
+// function menuTabIconSelected(e) {
+//   e.preventDefault();
+  
+//   menuSelectedTab = e.target.parentNode.tabIndex;
+//   redisplayTabSelection();
+//   redisplayBlockSelection();
+// }
+
+// function menuTabSelected(e) {
+//   e.preventDefault();
+
+//   selectedTab = e.target.tabIndex;
+//   if (selectedTab < 0) selectedTab = e.target.parentNode.tabIndex;
+//   if (selectedTab < 0) selectedTab = 0;
+//   redisplayTabSelection();
+//   redisplayBlockSelection();
+// }
 
 function redisplayTabSelection() {
   menuTabs.forEach(function(tab) {
     if (menuSelectedTab === tab.tabIndex) {
       tab.setAttribute('class', 'menuTabSelected');
+      console.log(tab);
     } else {
       tab.setAttribute('class', 'menuTab');
     }
@@ -981,14 +1016,16 @@ function blockMenuPointerDown(e) {
   menuIsPointerDown = true;
   console.log('pressed block');
   menuSelectedBlock = e.target;
-  setTimeout(function() {
-    console.log("press done");
-    if (menuSelectedBlock) {
-      console.log(menuSelectedBlock);
+  // setTimeout(function() {
+  //   console.log("press done");
+  //   if (menuSelectedBlock) {
+  //     console.log(menuSelectedBlock);
       menuSelectedBlock.parentNode.setAttribute('class', 'menuBlockSelected');
-      menuSelectedBlock.parentNode.addEventListener("webkitAnimationEnd", animationEndedBlockSelected);
-    }
-  }, 100);
+      // menuSelectedBlock.parentNode.addEventListener("webkitAnimationEnd", animationEndedBlockSelected);
+    // }
+  // }, 100);
+    menuBlockToAdd = e.target.parentNode;
+
 }
 
 function blockMenuPointerUp(e) {
@@ -1014,6 +1051,7 @@ function blockMenuPointerLeave(e) {
   menuBlockToAdd = null;
 }
 
+/*
 function animationEndedBlockSelected(e) {
   e.target.removeEventListener("webkitAnimationEnd", animationEndedBlockSelected);
   if (menuIsPointerDown && menuSelectedBlock === e.target.firstChild) {
@@ -1037,6 +1075,7 @@ function animationEndedBlockSelected(e) {
     menuBlockToAdd = e.target;
   }
 }
+*/
 
 function blockMenuPointerMove(e) {
   e.preventDefault();

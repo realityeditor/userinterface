@@ -1035,6 +1035,7 @@ function updateGrid(grid) {
 
         var blockTitle = document.createElement('div');
         blockTitle.setAttribute('class','blockTitlePlaced');
+        blockTitle.setAttribute("touch-action", "none");
         blockTitle.innerHTML = block.name;
 
         var firstCell = getCellForBlock(grid, block, 0);
@@ -1048,9 +1049,10 @@ function updateGrid(grid) {
         blockTitle.style.height = grid.blockRowHeight;
 
         var blockContainer = document.getElementById('blocks');
-        blockContainer.appendChild(blockTitle);
+        // blockContainer.appendChild(blockTitle);
+        blockContainer.insertBefore(blockTitle, blockContainer.firstChild);
 
-        blockTitles[blockKey] = blockTitle;
+        blockTitles[block.globalId] = blockTitle;
     }
 
     // for (var blockKey in globalStates.currentLogic.blocks) {
@@ -1193,18 +1195,18 @@ function checkForCutIntersections() {
 }
 
 function displayCellBlock(cell) {
-    var isFirst = cell.isFirstItem();
-    var isLast = cell.isLastItem();
+    // var isFirst = cell.isFirstItem();
+    // var isLast = cell.isLastItem();
 
-    cell.domElement.style.borderTop = '1px black solid';
-    cell.domElement.style.borderBottom = '1px black solid';
-    if (isFirst) {
-        cell.domElement.style.borderLeft = '1px black solid';
-    }
-    if (isLast) {
-        cell.domElement.style.borderRight = '1px black solid';
-    }
-    cell.domElement.style.backgroundColor = activeBlockColor;
+    // cell.domElement.style.borderTop = '1px black solid';
+    // cell.domElement.style.borderBottom = '1px black solid';
+    // if (isFirst) {
+    //     cell.domElement.style.borderLeft = '1px black solid';
+    // }
+    // if (isLast) {
+    //     cell.domElement.style.borderRight = '1px black solid';
+    // }
+    cell.domElement.style.backgroundColor = ''; //activeBlockColor; //TODO: BEN FIX
     cell.domElement.style.opacity = '1.00';
     // setCellContents(cell, "test");
 }
@@ -1233,13 +1235,24 @@ function hideCellBlock(cell) {
     } else {
         cell.domElement.style.backgroundColor = blockColorMap["faded"][cell.location.col/2];
     }
-    cell.domElement.style.borderTop = '';
-    cell.domElement.style.borderBottom = '';
-    cell.domElement.style.borderLeft = '';
-    cell.domElement.style.borderRight = '';
+    // cell.domElement.style.borderTop = '';
+    // cell.domElement.style.borderBottom = '';
+    // cell.domElement.style.borderLeft = '';
+    // cell.domElement.style.borderRight = '';
     cell.domElement.style.opacity = 0.75;
     // resetCellContents(cell);
 }
+
+function highlightBlockForMove(block) {
+    var blockTitle = blockTitles[block.globalId];
+    blockTitle.style.backgroundColor = movingBlockColor;
+}
+
+function unhighlightBlockForMove(block) {
+    var blockTitle = blockTitles[block.globalId];
+    blockTitle.style.backgroundColor = activeBlockColor;
+}
+
 
 function highlightCellsBlocksForMove(cells) {
     cells.forEach( function(cell) {
