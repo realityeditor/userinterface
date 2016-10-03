@@ -482,6 +482,8 @@ function GUI() {
         }
         setPocketPossition(evt);
 
+        //TODO: this is a debug method to create random blocks by dragging out from the pocket button while in crafting mode. should be removed eventually.
+        /*
         if (globalStates.pocketButtonDown === true && globalStates.guiState === "logic" && !globalStates.currentLogic.tempBlock) {
             console.log("create new block from pocket");
 
@@ -498,6 +500,7 @@ function GUI() {
 
             createTempBlockOnPointer(blockWidth, evt.pageX, evt.pageY, itemSelected);
         }
+        */
 
         // globalStates.pocketButtonDown = false;
        // globalStates.pocketButtonUp = false;
@@ -616,11 +619,14 @@ function blockMenuVisible() {
         // menuBlockDivs.forEach(function(blockDiv) {
         //   blockDiv.style.display = 'inline-block';
         // });
+        redisplayTabSelection();
+        redisplayBlockSelection();
     } else {
-        initializeBlockMenu(globalStates.currentLogic);
+        initializeBlockMenu(globalStates.currentLogic, function() {
+          redisplayTabSelection(); // wait for callback to ensure menu fully loaded
+          redisplayBlockSelection();
+        });
     }
-    redisplayTabSelection();
-    redisplayBlockSelection();
 }
 
 function blockMenuHide() {
@@ -751,6 +757,12 @@ function initializeDatacraftingGrid(logic) {
                 var thisCell = logic.grid.getCell(colNum, rowNum);
                 thisCell.domElement = blockImg;
                 blockImg.cell = thisCell;
+
+                // var blockTitleContainer = document.createElement('div');
+                // blockTitleContainer.setAttribute("class", "blockTitleContainer");
+                // blockTitleContainer.innerHTML = "test";
+                // blockImg.appendChild(blockTitleContainer);
+
                 rowDiv.appendChild(blockImg);
 
             } else {
@@ -783,31 +795,36 @@ var menuIsPointerDown = false;
 var menuNumTabs = 5;
 var menuSelectedTab = 0;
 var menuTabs = [];
-var menuBlockData = menuLoadBlocks();
+var menuBlockData = defaultBlockData(); //menuLoadBlocks();
 var menuBlockDivs = [];
+var menuBlockToAdd = null;
 
-function initializeBlockMenu(logic) {
-    var craftingBoard = document.getElementById('craftingBoard');
+function initializeBlockMenu(logic, callback) {
+  var craftingBoard = document.getElementById('craftingBoard');
 
-    var container = document.createElement('div');
-    container.setAttribute('id', 'menuContainer');
-    craftingBoard.appendChild(container);     
+  var container = document.createElement('div');
+  container.setAttribute('id', 'menuContainer');
+  craftingBoard.appendChild(container);     
 
-    var menuBlockContainer = document.createElement('div');
-    menuBlockContainer.setAttribute('id', 'menuBlockContainer');
-    container.appendChild(menuBlockContainer);
+  var menuBlockContainer = document.createElement('div');
+  menuBlockContainer.setAttribute('id', 'menuBlockContainer');
+  container.appendChild(menuBlockContainer);
 
-    var menuSideContainer = document.createElement('div');
-    menuSideContainer.setAttribute('id', 'menuSideContainer');
-    container.appendChild(menuSideContainer);
+  var menuSideContainer = document.createElement('div');
+  menuSideContainer.setAttribute('id', 'menuSideContainer');
+  container.appendChild(menuSideContainer);
 
-    menuSelectedTab = 0;
-    menuTabs = [];
-    menuBlockData = menuLoadBlocks();
-    menuIsPointerDown = false;
-    menuSelectedBlock = null;
-    menuBlockDivs = [];
-    
+  menuSelectedTab = 0;
+  menuTabs = [];
+  // menuBlockData = menuLoadBlocks();
+  menuBlockData = defaultBlockData(); //[];
+  menuIsPointerDown = false;
+  menuSelectedBlock = null;
+  menuBlockDivs = [];
+
+  menuLoadBlocks( function(blockData) {
+    menuBlockData[0] = blockData;
+  
     for (var r = 0; r < menuRows; r++) {
         var row = document.createElement('div');
         menuBlockContainer.appendChild(row);
@@ -820,6 +837,7 @@ function initializeBlockMenu(logic) {
             blockContents.addEventListener('pointerdown', blockMenuPointerDown);
             blockContents.addEventListener('pointerup', blockMenuPointerUp);
             blockContents.addEventListener('pointerleave', blockMenuPointerLeave);
+            blockContents.addEventListener('pointermove', blockMenuPointerMove);
             block.appendChild(blockContents);
             menuBlockDivs.push(block);
             row.appendChild(block);
@@ -835,13 +853,17 @@ function initializeBlockMenu(logic) {
         menuTabs.push(menuTab);
         menuSideContainer.appendChild(menuTab);
     }
+
+    callback();
+  });
 }
 
 function resetBlockMenu() {
   menuBlockDivs.forEach(function(blockDiv) {
-    blockDiv.firstChild.addEventListener('pointerdown', blockMenuPointerDown);
-    blockDiv.firstChild.addEventListener('pointerup', blockMenuPointerUp);
-    blockDiv.firstChild.addEventListener('pointerleave', blockMenuPointerLeave);
+    blockDiv.firstChild.removeEventListener('pointerdown', blockMenuPointerDown);
+    blockDiv.firstChild.removeEventListener('pointerup', blockMenuPointerUp);
+    blockDiv.firstChild.removeEventListener('pointerleave', blockMenuPointerLeave);
+    blockDiv.firstChild.removeEventListener('pointermove', blockMenuPointerMove);
   });
   var container = document.getElementById('menuContainer');
   while (container.hasChildNodes()) {
@@ -849,20 +871,61 @@ function resetBlockMenu() {
   }
 }
 
-function menuLoadBlocks() {
+function readTextFile(file, callback) {
+    var rawFile = new XMLHttpRequest();
+    rawFile.overrideMimeType("application/json");
+    rawFile.open("GET", file, true);
+    rawFile.onreadystatechange = function() {
+        if (rawFile.readyState === 4 && rawFile.status == "200") {
+            callback(rawFile.responseText);
+        }
+    }
+    rawFile.send(null);
+}
+
+function menuLoadBlocks(callback) {
+
+  readTextFile('blocks/blocks.json', function(fileText){
+    var blockJSON = JSON.parse(fileText);
+    console.log(blockJSON);
+    var blockDirs = blockJSON['blockDirs'];
+    var blockData = {};
+    var numBlocksLoaded = 0;
+    blockDirs.forEach( function(blockDirName) {
+      var blockPath = 'blocks/' + blockDirName + '/block.json';
+      readTextFile(blockPath, function(blockFileText) {
+        blockData[blockDirName] = JSON.parse(blockFileText);
+        numBlocksLoaded++;
+        if (numBlocksLoaded === blockDirs.length) {
+          callback(blockData);
+        }
+      });
+    });
+  });
+}
+
+function defaultBlockData() {
   return [
-          [ 'one','two','three','four',
-            'one','two','three','four',
-            'one','two','three','four',
-            'one','two','three','four',
-            'one','two','three','four',
-            'one','two','three','four'
-          ],
-          ['a','b','c'],
-          ['d','e','f'],
-          ['g','h','i'],
-          ['j']
-        ];
+    [],
+    [],
+    [],
+    [],
+    []
+    // [ 'one','two','three','four',
+    //   'one','two','three','four',
+    //   'one','two','three','four',
+    //   'one','two','three','four',
+    //   'one','two','three','four',
+    //   'one','two','three','four'
+    // ],
+    // ['a','b','c'],
+    // ['d','e','f'],
+    // ['g','h','i'],
+    // { 1:{name:'add-1', width:1},
+    //   2:{name:'add-2', width:2},
+    //   3:{name:'add-3', width:3},
+    //   4:{name:'add-4', width:4} }
+  ];
 }
 
 function menuTabSelected(e) {
@@ -884,19 +947,29 @@ function redisplayTabSelection() {
 }
 
 function redisplayBlockSelection() {
-  var blocksInThisSection = menuBlockData[menuSelectedTab];
+  // var blocksInThisSection = menuBlockData[menuSelectedTab];
+  // if (typeof(blocksInThisSection) === "object") {
+    var blocksObject = menuBlockData[menuSelectedTab]; //JSON.parse(JSON.stringify(blocksInThisSection));
+    var blocksInThisSection = [];
+    for (var key in blocksObject) {
+      blocksInThisSection.push(blocksObject[key]);
+    }
+  // }
   console.log(blocksInThisSection);
 
   // reassign as many divs as needed to the current set of blocks
   for (var i = 0; i < blocksInThisSection.length; i++) {
     var blockDiv = menuBlockDivs[i];
-    blockDiv.firstChild.innerHTML = blocksInThisSection[i];
+    var thisBlockData = blocksInThisSection[i];
+    blockDiv.blockData = thisBlockData;
+    blockDiv.firstChild.innerHTML = thisBlockData['name'];
     blockDiv.style.display = 'inline-block';
   }
   // clear the remaining block divs
   for (var i = blocksInThisSection.length; i < menuBlockDivs.length; i++) {
     var blockDiv = menuBlockDivs[i];
     // blockDiv.firstChild.innerHTML = 'none';
+    blockDiv.blockData = '';
     blockDiv.style.display = 'none';
   }
 }
@@ -904,6 +977,7 @@ function redisplayBlockSelection() {
 function blockMenuPointerDown(e) {
   e.preventDefault();
 
+  menuBlockToAdd = null;
   menuIsPointerDown = true;
   console.log('pressed block');
   menuSelectedBlock = e.target;
@@ -914,7 +988,7 @@ function blockMenuPointerDown(e) {
       menuSelectedBlock.parentNode.setAttribute('class', 'menuBlockSelected');
       menuSelectedBlock.parentNode.addEventListener("webkitAnimationEnd", animationEndedBlockSelected);
     }
-  }, 500);
+  }, 100);
 }
 
 function blockMenuPointerUp(e) {
@@ -925,6 +999,7 @@ function blockMenuPointerUp(e) {
     menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');
   }
   menuSelectedBlock = null;
+  menuBlockToAdd = null;
 }
 
 function blockMenuPointerLeave(e) {
@@ -936,60 +1011,60 @@ function blockMenuPointerLeave(e) {
     }
   }
   menuSelectedBlock = null;
+  menuBlockToAdd = null;
 }
 
 function animationEndedBlockSelected(e) {
   e.target.removeEventListener("webkitAnimationEnd", animationEndedBlockSelected);
   if (menuIsPointerDown && menuSelectedBlock === e.target.firstChild) {
-    var blockWidth = 1;
-    var blockName = e.target.firstChild.innerHTML;
-    if (blockName === "two") {
-      blockWidth = 2;
-    } else if (blockName === "three") {
-      blockWidth = 3;
-    } else if (blockName === "four") {
-      blockWidth = 4;
-    }
+    // var blockWidth = 1;
+    // var blockName = e.target.firstChild.innerHTML;
+    // if (blockName === "two") {
+    //   blockWidth = 2;
+    // } else if (blockName === "three") {
+    //   blockWidth = 3;
+    // } else if (blockName === "four") {
+    //   blockWidth = 4;
+    // }
 
-    var itemSelected = 0;
-    var blockRect = e.target.getBoundingClientRect();
-    var pointerX = blockRect.left + blockRect.width/2;
-    var pointerY = blockRect.top + blockRect.height/2;
-    createTempBlockOnPointer(blockWidth, pointerX, pointerY, itemSelected);
+    // var itemSelected = 0;
+    // var blockRect = e.target.getBoundingClientRect();
+    // var pointerX = blockRect.left + blockRect.width/2;
+    // var pointerY = blockRect.top + blockRect.height/2;
+    // createTempBlockOnPointer(blockWidth, pointerX, pointerY, itemSelected);
 
-    blockMenuHide();
+    // blockMenuHide();
+    menuBlockToAdd = e.target;
   }
 }
 
-  // function colMenuPressed(e) {
-  //   e.preventDefault();
+function blockMenuPointerMove(e) {
+  e.preventDefault();
 
-  //   console.log('col menu pressed');
-  //   if (menuCurrentMenuState === 1) {
-  //     menuCurrentMenuState = 1.5;
-  //     e.target.innerHTML = "2";
-  //     e.target.setAttribute('class', 'menuBlockColSlider2');
-  //     e.target.addEventListener("webkitAnimationEnd", endAnimationTo2);
+  if (menuBlockToAdd) {
+      // var blockName = menuBlockToAdd.blockData['name'] || "error";
+      // var blockWidth = menuBlockToAdd.blockData['width'] || 1;
+      // var blockName = menuBlockToAdd.firstChild.innerHTML;
+      // if (blockName === "two") {
+      //   blockWidth = 2;
+      // } else if (blockName === "three") {
+      //   blockWidth = 3;
+      // } else if (blockName === "four") {
+      //   blockWidth = 4;
+      // }
 
-  //   } else if (menuCurrentMenuState === 2) {
-  //     menuCurrentMenuState = 1.5;
-  //     e.target.innerHTML = "1";
-  //     e.target.setAttribute('class', 'menuBlockColSlider1');
-  //     e.target.addEventListener("webkitAnimationEnd", endAnimationTo1);
-  //   }
-  // }
+      var blockJSON = menuBlockToAdd.blockData;
+      var itemSelected = 0;
+      var blockRect = menuBlockToAdd.getBoundingClientRect();
+      var pointerX = blockRect.left + blockRect.width/2;
+      var pointerY = blockRect.top + blockRect.height/2;
+      createTempBlockOnPointer(blockJSON, pointerX, pointerY, itemSelected);
 
-  // function endAnimationTo2(e) {
-  //   e.target.removeEventListener("webkitAnimationEnd", endAnimationTo2);
-  //   menuCurrentMenuState = 2;
-  //   console.log('fully in state 2');
-  // }
+      menuBlockToAdd = null;
 
-  // function endAnimationTo1(e) {
-  //   e.target.removeEventListener("webkitAnimationEnd", endAnimationTo1);
-  //   menuCurrentMenuState = 1;
-  //   console.log('fully in state 1');
-  // }
+      blockMenuHide();
+  }
+}
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/

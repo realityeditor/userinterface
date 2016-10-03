@@ -72,6 +72,9 @@
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
     border-right: none;
+    display:-webkit-box;
+    -webkit-box-pack:center;
+    -webkit-box-align:center;
   }
   .menuTabSelected {
     width: 106px;
@@ -85,6 +88,12 @@
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
     border-right: none;
+    display:-webkit-box;
+    -webkit-box-pack:center;
+    -webkit-box-align:center;
+  }
+  .menuTabIcon {
+    height: 75%;
   }
 </style>
 </head>
@@ -135,6 +144,11 @@
     menuTab.setAttribute('tabIndex', i);
     menuTab.setAttribute('touch-action', 'none');
     menuTab.addEventListener('pointerdown', menuTabSelected);
+    var menuTabIcon = document.createElement('img');
+    menuTabIcon.setAttribute('class', 'menuTabIcon');
+    menuTabIcon.setAttribute('src', '../png/overlayNormal.png');
+    // menuTab.innerHTML = i;
+    menuTab.appendChild(menuTabIcon);
     menuTabs.push(menuTab);
     sideMenuContainer.appendChild(menuTab);
   }
@@ -143,6 +157,27 @@
   redisplayBlockSelection();
 
   function loadBlocks() {
+
+    console.log("loadBlocks");
+
+    function readTextFile(file, callback) {
+        var rawFile = new XMLHttpRequest();
+        rawFile.overrideMimeType("application/json");
+        rawFile.open("GET", file, true);
+        rawFile.onreadystatechange = function() {
+            if (rawFile.readyState === 4 && rawFile.status == "200") {
+                callback(rawFile.responseText);
+            }
+        }
+        rawFile.send(null);
+    }
+
+    //usage:
+    readTextFile("../blocks/blocks.json", function(text){
+        var data = JSON.parse(text);
+        console.log(data);
+    });
+
     return [
             ['one','two','three','four'],
             ['a','b','c'],
@@ -156,6 +191,8 @@
     e.preventDefault();
 
     selectedTab = e.target.tabIndex;
+    if (selectedTab < 0) selectedTab = e.target.parentNode.tabIndex;
+    if (selectedTab < 0) selectedTab = 0;
     redisplayTabSelection();
     redisplayBlockSelection();
   }
@@ -185,7 +222,6 @@
       var blockDiv = blockDivs[i];
       // blockDiv.firstChild.innerHTML = 'none';
       blockDiv.style.display = 'none';
-
     }
   }
 

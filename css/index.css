@@ -323,6 +323,25 @@ body {
     background-color: #E6E6E6;
 }
 
+.blockTitleContainer {
+  width: 100%;
+  height: 100%;
+  display:-webkit-box;
+  -webkit-box-pack:center;
+  -webkit-box-align:center;
+  user-select:none;
+  -webkit-user-select:none;
+  color: #000000;
+  /*position: absolute;*/
+}
+
+.blockTitle {
+  position: absolute;
+  color: #000000;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
 /* block menu */
 
 #menuContainer {
@@ -387,7 +406,7 @@ body {
   border: solid 2px #898989;
   margin: 3.5px;
   animation-name: blockSelectedKeyframes;
-  animation-duration: 0.25s;
+  animation-duration: 0.125s;
 }
 
 .menuTab {

@@ -840,6 +840,8 @@ function blockPointerDown(e) {
 
     if (e.target.cell.blockAtThisLocation()) {
         isPointerDown = true;
+        // cancelTimeout(blockMoveTimeout);
+        // blockMoveTimeout = setTimeout( function() {
         setTimeout( function() {
             if (isPointerDown && !isTempLinkBeingDrawn) {
                 cellToMoveBlockFrom = e.target.cell;
@@ -863,6 +865,7 @@ function blockPointerLeave(e) {
     if (isPointerDown && cellToMoveBlockFrom) {
         removeBlockFromCellAndCreateTempBlockAt(cellToMoveBlockFrom, e.pageX, e.pageY);
     } else if (isPointerDown && !isTempLinkBeingDrawn) {
+        // cancelTimeout(blockMoveTimeout);
         isTempLinkBeingDrawn = true;
         tempStartBlock = e.target.cell.blockAtThisLocation();
         tempStartItem = e.target.cell.itemAtThisLocation();
@@ -902,6 +905,7 @@ function blockPointerUp(e) {
     if (e.target.cell.blockAtThisLocation() === null) return;
     isPointerDown = false;
     isTempLinkBeingDrawn = false;
+    // cancelTimeout(blockMoveTimeout);
     tempLine.start = null;
     tempLine.end = null;
     if (cellToMoveBlockFrom) {
@@ -982,7 +986,7 @@ function datacraftingContainerPointerUp(e, didPointerLeave) {
             }
             if (blockPos) {
                 blockPos.x -= tempBlock.itemSelected; // offset so selected item stays on pointer
-                var block = addBlock(blockPos.x, blockPos.y, tempBlock.width, tempBlock.name);
+                var block = addBlock(blockPos.x, blockPos.y, tempBlock.blockJSON);
                 if (tempBlock.incomingLinks) {
                     tempBlock.incomingLinks.forEach( function(linkData) {
                         addBlockLink(linkData.blockA, block, linkData.itemA, linkData.itemB, true);
@@ -1011,6 +1015,8 @@ function datacraftingContainerPointerDown(e) {
     var marginBlockOver = cellOver.blockOverlappingThisMargin();
     if (marginBlockOver) {
         isPointerDown = true;
+        // cancelTimeout(blockMoveTimeout);
+        // blockMoveTimeout = setTimeout( function() {
         setTimeout( function() {
             console.log("start move, not link");
             if (isPointerDown && !isTempLinkBeingDrawn) {
@@ -1088,6 +1094,7 @@ function removeBlockFromCellAndCreateTempBlockAt(cellToMove, pageX, pageY) {
     var blockToMove = cellToMove.blockAtThisLocation();
     if (blockToMove) {
         var blockSize = blockToMove.blockSize;
+        var blockName = blockToMove.name;
         var itemSelected = cellToMove.itemAtThisLocation();
         if (cellToMove) {
             var allCellsForThisBlock = globalStates.currentLogic.grid.getCellsOver(cellToMoveBlockFrom,blockSize,itemSelected,true);
@@ -1115,16 +1122,21 @@ function removeBlockFromCellAndCreateTempBlockAt(cellToMove, pageX, pageY) {
         removeBlock(globalStates.currentLogic, blockToMove);
         updateGrid(globalStates.currentLogic.grid);
         // add temp block to pointer
-        createTempBlockOnPointer(blockSize, pageX, pageY, itemSelected, incomingLinks, outgoingLinks);
+        var blockJSON = toBlockJSON(blockName, blockSize);
+        createTempBlockOnPointer(blockJSON, pageX, pageY, itemSelected, incomingLinks, outgoingLinks);
     }
     // cellToMoveBlockFrom = null;
 }
 
-function createTempBlockOnPointer(blockSize, centerX, centerY, itemSelected, incomingLinks, outgoingLinks) {
+function toBlockJSON(name, width) {
+    return { name: name, width: width };
+}
+
+function createTempBlockOnPointer(blockJSON, centerX, centerY, itemSelected, incomingLinks, outgoingLinks) {
     var grid = globalStates.currentLogic.grid;
 
     var newBlockImg = document.createElement('div');
-    newBlockImg.setAttribute("class", "newBlock"+blockSize);
+    newBlockImg.setAttribute("class", "newBlock"+blockJSON['width']);
     newBlockImg.setAttribute("id", "newBlock"+uuidTime());
     newBlockImg.setAttribute("touch-action", "none");
     newBlockImg.style.opacity = 0.75;
@@ -1134,8 +1146,7 @@ function createTempBlockOnPointer(blockSize, centerX, centerY, itemSelected, inc
     newBlockImg.style.top = (centerY - grid.blockRowHeight/2) + "px";
     globalStates.currentLogic.tempBlock = {
         domElement: newBlockImg,
-        name: "test", //todo: change this to represent which block you are adding
-        width: blockSize,
+        blockJSON: blockJSON,
         itemSelected: itemSelected,
         incomingLinks: incomingLinks,
         outgoingLinks: outgoingLinks

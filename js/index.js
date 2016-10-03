@@ -1023,6 +1023,10 @@ function updateGrid(grid) {
             hideCellBlock(cell);
         }
     });
+
+    // globalStates.currentLogic.blocks.forEach( function(block) {
+        
+    // });
 }
 
 // updates datacrafting visuals each frame
@@ -1140,7 +1144,26 @@ function displayCellBlock(cell) {
     }
     cell.domElement.style.backgroundColor = activeBlockColor;
     cell.domElement.style.opacity = '1.00';
+    // setCellContents(cell, "test");
 }
+
+// function setCellContents(cell, text) {
+//     // cell.domElement.firstChild.innerHTML = text;
+//     var blockTitle = document.createElement('div');
+//     blockTitle.setAttribute('class','blockTitle');
+//     blockTitle.innerHTML = text;
+//     blockTitle.style.left = globalStates.currentLogic.grid.getCellCenterX(cell);
+//     blockTitle.style.top = globalStates.currentLogic.grid.getCellCenterY(cell);
+//     cell.contents = blockTitle;
+//     var blockContainer = document.getElementById('blocks');
+//     blockContainer.appendChild(blockTitle);
+// }
+
+// function resetCellContents(cell) {
+//     if (cell.contents) {
+//         cell.contents.parentNode.removeChild(cell.contents);
+//     }
+// }
 
 function hideCellBlock(cell) {
     if (cell.location.row === 0 || cell.location.row === 6) {
@@ -1153,6 +1176,7 @@ function hideCellBlock(cell) {
     cell.domElement.style.borderLeft = '';
     cell.domElement.style.borderRight = '';
     cell.domElement.style.opacity = 0.75;
+    // resetCellContents(cell);
 }
 
 function highlightCellsBlocksForMove(cells) {

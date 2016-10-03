@@ -905,12 +905,12 @@ function addBlockLink(blockA, blockB, itemA, itemB, addToLogic) {
     return null;
 }
 
-function addBlock(x,y,blockSize,name) {
+function addBlock(x,y,blockJSON) {
     var block = new Block();
     block.x = x;
     block.y = y;
-    block.blockSize = blockSize;
-    block.name = name;
+    block.blockSize = blockJSON['width'];
+    block.name = blockJSON['name'];
     var blockKey = "block" + uuidTime();
     globalStates.currentLogic.blocks[blockKey] = block;
     return block;
@@ -990,7 +990,7 @@ function areBlockLinksEqual(blockLink1, blockLink2) {
 
 function canAddBlockAtCell(firstCellOver, tempBlock) {
     if (!firstCellOver || !tempBlock) return false;
-    var cellsOver = globalStates.currentLogic.grid.getCellsOver(firstCellOver,tempBlock.width, tempBlock.itemSelected);
+    var cellsOver = globalStates.currentLogic.grid.getCellsOver(firstCellOver,tempBlock.blockJSON['width'], tempBlock.itemSelected);
     var canAddBlock = true;
     cellsOver.forEach(function(cell) {
         if (!cell || !cell.canHaveBlock() || cell.blockAtThisLocation()) {
