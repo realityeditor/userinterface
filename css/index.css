@@ -235,6 +235,12 @@ body {
     left: 0;
 }
 
+#blockPlaceholdersContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 .block {
     width: 92px;
     height: 46px;

@@ -1000,6 +1000,7 @@ function updateGrid(grid) {
     // *** this does all the backend work ***
     grid.recalculateAllRoutes();
 
+/*
     // remove margins between multi-column blocks
     grid.forEachPossibleBlockMarginCell( function(cell) {
         hideMargin(cell);
@@ -1023,6 +1024,7 @@ function updateGrid(grid) {
             hideCellBlock(cell);
         }
     });
+*/
 
     for (var titleKey in blockTitles) {
         var blockTitle = blockTitles[titleKey];

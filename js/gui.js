@@ -699,7 +699,7 @@ function resetCraftingBoard() {
 function initializeDatacraftingGrid(logic) {
     globalStates.currentLogic = logic;
 
-    var container = document.getElementById('craftingBoard'); //('datacrafting-container');
+    var container = document.getElementById('craftingBoard');
     container.setAttribute("touch-action", "none");
 
     var containerWidth = container.clientWidth;
@@ -710,9 +710,8 @@ function initializeDatacraftingGrid(logic) {
     var marginWidth = (containerWidth / 11);
     var marginHeight = blockHeight;
 
-    // grid = new Grid(gridSize, blockWidth, blockHeight, marginWidth, marginHeight); //130, 65, 65, 65);
-    logic.grid = new Grid(blockWidth, blockHeight, marginWidth, marginHeight); //130, 65, 65, 65);
-    // var datacraftingCanvas = document.getElementById("datacraftingCanvas");
+    // initializes the data model for the datacrafting board
+    logic.grid = new Grid(blockWidth, blockHeight, marginWidth, marginHeight);
 
     var datacraftingCanvas = document.createElement('canvas');
     datacraftingCanvas.setAttribute('id', 'datacraftingCanvas');
@@ -724,68 +723,51 @@ function initializeDatacraftingGrid(logic) {
     container.appendChild(sidebarBackground);
 
     var dimensions = logic.grid.getPixelDimensions();
-
     datacraftingCanvas.width = dimensions.width;
     datacraftingCanvas.style.width = dimensions.width;
     datacraftingCanvas.height = dimensions.height;
     datacraftingCanvas.style.height = dimensions.height;
 
+    var blockPlaceholdersContainer = document.createElement('div');
+    blockPlaceholdersContainer.setAttribute('id', 'blockPlaceholders');
+    container.appendChild(blockPlaceholdersContainer);
+
     // initialize by adding a grid of divs for the blocks
     // and associating them with the data model and assigning event handlers
 
-    var marginContainer = document.createElement('div');
-    marginContainer.setAttribute('id', 'margins');
-    container.appendChild(marginContainer);
-
     var blocksContainer = document.createElement('div');
     blocksContainer.setAttribute('id', 'blocks');
-    container.appendChild(blocksContainer);
-
     blocksContainer.setAttribute("touch-action", "none");
+    container.appendChild(blocksContainer);
 
     for (var rowNum = 0; rowNum < logic.grid.size; rowNum+=2) {
 
         var rowDiv = document.createElement('div');
         rowDiv.setAttribute("class", "row");
         rowDiv.setAttribute("id", "row" + rowNum);
-        blocksContainer.appendChild(rowDiv);
+        blockPlaceholdersContainer.appendChild(rowDiv);
 
         for (var colNum = 0; colNum < logic.grid.size; colNum++) {
 
             if (colNum % 2 === 0) {
 
-                var blockImg = document.createElement('div');
+                var blockPlaceholder = document.createElement('div');
                 var className = (colNum === logic.grid.size - 1) ? "blockRight" : "block";
-                blockImg.setAttribute("class", className);
-                blockImg.setAttribute("id", "block" + colNum);
-                blockImg.setAttribute("touch-action", "none");
-                var thisCell = logic.grid.getCell(colNum, rowNum);
-                thisCell.domElement = blockImg;
-                blockImg.cell = thisCell;
+                blockPlaceholder.setAttribute("class", className);
+                blockPlaceholder.setAttribute("id", "blockPlaceholder_" + colNum + "_" + rowNum);
+                blockPlaceholder.setAttribute("touch-action", "none");
 
-                // var blockTitleContainer = document.createElement('div');
-                // blockTitleContainer.setAttribute("class", "blockTitleContainer");
-                // blockTitleContainer.innerHTML = "test";
-                // blockImg.appendChild(blockTitleContainer);
+                if (rowNum === 0 || rowNum === 6) {
+                    blockPlaceholder.style.backgroundColor = blockColorMap["bright"][colNum/2];
+                } else {
+                    blockPlaceholder.style.backgroundColor = blockColorMap["faded"][colNum/2];
+                }
+                blockPlaceholder.style.opacity = 0.75;
 
-                rowDiv.appendChild(blockImg);
-
-            } else {
-
-                var marginImg = document.createElement('div');
-                marginImg.setAttribute("class", "blockMargin");
-                marginImg.setAttribute("id", "margin" + colNum);
-                // marginImg.style.backgroundColor = activeBlockColor;
-                marginImg.setAttribute("touch-action", "none");
-                var thisCell = logic.grid.getCell(colNum, rowNum);
-                marginImg.style.top = (rowDiv.getBoundingClientRect().top) + "px";
-                marginImg.style.left = (logic.grid.getCellCenterX(thisCell) - logic.grid.blockRowHeight/2) + "px";
-                thisCell.domElement = marginImg;
-                marginContainer.appendChild(marginImg);
+                rowDiv.appendChild(blockPlaceholder);
 
             }
         }
-
     }
 
     updateGrid(logic.grid);
