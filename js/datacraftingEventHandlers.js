@@ -66,6 +66,7 @@ function pointerMove(e) {
 
         // if you are over an elligible block, create a temp link and re-route grid
         if (canConnectBlocks(tappedContents, contents)) {
+            resetLinkLine();
             createTempLink(tappedContents, contents);
 
         // if you aren't over an elligible block, draw a line to current position        
@@ -121,6 +122,9 @@ function pointerUp(e, didPointerLeave) {
         if (canConnectBlocks(tappedContents, contents)) {
             resetTempLink();
             createLink(tappedContents, contents);
+        
+        } else {
+            resetLinkLine();
         }
 
     } else if (touchState === TS_MOVE) {
@@ -147,7 +151,7 @@ function pointerUp(e, didPointerLeave) {
 
     } else if (touchState === TS_CUT) {
 
-        removeCutLine();
+        resetCutLine();
 
     }
 
