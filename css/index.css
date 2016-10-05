@@ -333,6 +333,7 @@ body {
   -webkit-box-align:center;
   width: 100%;
   height: 100%;
+  font-family: Helvetica Neue, Helvetica, Arial;
 }
 
 .blockTitlePlaced {
@@ -347,6 +348,7 @@ body {
   /*height: 100%;*/
   background-color: #E6E6E6;
   border: 1px solid black;
+  font-family: Helvetica Neue, Helvetica, Arial;
 }
 
 /* block menu */
@@ -396,6 +398,7 @@ body {
   user-select:none;
   -webkit-user-select:none;
   color: #000000;
+  font-family: Helvetica Neue, Helvetica, Arial;
 }
 
   @keyframes blockSelectedKeyframes {

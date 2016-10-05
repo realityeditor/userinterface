@@ -785,6 +785,7 @@ function initializeDatacraftingGrid(logic) {
 
             }
         }
+
     }
 
     updateGrid(logic.grid);
@@ -827,6 +828,26 @@ function initializeBlockMenu(logic, callback) {
   menuSelectedBlock = null;
   menuBlockDivs = [];
 
+  // create menu tabs for block categories
+  for (var i = 0; i < menuNumTabs; i++) {
+    var menuTab = document.createElement('div');
+    menuTab.setAttribute('class', 'menuTab');
+    menuTab.setAttribute('tabIndex', i);
+    menuTab.setAttribute('touch-action', 'none');
+    menuTab.addEventListener('pointerdown', menuTabSelected);
+
+    var menuTabIcon = document.createElement('img');
+    menuTabIcon.setAttribute('class', 'menuTabIcon');
+    menuTabIcon.setAttribute('src', blockTabImage[i].src);
+    menuTabIcon.setAttribute('touch-action', 'none');
+    // menuTabIcon.addEventListener('pointerdown', menuTabIconSelected);
+
+    menuTab.appendChild(menuTabIcon);
+
+    menuTabs.push(menuTab);
+    menuSideContainer.appendChild(menuTab);
+}
+
   menuLoadBlocks( function(blockData) {
     menuBlockData[0] = blockData;
   
@@ -847,25 +868,6 @@ function initializeBlockMenu(logic, callback) {
             menuBlockDivs.push(block);
             row.appendChild(block);
         }
-    }
-
-    for (var i = 0; i < menuNumTabs; i++) {
-        var menuTab = document.createElement('div');
-        menuTab.setAttribute('class', 'menuTab');
-        menuTab.setAttribute('tabIndex', i);
-        menuTab.setAttribute('touch-action', 'none');
-        menuTab.addEventListener('pointerdown', menuTabSelected);
-
-        var menuTabIcon = document.createElement('img');
-        menuTabIcon.setAttribute('class', 'menuTabIcon');
-        menuTabIcon.setAttribute('src', blockTabImage[i].src);
-        menuTabIcon.setAttribute('touch-action', 'none');
-        // menuTabIcon.addEventListener('pointerdown', menuTabIconSelected);
-
-        menuTab.appendChild(menuTabIcon);
-
-        menuTabs.push(menuTab);
-        menuSideContainer.appendChild(menuTab);
     }
 
     callback();
