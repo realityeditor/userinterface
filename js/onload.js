@@ -255,6 +255,54 @@ function postMessage(e) {
         }
     }
 
+
+    if (typeof msgContent.sendAcceleration !== "undefined") {
+console.log(msgContent.sendAcceleration);
+        if (msgContent.sendAcceleration === true) {
+
+            if (tempThisObject.integerVersion >= 32) {
+
+                tempThisObject.sendAcceleration = true;
+
+                if(globalStates.sendAcceleration === false) {
+                    globalStates.sendAcceleration = true;
+                    if (window.DeviceMotionEvent) {
+                        console.log("motion activated");
+
+                        window.addEventListener("deviceorientation", function () {
+
+                        });
+
+                        window.addEventListener("devicemotion", function () {
+
+                            var thisState = globalStates.acceleration;
+
+                            thisState.x = event.acceleration.x;
+                            thisState.y = event.acceleration.y;
+                            thisState.z = event.acceleration.z;
+
+                            thisState.alpha = event.rotationRate.alpha;
+                            thisState.beta = event.rotationRate.beta;
+                            thisState.gamma = event.rotationRate.gamma;
+
+                            // Manhattan Distance :-D
+                            thisState.motion =
+                                Math.abs(thisState.x) +
+                                Math.abs(thisState.y) +
+                                Math.abs(thisState.z) +
+                                Math.abs(thisState.alpha) +
+                                Math.abs(thisState.beta) +
+                                Math.abs(thisState.gamma);
+
+                        }, false);
+                    } else {
+                        console.log("DeviceMotionEvent is not supported");
+                    }
+                }
+            }
+        }
+    }
+
     if (msgContent.globalMessage) {
         var iframes = document.getElementsByTagName('iframe');
         for (var i = 0; i < iframes.length; i++) {

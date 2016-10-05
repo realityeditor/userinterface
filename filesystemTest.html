@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="thirdPartyCode/idb.filesystem.js"></script>
+</head>
+<body>
+
+<script>
+
+    window.requestFileSystem(TEMPORARY, 1024 * 1024, function(fs) {
+        console.log('Opened ' + fs.name);
+
+        fs.root.getFile('NewFile.txt', {create: true}, function(fileEntry) {
+            fileEntry.createWriter(function(fileWriter) {
+                fileWriter.onwritestart = function() {
+                    console.log('WRITE START');
+                };
+
+                fileWriter.onwriteend = function() {
+                    console.log('WRITE END');
+                };
+
+                var blob = new Blob(['1234567890'], {type: 'text/plain'});
+
+                fileWriter.write(blob);
+            }, onError);
+        }, onError);
+    }, onError);
+
+
+    function onError(e) {
+        console.log('Error', e);
+    }
+
+</script>
+</body>
+</html>

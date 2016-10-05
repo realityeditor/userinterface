@@ -176,7 +176,6 @@ function toAxisAngle(matrix) {
     var rZ = Math.atan2(matrix[1], matrix[5]);
 
     return [rX, rY, rZ];
-
 }
 
 function screenCoordinatesToMatrixXY(thisObject, touch){

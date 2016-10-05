@@ -97,6 +97,8 @@ function Objects() {
     this.links = {};
     // Stores all IOPoints. These points are used to keep the state of an object and process its data.
     this.nodes = {};
+
+    this.frames = {};
     // The arrangement of nodes for crafting.
     this.logic = {};
 }
@@ -154,6 +156,8 @@ function Node() {
     // in the Reality Editor. Such data points interfaces can be found in the nodeInterface folder.
     // todo appearance should be removed eventually as there is only one kind of appearance
     this.appearance = "logicNode";
+    // todo implement src
+    this.src = "";
     // defines the origin Hardware interface of the IO Point. For example if this is arduinoYun the Server associates
     // this IO Point with the Arduino Yun hardware interface.
     //this.type = "arduinoYun"; // todo "arduinoYun", "virtual", "edison", ... make sure to define yours in your internal_module file

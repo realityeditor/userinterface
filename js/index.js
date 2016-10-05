@@ -86,6 +86,7 @@ function addHeartbeatObject(beat) {
                     thisObject.screenZ = 1000;
                     thisObject.fullScreen = false;
                     thisObject.sendMatrix = false;
+                    thisObject.sendAcceleration = false;
                     thisObject.integerVersion = parseInt(objects[thisKey].version.replace(/\./g, ""));
 
                     if (thisObject.matrix === null || typeof thisObject.matrix !== "object") {
@@ -672,6 +673,18 @@ function update(visibleObjects) {
 
     /// todo Test
 
+    if(globalStates.acceleration.motion!= 0){
+        globalStates.acceleration = {
+            x : 0,
+            y : 0,
+            z : 0,
+            alpha: 0,
+            beta: 0,
+            gamma: 0,
+            motion:0
+        }
+    }
+
 }
 
 /**********************************************************************************************************************
@@ -875,10 +888,22 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
 
             }
             if (kind === "ui") {
-                if (thisObject.sendMatrix === true) {
-                    cout(globalObjects[objectKey]);
+
+                if (thisObject.sendMatrix === true || thisObject.sendAcceleration === true) {
+
+                    var thisMsg = {};
+                    
+                    if(thisObject.sendMatrix === true) {
+                        thisMsg.modelViewMatrix = globalObjects[objectKey];
+                    }
+
+                    if(thisObject.sendAcceleration === true) {
+                        thisMsg.acceleration = globalStates.acceleration;
+                    }
+
+                    cout(thisMsg);
                     globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
-                        JSON.stringify({modelViewMatrix: globalObjects[objectKey]}), '*');
+                        JSON.stringify(thisMsg), '*');
                   //  console.log("I am here");
 
                 }
