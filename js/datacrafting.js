@@ -128,9 +128,18 @@ Cell.prototype.containsHorizontalSegmentOfRoute = function(route) {
 };
 
 Cell.prototype.blockAtThisLocation = function() {
-    if (!this.canHaveBlock()) return null;
-    var blockPos = convertGridPosToBlockPos(this.location.col, this.location.row);
-    return getBlockOverlappingPosition(blockPos.x, blockPos.y);
+    if (this.isMarginCell()) {
+        var blockPosBefore = convertGridPosToBlockPos(this.location.col-1, this.location.row);
+        var blockPosAfter = convertGridPosToBlockPos(this.location.col+1, this.location.row);
+        var blockBefore = getBlockOverlappingPosition(blockPosBefore.x, blockPosBefore.y);
+        var blockAfter = getBlockOverlappingPosition(blockPosAfter.x, blockPosAfter.y);
+        if (blockBefore && blockAfter && areBlocksEqual(blockBefore, blockAfter)) {
+            return blockBefore;
+        }
+    } else if (this.canHaveBlock()) {
+        var blockPos = convertGridPosToBlockPos(this.location.col, this.location.row);
+        return getBlockOverlappingPosition(blockPos.x, blockPos.y);
+    }
 }
 
 Cell.prototype.blockOverlappingThisMargin = function() {
@@ -372,7 +381,7 @@ Grid.prototype.getCellsBetween = function(cell1, cell2) {
 // utility - true iff a cell between the start and end actually contains a block
 Grid.prototype.areBlocksBetween = function(startCell, endCell) {
     var blocksBetween = this.getCellsBetween(startCell, endCell).filter( function(cell) {
-        return cell.blockAtThisLocation() !== null;
+        return cell.blockAtThisLocation() !== undefined;
     });
     return blocksBetween.length > 0;
 };
@@ -381,7 +390,7 @@ Grid.prototype.areBlocksBetween = function(startCell, endCell) {
 Grid.prototype.getFirstBlockBelow = function(col, row) {
     for (var r = row+1; r < this.size; r++) {
         var cell = this.getCell(col,r);
-        if (cell.blockAtThisLocation() !== null) {
+        if (cell.blockAtThisLocation()) {
             return cell.blockAtThisLocation();
         }
     }
@@ -463,7 +472,7 @@ Grid.prototype.calculateLinkRoute = function(link) {
             // first point continues down vertically as far as it can go without hitting another block
             var firstBlockBelow = this.getFirstBlockBelow(startLocation.col, startLocation.row);
             var rowToDrawDownTo = endLocation.row-1;
-            if (firstBlockBelow !== null) {
+            if (firstBlockBelow) {
                 var firstBlockRowBelow = convertBlockPosToGridPos(firstBlockBelow.x, firstBlockBelow.y).row;
                 rowToDrawDownTo = Math.min(firstBlockRowBelow-1, rowToDrawDownTo);
             }
@@ -501,7 +510,7 @@ Grid.prototype.calculateLinkRoute = function(link) {
             // if there's nothing blocking the line from getting to the side of the end block, last point goes there
             var cellsBetween = this.getCellsBetween(this.getCell(startLocation.col, 0), this.getCell(endLocation.col, endLocation.row));
             var blocksBetween = cellsBetween.filter(function(cell){
-                return cell.blockAtThisLocation() !== null;
+                return cell.blockAtThisLocation() !== undefined;
             });
             if (blocksBetween.length === 0) {
                 route.addLocation(startLocation.col + sideToApproachOn, 0);
@@ -905,10 +914,12 @@ function addBlockLink(blockA, blockB, itemA, itemB, addToLogic) {
     return null;
 }
 
-function addBlock(x,y,blockJSON,globalId) {
+function addBlock(x,y,blockJSON,globalId) { // TODO: include a hasBeenPlaced bool to treat new blocks differently?
     var block = new Block();
-    block.x = x;
-    block.y = y;
+    // if (x !== undefined && y !== undefined) {
+        block.x = x;
+        block.y = y;
+    // }
     block.blockSize = blockJSON['width'];
     block.name = blockJSON['name'];
     block.globalId = globalId;
@@ -952,6 +963,7 @@ function clearAllBlockLinks() {
 
 function removeBlock(logic, block) {
     removeLinksForBlock(logic, block);
+    delete blockDomElements[block.globalId]; // TODO: associate this with a particular logic object
     for (var blockKey in logic.blocks) {
         if (logic.blocks[blockKey] === block) {
             delete logic.blocks[blockKey];

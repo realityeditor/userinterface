@@ -246,7 +246,7 @@ var tempLine = { // endpoints of visual-feedback line showing you the new link y
     color: null
 }
 
-var blockTitles = {};
+var blockDomElements = {};
 
 // var blockMoveTimeout = null; // adds a delay so that tapping and holding on a block lets you move it
 

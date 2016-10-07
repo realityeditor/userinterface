@@ -1026,35 +1026,15 @@ function updateGrid(grid) {
     });
 */
 
-    for (var titleKey in blockTitles) {
-        var blockTitle = blockTitles[titleKey];
-        blockTitle.parentNode.removeChild(blockTitle);
-        delete blockTitles[titleKey];
+    for (var domKey in blockDomElements) {
+        var blockDomElement = blockDomElements[domKey];
+        blockDomElement.parentNode.removeChild(blockDomElement);
+        delete blockDomElements[domKey];
     }
 
     for (var blockKey in globalStates.currentLogic.blocks) {
         var block = globalStates.currentLogic.blocks[blockKey];
-
-        var blockTitle = document.createElement('div');
-        blockTitle.setAttribute('class','blockTitlePlaced');
-        blockTitle.setAttribute("touch-action", "none");
-        blockTitle.innerHTML = block.name;
-
-        var firstCell = getCellForBlock(grid, block, 0);
-        var lastCell = getCellForBlock(grid, block, block.blockSize-1);
-        var firstCellCenterX = grid.getCellCenterX(firstCell);
-        var lastCellCenterX = grid.getCellCenterX(lastCell);
-
-        blockTitle.style.left = firstCellCenterX - grid.blockColWidth/2;
-        blockTitle.style.top = grid.getCellCenterY(firstCell) - grid.blockRowHeight/2;
-        blockTitle.style.width = (lastCellCenterX - firstCellCenterX) + grid.blockColWidth;
-        blockTitle.style.height = grid.blockRowHeight;
-
-        var blockContainer = document.getElementById('blocks');
-        // blockContainer.appendChild(blockTitle);
-        blockContainer.insertBefore(blockTitle, blockContainer.firstChild);
-
-        blockTitles[block.globalId] = blockTitle;
+        addDomElementForBlock(block, grid);
     }
 
     // for (var blockKey in globalStates.currentLogic.blocks) {
@@ -1063,6 +1043,41 @@ function updateGrid(grid) {
     //     console.log(block);
     //     displayTitleForBlock(block);
     // }
+}
+
+function addDomElementForBlock(block, grid, isTempBlock) {
+    var blockDomElement = document.createElement('div');
+    blockDomElement.setAttribute('class','blockTitlePlaced');
+    blockDomElement.innerHTML = block.name;
+
+
+    // if we're adding a temp block, it doesn't have associated cells it can use to calculate position. we need to remember to set position to pointer afterwards
+    if (!isTempBlock) {
+        var firstCell = getCellForBlock(grid, block, 0);
+        // var lastCell = getCellForBlock(grid, block, block.blockSize-1);
+        var firstCellCenterX = grid.getCellCenterX(firstCell);
+        // var lastCellCenterX = grid.getCellCenterX(lastCell);
+        blockDomElement.style.left = firstCellCenterX - grid.blockColWidth/2;
+        blockDomElement.style.top = grid.getCellCenterY(firstCell) - grid.blockRowHeight/2;
+        // blockDomElement.style.width = (lastCellCenterX - firstCellCenterX) + grid.blockColWidth;
+        // blockDomElement.style.height = grid.blockRowHeight;
+    }
+
+    blockDomElement.style.width = getBlockPixelWidth(block,grid);
+    blockDomElement.style.height = grid.blockRowHeight;
+
+    var blockContainer = document.getElementById('blocks');
+    // blockContainer.insertBefore(blockDomElement, blockContainer.firstChild);
+    blockContainer.appendChild(blockDomElement);
+
+    blockDomElements[block.globalId] = blockDomElement;
+}
+
+function getBlockPixelWidth(block, grid) {
+    var numBlockCols = block.blockSize;
+    var numMarginCols = block.blockSize - 1;
+    var width = grid.blockColWidth * numBlockCols + grid.marginColWidth * numMarginCols;
+    return width;
 }
 
 // function resetBlockTitle(block) {

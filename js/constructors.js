@@ -269,6 +269,8 @@ function Block() {
     this.text = "";
     // indicates how much calls per second is happening on this block
     this.stress = 0;
+
+    this.domElement = null;
 }
 
 /**

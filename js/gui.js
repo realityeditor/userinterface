@@ -652,37 +652,45 @@ function blockMenuHide() {
 
 function addDatacraftingEventListeners() {
     if (globalStates.currentLogic) {
-        globalStates.currentLogic.grid.cells.forEach( function(cell) {
-            if (cell.domElement) {
-                cell.domElement.addEventListener("pointerdown", blockPointerDown); //TODO: eventually remove all these events and just use events on the blocks container?
-                cell.domElement.addEventListener("pointerenter", blockPointerEnter);
-                cell.domElement.addEventListener("pointerleave", blockPointerLeave);
-                cell.domElement.addEventListener("pointerup", blockPointerUp);            
-            }
-        });
-        var blocksContainer = document.getElementById('blocks');
-        blocksContainer.addEventListener("pointerup", datacraftingContainerPointerUp);
-        blocksContainer.addEventListener("pointerdown", datacraftingContainerPointerDown);
-        blocksContainer.addEventListener("pointermove", datacraftingContainerPointerMove);
-        blocksContainer.addEventListener("pointerleave", datacraftingContainerPointerLeave);
+        // globalStates.currentLogic.grid.cells.forEach( function(cell) {
+        //     if (cell.domElement) {
+        //         cell.domElement.addEventListener("pointerdown", blockPointerDown); //TODO: eventually remove all these events and just use events on the blocks container?
+        //         cell.domElement.addEventListener("pointerenter", blockPointerEnter);
+        //         cell.domElement.addEventListener("pointerleave", blockPointerLeave);
+        //         cell.domElement.addEventListener("pointerup", blockPointerUp);            
+        //     }
+        // });
+        var datacraftingEventDiv = document.getElementById('datacraftingEventDiv');
+        // blocksContainer.addEventListener("pointerup", datacraftingContainerPointerUp);
+        // blocksContainer.addEventListener("pointerdown", datacraftingContainerPointerDown);
+        // blocksContainer.addEventListener("pointermove", datacraftingContainerPointerMove);
+        // blocksContainer.addEventListener("pointerleave", datacraftingContainerPointerLeave);
+        datacraftingEventDiv.addEventListener("pointerdown", pointerDown);
+        datacraftingEventDiv.addEventListener("pointermove", pointerMove);
+        // craftingBoard.addEventListener("pointerup", pointerUp);
+        datacraftingEventDiv.addEventListener("pointerleave", pointerLeave);
     }
 }
 
 function removeDatacraftingEventListeners() {
     if (globalStates.currentLogic) {
-        globalStates.currentLogic.grid.cells.forEach( function(cell) {
-            if (cell.domElement) {
-                cell.domElement.removeEventListener("pointerdown", blockPointerDown);
-                cell.domElement.removeEventListener("pointerenter", blockPointerEnter);
-                cell.domElement.removeEventListener("pointerleave", blockPointerLeave);
-                cell.domElement.removeEventListener("pointerup", blockPointerUp);
-            }
-        });
-        var blocksContainer = document.getElementById('blocks');
-        blocksContainer.removeEventListener("pointerup", datacraftingContainerPointerUp);
-        blocksContainer.removeEventListener("pointerdown", datacraftingContainerPointerDown);
-        blocksContainer.removeEventListener("pointermove", datacraftingContainerPointerMove);
-        blocksContainer.removeEventListener("pointerleave", datacraftingContainerPointerUp);
+        // globalStates.currentLogic.grid.cells.forEach( function(cell) {
+        //     if (cell.domElement) {
+        //         cell.domElement.removeEventListener("pointerdown", blockPointerDown);
+        //         cell.domElement.removeEventListener("pointerenter", blockPointerEnter);
+        //         cell.domElement.removeEventListener("pointerleave", blockPointerLeave);
+        //         cell.domElement.removeEventListener("pointerup", blockPointerUp);
+        //     }
+        // });
+        var datacraftingEventDiv = document.getElementById('datacraftingEventDiv');
+        // blocksContainer.removeEventListener("pointerup", datacraftingContainerPointerUp);
+        // blocksContainer.removeEventListener("pointerdown", datacraftingContainerPointerDown);
+        // blocksContainer.removeEventListener("pointermove", datacraftingContainerPointerMove);
+        // blocksContainer.removeEventListener("pointerleave", datacraftingContainerPointerUp);
+        datacraftingEventDiv.removeEventListener("pointerdown", pointerDown);
+        datacraftingEventDiv.removeEventListener("pointermove", pointerMove);
+        // blocksContainer.removeEventListener("pointerup", pointerUp);
+        datacraftingEventDiv.removeEventListener("pointerleave", pointerLeave);
     }
 }
 
@@ -700,7 +708,7 @@ function initializeDatacraftingGrid(logic) {
     globalStates.currentLogic = logic;
 
     var container = document.getElementById('craftingBoard');
-    container.setAttribute("touch-action", "none");
+    // container.setAttribute("touch-action", "none");
 
     var containerWidth = container.clientWidth;
     var containerHeight = container.clientHeight;
@@ -715,7 +723,6 @@ function initializeDatacraftingGrid(logic) {
 
     var datacraftingCanvas = document.createElement('canvas');
     datacraftingCanvas.setAttribute('id', 'datacraftingCanvas');
-    datacraftingCanvas.setAttribute("touch-action", "none");
     container.appendChild(datacraftingCanvas);
 
     var sidebarBackground = document.createElement('div');
@@ -730,6 +737,7 @@ function initializeDatacraftingGrid(logic) {
 
     var blockPlaceholdersContainer = document.createElement('div');
     blockPlaceholdersContainer.setAttribute('id', 'blockPlaceholders');
+    // blockPlaceholdersContainer.setAttribute("touch-action", "none");
     container.appendChild(blockPlaceholdersContainer);
 
     // initialize by adding a grid of divs for the blocks
@@ -737,7 +745,7 @@ function initializeDatacraftingGrid(logic) {
 
     var blocksContainer = document.createElement('div');
     blocksContainer.setAttribute('id', 'blocks');
-    blocksContainer.setAttribute("touch-action", "none");
+    // blocksContainer.setAttribute("touch-action", "none");
     container.appendChild(blocksContainer);
 
     for (var rowNum = 0; rowNum < logic.grid.size; rowNum+=2) {
@@ -755,7 +763,7 @@ function initializeDatacraftingGrid(logic) {
                 var className = (colNum === logic.grid.size - 1) ? "blockRight" : "block";
                 blockPlaceholder.setAttribute("class", className);
                 blockPlaceholder.setAttribute("id", "blockPlaceholder_" + colNum + "_" + rowNum);
-                blockPlaceholder.setAttribute("touch-action", "none");
+                // blockPlaceholder.setAttribute("touch-action", "none");
 
                 if (rowNum === 0 || rowNum === 6) {
                     blockPlaceholder.style.backgroundColor = blockColorMap["bright"][colNum/2];
@@ -769,6 +777,17 @@ function initializeDatacraftingGrid(logic) {
             }
         }
     }
+
+    var datacraftingEventDiv = document.createElement('div');
+    datacraftingEventDiv.setAttribute('id', 'datacraftingEventDiv');
+    datacraftingEventDiv.setAttribute("touch-action", "none");
+    container.appendChild(datacraftingEventDiv);
+    // datacraftingEventDiv.style.width = dimensions.width;
+    // datacraftingEventDiv.style.height = dimensions.height;
+
+    addBlock(0, 0, {name:"test",width:1}, "block1"+uuidTime());
+    addBlock(1, 3, {name:"test2",width:1}, "block2"+uuidTime());
+    addBlock(3, 2, {name:"test3",width:1}, "block2"+uuidTime());
 
     updateGrid(logic.grid);
     addDatacraftingEventListeners();
@@ -864,8 +883,10 @@ function resetBlockMenu() {
     blockDiv.firstChild.removeEventListener('pointermove', blockMenuPointerMove);
   });
   var container = document.getElementById('menuContainer');
-  while (container.hasChildNodes()) {
-      container.removeChild(container.lastChild);
+  if (container) {
+    while (container.hasChildNodes()) {
+        container.removeChild(container.lastChild);
+    }
   }
 }
 
@@ -1077,16 +1098,22 @@ function blockMenuPointerMove(e) {
       // }
 
       var blockJSON = menuBlockToAdd.blockData;
-      var itemSelected = 0;
+      // var itemSelected = 0;
       var blockRect = menuBlockToAdd.getBoundingClientRect();
       var pointerX = blockRect.left + blockRect.width/2;
       var pointerY = blockRect.top + blockRect.height/2;
-      createTempBlockOnPointer(blockJSON, pointerX, pointerY, itemSelected);
+      // createTempBlockOnPointer(blockJSON, pointerX, pointerY, itemSelected);
+
+      addBlockFromMenu(blockJSON, pointerX, pointerY);
 
       menuBlockToAdd = null;
-
       blockMenuHide();
   }
+}
+
+function addBlockFromMenu(blockJSON, pointerX, pointerY) {
+    // addBlock(undefined, undefined, blockJSON, generateBlockGlobalId());
+    // updateGrid(globalStates.currentLogic.grid);
 }
 
 /**********************************************************************************************************************

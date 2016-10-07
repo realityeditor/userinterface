@@ -260,7 +260,7 @@ function getPossition(evt) {
     setPocketPossition(evt);
 
 
-    cout("getPossition");
+    // cout("getPossition");
 
 }
 
@@ -1161,7 +1161,7 @@ function createTempBlockOnPointer(blockJSON, centerX, centerY, itemSelected, inc
     // blockTitleDiv.style.top = //globalStates.currentLogic.grid.getCellCenterY(cell);
     newBlockImg.appendChild(blockTitleDiv);
 
-    var globalId = existingGlobalId || "block" + uuidTime();
+    var globalId = existingGlobalId || generateBlockGlobalId();
 
     globalStates.currentLogic.tempBlock = {
         domElement: newBlockImg,
@@ -1173,4 +1173,8 @@ function createTempBlockOnPointer(blockJSON, centerX, centerY, itemSelected, inc
     };
     var blocksContainer = document.getElementById('blocks');
     blocksContainer.appendChild(newBlockImg);
+}
+
+function generateBlockGlobalId() {
+    return "block" + uuidTime();
 }
