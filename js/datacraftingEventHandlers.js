@@ -17,6 +17,7 @@ function pointerDown(e) {
     // we can assume we are in TS_NONE
 
     var cell = getCellOverPointer(e.pageX, e.pageY);
+    if (!cell) return; // tapped on menu
     var contents = getCellContents(cell);
     
     if (contents) {
@@ -49,6 +50,9 @@ function pointerDown(e) {
 function pointerMove(e) {
 
     var cell = getCellOverPointer(e.pageX, e.pageY);
+    if (!cell) { // moved to menu
+        return pointerUp(e, true);
+    }
     var contents = getCellContents(cell);
 
     if (touchState === TS_TAP_BLOCK) {
@@ -59,7 +63,7 @@ function pointerMove(e) {
         
         // otherwise if enough time has passed, change to TS_HOLD
         } else {
-            if (Date.now() - startTapTime > 1000) {
+            if (Date.now() - startTapTime > 500) {
                 console.log("enough time has passed -> HOLD");
                 touchState = TS_HOLD;
             }
@@ -72,7 +76,7 @@ function pointerMove(e) {
 
         if (!areCellsEqual(cell, tappedContents.cell)) {
             touchState = TS_MOVE;
-            convertToMoveBlock(tappedContents);
+            convertToTempBlock(tappedContents);
             moveBlockToPosition(tappedContents, e.pageX, e.pageY);
         }
 
@@ -128,6 +132,8 @@ function pointerUp(e, didPointerLeave) {
     if (touchState === TS_TAP_BLOCK) {
         // for now -> do nothing
         // but in the future -> this will open the block settings screen
+        openBlockSettings(tappedContents.block);
+
     } else if (touchState === TS_HOLD) {
         // holding (not moving) a block means haven't left the cell
         // so do nothing (just put it down)
@@ -144,6 +150,18 @@ function pointerUp(e, didPointerLeave) {
 
     } else if (touchState === TS_MOVE) {
 
+        // remove entirely if dragged to menu
+        if (didPointerLeave) {
+            removeTappedContents(tappedContents);
+        } else {
+            if (canPlaceBlockInCell(tappedContents, cell)) {
+                placeBlockInCell(tappedContents, cell);
+            } else {
+                placeBlockInCell(tappedContents, tappedContents.cell);
+            }
+        }
+
+        /*
         // if you are over an elligible cell, add block to that cell        
         if (canPlaceBlockInCell(tappedContents, cell)) {
 
@@ -161,6 +179,7 @@ function pointerUp(e, didPointerLeave) {
             }
 
         }
+        */
 
     } else if (touchState === TS_CUT) {
         cutIntersectingLinks();
@@ -174,20 +193,25 @@ function pointerUp(e, didPointerLeave) {
     console.log("pointerUp ->" + touchState + "(" + didPointerLeave + ")");//, e.target, e.currentTarget);
 }
 
-function pointerLeave(e) {
-    if (e.target !== e.currentTarget) return; // prevents event bubbling
+// function pointerLeave(e) {
+//     if (e.target !== e.currentTarget) return;
 
-    var bounds = e.currentTarget.getBoundingClientRect();
-    if (e.pageX > bounds.width) {
-        console.log("pointer leave");
-        pointerUp(e, true);
-    } else {
-        console.log("pointer up");
-        pointerUp(e, false);
-    }
+// }
 
-    // console.log("pointerLeave ->" + touchState);//, e.target, e.currentTarget);
-}
+// function pointerLeave(e) {
+//     if (e.target !== e.currentTarget) return; // prevents event bubbling
+
+//     var bounds = e.currentTarget.getBoundingClientRect();
+//     if (e.pageX > bounds.width) {
+//         console.log("pointer leave");
+//         pointerUp(e, true);
+//     } else {
+//         console.log("pointer up");
+//         pointerUp(e, false);
+//     }
+
+//     // console.log("pointerLeave ->" + touchState);//, e.target, e.currentTarget);
+// }
 
 function addBlockFromMenu(blockJSON, pointerX, pointerY) {
     // var name = blockJSON.name;
@@ -209,9 +233,3 @@ function addBlockFromMenu(blockJSON, pointerX, pointerY) {
     });
 
 }
-
-
-
-
-
-

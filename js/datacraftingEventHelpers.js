@@ -16,6 +16,7 @@ function getCellContents(cell) {
         block: block,
         item: item,
         cell: cell
+        // pointerX: pointerX
         // isMoving: false
       };
     }
@@ -32,18 +33,57 @@ function areBlocksEqual(block1, block2) {
   return (block1.globalId === block2.globalId);
 }
 
-function convertToMoveBlock(contents) {
-  // contents.isMoving = true;
-  // setTempBlock(contents);
+function convertToTempBlock(contents) {
+  contents.block.isTempBlock = true;
 }
+
+// function convertToTempBlock(contents) {
+
+//   var domElement = getDomElementForBlock(contents.block).cloneNode(true);
+//   var blockJSON = toBlockJSON(contents.block.name, contents.block.blockSize);
+//   var itemSelected = contents.item;
+//   var incomingLinks = [];
+//   var outgoingLinks = [];
+//   var globalId = contents.block.globalId;
+
+//   globalStates.currentLogic.tempBlock = {
+//       domElement: domElement,
+//       blockJSON: blockJSON,
+//       itemSelected: itemSelected,
+//       incomingLinks: incomingLinks,
+//       outgoingLinks: outgoingLinks,
+//       globalId: globalId
+//   };
+
+//   removeTappedContents(contents);
+
+//   var blocksContainer = document.getElementById('blocks');
+//   blocksContainer.appendChild(domElement);
+
+//   // contents.isMoving = true;
+//   // setTempBlock(contents);
+// }
 
 function moveBlockToPosition(contents, pointerX, pointerY) {
   var grid = globalStates.currentLogic.grid;
-
-  var domElement = getDomElementForBlock(contents.block); // contents.block.domElement; // getDomElement();
+  var domElement = getDomElementForBlock(contents.block); 
   domElement.style.left = pointerX - offsetForItem(contents.item);
   domElement.style.top = pointerY - grid.blockRowHeight/2;
 }
+
+/*
+function moveTempBlockToPosition(pointerX, pointerY) {
+  var grid = globalStates.currentLogic.grid;
+
+  // var domElement = getDomElementForBlock(contents.block); // contents.block.domElement; // getDomElement();
+  
+  var domElement = globalStates.currentLogic.tempBlock.domElement;
+  var itemSelected = globalStates.currentLogic.tempBlock.itemSelected;
+
+  domElement.style.left = pointerX - offsetForItem(itemSelected);
+  domElement.style.top = pointerY - grid.blockRowHeight/2;
+}
+*/
 
 function offsetForItem(item) {
   var grid = globalStates.currentLogic.grid;
@@ -78,7 +118,7 @@ function canPlaceBlockInCell(tappedContents, cell) {
   var cellsOver = grid.getCellsOver(cell, tappedContents.block.blockSize, tappedContents.item);
   var canPlaceBlock = true;
   cellsOver.forEach( function(cell) {
-    if (!cell || !cell.canHaveBlock() || cell.blockAtThisLocation()) {
+    if (!cell || !cell.canHaveBlock() || (cell.blockAtThisLocation() && !cell.blockAtThisLocation().isTempBlock)) {
       canPlaceBlock = false;
     }
   });
@@ -98,6 +138,7 @@ function placeBlockInCell(contents, cell) {
   if (cell) {
     contents.block.x = (cell.location.col / 2) - contents.item;
     contents.block.y = (cell.location.row / 2);
+    contents.block.isTempBlock = false;
     contents = null;
   } else {
     removeTappedContents(contents);
@@ -187,3 +228,23 @@ function cutIntersectingLinks() {
 function getDomElementForBlock(block) {
   return blockDomElements[block.globalId];
 }
+
+// new functions
+
+function openBlockSettings(block) {
+  console.log(block);
+  var craftingBoard = document.getElementById('craftingBoard');
+  var blockSettingsContainer = document.createElement('iframe');
+  blockSettingsContainer.setAttribute('id', 'blockSettingsContainer');
+  blockSettingsContainer.src = 'blocks/'+block.name+'/settings.html';
+  craftingBoard.appendChild(blockSettingsContainer);
+
+}
+
+function hideBlockSettings() {
+  var container = document.getElementById('blockSettingsContainer');
+  if (container) {
+    container.parentNode.removeChild(container);
+  }
+}
+

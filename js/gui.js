@@ -303,6 +303,13 @@ function GUI() {
     ec++;
 
     document.getElementById("preferencesButton").addEventListener("touchend", function () {
+
+        if (globalStates.guiState === "logic") {
+            hideBlockSettings();
+            document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
+            return;
+        }
+
         if (globalStates.preferencesButtonState === true) {
             preferencesHide();
             overlayDiv.style.display = "none";
@@ -667,8 +674,8 @@ function addDatacraftingEventListeners() {
         // blocksContainer.addEventListener("pointerleave", datacraftingContainerPointerLeave);
         datacraftingEventDiv.addEventListener("pointerdown", pointerDown);
         datacraftingEventDiv.addEventListener("pointermove", pointerMove);
-        // craftingBoard.addEventListener("pointerup", pointerUp);
-        datacraftingEventDiv.addEventListener("pointerleave", pointerLeave);
+        datacraftingEventDiv.addEventListener("pointerup", pointerUp);
+        // datacraftingEventDiv.addEventListener("pointerleave", pointerLeave);
     }
 }
 
@@ -689,8 +696,8 @@ function removeDatacraftingEventListeners() {
         // blocksContainer.removeEventListener("pointerleave", datacraftingContainerPointerUp);
         datacraftingEventDiv.removeEventListener("pointerdown", pointerDown);
         datacraftingEventDiv.removeEventListener("pointermove", pointerMove);
-        // blocksContainer.removeEventListener("pointerup", pointerUp);
-        datacraftingEventDiv.removeEventListener("pointerleave", pointerLeave);
+        datacraftingEventDiv.removeEventListener("pointerup", pointerUp);
+        // datacraftingEventDiv.removeEventListener("pointerleave", pointerLeave);
     }
 }
 
@@ -785,9 +792,9 @@ function initializeDatacraftingGrid(logic) {
     // datacraftingEventDiv.style.width = dimensions.width;
     // datacraftingEventDiv.style.height = dimensions.height;
 
-    addBlock(0, 0, {name:"test",width:1}, "block1"+uuidTime());
-    addBlock(1, 3, {name:"test2",width:1}, "block2"+uuidTime());
-    addBlock(3, 2, {name:"test3",width:1}, "block2"+uuidTime());
+    addBlock(0, 0, {name:"delay",width:1}, "block1"+uuidTime());
+    addBlock(1, 3, {name:"delay",width:1}, "block2"+uuidTime());
+    addBlock(3, 2, {name:"delay",width:1}, "block2"+uuidTime());
 
     updateGrid(logic.grid);
     addDatacraftingEventListeners();

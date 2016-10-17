@@ -963,6 +963,10 @@ function clearAllBlockLinks() {
 
 function removeBlock(logic, block) {
     removeLinksForBlock(logic, block);
+    var domElement = blockDomElements[block.globalId];
+    if (domElement) {
+        domElement.parentNode.removeChild(domElement);
+    }
     delete blockDomElements[block.globalId]; // TODO: associate this with a particular logic object
     for (var blockKey in logic.blocks) {
         if (logic.blocks[blockKey] === block) {

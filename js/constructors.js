@@ -271,6 +271,7 @@ function Block() {
     this.stress = 0;
 
     this.domElement = null;
+    this.isTempBlock = false;
 }
 
 /**

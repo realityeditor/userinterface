@@ -1,0 +1,27 @@
+<html>
+<head>
+  <style>
+  body {
+    display:-webkit-box;
+    -webkit-box-pack:center;
+    -webkit-box-align:center;
+    font-size: 24px;
+  }
+  #settingsContents {
+    display: inline;
+  }
+  </style>
+</head>
+<body>
+  <div id='settingsContents'>
+    <p>Settings Page for Delay Block</p>
+    <p id="valueText">Value: 0</p>
+    <p><button type="button" onclick="
+      var x = document.getElementById('valueText');
+      if (x) {
+        x.innerHTML = (x.innerHTML === 'Value: 0') ? 'Value: 1' : 'Value: 0';
+      }">Click Me!</button>
+    </p>
+  </div>
+</body>
+</html>
