@@ -12,6 +12,8 @@ var cutLineStart = null;
 
 var startTapTime;
 
+var HOLD_TIME_THRESHOLD = 500;
+
 function pointerDown(e) {
     
     // we can assume we are in TS_NONE
@@ -34,7 +36,7 @@ function pointerDown(e) {
 
         startTapTime = Date.now();
 
-        // blockDomElements[tappedContents.block.globalId].setAttribute('class','blockTitleHighlighted');
+        styleBlockForHolding(tappedContents, true);
 
     } else {
         touchState = TS_CUT;
@@ -59,12 +61,13 @@ function pointerMove(e) {
 
         // if you moved to a different cell, go to TS_CONNECT
         if (!areCellsEqual(cell, tappedContents.cell)) {
+            styleBlockForHolding(tappedContents, false);
             touchState = TS_CONNECT;
         
         // otherwise if enough time has passed, change to TS_HOLD
         } else {
-            if (Date.now() - startTapTime > 500) {
-                console.log("enough time has passed -> HOLD");
+            if (Date.now() - startTapTime > HOLD_TIME_THRESHOLD) {
+                console.log("enough time has passed -> HOLD (" + (Date.now() - startTapTime) + ")");
                 touchState = TS_HOLD;
             }
         }
@@ -132,11 +135,16 @@ function pointerUp(e, didPointerLeave) {
     if (touchState === TS_TAP_BLOCK) {
         // for now -> do nothing
         // but in the future -> this will open the block settings screen
-        openBlockSettings(tappedContents.block);
+        styleBlockForHolding(tappedContents, false);
+
+        if (Date.now() - startTapTime < (HOLD_TIME_THRESHOLD/2)) {
+            openBlockSettings(tappedContents.block);
+        }
 
     } else if (touchState === TS_HOLD) {
         // holding (not moving) a block means haven't left the cell
         // so do nothing (just put it down)
+        styleBlockForHolding(tappedContents, false);
 
     } else if (touchState === TS_CONNECT) {
 

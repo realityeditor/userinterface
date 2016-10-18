@@ -1126,7 +1126,7 @@ function redrawDatacrafting() {
         drawDatacraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
     });
 
-    if (cutLine.start !== null && cutLine.end !== null) {
+    if (cutLine.start && cutLine.end) {
         ctx.strokeStyle = "#FFFFFF";
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -1135,7 +1135,7 @@ function redrawDatacrafting() {
         ctx.stroke();
     }
 
-    if (tempLine.start !== null && tempLine.end !== null) {
+    if (tempLine.start && tempLine.end) {
         ctx.strokeStyle = tempLine.color;
         ctx.lineWidth = 3;
         ctx.beginPath();

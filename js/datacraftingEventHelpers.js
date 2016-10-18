@@ -125,6 +125,15 @@ function canPlaceBlockInCell(tappedContents, cell) {
   return canPlaceBlock;
 }
 
+function styleBlockForHolding(contents, startHold) {
+  if (startHold) {
+    blockDomElements[contents.block.globalId].setAttribute('class','blockTitleHighlighted');
+  } else {
+    blockDomElements[contents.block.globalId].setAttribute('class','blockTitlePlaced');
+  }
+
+}
+
 function styleBlockForPlacement(contents, shouldHighlight) {
   var domElement = getDomElementForBlock(contents.block); // contents.block.domElement; // getDomElement();
   if (shouldHighlight) {
@@ -136,7 +145,7 @@ function styleBlockForPlacement(contents, shouldHighlight) {
 
 function placeBlockInCell(contents, cell) {
   if (cell) {
-    contents.block.x = (cell.location.col / 2) - contents.item;
+    contents.block.x = (cell.location.col / 2) - Math.floor(contents.item);
     contents.block.y = (cell.location.row / 2);
     contents.block.isTempBlock = false;
     contents = null;
@@ -168,6 +177,8 @@ function drawLinkLine(contents, endX, endY) {
   // actual drawing happens in index.js loop, we just need to set endpoint here
   var startX = grid.getCellCenterX(contents.cell);
   var startY = grid.getCellCenterY(contents.cell);
+  var hsl = contents.cell.getColorHSL();
+  var lineColor = 'hsl(' + hsl.h + ', '+ hsl.s +'%,'+ hsl.l +'%)';
   tempLine.start = {
     x: startX,
     y: startY
@@ -176,11 +187,13 @@ function drawLinkLine(contents, endX, endY) {
     x: endX,
     y: endY
   };
+  tempLine.color = lineColor;
 }
 
 function resetLinkLine() {
   tempLine.start = null;
   tempLine.end = null;
+  tempLine.color = null;
 }
 
 function drawCutLine(start, end) {
