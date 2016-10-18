@@ -35,6 +35,7 @@ function areBlocksEqual(block1, block2) {
 
 function convertToTempBlock(contents) {
   contents.block.isTempBlock = true;
+  updateTempLinkOutlinesForBlock(contents);
 }
 
 // function convertToTempBlock(contents) {
@@ -148,6 +149,8 @@ function placeBlockInCell(contents, cell) {
     contents.block.x = (cell.location.col / 2) - Math.floor(contents.item);
     contents.block.y = (cell.location.row / 2);
     contents.block.isTempBlock = false;
+    convertTempLinkOutlinesToLinks(contents);
+    // TODO: create real links again using each temp link
     contents = null;
   } else {
     removeTappedContents(contents);
@@ -155,7 +158,47 @@ function placeBlockInCell(contents, cell) {
   updateGrid(globalStates.currentLogic.grid);
 }
 
+function updateTempLinkOutlinesForBlock(contents) {
+  for (var linkKey in globalStates.currentLogic.links) {
+    var link = globalStates.currentLogic.links[linkKey];
+    if (link.blockB === contents.block) {
+      globalStates.currentLogic.tempIncomingLinks.push({
+          blockA: link.blockA,
+          itemA: link.itemA,
+          itemB: link.itemB
+      });
+    
+    } else if (link.blockA === contents.block) {
+      globalStates.currentLogic.tempOutgoingLinks.push({
+          itemA: link.itemA,
+          blockB: link.blockB,
+          itemB: link.itemB
+      });
+    }
+  }
+
+  removeLinksForBlock(globalStates.currentLogic, contents.block);
+}
+
+function convertTempLinkOutlinesToLinks(contents) {
+  globalStates.currentLogic.tempIncomingLinks.forEach( function(linkData) {
+    addBlockLink(linkData.blockA, contents.block, linkData.itemA, linkData.itemB, true);
+  });
+
+  globalStates.currentLogic.tempOutgoingLinks.forEach( function(linkData) {
+    addBlockLink(contents.block, linkData.blockB, linkData.itemA, linkData.itemB, true);
+  });
+
+  resetTempLinkOutlines();
+}
+
+function resetTempLinkOutlines() {
+  globalStates.currentLogic.tempIncomingLinks = [];
+  globalStates.currentLogic.tempOutgoingLinks = [];
+}
+
 function removeTappedContents(contents) {
+  resetTempLinkOutlines();
   removeBlock(globalStates.currentLogic, contents.block);
   contents = null;
   updateGrid(globalStates.currentLogic.grid);

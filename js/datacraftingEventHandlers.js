@@ -7,12 +7,15 @@ var TS_CUT = "CUT";
 
 var touchState = TS_NONE;
 
-var tappedContents = null;
+// var tappedContents = null;
 var cutLineStart = null;
 
 var startTapTime;
 
 var HOLD_TIME_THRESHOLD = 500;
+
+// var tempIncomingLinks = [];
+// var tempOutgoingLinks = [];
 
 function pointerDown(e) {
     
@@ -26,7 +29,7 @@ function pointerDown(e) {
         touchState = TS_TAP_BLOCK;
         // var block = contents.block;
         // var item = contents.item;
-        tappedContents = contents;
+        globalStates.currentLogic.tappedContents = contents;
 
         // TODO: holding changes to TS_HOLD
             // one way of doing this is to record the tap down time
@@ -36,7 +39,7 @@ function pointerDown(e) {
 
         startTapTime = Date.now();
 
-        styleBlockForHolding(tappedContents, true);
+        styleBlockForHolding(globalStates.currentLogic.tappedContents, true);
 
     } else {
         touchState = TS_CUT;
@@ -56,6 +59,7 @@ function pointerMove(e) {
         return pointerUp(e, true);
     }
     var contents = getCellContents(cell);
+    var tappedContents = globalStates.currentLogic.tappedContents;
 
     if (touchState === TS_TAP_BLOCK) {
 
@@ -131,6 +135,7 @@ function pointerUp(e, didPointerLeave) {
 
     var cell = getCellOverPointer(e.pageX, e.pageY);
     var contents = getCellContents(cell);
+    var tappedContents = globalStates.currentLogic.tappedContents;
 
     if (touchState === TS_TAP_BLOCK) {
         // for now -> do nothing
@@ -194,7 +199,7 @@ function pointerUp(e, didPointerLeave) {
         resetCutLine();
     }
 
-    tappedContents = null;
+    globalStates.currentLogic.tappedContents = null;
     cutLineStart = null;
     touchState = TS_NONE;
 
@@ -228,7 +233,7 @@ function addBlockFromMenu(blockJSON, pointerX, pointerY) {
     var addedBlock = addBlock(-1, -1, blockJSON, globalId);
     addDomElementForBlock(addedBlock, globalStates.currentLogic.grid, true);
 
-    tappedContents = {
+    globalStates.currentLogic.tappedContents = {
         block: addedBlock,
         item: 0,
         cell: null

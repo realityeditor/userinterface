@@ -1144,6 +1144,51 @@ function redrawDatacrafting() {
         ctx.stroke();
     }
 
+
+    var tappedContents = globalStates.currentLogic.tappedContents;
+    if (tappedContents) {
+
+        var domElement = getDomElementForBlock(tappedContents.block);
+
+        globalStates.currentLogic.tempIncomingLinks.forEach( function(linkData) {
+            var startCell = getCellForBlock(grid, linkData.blockA, linkData.itemA);
+            var startX = grid.getCellCenterX(startCell);
+            var startY = grid.getCellCenterY(startCell);
+
+            var xOffset =  0.5 * grid.blockColWidth + (grid.blockColWidth + grid.marginColWidth) * linkData.itemB;
+            var endX = parseInt(domElement.style.left) + xOffset;
+            var endY = parseInt(domElement.style.top) + domElement.clientHeight/2;
+
+            var startColor = startCell.getColorHSL();
+            ctx.strokeStyle = 'hsl('+startColor.h+','+startColor.s+'%,'+startColor.l+'%)'; //'white';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+        });
+
+        globalStates.currentLogic.tempOutgoingLinks.forEach( function(linkData) {
+            var xOffset =  0.5 * grid.blockColWidth + (grid.blockColWidth + grid.marginColWidth) * linkData.itemA;
+            var startX = parseInt(domElement.style.left) + xOffset;
+            var startY = parseInt(domElement.style.top) + domElement.clientHeight/2;
+
+            var endCell = getCellForBlock(grid, linkData.blockB, linkData.itemB);
+            var endX = grid.getCellCenterX(endCell);
+            var endY = grid.getCellCenterY(endCell);
+
+            var endColor = endCell.getColorHSL();
+            ctx.strokeStyle = 'hsl('+endColor.h+','+endColor.s+'%,'+endColor.l+'%)'; //'white';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+        });
+
+    }
+
+    /*
     // when moving a block, trace lines for each link to one of its inputs and outputs
     if (globalStates.currentLogic.tempBlock) {
         if (globalStates.currentLogic.tempBlock.incomingLinks) {
@@ -1164,7 +1209,7 @@ function redrawDatacrafting() {
                 ctx.lineTo(endX, endY);
                 ctx.stroke();
             });
-        }
+        // }
 
         if (globalStates.currentLogic.tempBlock.outgoingLinks) {
             globalStates.currentLogic.tempBlock.outgoingLinks.forEach( function(linkData) {
@@ -1186,6 +1231,7 @@ function redrawDatacrafting() {
             });
         }
     }
+    */
 }
 
 function checkForCutIntersections() {
