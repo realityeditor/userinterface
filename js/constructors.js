@@ -202,7 +202,6 @@ function Logic() {
     this.links = {};
     this.blocks = {};
     this.tempLink = null;
-    this.tempBlock = null; // {domElement: <img>, width: 1}
 
     this.tappedContents = null;
     this.tempIncomingLinks = [];

@@ -38,33 +38,6 @@ function convertToTempBlock(contents) {
   updateTempLinkOutlinesForBlock(contents);
 }
 
-// function convertToTempBlock(contents) {
-
-//   var domElement = getDomElementForBlock(contents.block).cloneNode(true);
-//   var blockJSON = toBlockJSON(contents.block.name, contents.block.blockSize);
-//   var itemSelected = contents.item;
-//   var incomingLinks = [];
-//   var outgoingLinks = [];
-//   var globalId = contents.block.globalId;
-
-//   globalStates.currentLogic.tempBlock = {
-//       domElement: domElement,
-//       blockJSON: blockJSON,
-//       itemSelected: itemSelected,
-//       incomingLinks: incomingLinks,
-//       outgoingLinks: outgoingLinks,
-//       globalId: globalId
-//   };
-
-//   removeTappedContents(contents);
-
-//   var blocksContainer = document.getElementById('blocks');
-//   blocksContainer.appendChild(domElement);
-
-//   // contents.isMoving = true;
-//   // setTempBlock(contents);
-// }
-
 function moveBlockToPosition(contents, pointerX, pointerY) {
   var grid = globalStates.currentLogic.grid;
   var domElement = getDomElementForBlock(contents.block); 
@@ -72,42 +45,11 @@ function moveBlockToPosition(contents, pointerX, pointerY) {
   domElement.style.top = pointerY - grid.blockRowHeight/2;
 }
 
-/*
-function moveTempBlockToPosition(pointerX, pointerY) {
-  var grid = globalStates.currentLogic.grid;
-
-  // var domElement = getDomElementForBlock(contents.block); // contents.block.domElement; // getDomElement();
-  
-  var domElement = globalStates.currentLogic.tempBlock.domElement;
-  var itemSelected = globalStates.currentLogic.tempBlock.itemSelected;
-
-  domElement.style.left = pointerX - offsetForItem(itemSelected);
-  domElement.style.top = pointerY - grid.blockRowHeight/2;
-}
-*/
-
 function offsetForItem(item) {
   var grid = globalStates.currentLogic.grid;
 
   return grid.blockColWidth/2 + item * (grid.blockColWidth + grid.marginColWidth);
 }
-
-// function moveBlockToPosition(contents, pointerX, pointerY) {
-//   var domElement = getDomElementForBlock(contents.block); // contents.block.domElement; // getDomElement();
-//   setDomCenter(domElement, pointerX + offsetForItem(contents.item), pointerY);
-//   // TODO: handle grid-snap logic here or in parent function?
-// }
-
-// function offsetForItem(item) {
-//   var grid = globalStates.currentLogic.grid;
-//   return item * (grid.blockColWidth + grid.marginColWidth);
-// }
-
-// function setDomCenter(domElement, centerX, centerY) {
-//   var bounds = domElement.getBoundingClientRect();
-//   domElement.style.left = centerX - bounds.width/2;
-//   domElement.style.top = centerY - bounds.height/2;
-// }
 
 function canConnectBlocks(contents1, contents2) {
   return !areBlocksEqual(contents1.block, contents2.block);
@@ -128,9 +70,9 @@ function canPlaceBlockInCell(tappedContents, cell) {
 
 function styleBlockForHolding(contents, startHold) {
   if (startHold) {
-    blockDomElements[contents.block.globalId].setAttribute('class','blockTitleHighlighted');
+    blockDomElements[contents.block.globalId].setAttribute('class','blockDivHighlighted');
   } else {
-    blockDomElements[contents.block.globalId].setAttribute('class','blockTitlePlaced');
+    blockDomElements[contents.block.globalId].setAttribute('class','blockDivPlaced');
   }
 
 }
@@ -283,6 +225,10 @@ function cutIntersectingLinks() {
 
 function getDomElementForBlock(block) {
   return blockDomElements[block.globalId];
+}
+
+function generateBlockGlobalId() {
+  return "block" + uuidTime();
 }
 
 // new functions

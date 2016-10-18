@@ -1047,7 +1047,7 @@ function updateGrid(grid) {
 
 function addDomElementForBlock(block, grid, isTempBlock) {
     var blockDomElement = document.createElement('div');
-    blockDomElement.setAttribute('class','blockTitlePlaced');
+    blockDomElement.setAttribute('class','blockDivPlaced');
     blockDomElement.innerHTML = block.name;
 
 
@@ -1095,7 +1095,7 @@ function getBlockPixelWidth(block, grid) {
 //     }
 
 //     var blockTitle = document.createElement('div');
-//     blockTitle.setAttribute('class','blockTitlePlaced');
+//     blockTitle.setAttribute('class','blockDivPlaced');
 //     blockTitle.innerHTML = block.name;
 //     var firstCell = getCellForBlock(globalStates.currentLogic.grid, block, 0);
 //     var lastCell = getCellForBlock(globalStates.currentLogic.grid, block, block.blockSize-1);
@@ -1273,24 +1273,6 @@ function displayCellBlock(cell) {
     cell.domElement.style.opacity = '1.00';
     // setCellContents(cell, "test");
 }
-
-// function setCellContents(cell, text) {
-//     // cell.domElement.firstChild.innerHTML = text;
-//     var blockTitle = document.createElement('div');
-//     blockTitle.setAttribute('class','blockTitle');
-//     blockTitle.innerHTML = text;
-//     blockTitle.style.left = globalStates.currentLogic.grid.getCellCenterX(cell);
-//     blockTitle.style.top = globalStates.currentLogic.grid.getCellCenterY(cell);
-//     cell.contents = blockTitle;
-//     var blockContainer = document.getElementById('blocks');
-//     blockContainer.appendChild(blockTitle);
-// }
-
-// function resetCellContents(cell) {
-//     if (cell.contents) {
-//         cell.contents.parentNode.removeChild(cell.contents);
-//     }
-// }
 
 function hideCellBlock(cell) {
     if (cell.location.row === 0 || cell.location.row === 6) {
