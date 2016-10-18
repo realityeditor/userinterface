@@ -60,6 +60,8 @@
  **/
 
 window.onload = function () {
+
+    console.log("starting up GUI");
     uiButtons = document.getElementById("GUI");
     guiButtonImage= document.getElementById("guiButtonImage");
     overlayDiv = document.getElementById('overlay');
@@ -67,9 +69,13 @@ window.onload = function () {
 
     GUI();
 
-    if (globalStates.platform !== 'iPad' && globalStates.platform !== 'iPhone' && globalStates.platform !== 'iPod') {
+    console.log(globalStates.platform);
+
+    if (globalStates.platform !== 'iPad' && globalStates.platform !== 'iPhone' && globalStates.platform !== 'iPod touch') {
         globalStates.platform = false;
     }
+
+
 
     if (globalStates.platform === 'iPhone') {
         document.getElementById("logButtonDiv").style.visibility = "hidden";
