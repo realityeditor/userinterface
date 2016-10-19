@@ -1000,49 +1000,18 @@ function updateGrid(grid) {
     // *** this does all the backend work ***
     grid.recalculateAllRoutes();
 
-/*
-    // remove margins between multi-column blocks
-    grid.forEachPossibleBlockMarginCell( function(cell) {
-        hideMargin(cell);
-    });
-
-    // updates the visuals for the blocks
-    grid.forEachPossibleBlockCell( function(cell) {
-        var thisBlock = cell.blockAtThisLocation();
-        if (thisBlock) {
-            displayCellBlock(cell);
-            // add margin between cells within the same multi-column block
-            var cellToLeft = grid.getCell(cell.location.col-2,cell.location.row);
-            if (cellToLeft) {
-                var blockToLeft = cellToLeft.blockAtThisLocation();
-                if (blockToLeft && (blockToLeft === thisBlock)) {
-                    var cellInBetween = grid.getCell(cell.location.col-1,cell.location.row);
-                    displayMargin(cellInBetween);
-                }
-            }
-        } else {
-            hideCellBlock(cell);
-        }
-    });
-*/
-
+    // reset all domElements //TODO: only change blocks that were modified??
     for (var domKey in blockDomElements) {
         var blockDomElement = blockDomElements[domKey];
         blockDomElement.parentNode.removeChild(blockDomElement);
         delete blockDomElements[domKey];
     }
 
+    // add new domElement for each block
     for (var blockKey in globalStates.currentLogic.blocks) {
         var block = globalStates.currentLogic.blocks[blockKey];
         addDomElementForBlock(block, grid);
     }
-
-    // for (var blockKey in globalStates.currentLogic.blocks) {
-    //     resetBlockTitle(block);
-    //     var block = globalStates.currentLogic.blocks[blockKey];
-    //     console.log(block);
-    //     displayTitleForBlock(block);
-    // }
 }
 
 function addDomElementForBlock(block, grid, isTempBlock) {
@@ -1050,65 +1019,29 @@ function addDomElementForBlock(block, grid, isTempBlock) {
     blockDomElement.setAttribute('class','blockDivPlaced');
     blockDomElement.innerHTML = block.name;
 
-
     // if we're adding a temp block, it doesn't have associated cells it can use to calculate position. we need to remember to set position to pointer afterwards
-    if (!isTempBlock) {
+    if (!isTempBlock) { //TODO: is there a way to set position for new blocks consistently?
         var firstCell = getCellForBlock(grid, block, 0);
-        // var lastCell = getCellForBlock(grid, block, block.blockSize-1);
         var firstCellCenterX = grid.getCellCenterX(firstCell);
-        // var lastCellCenterX = grid.getCellCenterX(lastCell);
         blockDomElement.style.left = firstCellCenterX - grid.blockColWidth/2;
         blockDomElement.style.top = grid.getCellCenterY(firstCell) - grid.blockRowHeight/2;
-        // blockDomElement.style.width = (lastCellCenterX - firstCellCenterX) + grid.blockColWidth;
-        // blockDomElement.style.height = grid.blockRowHeight;
     }
 
     blockDomElement.style.width = getBlockPixelWidth(block,grid);
     blockDomElement.style.height = grid.blockRowHeight;
 
     var blockContainer = document.getElementById('blocks');
-    // blockContainer.insertBefore(blockDomElement, blockContainer.firstChild);
     blockContainer.appendChild(blockDomElement);
 
     blockDomElements[block.globalId] = blockDomElement;
 }
 
+// TODO: move somewhere better... just a utility
 function getBlockPixelWidth(block, grid) {
     var numBlockCols = block.blockSize;
     var numMarginCols = block.blockSize - 1;
-    var width = grid.blockColWidth * numBlockCols + grid.marginColWidth * numMarginCols;
-    return width;
+    return grid.blockColWidth * numBlockCols + grid.marginColWidth * numMarginCols;
 }
-
-// function resetBlockTitle(block) {
-//     if (block.titleDomElement) {
-//         block.titleDomElement.parentNode.removeChild(block.titleDomElement);
-//         block.titleDomElement = undefined;
-//     }
-// }
-
-// function displayTitleForBlock(block) {
-
-//     if (block.titleDomElement) {
-//         block.titleDomElement.parentNode.removeChild(block.titleDomElement);
-//         delete block.titleDomElement;
-//     }
-
-//     var blockTitle = document.createElement('div');
-//     blockTitle.setAttribute('class','blockDivPlaced');
-//     blockTitle.innerHTML = block.name;
-//     var firstCell = getCellForBlock(globalStates.currentLogic.grid, block, 0);
-//     var lastCell = getCellForBlock(globalStates.currentLogic.grid, block, block.blockSize-1);
-//     var firstCellCenterX = globalStates.currentLogic.grid.getCellCenterX(firstCell);
-//     var blockCenterY = globalStates.currentLogic.grid.getCellCenterY(firstCell);
-//     var lastCellCenterX = globalStates.currentLogic.grid.getCellCenterX(lastCell);
-//     var blockCenterX = (firstCellCenterX + lastCellCenterX) / 2;
-//     blockTitle.style.left = blockCenterX;
-//     blockTitle.style.top = blockCenterY;
-//     var blockContainer = document.getElementById('blocks');
-//     blockContainer.appendChild(blockTitle);
-//     block.titleDomElement = blockTitle;
-// }
 
 // updates datacrafting visuals each frame
 // renders all the links for a datacrafting grid, draws cut line if present, draws temp block if present
@@ -1127,27 +1060,15 @@ function redrawDatacrafting() {
     });
 
     if (cutLine.start && cutLine.end) {
-        ctx.strokeStyle = "#FFFFFF";
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(cutLine.start.x, cutLine.start.y);
-        ctx.lineTo(cutLine.end.x, cutLine.end.y);
-        ctx.stroke();
+        drawSimpleLine(ctx, cutLine.start.x, cutLine.start.y, cutLine.end.x, cutLine.end.y, "#FFFFFF", 3);
     }
 
     if (tempLine.start && tempLine.end) {
-        ctx.strokeStyle = tempLine.color;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(tempLine.start.x, tempLine.start.y);
-        ctx.lineTo(tempLine.end.x, tempLine.end.y);
-        ctx.stroke();
+        drawSimpleLine(ctx, tempLine.start.x, tempLine.start.y, tempLine.end.x, tempLine.end.y, tempLine.color, 3);
     }
-
 
     var tappedContents = globalStates.currentLogic.tappedContents;
     if (tappedContents) {
-
         var domElement = getDomElementForBlock(tappedContents.block);
 
         globalStates.currentLogic.tempIncomingLinks.forEach( function(linkData) {
@@ -1158,14 +1079,10 @@ function redrawDatacrafting() {
             var xOffset =  0.5 * grid.blockColWidth + (grid.blockColWidth + grid.marginColWidth) * linkData.itemB;
             var endX = parseInt(domElement.style.left) + xOffset;
             var endY = parseInt(domElement.style.top) + domElement.clientHeight/2;
-
             var startColor = startCell.getColorHSL();
-            ctx.strokeStyle = 'hsl('+startColor.h+','+startColor.s+'%,'+startColor.l+'%)'; //'white';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(startX, startY);
-            ctx.lineTo(endX, endY);
-            ctx.stroke();
+            var lineColor = 'hsl('+startColor.h+','+startColor.s+'%,'+startColor.l+'%)';
+
+            drawSimpleLine(ctx, startX, startY, endX, endY, lineColor, 2);
         });
 
         globalStates.currentLogic.tempOutgoingLinks.forEach( function(linkData) {
@@ -1176,149 +1093,12 @@ function redrawDatacrafting() {
             var endCell = getCellForBlock(grid, linkData.blockB, linkData.itemB);
             var endX = grid.getCellCenterX(endCell);
             var endY = grid.getCellCenterY(endCell);
-
             var endColor = endCell.getColorHSL();
-            ctx.strokeStyle = 'hsl('+endColor.h+','+endColor.s+'%,'+endColor.l+'%)'; //'white';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(startX, startY);
-            ctx.lineTo(endX, endY);
-            ctx.stroke();
+            var lineColor = 'hsl('+endColor.h+','+endColor.s+'%,'+endColor.l+'%)';
+
+            drawSimpleLine(ctx, startX, startY, endX, endY, lineColor, 2);
         });
-
     }
-
-    /*
-    // when moving a block, trace lines for each link to one of its inputs and outputs
-    if (globalStates.currentLogic.tempBlock) {
-        if (globalStates.currentLogic.tempBlock.incomingLinks) {
-            globalStates.currentLogic.tempBlock.incomingLinks.forEach( function(linkData) {
-                var startCell = getCellForBlock(globalStates.currentLogic.grid, linkData.blockA, linkData.itemA);
-                var startX = globalStates.currentLogic.grid.getCellCenterX(startCell);
-                var startY = globalStates.currentLogic.grid.getCellCenterY(startCell);
-
-                var xOffset =  0.5 * globalStates.currentLogic.grid.blockColWidth + (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth) * linkData.itemB;
-                var endX = parseInt(globalStates.currentLogic.tempBlock.domElement.style.left) + xOffset;
-                var endY = parseInt(globalStates.currentLogic.tempBlock.domElement.style.top) + globalStates.currentLogic.tempBlock.domElement.clientHeight/2;
-
-                var startColor = startCell.getColorHSL();
-                ctx.strokeStyle = 'hsl('+startColor.h+','+startColor.s+'%,'+startColor.l+'%)'; //'white';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(endX, endY);
-                ctx.stroke();
-            });
-        // }
-
-        if (globalStates.currentLogic.tempBlock.outgoingLinks) {
-            globalStates.currentLogic.tempBlock.outgoingLinks.forEach( function(linkData) {
-                var xOffset =  0.5 * globalStates.currentLogic.grid.blockColWidth + (globalStates.currentLogic.grid.blockColWidth + globalStates.currentLogic.grid.marginColWidth) * linkData.itemA;
-                var startX = parseInt(globalStates.currentLogic.tempBlock.domElement.style.left) + xOffset;
-                var startY = parseInt(globalStates.currentLogic.tempBlock.domElement.style.top) + globalStates.currentLogic.tempBlock.domElement.clientHeight/2;
-
-                var endCell = getCellForBlock(globalStates.currentLogic.grid, linkData.blockB, linkData.itemB);
-                var endX = globalStates.currentLogic.grid.getCellCenterX(endCell);
-                var endY = globalStates.currentLogic.grid.getCellCenterY(endCell);
-
-                var endColor = endCell.getColorHSL();
-                ctx.strokeStyle = 'hsl('+endColor.h+','+endColor.s+'%,'+endColor.l+'%)'; //'white';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(endX, endY);
-                ctx.stroke();
-            });
-        }
-    }
-    */
-}
-
-function checkForCutIntersections() {
-    var didRemoveAnyLinks = false;
-    for (var linkKey in globalStates.currentLogic.links) {
-        var didIntersect = false;
-        var blockLink = globalStates.currentLogic.links[linkKey];
-        var points = globalStates.currentLogic.grid.getPointsForLink(blockLink);
-        for (var j = 1; j < points.length; j++) {
-            var start = points[j - 1];
-            var end = points[j];
-            if (checkLineCross(start.screenX, start.screenY, end.screenX, end.screenY, cutLine.start.x, cutLine.start.y, cutLine.end.x, cutLine.end.y)) {
-                didIntersect = true;
-            }
-            if (didIntersect) {
-                removeBlockLink(linkKey);
-                didRemoveAnyLinks = true;
-            }
-        }
-    }
-    if (didRemoveAnyLinks) {
-        updateGrid(globalStates.currentLogic.grid);
-    }
-}
-
-function displayCellBlock(cell) {
-    // var isFirst = cell.isFirstItem();
-    // var isLast = cell.isLastItem();
-
-    // cell.domElement.style.borderTop = '1px black solid';
-    // cell.domElement.style.borderBottom = '1px black solid';
-    // if (isFirst) {
-    //     cell.domElement.style.borderLeft = '1px black solid';
-    // }
-    // if (isLast) {
-    //     cell.domElement.style.borderRight = '1px black solid';
-    // }
-    cell.domElement.style.backgroundColor = ''; //activeBlockColor; //TODO: BEN FIX
-    cell.domElement.style.opacity = '1.00';
-    // setCellContents(cell, "test");
-}
-
-function hideCellBlock(cell) {
-    if (cell.location.row === 0 || cell.location.row === 6) {
-        cell.domElement.style.backgroundColor = blockColorMap["bright"][cell.location.col/2];
-    } else {
-        cell.domElement.style.backgroundColor = blockColorMap["faded"][cell.location.col/2];
-    }
-    // cell.domElement.style.borderTop = '';
-    // cell.domElement.style.borderBottom = '';
-    // cell.domElement.style.borderLeft = '';
-    // cell.domElement.style.borderRight = '';
-    cell.domElement.style.opacity = 0.75;
-    // resetCellContents(cell);
-}
-
-function highlightBlockForMove(block) {
-    var blockTitle = blockTitles[block.globalId];
-    blockTitle.style.backgroundColor = movingBlockColor;
-}
-
-function unhighlightBlockForMove(block) {
-    var blockTitle = blockTitles[block.globalId];
-    blockTitle.style.backgroundColor = activeBlockColor;
-}
-
-
-function highlightCellsBlocksForMove(cells) {
-    cells.forEach( function(cell) {
-        cell.domElement.style.backgroundColor = movingBlockColor;   
-    });
-}
-
-function unhighlightCellsBlocksForMove(cells) {
-    cells.forEach( function(cell) {
-        cell.domElement.style.backgroundColor = activeBlockColor;
-    });
-}
-
-function displayMargin(cell) {
-    cell.domElement.style.display = "inline";
-    // cell.domElement.style.border = "1px solid black";
-}
-
-function hideMargin(cell) {
-    cell.domElement.style.display = "none";
-    // cell.domElement.style.border = "";
 }
 
 /**********************************************************************************************************************

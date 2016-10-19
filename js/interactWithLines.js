@@ -414,3 +414,12 @@ function drawYellow(context, lineStartPoint, lineEndPoint, radius) {
     context.closePath();
 }
 
+function drawSimpleLine(context, startX, startY, endX, endY, color, width) {
+    context.strokeStyle = color;
+    context.lineWidth = width;
+    context.beginPath();
+    context.moveTo(startX, startY);
+    context.lineTo(endX, endY);
+    context.stroke();
+}
+

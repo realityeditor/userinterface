@@ -2,14 +2,14 @@
 //   Data Structures - Definitions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// TODO: initialize simply by passing in the total width, total height, and ratio of w/h for block and margins
 // the grid is the overall data structure for managing block locations and calculating routes between them
-function Grid(blockColWidth, blockRowHeight, marginColWidth, marginRowHeight) {
+function Grid(containerWidth, containerHeight) {
+
     this.size = 7; // number of rows and columns
-    this.blockColWidth = blockColWidth; // width of cells in columns with blocks
-    this.blockRowHeight = blockRowHeight; // height of cells in columns with blocks
-    this.marginColWidth = marginColWidth; // width of cells in columns without blocks (the margins)
-    this.marginRowHeight = marginRowHeight; // height of cells in rows without blocks (the margins)
+    this.blockColWidth = 2 * (containerWidth / 11);
+    this.blockRowHeight = (containerHeight / 7);
+    this.marginColWidth = (containerWidth / 11);
+    this.marginRowHeight = this.blockRowHeight;
 
     this.cells = []; // array of [Cell] objects
 

@@ -421,8 +421,8 @@ function GUI() {
 
     thisPocket.addEventListener("pointerenter", function () { console.log("pointerenter");
 
-
-        if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1].src;
+        var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
+        if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1+indexChange].src;
 
         // this is where the virtual point disapears!
 
@@ -442,11 +442,12 @@ function GUI() {
 
     thisPocket.addEventListener("pointerleave", function (evt) { console.log("pointerleave");
 
+        var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
         if (globalStates.pocketButtonState === true) {
-            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0+indexChange].src;
         }
         else {
-            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2].src;
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2+indexChange].src;
         }
 
         // this is where the virtual point creates object
@@ -523,18 +524,23 @@ function GUI() {
 
     function pocketButtonAction() {
 
+        console.log("state: " + globalStates.pocketButtonState);
+
+        var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
+
         if (globalStates.pocketButtonState === true) {
             console.log("buttonon");
-            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0+indexChange].src;
             globalStates.pocketButtonState = false;
 
             if (globalStates.guiState === 'logic') {
                 blockMenuVisible();
+                console.log("blockMenuVisible");
             }
         }
         else {
             console.log("buttonoff");
-            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2].src;
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2+indexChange].src;
             globalStates.pocketButtonState = true;
 
             if (globalStates.guiState === 'logic') {
@@ -592,20 +598,24 @@ function preferencesVisible() {
  **/
 
 function craftingBoardVisible(objectKey, nodeKey) {
+    // update side menu buttons
     document.getElementById('guiButtonImage').src = guiButtonImage[5].src;
     document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
+    globalStates.pocketButtonState = true;
     document.getElementById('pocketButton').src = pocketButtonImage[4].src;
+    // set global state
     globalStates.guiState ="logic";
+    // display crafting board div
     document.getElementById("craftingBoard").style.visibility = "visible";
     document.getElementById("craftingBoard").style.display = "inline";
-    cout("craftingBoardVisible");
 
     if (DEBUG_DATACRAFTING) { // TODO: BEN DEBUG - turn off debugging!
         var logic = new Logic();
         initializeDatacraftingGrid(logic); 
         // initializeBlockMenu(logic);
     } else {
-        initializeDatacraftingGrid(objects[objectKey].logic[nodeKey]);
+        var nodeLogic = objects[objectKey].logic[nodeKey];
+        initializeDatacraftingGrid(nodeLogic);
     }
 }
 
@@ -614,23 +624,27 @@ function craftingBoardVisible(objectKey, nodeKey) {
  **/
 
 function craftingBoardHide() {
+    // remove the block menu if it's showing
     resetBlockMenu();
+    // reset side menu buttons
     document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
     document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+    // hide the crafting board div
     document.getElementById("craftingBoard").style.visibility = "hidden";
     document.getElementById("craftingBoard").style.display = "none";
-    cout("craftingBoardHide");
+    // reset the contents of the crafting board div so that another node's logic can be fresh loaded into it
     resetCraftingBoard();
 }
 
+/**
+ * @desc
+ **/
+
 function blockMenuVisible() {
+    // create the menu if it doesn't already exist, otherwise just show it
     var existingMenu = document.getElementById('menuContainer');
     if (existingMenu) {
-        // just show it
         existingMenu.style.display = 'inline';
-        // menuBlockDivs.forEach(function(blockDiv) {
-        //   blockDiv.style.display = 'inline-block';
-        // });
         redisplayTabSelection();
         redisplayBlockSelection();
     } else {
@@ -641,14 +655,17 @@ function blockMenuVisible() {
     }
 }
 
+/**
+ * @desc
+ **/
+
 function blockMenuHide() {
     var existingMenu = document.getElementById('menuContainer');
     if (existingMenu) {
         existingMenu.style.display = 'none';
-
         if (!globalStates.pocketButtonState) {
           globalStates.pocketButtonState = true;
-          document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+          document.getElementById('pocketButton').src = pocketButtonImage[4].src;
         }
     }
 }
@@ -697,15 +714,15 @@ function initializeDatacraftingGrid(logic) {
     globalStates.currentLogic = logic;
 
     var container = document.getElementById('craftingBoard');
-    var containerWidth = container.clientWidth;
-    var containerHeight = container.clientHeight;
-    var blockWidth = 2 * (containerWidth / 11);
-    var blockHeight = (containerHeight / 7);
-    var marginWidth = (containerWidth / 11);
-    var marginHeight = blockHeight;
+    //var containerWidth = container.clientWidth;
+    //var containerHeight = container.clientHeight;
+    //var blockWidth = 2 * (containerWidth / 11);
+    //var blockHeight = (containerHeight / 7);
+    //var marginWidth = (containerWidth / 11);
+    //var marginHeight = blockHeight;
 
     // initializes the data model for the datacrafting board
-    logic.grid = new Grid(blockWidth, blockHeight, marginWidth, marginHeight);
+    logic.grid = new Grid(container.clientWidth, container.clientHeight); //blockWidth, blockHeight, marginWidth, marginHeight);
 
     var datacraftingCanvas = document.createElement('canvas');
     datacraftingCanvas.setAttribute('id', 'datacraftingCanvas');
@@ -750,22 +767,20 @@ function initializeDatacraftingGrid(logic) {
     blocksContainer.setAttribute('id', 'blocks');
     container.appendChild(blocksContainer);
 
+    // an invisible div on top captures all the touch events and handles them properly
     var datacraftingEventDiv = document.createElement('div');
     datacraftingEventDiv.setAttribute('id', 'datacraftingEventDiv');
     datacraftingEventDiv.setAttribute("touch-action", "none");
     container.appendChild(datacraftingEventDiv);
-    // datacraftingEventDiv.style.width = dimensions.width;
-    // datacraftingEventDiv.style.height = dimensions.height;
 
-    addBlock(0, 0, {name:"delay",width:1}, "block1"+uuidTime());
-    addBlock(1, 3, {name:"delay",width:1}, "block2"+uuidTime());
-    addBlock(3, 2, {name:"delay",width:1}, "block2"+uuidTime());
+    //addBlock(0, 0, {name:"delay",width:1}, "block1"+uuidTime());
+    //addBlock(1, 3, {name:"delay",width:1}, "block2"+uuidTime());
+    //addBlock(3, 2, {name:"delay",width:1}, "block2"+uuidTime());
 
     updateGrid(logic.grid);
     addDatacraftingEventListeners();
 }
 
-var menuCurrentMenuState = 1;
 var menuCols = 4;
 var menuRows = 6;
 var menuSelectedBlock = null;
@@ -783,7 +798,7 @@ function initializeBlockMenu(logic, callback) {
 
   var container = document.createElement('div');
   container.setAttribute('id', 'menuContainer');
-  craftingBoard.appendChild(container);     
+  craftingBoard.appendChild(container);
 
   var menuBlockContainer = document.createElement('div');
   menuBlockContainer.setAttribute('id', 'menuBlockContainer');
