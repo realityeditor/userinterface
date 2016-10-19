@@ -272,8 +272,9 @@ function Block() {
     // indicates how much calls per second is happening on this block
     this.stress = 0;
 
-    this.domElement = null;
+    //this.domElement = null;
     this.isTempBlock = false;
+    this.isPortBlock = false;
 }
 
 /**

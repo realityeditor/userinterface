@@ -28,7 +28,7 @@ function Grid(containerWidth, containerHeight) {
 function Cell(location) {
     this.location = location; // CellLocation
     this.routeSegments = []; // [RouteSegment]
-    this.domElement = null; // <div> element //TODO: remove DOM element to decouple frontend from backend?
+    //this.domElement = null; // <div> element //TODO: remove DOM element to decouple frontend from backend?
 }
 
 function CellLocation(col,row) {
@@ -72,11 +72,11 @@ function RouteSegment(route, containsHorizontal, containsVertical) {
 // *** Public to app
 Cell.prototype.canHaveBlock = function() {
     return (this.location.col % 2 === 0) && (this.location.row % 2 === 0);
-}
+};
 
 Cell.prototype.isMarginCell = function() {
     return this.location.row % 2 === 0 && this.location.col % 2 === 1;
-}
+};
 
 // *** Public to app
 // utility - gets the hue for cells in a given column
@@ -140,8 +140,9 @@ Cell.prototype.blockAtThisLocation = function() {
         var blockPos = convertGridPosToBlockPos(this.location.col, this.location.row);
         return getBlockOverlappingPosition(blockPos.x, blockPos.y);
     }
-}
+};
 
+/*
 Cell.prototype.blockOverlappingThisMargin = function() {
     if (this.location.col % 2 === 0 || this.location.row % 2 === 1) return; // this isn't a margin cell
     var blockPosBefore = convertGridPosToBlockPos(this.location.col-1, this.location.row);
@@ -153,15 +154,17 @@ Cell.prototype.blockOverlappingThisMargin = function() {
     } else {
         return null;
     }
-}
+};
+*/
 
 Cell.prototype.itemAtThisLocation = function() {
     var block = this.blockAtThisLocation();
     var blockGridPos = convertBlockPosToGridPos(block.x, block.y);
     var itemCol = this.location.col - blockGridPos.col;
     return convertGridPosToBlockPos(itemCol, blockGridPos.row).x;
-}
+};
 
+/*
 Cell.prototype.isFirstItem = function() {
     return this.itemAtThisLocation() === 0;
 }
@@ -171,6 +174,7 @@ Cell.prototype.isLastItem = function() {
     var item = this.itemAtThisLocation();
     return item === (block.blockSize-1);
 }
+*/
 
 ////////////////////////////////////////////////////////////////////////////////
 //      ROUTE METHODS   
@@ -233,7 +237,7 @@ Route.prototype.getXYPositionAtPercentage = function(percent) {
     } else {
         return null;
     }
-}
+};
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   GRID METHODS
@@ -270,7 +274,7 @@ Grid.prototype.getPixelDimensions = function() {
         "width": width,
         "height": height
     };
-}
+};
 
 // utility - gets a cell at a given grid location
 Grid.prototype.getCell = function(col, row) {
@@ -325,6 +329,7 @@ Grid.prototype.getRowCenterY = function(row) {
     return this.getCellCenterY(this.getCell(0,row));
 };
 
+/*
 // performs action on all cells that can have a block (not the empty margins)
 Grid.prototype.forEachPossibleBlockCell = function(action) {
     this.cells.filter( function(cell) {
@@ -333,7 +338,9 @@ Grid.prototype.forEachPossibleBlockCell = function(action) {
         action(cell);
     });
 };
+*/
 
+/*
 Grid.prototype.forEachPossibleBlockMarginCell = function(action) {
     this.cells.filter( function(cell) {
         return (cell.location.row % 2 === 0 && cell.location.col % 2 === 1);
@@ -341,6 +348,7 @@ Grid.prototype.forEachPossibleBlockMarginCell = function(action) {
         action(cell);
     });
 }
+*/
 
 // utility - true iff cells are in same row
 Grid.prototype.areCellsHorizontal = function(cell1, cell2) {
@@ -829,7 +837,7 @@ Grid.prototype.getCellsOver = function (firstCell,blockWidth,itemSelected,includ
         cells.push(this.getCell(col - (itemSelected * 2), firstCell.location.row))
     }
     return cells;
-}
+};
 
 Grid.prototype.getCellFromPointerPosition = function(xCoord, yCoord) {
     var col;
@@ -854,13 +862,12 @@ Grid.prototype.getCellFromPointerPosition = function(xCoord, yCoord) {
     }
 
     return this.getCell(col, row);
-}
+};
 
 // gets a block overlapping the cell at this x,y location
 function getBlockOverlappingPosition(x, y) {
     // check if block of size >= 1 is at (x, y)
-    var block = null;
-    block = getBlock(x,y);
+    var block = getBlock(x,y);
     if (block && block.blockSize >= 1) {
         return block;
     }
@@ -954,12 +961,14 @@ function removeBlockLink(linkKey) {
     delete globalStates.currentLogic.links[linkKey];
 }
 
+/*
 function clearAllBlockLinks() {
     for (var linkKey in globalStates.currentLogic.blocks) {
         removeBlockLink(linkKey);
     }
     globalStates.currentLogic.tempLink = null;
 }
+*/
 
 function removeBlock(logic, block) {
     removeLinksForBlock(logic, block);
@@ -1004,6 +1013,7 @@ function areBlockLinksEqual(blockLink1, blockLink2) {
     return false;
 }
 
+/*
 function canAddBlockAtCell(firstCellOver, tempBlock) {
     if (!firstCellOver || !tempBlock) return false;
     var cellsOver = globalStates.currentLogic.grid.getCellsOver(firstCellOver,tempBlock.blockJSON['width'], tempBlock.itemSelected);
@@ -1015,6 +1025,7 @@ function canAddBlockAtCell(firstCellOver, tempBlock) {
     });
     return canAddBlock;
 }
+*/
 
 // points is an array like [{screenX: x1, screenY: y1}, ...]
 // calculates useful pointData for drawing lines with varying color/weight/etc,
@@ -1040,4 +1051,4 @@ function preprocessPointsForDrawing(points) { //... only ever used here.. could 
         lengths: lengths,
         percentages: percentages
     };
-};
+}

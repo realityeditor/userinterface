@@ -1010,6 +1010,7 @@ function updateGrid(grid) {
     // add new domElement for each block
     for (var blockKey in globalStates.currentLogic.blocks) {
         var block = globalStates.currentLogic.blocks[blockKey];
+        if (block.isPortBlock) continue; // don't render invisible input/output blocks
         addDomElementForBlock(block, grid);
     }
 }

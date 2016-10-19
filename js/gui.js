@@ -758,9 +758,25 @@ function initializeDatacraftingGrid(logic) {
                 blockPlaceholder.style.backgroundColor = blockColorMap[colorMapKey][colNum/2];
 
                 rowDiv.appendChild(blockPlaceholder);
+
+                // // add invisible blocks to top and bottom edges //TODO: make use of replacePortBlocksIfNecessary method, just pass in filtered list of cells that need them at the end
+                // if (rowNum === 0 || rowNum === logic.grid.size-1) {
+                //     var blockJSON = toBlockJSON("edge", 1);
+                //     var blockPos = convertGridPosToBlockPos(colNum, rowNum);
+                //     var globalId = "edgeBlock" + uuidTime();
+                //     var block = addBlock(blockPos.x, blockPos.y, blockJSON, globalId);
+                //     block.isPortBlock = true;
+                //     // block.isInput = (rowNum === 0);
+                //     // block.isOutput = (rowNum === logic.grid.size-1);
+                // }
             }
         }
     }
+
+    var portCells = logic.grid.cells.filter(function(cell) {
+        return cell.canHaveBlock() && (cell.location.row === 0 || cell.location.row === logic.grid.size-1);
+    });
+    replacePortBlocksIfNecessary(portCells);
 
     // add a container where the real blocks will eventually be added
     var blocksContainer = document.createElement('div');
@@ -779,6 +795,33 @@ function initializeDatacraftingGrid(logic) {
 
     updateGrid(logic.grid);
     addDatacraftingEventListeners();
+}
+
+function removePortBlocksIfNecessary(cells) {
+  cells.forEach( function(cell) {
+    var existingBlock = cell.blockAtThisLocation();
+    if (existingBlock && isPortBlock(existingBlock)) {
+        removeBlock(globalStates.currentLogic, existingBlock);
+    }
+  });
+}
+
+function replacePortBlocksIfNecessary(cells) {
+  cells.forEach( function(cell) {
+    if (!cell.blockAtThisLocation()) {
+      if (cell.location.row === 0 || cell.location.row === globalStates.currentLogic.grid.size-1) {
+        var blockJSON = toBlockJSON("edge", 1);
+        var blockPos = convertGridPosToBlockPos(cell.location.col, cell.location.row);
+        var globalId = "edgeBlock" + uuidTime();
+        var block = addBlock(blockPos.x, blockPos.y, blockJSON, globalId);
+        block.isPortBlock = true;
+      }
+    }
+  });
+}
+
+function toBlockJSON(name, width) {
+    return { name: name, width: width };
 }
 
 var menuCols = 4;

@@ -38,7 +38,7 @@ function convertToTempBlock(contents) {
   updateTempLinkOutlinesForBlock(contents);
 }
 
-function moveBlockToPosition(contents, pointerX, pointerY) {
+function moveBlockDomToPosition(contents, pointerX, pointerY) {
   var grid = globalStates.currentLogic.grid;
   var domElement = getDomElementForBlock(contents.block); 
   domElement.style.left = pointerX - offsetForItem(contents.item);
@@ -52,7 +52,17 @@ function offsetForItem(item) {
 }
 
 function canConnectBlocks(contents1, contents2) {
-  return !areBlocksEqual(contents1.block, contents2.block);
+  return !areBlocksEqual(contents1.block, contents2.block) && !isInputBlock(contents2.block);
+}
+
+function areBlocksTempConnected(contents1, contents2) {
+  var tempLink = globalStates.currentLogic.tempLink;
+  if (!tempLink) return false;
+
+  return areBlocksEqual(tempLink.blockA, contents1.block) &&
+          areBlocksEqual(tempLink.blockB, contents2.block) &&
+          tempLink.itemA === contents1.item &&
+          tempLink.itemB === contents2.item;
 }
 
 function canPlaceBlockInCell(tappedContents, cell) {
@@ -61,7 +71,7 @@ function canPlaceBlockInCell(tappedContents, cell) {
   var cellsOver = grid.getCellsOver(cell, tappedContents.block.blockSize, tappedContents.item);
   var canPlaceBlock = true;
   cellsOver.forEach( function(cell) {
-    if (!cell || !cell.canHaveBlock() || (cell.blockAtThisLocation() && !cell.blockAtThisLocation().isTempBlock)) {
+    if (!cell || !cell.canHaveBlock() || (cell.blockAtThisLocation() && !cell.blockAtThisLocation().isTempBlock && !cell.blockAtThisLocation().isPortBlock)) {
       canPlaceBlock = false;
     }
   });
@@ -69,16 +79,19 @@ function canPlaceBlockInCell(tappedContents, cell) {
 }
 
 function styleBlockForHolding(contents, startHold) {
+  var domElement = getDomElementForBlock(contents.block);
+  if (!domElement) return;
   if (startHold) {
-    blockDomElements[contents.block.globalId].setAttribute('class','blockDivHighlighted');
+    domElement.setAttribute('class','blockDivHighlighted');
   } else {
-    blockDomElements[contents.block.globalId].setAttribute('class','blockDivPlaced');
+    domElement.setAttribute('class','blockDivPlaced');
   }
 
 }
 
 function styleBlockForPlacement(contents, shouldHighlight) {
-  var domElement = getDomElementForBlock(contents.block); // contents.block.domElement; // getDomElement();
+  var domElement = getDomElementForBlock(contents.block);
+  if (!domElement) return;
   if (shouldHighlight) {
     domElement.style.opacity = 1.00;
   } else {
@@ -86,19 +99,71 @@ function styleBlockForPlacement(contents, shouldHighlight) {
   }
 }
 
+//TODO: modify so that whenever you add a block to a cell with a portBlock, first remove the port block
+//      and whenever you remove a block from a cell in top or bottom rows, re-add the port block
+
 function placeBlockInCell(contents, cell) {
+  var grid = globalStates.currentLogic.grid;
   if (cell) {
-    contents.block.x = (cell.location.col / 2) - Math.floor(contents.item);
+    var prevCell = getCellForBlock(grid, contents.block, contents.item);
+    var newCellsOver = grid.getCellsOver(cell, contents.block.blockSize, contents.item);
+
+    removePortBlocksIfNecessary(newCellsOver);
+
+    contents.block.x = Math.floor((cell.location.col / 2) - (contents.item));
     contents.block.y = (cell.location.row / 2);
     contents.block.isTempBlock = false;
     convertTempLinkOutlinesToLinks(contents);
-    // TODO: create real links again using each temp link
+
+    // removePortBlocksIfNecessary(newCellsOver);
+    if (prevCell) {
+      var prevCellsOver = grid.getCellsOver(prevCell, contents.block.blockSize, contents.item);
+      replacePortBlocksIfNecessary(prevCellsOver);
+    }
     contents = null;
+
   } else {
     removeTappedContents(contents);
   }
   updateGrid(globalStates.currentLogic.grid);
 }
+
+function removePortBlocksIfNecessary(cells) {
+  cells.forEach( function(cell) {
+    if (cell) {
+      var existingBlock = cell.blockAtThisLocation();
+      if (existingBlock && isPortBlock(existingBlock)) {
+          removeBlock(globalStates.currentLogic, existingBlock);
+      }
+    }
+  });
+}
+
+function replacePortBlocksIfNecessary(cells) {
+  cells.forEach( function(cell) {
+    if (cell && !cell.blockAtThisLocation()) {
+      if (cell.location.row === 0 || cell.location.row === globalStates.currentLogic.grid.size-1) {
+        var blockJSON = toBlockJSON("edge", 1);
+        var blockPos = convertGridPosToBlockPos(cell.location.col, cell.location.row);
+        var globalId = "edgeBlock" + uuidTime();
+        var block = addBlock(blockPos.x, blockPos.y, blockJSON, globalId);
+        block.isPortBlock = true;
+      }
+    }
+  });
+}
+
+
+                // // add invisible blocks to top and bottom edges
+                // if (rowNum === 0 || rowNum === logic.grid.size-1) {
+                //     var blockJSON = toBlockJSON("edge", 1);
+                //     var blockPos = convertGridPosToBlockPos(colNum, rowNum);
+                //     var globalId = "edgeBlock" + uuidTime();
+                //     var block = addBlock(blockPos.x, blockPos.y, blockJSON, globalId);
+                //     block.isPortBlock = true;
+                //     // block.isInput = (rowNum === 0);
+                //     // block.isOutput = (rowNum === logic.grid.size-1);
+                // }
 
 function updateTempLinkOutlinesForBlock(contents) {
   for (var linkKey in globalStates.currentLogic.links) {
@@ -124,14 +189,24 @@ function updateTempLinkOutlinesForBlock(contents) {
 
 function convertTempLinkOutlinesToLinks(contents) {
   globalStates.currentLogic.tempIncomingLinks.forEach( function(linkData) {
-    addBlockLink(linkData.blockA, contents.block, linkData.itemA, linkData.itemB, true);
+    if (blocksExist(linkData.blockA, contents.block)) {
+      addBlockLink(linkData.blockA, contents.block, linkData.itemA, linkData.itemB, true);      
+    }
   });
 
   globalStates.currentLogic.tempOutgoingLinks.forEach( function(linkData) {
-    addBlockLink(contents.block, linkData.blockB, linkData.itemA, linkData.itemB, true);
+    if (blocksExist(linkData.blockB, contents.block)) {
+      addBlockLink(contents.block, linkData.blockB, linkData.itemA, linkData.itemB, true);
+    }
   });
 
   resetTempLinkOutlines();
+}
+
+function blocksExist(block1, block2) {
+  var blocks = globalStates.currentLogic.blocks;
+  return !!(blocks[block1.globalId]) && !!(blocks[block2.globalId]);
+  // return !!globalStates.currentLogic.blocks[blockA.globalId] && !!globalStates.currentLogic.blocks[blockB.globalId]
 }
 
 function resetTempLinkOutlines() {
@@ -140,8 +215,17 @@ function resetTempLinkOutlines() {
 }
 
 function removeTappedContents(contents) {
+  var grid = globalStates.currentLogic.grid;
   resetTempLinkOutlines();
   removeBlock(globalStates.currentLogic, contents.block);
+
+  // replace port blocks if necessary
+  var prevCell = getCellForBlock(grid, contents.block, contents.item);
+  if (prevCell) {
+    var prevCellsOver = grid.getCellsOver(prevCell, contents.block.blockSize, contents.item);
+    replacePortBlocksIfNecessary(prevCellsOver);
+  }
+
   contents = null;
   updateGrid(globalStates.currentLogic.grid);
 }
@@ -224,6 +308,7 @@ function cutIntersectingLinks() {
 }
 
 function getDomElementForBlock(block) {
+  if (isPortBlock(block)) return;
   return blockDomElements[block.globalId];
 }
 
@@ -250,3 +335,14 @@ function hideBlockSettings() {
   }
 }
 
+function isPortBlock(block) {
+  return block.isPortBlock;
+}
+
+function isInputBlock(block) {
+  return isPortBlock(block) && block.y === 0;
+}
+
+function isOutputBlock(block) {
+  return isPortBlock(block) && !isInputBlock(block);
+}

@@ -25,7 +25,7 @@ function pointerDown(e) {
     if (!cell) return; // tapped on menu
     var contents = getCellContents(cell);
     
-    if (contents) {
+    if (contents && !isOutputBlock(contents.block)) {
         touchState = TS_TAP_BLOCK;
         // var block = contents.block;
         // var item = contents.item;
@@ -69,7 +69,8 @@ function pointerMove(e) {
             touchState = TS_CONNECT;
         
         // otherwise if enough time has passed, change to TS_HOLD
-        } else {
+        } else if (!isPortBlock(contents.block)) {
+
             if (Date.now() - startTapTime > HOLD_TIME_THRESHOLD) {
                 console.log("enough time has passed -> HOLD (" + (Date.now() - startTapTime) + ")");
                 touchState = TS_HOLD;
@@ -84,15 +85,17 @@ function pointerMove(e) {
         if (!areCellsEqual(cell, tappedContents.cell)) {
             touchState = TS_MOVE;
             convertToTempBlock(tappedContents);
-            moveBlockToPosition(tappedContents, e.pageX, e.pageY);
+            moveBlockDomToPosition(tappedContents, e.pageX, e.pageY);
         }
 
     } else if (touchState === TS_CONNECT) {
 
         // if you are over an elligible block, create a temp link and re-route grid
-        if (contents && canConnectBlocks(tappedContents, contents)) {
+        if (contents && canConnectBlocks(tappedContents, contents)){ //&& !areBlocksTempConnected(tappedContents, contents)) { //TODO: don't keep doing this if we already have a temp link line between the two
             resetLinkLine();
-            createTempLink(tappedContents, contents);
+            if (!areBlocksTempConnected(tappedContents, contents)) {
+                createTempLink(tappedContents, contents);
+            }
 
         // if you aren't over an elligible block, draw a line to current position        
         } else {
@@ -102,7 +105,7 @@ function pointerMove(e) {
     } else if (touchState === TS_MOVE) {
 
         // move the temp block
-        moveBlockToPosition(tappedContents, e.pageX, e.pageY);
+        moveBlockDomToPosition(tappedContents, e.pageX, e.pageY);
 
         // if you are over an elligible cell, style temp block to highlighted
         var cell = getCellOverPointer(e.pageX, e.pageY);
