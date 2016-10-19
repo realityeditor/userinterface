@@ -714,15 +714,9 @@ function initializeDatacraftingGrid(logic) {
     globalStates.currentLogic = logic;
 
     var container = document.getElementById('craftingBoard');
-    //var containerWidth = container.clientWidth;
-    //var containerHeight = container.clientHeight;
-    //var blockWidth = 2 * (containerWidth / 11);
-    //var blockHeight = (containerHeight / 7);
-    //var marginWidth = (containerWidth / 11);
-    //var marginHeight = blockHeight;
 
     // initializes the data model for the datacrafting board
-    logic.grid = new Grid(container.clientWidth, container.clientHeight); //blockWidth, blockHeight, marginWidth, marginHeight);
+    logic.grid = new Grid(container.clientWidth, container.clientHeight);
 
     var datacraftingCanvas = document.createElement('canvas');
     datacraftingCanvas.setAttribute('id', 'datacraftingCanvas');
@@ -753,22 +747,9 @@ function initializeDatacraftingGrid(logic) {
                 var blockPlaceholder = document.createElement('div');
                 var className = (colNum === logic.grid.size - 1) ? "blockPlaceholderLastCol" : "blockPlaceholder";
                 blockPlaceholder.setAttribute("class", className);
-
                 var colorMapKey = (rowNum === 0 || rowNum === 6) ? "bright" : "faded";
                 blockPlaceholder.style.backgroundColor = blockColorMap[colorMapKey][colNum/2];
-
                 rowDiv.appendChild(blockPlaceholder);
-
-                // // add invisible blocks to top and bottom edges //TODO: make use of replacePortBlocksIfNecessary method, just pass in filtered list of cells that need them at the end
-                // if (rowNum === 0 || rowNum === logic.grid.size-1) {
-                //     var blockJSON = toBlockJSON("edge", 1);
-                //     var blockPos = convertGridPosToBlockPos(colNum, rowNum);
-                //     var globalId = "edgeBlock" + uuidTime();
-                //     var block = addBlock(blockPos.x, blockPos.y, blockJSON, globalId);
-                //     block.isPortBlock = true;
-                //     // block.isInput = (rowNum === 0);
-                //     // block.isOutput = (rowNum === logic.grid.size-1);
-                // }
             }
         }
     }
@@ -789,6 +770,7 @@ function initializeDatacraftingGrid(logic) {
     datacraftingEventDiv.setAttribute("touch-action", "none");
     container.appendChild(datacraftingEventDiv);
 
+    // debug: uncomment to add some default blocks to the initial grid
     //addBlock(0, 0, {name:"delay",width:1}, "block1"+uuidTime());
     //addBlock(1, 3, {name:"delay",width:1}, "block2"+uuidTime());
     //addBlock(3, 2, {name:"delay",width:1}, "block2"+uuidTime());
@@ -797,28 +779,7 @@ function initializeDatacraftingGrid(logic) {
     addDatacraftingEventListeners();
 }
 
-function removePortBlocksIfNecessary(cells) {
-  cells.forEach( function(cell) {
-    var existingBlock = cell.blockAtThisLocation();
-    if (existingBlock && isPortBlock(existingBlock)) {
-        removeBlock(globalStates.currentLogic, existingBlock);
-    }
-  });
-}
 
-function replacePortBlocksIfNecessary(cells) {
-  cells.forEach( function(cell) {
-    if (!cell.blockAtThisLocation()) {
-      if (cell.location.row === 0 || cell.location.row === globalStates.currentLogic.grid.size-1) {
-        var blockJSON = toBlockJSON("edge", 1);
-        var blockPos = convertGridPosToBlockPos(cell.location.col, cell.location.row);
-        var globalId = "edgeBlock" + uuidTime();
-        var block = addBlock(blockPos.x, blockPos.y, blockJSON, globalId);
-        block.isPortBlock = true;
-      }
-    }
-  });
-}
 
 function toBlockJSON(name, width) {
     return { name: name, width: width };
@@ -832,7 +793,7 @@ var menuIsPointerDown = false;
 var menuNumTabs = 5;
 var menuSelectedTab = 0;
 var menuTabs = [];
-var menuBlockData = defaultBlockData(); //menuLoadBlocks();
+var menuBlockData = defaultBlockData();
 var menuBlockDivs = [];
 var menuBlockToAdd = null;
 
@@ -877,11 +838,12 @@ function initializeBlockMenu(logic, callback) {
 
     menuTabs.push(menuTab);
     menuSideContainer.appendChild(menuTab);
-}
+  }
 
   menuLoadBlocks( function(blockData) {
-    menuBlockData[0] = blockData;
-  
+    for (var i = 0; i < menuNumTabs; i++) {
+        menuBlockData[i] = blockData[i];
+    }  
     for (var r = 0; r < menuRows; r++) {
         var row = document.createElement('div');
         menuBlockContainer.appendChild(row);
@@ -900,7 +862,6 @@ function initializeBlockMenu(logic, callback) {
             row.appendChild(block);
         }
     }
-
     callback();
   });
 }
@@ -933,48 +894,34 @@ function readTextFile(file, callback) {
 }
 
 function menuLoadBlocks(callback) {
-
   readTextFile('blocks/blocks.json', function(fileText){
     var blockJSON = JSON.parse(fileText);
     console.log(blockJSON);
     var blockDirs = blockJSON['blockDirs'];
     var blockData = {};
     var numBlocksLoaded = 0;
-    blockDirs.forEach( function(blockDirName) {
-      var blockPath = 'blocks/' + blockDirName + '/block.json';
-      readTextFile(blockPath, function(blockFileText) {
-        blockData[blockDirName] = JSON.parse(blockFileText);
-        numBlocksLoaded++;
-        if (numBlocksLoaded === blockDirs.length) {
-          callback(blockData);
-        }
-      });
+
+    console.log(blockDirs);
+    blockDirs.forEach( function(category, i) {
+        blockData[i] = {};
+        category.forEach( function(blockDirName) {
+            var blockPath = 'blocks/' + blockDirName + '/block.json';
+            readTextFile(blockPath, function(blockFileText) {
+                blockData[i][blockDirName] = JSON.parse(blockFileText);
+                numBlocksLoaded++;
+                if (numBlocksLoaded === blockDirs.length) {
+                    callback(blockData);
+                }
+            });
+        });
     });
   });
 }
 
+// TODO: in the future, cache some blocks that can be loaded immeditately
+//       instead of requesting data from another file
 function defaultBlockData() {
-  return [
-    [],
-    [],
-    [],
-    [],
-    []
-    // [ 'one','two','three','four',
-    //   'one','two','three','four',
-    //   'one','two','three','four',
-    //   'one','two','three','four',
-    //   'one','two','three','four',
-    //   'one','two','three','four'
-    // ],
-    // ['a','b','c'],
-    // ['d','e','f'],
-    // ['g','h','i'],
-    // { 1:{name:'add-1', width:1},
-    //   2:{name:'add-2', width:2},
-    //   3:{name:'add-3', width:3},
-    //   4:{name:'add-4', width:4} }
-  ];
+  return [ [], [], [], [], [] ];
 }
 
 function menuTabSelected(e) {
@@ -986,24 +933,6 @@ function menuTabSelected(e) {
     redisplayTabSelection();
     redisplayBlockSelection();
 }
-
-// function menuTabIconSelected(e) {
-//   e.preventDefault();
-  
-//   menuSelectedTab = e.target.parentNode.tabIndex;
-//   redisplayTabSelection();
-//   redisplayBlockSelection();
-// }
-
-// function menuTabSelected(e) {
-//   e.preventDefault();
-
-//   selectedTab = e.target.tabIndex;
-//   if (selectedTab < 0) selectedTab = e.target.parentNode.tabIndex;
-//   if (selectedTab < 0) selectedTab = 0;
-//   redisplayTabSelection();
-//   redisplayBlockSelection();
-// }
 
 function redisplayTabSelection() {
   menuTabs.forEach(function(tab) {
@@ -1017,14 +946,11 @@ function redisplayTabSelection() {
 }
 
 function redisplayBlockSelection() {
-  // var blocksInThisSection = menuBlockData[menuSelectedTab];
-  // if (typeof(blocksInThisSection) === "object") {
-    var blocksObject = menuBlockData[menuSelectedTab]; //JSON.parse(JSON.stringify(blocksInThisSection));
-    var blocksInThisSection = [];
-    for (var key in blocksObject) {
-      blocksInThisSection.push(blocksObject[key]);
-    }
-  // }
+  var blocksObject = menuBlockData[menuSelectedTab];
+  var blocksInThisSection = [];
+  for (var key in blocksObject) {
+    blocksInThisSection.push(blocksObject[key]);
+  }
   console.log(blocksInThisSection);
 
   // reassign as many divs as needed to the current set of blocks
@@ -1035,10 +961,10 @@ function redisplayBlockSelection() {
     blockDiv.firstChild.innerHTML = thisBlockData['name'];
     blockDiv.style.display = 'inline-block';
   }
+
   // clear the remaining block divs
   for (var i = blocksInThisSection.length; i < menuBlockDivs.length; i++) {
     var blockDiv = menuBlockDivs[i];
-    // blockDiv.firstChild.innerHTML = 'none';
     blockDiv.blockData = '';
     blockDiv.style.display = 'none';
   }
@@ -1051,16 +977,8 @@ function blockMenuPointerDown(e) {
   menuIsPointerDown = true;
   console.log('pressed block');
   menuSelectedBlock = e.target;
-  // setTimeout(function() {
-  //   console.log("press done");
-  //   if (menuSelectedBlock) {
-  //     console.log(menuSelectedBlock);
-      menuSelectedBlock.parentNode.setAttribute('class', 'menuBlockSelected');
-      // menuSelectedBlock.parentNode.addEventListener("webkitAnimationEnd", animationEndedBlockSelected);
-    // }
-  // }, 100);
-    menuBlockToAdd = e.target.parentNode;
-
+  menuSelectedBlock.parentNode.setAttribute('class', 'menuBlockSelected');
+  menuBlockToAdd = e.target.parentNode;
 }
 
 function blockMenuPointerUp(e) {
@@ -1086,56 +1004,15 @@ function blockMenuPointerLeave(e) {
   menuBlockToAdd = null;
 }
 
-/*
-function animationEndedBlockSelected(e) {
-  e.target.removeEventListener("webkitAnimationEnd", animationEndedBlockSelected);
-  if (menuIsPointerDown && menuSelectedBlock === e.target.firstChild) {
-    // var blockWidth = 1;
-    // var blockName = e.target.firstChild.innerHTML;
-    // if (blockName === "two") {
-    //   blockWidth = 2;
-    // } else if (blockName === "three") {
-    //   blockWidth = 3;
-    // } else if (blockName === "four") {
-    //   blockWidth = 4;
-    // }
-
-    // var itemSelected = 0;
-    // var blockRect = e.target.getBoundingClientRect();
-    // var pointerX = blockRect.left + blockRect.width/2;
-    // var pointerY = blockRect.top + blockRect.height/2;
-    // createTempBlockOnPointer(blockWidth, pointerX, pointerY, itemSelected);
-
-    // blockMenuHide();
-    menuBlockToAdd = e.target;
-  }
-}
-*/
-
 function blockMenuPointerMove(e) {
   e.preventDefault();
 
   if (menuBlockToAdd) {
-      // var blockName = menuBlockToAdd.blockData['name'] || "error";
-      // var blockWidth = menuBlockToAdd.blockData['width'] || 1;
-      // var blockName = menuBlockToAdd.firstChild.innerHTML;
-      // if (blockName === "two") {
-      //   blockWidth = 2;
-      // } else if (blockName === "three") {
-      //   blockWidth = 3;
-      // } else if (blockName === "four") {
-      //   blockWidth = 4;
-      // }
-
       var blockJSON = menuBlockToAdd.blockData;
-      // var itemSelected = 0;
       var blockRect = menuBlockToAdd.getBoundingClientRect();
       var pointerX = blockRect.left + blockRect.width/2;
       var pointerY = blockRect.top + blockRect.height/2;
-      // createTempBlockOnPointer(blockJSON, pointerX, pointerY, itemSelected);
-
       addBlockFromMenu(blockJSON, pointerX, pointerY);
-
       menuBlockToAdd = null;
       blockMenuHide();
   }

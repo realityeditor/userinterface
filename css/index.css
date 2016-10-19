@@ -387,7 +387,8 @@ body {
   user-select:none;
   -webkit-user-select:none;
   color: #000000;
-  font-family: Helvetica Neue, Helvetica, Arial;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-size: 14px;
 }
 
   @keyframes blockSelectedKeyframes {
