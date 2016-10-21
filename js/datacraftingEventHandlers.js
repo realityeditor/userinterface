@@ -103,9 +103,11 @@ function pointerMove(e) {
         }
 
     } else if (touchState === TS_MOVE) {
-
-        // move the temp block
-        moveBlockDomToPosition(tappedContents, e.pageX, e.pageY);
+        // snap if to grid position if necessary, otherwise just move block to pointer position
+        var didSnap = snapBlockToCellIfPossible(tappedContents, cell, e.pageX, e.pageY); //TODO: move to inside the canPlaceBlockInCell block to avoid redundant checks
+        if (!didSnap) {
+            moveBlockDomToPosition(tappedContents, e.pageX, e.pageY);
+        }
 
         // if you are over an elligible cell, style temp block to highlighted
         var cell = getCellOverPointer(e.pageX, e.pageY);
@@ -120,7 +122,6 @@ function pointerMove(e) {
     } else if (touchState === TS_CUT) {
 
         // draw the cut line from cutLineStart to current position
-
         var cutLineEnd = {
             x: e.pageX,
             y: e.pageY
@@ -176,26 +177,6 @@ function pointerUp(e, didPointerLeave) {
                 placeBlockInCell(tappedContents, tappedContents.cell);
             }
         }
-
-        /*
-        // if you are over an elligible cell, add block to that cell        
-        if (canPlaceBlockInCell(tappedContents, cell)) {
-
-            placeBlockInCell(tappedContents, cell);
-
-        } else {
-            
-            // return block to start position if tap up,
-            // but delete it entirely if dragged to menu
-            
-            if (!didPointerLeave) {
-                placeBlockInCell(tappedContents, tappedContents.cell);
-            } else {
-                removeTappedContents(tappedContents);
-            }
-
-        }
-        */
 
     } else if (touchState === TS_CUT) {
         cutIntersectingLinks();

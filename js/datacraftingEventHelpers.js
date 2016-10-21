@@ -45,9 +45,22 @@ function moveBlockDomToPosition(contents, pointerX, pointerY) {
   domElement.style.top = pointerY - grid.blockRowHeight/2;
 }
 
+function snapBlockToCellIfPossible(contents, cell, pointerX, pointerY) {
+  var grid = globalStates.currentLogic.grid;
+  if (canPlaceBlockInCell(contents, cell)) {
+    var dX = Math.abs(pointerX - grid.getCellCenterX(cell)) / (grid.blockColWidth/2);
+    var dY = Math.abs(pointerY - grid.getCellCenterY(cell)) / (grid.blockRowHeight/2);
+    var shouldSnap = (dX * dX + dY * dY) < 0.5; // only snaps to grid if tighter bound is overlapped
+    if (shouldSnap) {
+      moveBlockDomToPosition(contents, grid.getCellCenterX(cell), grid.getCellCenterY(cell));
+      return true;
+    }
+  }
+  return false;
+}
+
 function offsetForItem(item) {
   var grid = globalStates.currentLogic.grid;
-
   return grid.blockColWidth/2 + item * (grid.blockColWidth + grid.marginColWidth);
 }
 
@@ -152,18 +165,6 @@ function replacePortBlocksIfNecessary(cells) {
     }
   });
 }
-
-
-                // // add invisible blocks to top and bottom edges
-                // if (rowNum === 0 || rowNum === logic.grid.size-1) {
-                //     var blockJSON = toBlockJSON("edge", 1);
-                //     var blockPos = convertGridPosToBlockPos(colNum, rowNum);
-                //     var globalId = "edgeBlock" + uuidTime();
-                //     var block = addBlock(blockPos.x, blockPos.y, blockJSON, globalId);
-                //     block.isPortBlock = true;
-                //     // block.isInput = (rowNum === 0);
-                //     // block.isOutput = (rowNum === logic.grid.size-1);
-                // }
 
 function updateTempLinkOutlinesForBlock(contents) {
   for (var linkKey in globalStates.currentLogic.links) {

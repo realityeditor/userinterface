@@ -779,18 +779,14 @@ function initializeDatacraftingGrid(logic) {
     addDatacraftingEventListeners();
 }
 
-
-
 function toBlockJSON(name, width) {
     return { name: name, width: width };
 }
 
-var menuCols = 4;
-var menuRows = 6;
+// TODO: decide where these global variables should live... perhaps in a blockMenu object in logic
 var menuSelectedBlock = null;
 var menuIsPointerDown = false;
 
-var menuNumTabs = 5;
 var menuSelectedTab = 0;
 var menuTabs = [];
 var menuBlockData = defaultBlockData();
@@ -798,87 +794,88 @@ var menuBlockDivs = [];
 var menuBlockToAdd = null;
 
 function initializeBlockMenu(logic, callback) {
-  var craftingBoard = document.getElementById('craftingBoard');
+    var craftingBoard = document.getElementById('craftingBoard');
 
-  var container = document.createElement('div');
-  container.setAttribute('id', 'menuContainer');
-  craftingBoard.appendChild(container);
+    var container = document.createElement('div');
+    container.setAttribute('id', 'menuContainer');
+    craftingBoard.appendChild(container);
 
-  var menuBlockContainer = document.createElement('div');
-  menuBlockContainer.setAttribute('id', 'menuBlockContainer');
-  container.appendChild(menuBlockContainer);
+    var menuBlockContainer = document.createElement('div');
+    menuBlockContainer.setAttribute('id', 'menuBlockContainer');
+    container.appendChild(menuBlockContainer);
 
-  var menuSideContainer = document.createElement('div');
-  menuSideContainer.setAttribute('id', 'menuSideContainer');
-  container.appendChild(menuSideContainer);
+    var menuSideContainer = document.createElement('div');
+    menuSideContainer.setAttribute('id', 'menuSideContainer');
+    container.appendChild(menuSideContainer);
 
-  menuSelectedTab = 0;
-  menuTabs = [];
-  // menuBlockData = menuLoadBlocks();
-  menuBlockData = defaultBlockData(); //[];
-  menuIsPointerDown = false;
-  menuSelectedBlock = null;
-  menuBlockDivs = [];
+    var menuCols = 4;
+    var menuRows = 6;
+    var menuNumTabs = 5;
+    menuSelectedTab = 0;
+    menuTabs = [];
+    menuIsPointerDown = false;
+    menuSelectedBlock = null;
+    menuBlockDivs = [];
 
-  // create menu tabs for block categories
-  for (var i = 0; i < menuNumTabs; i++) {
-    var menuTab = document.createElement('div');
-    menuTab.setAttribute('class', 'menuTab');
-    menuTab.setAttribute('tabIndex', i);
-    menuTab.setAttribute('touch-action', 'none');
-    menuTab.addEventListener('pointerdown', menuTabSelected);
-
-    var menuTabIcon = document.createElement('img');
-    menuTabIcon.setAttribute('class', 'menuTabIcon');
-    menuTabIcon.setAttribute('src', blockTabImage[i].src);
-    menuTabIcon.setAttribute('touch-action', 'none');
-    // menuTabIcon.addEventListener('pointerdown', menuTabIconSelected);
-
-    menuTab.appendChild(menuTabIcon);
-
-    menuTabs.push(menuTab);
-    menuSideContainer.appendChild(menuTab);
-  }
-
-  menuLoadBlocks( function(blockData) {
+    // create menu tabs for block categories
     for (var i = 0; i < menuNumTabs; i++) {
-        menuBlockData[i] = blockData[i];
-    }  
-    for (var r = 0; r < menuRows; r++) {
-        var row = document.createElement('div');
-        menuBlockContainer.appendChild(row);
-        for (var c = 0; c < menuCols; c++) {
-            var block = document.createElement('div');
-            block.setAttribute('class', 'menuBlock');
-            var blockContents = document.createElement('div');
-            blockContents.setAttribute('class', 'menuBlockContents');
-            blockContents.setAttribute("touch-action", "none");
-            blockContents.addEventListener('pointerdown', blockMenuPointerDown);
-            blockContents.addEventListener('pointerup', blockMenuPointerUp);
-            blockContents.addEventListener('pointerleave', blockMenuPointerLeave);
-            blockContents.addEventListener('pointermove', blockMenuPointerMove);
-            block.appendChild(blockContents);
-            menuBlockDivs.push(block);
-            row.appendChild(block);
-        }
+        var menuTab = document.createElement('div');
+        menuTab.setAttribute('class', 'menuTab');
+        menuTab.setAttribute('tabIndex', i);
+        menuTab.setAttribute('touch-action', 'none');
+        menuTab.addEventListener('pointerdown', menuTabSelected);
+
+        var menuTabIcon = document.createElement('img');
+        menuTabIcon.setAttribute('class', 'menuTabIcon');
+        menuTabIcon.setAttribute('src', blockTabImage[i].src);
+        menuTabIcon.setAttribute('touch-action', 'none');
+        // menuTabIcon.addEventListener('pointerdown', menuTabIconSelected);
+
+        menuTab.appendChild(menuTabIcon);
+
+        menuTabs.push(menuTab);
+        menuSideContainer.appendChild(menuTab);
     }
-    callback();
-  });
+
+    menuLoadBlocks( function(blockData) {
+        for (var i = 0; i < menuNumTabs; i++) {
+            menuBlockData[i] = blockData[i];
+        }  
+        for (var r = 0; r < menuRows; r++) {
+            var row = document.createElement('div');
+            menuBlockContainer.appendChild(row);
+            for (var c = 0; c < menuCols; c++) {
+                var block = document.createElement('div');
+                block.setAttribute('class', 'menuBlock');
+                var blockContents = document.createElement('div');
+                blockContents.setAttribute('class', 'menuBlockContents');
+                blockContents.setAttribute("touch-action", "none");
+                blockContents.addEventListener('pointerdown', blockMenuPointerDown);
+                blockContents.addEventListener('pointerup', blockMenuPointerUp);
+                blockContents.addEventListener('pointerleave', blockMenuPointerLeave);
+                blockContents.addEventListener('pointermove', blockMenuPointerMove);
+                block.appendChild(blockContents);
+                menuBlockDivs.push(block);
+                row.appendChild(block);
+            }
+        }
+        callback();
+    });
 }
 
 function resetBlockMenu() {
-  menuBlockDivs.forEach(function(blockDiv) {
-    blockDiv.firstChild.removeEventListener('pointerdown', blockMenuPointerDown);
-    blockDiv.firstChild.removeEventListener('pointerup', blockMenuPointerUp);
-    blockDiv.firstChild.removeEventListener('pointerleave', blockMenuPointerLeave);
-    blockDiv.firstChild.removeEventListener('pointermove', blockMenuPointerMove);
-  });
-  var container = document.getElementById('menuContainer');
-  if (container) {
-    while (container.hasChildNodes()) {
-        container.removeChild(container.lastChild);
+    menuBlockDivs.forEach(function(blockDiv) {
+        blockDiv.firstChild.removeEventListener('pointerdown', blockMenuPointerDown);
+        blockDiv.firstChild.removeEventListener('pointerup', blockMenuPointerUp);
+        blockDiv.firstChild.removeEventListener('pointerleave', blockMenuPointerLeave);
+        blockDiv.firstChild.removeEventListener('pointermove', blockMenuPointerMove);
+    });
+    var container = document.getElementById('menuContainer');
+    if (container) {
+        while (container.hasChildNodes()) {
+            container.removeChild(container.lastChild);
+        }
     }
-  }
 }
 
 function readTextFile(file, callback) {
@@ -893,35 +890,37 @@ function readTextFile(file, callback) {
     rawFile.send(null);
 }
 
+// TODO: how to load json file and html page from local directory without using XHR request?
 function menuLoadBlocks(callback) {
-  readTextFile('blocks/blocks.json', function(fileText){
-    var blockJSON = JSON.parse(fileText);
-    console.log(blockJSON);
-    var blockDirs = blockJSON['blockDirs'];
-    var blockData = {};
-    var numBlocksLoaded = 0;
+    var filename = 'blocks/blocks.json';
+    readTextFile(filename, function(fileText){
+        var blockJSON = JSON.parse(fileText);
+        console.log(blockJSON);
+        var blockDirs = blockJSON['blockDirs'];
+        var blockData = {};
+        var numBlocksLoaded = 0;
 
-    console.log(blockDirs);
-    blockDirs.forEach( function(category, i) {
-        blockData[i] = {};
-        category.forEach( function(blockDirName) {
-            var blockPath = 'blocks/' + blockDirName + '/block.json';
-            readTextFile(blockPath, function(blockFileText) {
-                blockData[i][blockDirName] = JSON.parse(blockFileText);
-                numBlocksLoaded++;
-                if (numBlocksLoaded === blockDirs.length) {
-                    callback(blockData);
-                }
+        console.log(blockDirs);
+        blockDirs.forEach( function(category, i) {
+            blockData[i] = {};
+            category.forEach( function(blockDirName) {
+                var blockPath = 'blocks/' + blockDirName + '/block.json';
+                readTextFile(blockPath, function(blockFileText) {
+                    blockData[i][blockDirName] = JSON.parse(blockFileText);
+                    numBlocksLoaded++;
+                    if (numBlocksLoaded === blockDirs.length) {
+                        callback(blockData);
+                    }
+                });
             });
         });
     });
-  });
 }
 
 // TODO: in the future, cache some blocks that can be loaded immeditately
 //       instead of requesting data from another file
 function defaultBlockData() {
-  return [ [], [], [], [], [] ];
+    return [ [], [], [], [], [] ];
 }
 
 function menuTabSelected(e) {
@@ -935,39 +934,39 @@ function menuTabSelected(e) {
 }
 
 function redisplayTabSelection() {
-  menuTabs.forEach(function(tab) {
-    if (menuSelectedTab === tab.tabIndex) {
-      tab.setAttribute('class', 'menuTabSelected');
-      console.log(tab);
-    } else {
-      tab.setAttribute('class', 'menuTab');
-    }
-  });
+    menuTabs.forEach(function(tab) {
+        if (menuSelectedTab === tab.tabIndex) {
+            tab.setAttribute('class', 'menuTabSelected');
+            console.log(tab);
+        } else {
+            tab.setAttribute('class', 'menuTab');
+        }
+    });
 }
 
 function redisplayBlockSelection() {
-  var blocksObject = menuBlockData[menuSelectedTab];
-  var blocksInThisSection = [];
-  for (var key in blocksObject) {
-    blocksInThisSection.push(blocksObject[key]);
-  }
-  console.log(blocksInThisSection);
+    var blocksObject = menuBlockData[menuSelectedTab];
+    var blocksInThisSection = [];
+    for (var key in blocksObject) {
+        blocksInThisSection.push(blocksObject[key]);
+    }
+    console.log(blocksInThisSection);
 
-  // reassign as many divs as needed to the current set of blocks
-  for (var i = 0; i < blocksInThisSection.length; i++) {
-    var blockDiv = menuBlockDivs[i];
-    var thisBlockData = blocksInThisSection[i];
-    blockDiv.blockData = thisBlockData;
-    blockDiv.firstChild.innerHTML = thisBlockData['name'];
-    blockDiv.style.display = 'inline-block';
-  }
+    // reassign as many divs as needed to the current set of blocks
+    for (var i = 0; i < blocksInThisSection.length; i++) {
+        var blockDiv = menuBlockDivs[i];
+        var thisBlockData = blocksInThisSection[i];
+        blockDiv.blockData = thisBlockData;
+        blockDiv.firstChild.innerHTML = thisBlockData['name'];
+        blockDiv.style.display = 'inline-block';
+    }
 
-  // clear the remaining block divs
-  for (var i = blocksInThisSection.length; i < menuBlockDivs.length; i++) {
-    var blockDiv = menuBlockDivs[i];
-    blockDiv.blockData = '';
-    blockDiv.style.display = 'none';
-  }
+    // clear the remaining block divs
+    for (var i = blocksInThisSection.length; i < menuBlockDivs.length; i++) {
+        var blockDiv = menuBlockDivs[i];
+        blockDiv.blockData = '';
+        blockDiv.style.display = 'none';
+    }
 }
 
 function blockMenuPointerDown(e) {
@@ -982,40 +981,40 @@ function blockMenuPointerDown(e) {
 }
 
 function blockMenuPointerUp(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  menuIsPointerDown = false;
-  if (menuSelectedBlock) {
-    menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');
-  }
-  menuSelectedBlock = null;
-  menuBlockToAdd = null;
+    menuIsPointerDown = false;
+    if (menuSelectedBlock) {
+        menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');
+    }
+    menuSelectedBlock = null;
+    menuBlockToAdd = null;
 }
 
 function blockMenuPointerLeave(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (menuIsPointerDown) {
-    if (menuSelectedBlock) {
-      menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');        
+    if (menuIsPointerDown) {
+        if (menuSelectedBlock) {
+            menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');        
+        }
     }
-  }
-  menuSelectedBlock = null;
-  menuBlockToAdd = null;
+    menuSelectedBlock = null;
+    menuBlockToAdd = null;
 }
 
 function blockMenuPointerMove(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (menuBlockToAdd) {
-      var blockJSON = menuBlockToAdd.blockData;
-      var blockRect = menuBlockToAdd.getBoundingClientRect();
-      var pointerX = blockRect.left + blockRect.width/2;
-      var pointerY = blockRect.top + blockRect.height/2;
-      addBlockFromMenu(blockJSON, pointerX, pointerY);
-      menuBlockToAdd = null;
-      blockMenuHide();
-  }
+    if (menuBlockToAdd) {
+        var blockJSON = menuBlockToAdd.blockData;
+        var blockRect = menuBlockToAdd.getBoundingClientRect();
+        var pointerX = blockRect.left + blockRect.width/2;
+        var pointerY = blockRect.top + blockRect.height/2;
+        addBlockFromMenu(blockJSON, pointerX, pointerY);
+        menuBlockToAdd = null;
+        blockMenuHide();
+    }
 }
 
 /**********************************************************************************************************************

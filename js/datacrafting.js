@@ -921,12 +921,11 @@ function addBlockLink(blockA, blockB, itemA, itemB, addToLogic) {
     return null;
 }
 
-function addBlock(x,y,blockJSON,globalId) { // TODO: include a hasBeenPlaced bool to treat new blocks differently?
+// TODO: populate all constructor values using fields from blockJSON
+function addBlock(x,y,blockJSON,globalId) {
     var block = new Block();
-    // if (x !== undefined && y !== undefined) {
-        block.x = x;
-        block.y = y;
-    // }
+    block.x = x;
+    block.y = y;
     block.blockSize = blockJSON['width'];
     block.name = blockJSON['name'];
     block.globalId = globalId;

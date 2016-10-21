@@ -1031,6 +1031,23 @@ function addDomElementForBlock(block, grid, isTempBlock) {
     blockDomElement.style.width = getBlockPixelWidth(block,grid);
     blockDomElement.style.height = grid.blockRowHeight;
 
+    // TODO: add indicators for possible inputs and outputs
+    
+    for (var i=0; i < block.width; i++) {
+        var isActiveInput = block.activeInputs[i];
+        var isActiveOutput = block.activeOutputs[i];
+        if (isActiveInput) {
+            // TODO: create input indicator div
+            var inputIndicatorDiv = document.createElement('div');
+            inputIndicatorDiv.setAttribute('class', 'inputIndicator');
+            blockDomElement.appendChild(inputIndicatorDiv);
+        }
+        if (isActiveOutput) {
+            // TODO: create output indicator div
+        }
+    }
+    
+
     var blockContainer = document.getElementById('blocks');
     blockContainer.appendChild(blockDomElement);
 
