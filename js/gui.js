@@ -779,8 +779,18 @@ function initializeDatacraftingGrid(logic) {
     addDatacraftingEventListeners();
 }
 
-function toBlockJSON(name, width) {
-    return { name: name, width: width };
+// TODO: update as more properties get taken from JSON instead of null
+function toBlockJSON(name, width, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput) {
+    return {
+        name: name,
+        width: width,
+        privateData: privateData,
+        publicData: publicData,
+        activeInputs: activeInputs,
+        activeOutputs: activeOutputs,
+        nameInput: nameInput,
+        nameOutput: nameOutput
+    };
 }
 
 // TODO: decide where these global variables should live... perhaps in a blockMenu object in logic

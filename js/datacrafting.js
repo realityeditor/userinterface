@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//   Data Structures - Definitions
+//   Data Structures - Constructors
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // the grid is the overall data structure for managing block locations and calculating routes between them
@@ -24,11 +24,10 @@ function Grid(containerWidth, containerHeight) {
 }
 
 // the cell has a location in the grid, possibly an associated Block object
-//  and DOM element, and a list of which routes pass through the cell
+// and a list of which routes pass through the cell
 function Cell(location) {
     this.location = location; // CellLocation
     this.routeSegments = []; // [RouteSegment]
-    //this.domElement = null; // <div> element //TODO: remove DOM element to decouple frontend from backend?
 }
 
 function CellLocation(col,row) {
@@ -65,11 +64,8 @@ function RouteSegment(route, containsHorizontal, containsVertical) {
 //   Data Structures - Methods
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-//      CELL METHODS   
-////////////////////////////////////////////////////////////////////////////////
+// -- CELL METHODS -- //
 
-// *** Public to app
 Cell.prototype.canHaveBlock = function() {
     return (this.location.col % 2 === 0) && (this.location.row % 2 === 0);
 };
@@ -78,7 +74,6 @@ Cell.prototype.isMarginCell = function() {
     return this.location.row % 2 === 0 && this.location.col % 2 === 1;
 };
 
-// *** Public to app
 // utility - gets the hue for cells in a given column
 Cell.prototype.getColorHSL = function() {
     var blockColumn = Math.floor(this.location.col / 2);
@@ -87,13 +82,11 @@ Cell.prototype.getColorHSL = function() {
     return colorMap[colorName];
 };
 
-// *** Public
 // utility - counts the number of horizontal routes in a cell
 Cell.prototype.countHorizontalRoutes = function() {
     return this.routeSegments.filter(function(value) { return value.containsHorizontal; }).length;
 };
 
-// *** Public
 // utility - counts the number of vertical routes in a cell
 // optionally excludes start or endpoints so that routes starting in a
 // block cell don't count as overlapping routes ending in a block cell
@@ -103,7 +96,6 @@ Cell.prototype.countVerticalRoutes = function(excludeStartPoints, excludeEndPoin
     }).length;
 };
 
-// *** Public
 // utility - checks whether the cell has a vertical route tracker for the given route
 Cell.prototype.containsVerticalSegmentOfRoute = function(route) {
     var containsVerticalSegment = false;
@@ -115,7 +107,6 @@ Cell.prototype.containsVerticalSegmentOfRoute = function(route) {
     return containsVerticalSegment;
 };
 
-// *** Public
 // utility - checks whether the cell has a horizontal route tracker for the given route
 Cell.prototype.containsHorizontalSegmentOfRoute = function(route) {
     var containsHorizontalSegment = false;
@@ -142,21 +133,6 @@ Cell.prototype.blockAtThisLocation = function() {
     }
 };
 
-/*
-Cell.prototype.blockOverlappingThisMargin = function() {
-    if (this.location.col % 2 === 0 || this.location.row % 2 === 1) return; // this isn't a margin cell
-    var blockPosBefore = convertGridPosToBlockPos(this.location.col-1, this.location.row);
-    var blockPosAfter = convertGridPosToBlockPos(this.location.col+1, this.location.row);
-    var blockBefore = getBlockOverlappingPosition(blockPosBefore.x, blockPosBefore.y);
-    var blockAfter = getBlockOverlappingPosition(blockPosAfter.x, blockPosAfter.y);
-    if (blockBefore === blockAfter) {
-        return blockBefore;
-    } else {
-        return null;
-    }
-};
-*/
-
 Cell.prototype.itemAtThisLocation = function() {
     var block = this.blockAtThisLocation();
     var blockGridPos = convertBlockPosToGridPos(block.x, block.y);
@@ -164,23 +140,8 @@ Cell.prototype.itemAtThisLocation = function() {
     return convertGridPosToBlockPos(itemCol, blockGridPos.row).x;
 };
 
-/*
-Cell.prototype.isFirstItem = function() {
-    return this.itemAtThisLocation() === 0;
-}
+// -- ROUTE METHODS -- //
 
-Cell.prototype.isLastItem = function() {
-    var block = this.blockAtThisLocation();
-    var item = this.itemAtThisLocation();
-    return item === (block.blockSize-1);
-}
-*/
-
-////////////////////////////////////////////////////////////////////////////////
-//      ROUTE METHODS   
-////////////////////////////////////////////////////////////////////////////////
-
-// *** Public
 // adds a new corner location to a route
 Route.prototype.addLocation = function(col, row) {
     var skip = false;
@@ -194,7 +155,6 @@ Route.prototype.addLocation = function(col, row) {
     }
 };
 
-// *** Public
 // utility - outputs how far a route travels left/right and up/down, for
 // use in choosing the order of routes so that they usually don't cross
 Route.prototype.getOrderPreferences = function() {
@@ -206,7 +166,6 @@ Route.prototype.getOrderPreferences = function() {
     };
 };
 
-// *** Public to app
 Route.prototype.getXYPositionAtPercentage = function(percent) {
     var pointData = this.pointData;
     if (percent >= 0 && percent <= 1) {
@@ -239,13 +198,9 @@ Route.prototype.getXYPositionAtPercentage = function(percent) {
     }
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//   GRID METHODS
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// -- GRID METHODS -- //
 
-////////////////////////////////////////////////////////////////////////////////
-//      GRID UTILITIES     
-////////////////////////////////////////////////////////////////////////////////
+//      -- GRID UTILITIES -- //
 
 // utility - returns the x,y coordinates of corners for a link so that they can be rendered
 // (includes the offsets - these are the actual points to draw on the screen exactly as is)
@@ -329,27 +284,6 @@ Grid.prototype.getRowCenterY = function(row) {
     return this.getCellCenterY(this.getCell(0,row));
 };
 
-/*
-// performs action on all cells that can have a block (not the empty margins)
-Grid.prototype.forEachPossibleBlockCell = function(action) {
-    this.cells.filter( function(cell) {
-        return cell.canHaveBlock();
-    }).forEach( function(cell) {
-        action(cell);
-    });
-};
-*/
-
-/*
-Grid.prototype.forEachPossibleBlockMarginCell = function(action) {
-    this.cells.filter( function(cell) {
-        return (cell.location.row % 2 === 0 && cell.location.col % 2 === 1);
-    }).forEach( function(cell) {
-        action(cell);
-    });
-}
-*/
-
 // utility - true iff cells are in same row
 Grid.prototype.areCellsHorizontal = function(cell1, cell2) {
     if (cell1 && cell2) {
@@ -405,13 +339,6 @@ Grid.prototype.getFirstBlockBelow = function(col, row) {
     return null;
 };
 
-// resets the number of "horizontal" or "vertical" segments contained to 0 for all cells
-Grid.prototype.resetCellRouteCounts = function() {
-    this.cells.forEach(function(cell) {
-        cell.routeSegments = [];
-    });
-};
-
 // utility - for a given cell in a route, looks at the previous and next cells in the route to
 // figure out if the cell contains a vertical path, horizontal path, or both (it's a corner)
 Grid.prototype.getLineSegmentDirections = function(prevCell,currentCell,nextCell) {
@@ -432,10 +359,14 @@ Grid.prototype.getLineSegmentDirections = function(prevCell,currentCell,nextCell
     };
 };
 
-////////////////////////////////////////////////////////////////////////////////
-//      GRID ROUTING ALGORITHM      
-////////////////////////////////////////////////////////////////////////////////
+// resets the number of "horizontal" or "vertical" segments contained to 0 for all cells
+Grid.prototype.resetCellRouteCounts = function() {
+    this.cells.forEach(function(cell) {
+        cell.routeSegments = [];
+    });
+};
 
+//      -- GRID ROUTING ALGORITHM -- //
 
 // *** main method for routing ***
 // first, calculates the routes (which cells they go thru)
@@ -812,7 +743,7 @@ Grid.prototype.calculateOffsets = function(overlaps) {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-//      misc functions for working with blocks and grids
+//      MISC FUNCTIONS FOR WORKING WITH CELLS, BLOCKS, GRID
 ////////////////////////////////////////////////////////////////////////////////
 
 function getBlock(x,y) {
@@ -924,11 +855,22 @@ function addBlockLink(blockA, blockB, itemA, itemB, addToLogic) {
 // TODO: populate all constructor values using fields from blockJSON
 function addBlock(x,y,blockJSON,globalId) {
     var block = new Block();
+
+    block.name = blockJSON.name;
     block.x = x;
     block.y = y;
-    block.blockSize = blockJSON['width'];
-    block.name = blockJSON['name'];
+    block.blockSize = blockJSON.width;
     block.globalId = globalId;
+    block.checksum = null; // TODO: implement this!!
+    block.privateData = blockJSON.privateData;
+    block.publicData = blockJSON.publicData;
+    block.activeInputs = blockJSON.activeInputs;
+    block.activeOutputs = blockJSON.activeOutputs;
+    block.nameInput = blockJSON.nameInput;
+    block.nameOutput = blockJSON.nameOutput;
+    block.iconImage = null; //TODO: implement this!!
+    block.text = block.name; //TODO: should this be different?
+    
     globalStates.currentLogic.blocks[block.globalId] = block;
     return block;
 }
@@ -959,15 +901,6 @@ function setTempLink(newTempLink) {
 function removeBlockLink(linkKey) {
     delete globalStates.currentLogic.links[linkKey];
 }
-
-/*
-function clearAllBlockLinks() {
-    for (var linkKey in globalStates.currentLogic.blocks) {
-        removeBlockLink(linkKey);
-    }
-    globalStates.currentLogic.tempLink = null;
-}
-*/
 
 function removeBlock(logic, block) {
     removeLinksForBlock(logic, block);
@@ -1012,24 +945,9 @@ function areBlockLinksEqual(blockLink1, blockLink2) {
     return false;
 }
 
-/*
-function canAddBlockAtCell(firstCellOver, tempBlock) {
-    if (!firstCellOver || !tempBlock) return false;
-    var cellsOver = globalStates.currentLogic.grid.getCellsOver(firstCellOver,tempBlock.blockJSON['width'], tempBlock.itemSelected);
-    var canAddBlock = true;
-    cellsOver.forEach(function(cell) {
-        if (!cell || !cell.canHaveBlock() || cell.blockAtThisLocation()) {
-            canAddBlock = false;
-        }
-    });
-    return canAddBlock;
-}
-*/
-
 // points is an array like [{screenX: x1, screenY: y1}, ...]
 // calculates useful pointData for drawing lines with varying color/weight/etc,
 // by determining how far along the line each corner is located (as a percentage)
-
 function preprocessPointsForDrawing(points) { //... only ever used here.. could just inline it
     // adds up the total length the route points travel
     var lengths = []; // size = lines.length-1

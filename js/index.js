@@ -1018,7 +1018,7 @@ function updateGrid(grid) {
 function addDomElementForBlock(block, grid, isTempBlock) {
     var blockDomElement = document.createElement('div');
     blockDomElement.setAttribute('class','blockDivPlaced');
-    blockDomElement.innerHTML = block.name;
+    blockDomElement.innerHTML = block.text; //TODO: use block.iconImage if it has one
 
     // if we're adding a temp block, it doesn't have associated cells it can use to calculate position. we need to remember to set position to pointer afterwards
     if (!isTempBlock) { //TODO: is there a way to set position for new blocks consistently?
@@ -1031,22 +1031,33 @@ function addDomElementForBlock(block, grid, isTempBlock) {
     blockDomElement.style.width = getBlockPixelWidth(block,grid);
     blockDomElement.style.height = grid.blockRowHeight;
 
-    // TODO: add indicators for possible inputs and outputs
+    var indicatorWidth = 10;
     
-    for (var i=0; i < block.width; i++) {
+    for (var i=0; i < block.blockSize; i++) {
         var isActiveInput = block.activeInputs[i];
         var isActiveOutput = block.activeOutputs[i];
         if (isActiveInput) {
-            // TODO: create input indicator div
             var inputIndicatorDiv = document.createElement('div');
             inputIndicatorDiv.setAttribute('class', 'inputIndicator');
+            inputIndicatorDiv.style.width = indicatorWidth;
+            inputIndicatorDiv.style.height = 0.5 * indicatorWidth;
+            inputIndicatorDiv.style.left = offsetForItem(i) - 0.5 * indicatorWidth;
+            inputIndicatorDiv.style.borderBottomLeftRadius = 0.5 * indicatorWidth;
+            inputIndicatorDiv.style.borderBottomRightRadius = 0.5 * indicatorWidth;
             blockDomElement.appendChild(inputIndicatorDiv);
         }
         if (isActiveOutput) {
-            // TODO: create output indicator div
+            var outputIndicatorDiv = document.createElement('div');
+            outputIndicatorDiv.setAttribute('class', 'outputIndicator');
+            outputIndicatorDiv.style.width = indicatorWidth;
+            outputIndicatorDiv.style.height = 0.5 * indicatorWidth;
+            outputIndicatorDiv.style.left = offsetForItem(i) - 0.5 * indicatorWidth;
+            outputIndicatorDiv.style.bottom = -0.5 * indicatorWidth;
+            outputIndicatorDiv.style.borderBottomLeftRadius = 0.5 * indicatorWidth;
+            outputIndicatorDiv.style.borderBottomRightRadius = 0.5 * indicatorWidth;
+            blockDomElement.appendChild(outputIndicatorDiv);
         }
     }
-    
 
     var blockContainer = document.getElementById('blocks');
     blockContainer.appendChild(blockDomElement);

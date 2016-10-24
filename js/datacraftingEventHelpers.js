@@ -16,8 +16,6 @@ function getCellContents(cell) {
         block: block,
         item: item,
         cell: cell
-        // pointerX: pointerX
-        // isMoving: false
       };
     }
   }
@@ -65,7 +63,12 @@ function offsetForItem(item) {
 }
 
 function canConnectBlocks(contents1, contents2) {
-  return !areBlocksEqual(contents1.block, contents2.block) && !isInputBlock(contents2.block);
+  return !areBlocksEqual(contents1.block, contents2.block)
+      && (contents2.block.activeInputs[contents2.item] === true);
+}
+
+function canDrawLineFrom(contents) {
+  return (contents.block.activeOutputs[contents.item] === true);
 }
 
 function areBlocksTempConnected(contents1, contents2) {
@@ -112,15 +115,13 @@ function styleBlockForPlacement(contents, shouldHighlight) {
   }
 }
 
-//TODO: modify so that whenever you add a block to a cell with a portBlock, first remove the port block
-//      and whenever you remove a block from a cell in top or bottom rows, re-add the port block
-
 function placeBlockInCell(contents, cell) {
   var grid = globalStates.currentLogic.grid;
   if (cell) {
     var prevCell = getCellForBlock(grid, contents.block, contents.item);
     var newCellsOver = grid.getCellsOver(cell, contents.block.blockSize, contents.item);
 
+    // if it's being moved to the top or bottom rows, delete the invisible port block underneath
     removePortBlocksIfNecessary(newCellsOver);
 
     contents.block.x = Math.floor((cell.location.col / 2) - (contents.item));
@@ -128,7 +129,7 @@ function placeBlockInCell(contents, cell) {
     contents.block.isTempBlock = false;
     convertTempLinkOutlinesToLinks(contents);
 
-    // removePortBlocksIfNecessary(newCellsOver);
+    // if it's being moved away from the top or bottom rows, re-add the invisible port block underneath
     if (prevCell) {
       var prevCellsOver = grid.getCellsOver(prevCell, contents.block.blockSize, contents.item);
       replacePortBlocksIfNecessary(prevCellsOver);
@@ -156,7 +157,16 @@ function replacePortBlocksIfNecessary(cells) {
   cells.forEach( function(cell) {
     if (cell && !cell.blockAtThisLocation()) {
       if (cell.location.row === 0 || cell.location.row === globalStates.currentLogic.grid.size-1) {
-        var blockJSON = toBlockJSON("edge", 1);
+        // var blockJSON = toBlockJSON("edge", 1); //TODO: encode all info here
+        var name = "edge";
+        var width = 1;
+        var privateData = {};
+        var publicData = {};
+        var activeInputs = (cell.location.row === 0) ? [false, false, false, false] : [true, false, false, false];
+        var activeOutputs = (cell.location.row === 0) ? [true, false, false, false] : [false, false, false, false];
+        var nameInput = ["","","",""];
+        var nameOutput = ["","","",""];
+        var blockJSON = toBlockJSON(name, width, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput);
         var blockPos = convertGridPosToBlockPos(cell.location.col, cell.location.row);
         var globalId = "edgeBlock" + uuidTime();
         var block = addBlock(blockPos.x, blockPos.y, blockJSON, globalId);
@@ -207,7 +217,6 @@ function convertTempLinkOutlinesToLinks(contents) {
 function blocksExist(block1, block2) {
   var blocks = globalStates.currentLogic.blocks;
   return !!(blocks[block1.globalId]) && !!(blocks[block2.globalId]);
-  // return !!globalStates.currentLogic.blocks[blockA.globalId] && !!globalStates.currentLogic.blocks[blockB.globalId]
 }
 
 function resetTempLinkOutlines() {
@@ -317,7 +326,40 @@ function generateBlockGlobalId() {
   return "block" + uuidTime();
 }
 
+function isPortBlock(block) {
+  return block.isPortBlock;
+}
+
+function isInputBlock(block) {
+  return isPortBlock(block) && block.y === 0;
+}
+
+function isOutputBlock(block) {
+  return isPortBlock(block) && !isInputBlock(block);
+}
+
 // new functions
+
+function addBlockFromMenu(blockJSON, pointerX, pointerY) {
+    // var name = blockJSON.name;
+    // var width = blockJSON.width;
+    var globalId = generateBlockGlobalId();
+    var addedBlock = addBlock(-1, -1, blockJSON, globalId);
+    addDomElementForBlock(addedBlock, globalStates.currentLogic.grid, true);
+
+    globalStates.currentLogic.tappedContents = {
+        block: addedBlock,
+        item: 0,
+        cell: null
+    };
+    touchState = TS_MOVE;
+
+    pointerMove({
+        pageX: pointerX,
+        pageY: pointerY
+    });
+
+}
 
 function openBlockSettings(block) {
   console.log(block);
@@ -334,16 +376,4 @@ function hideBlockSettings() {
   if (container) {
     container.parentNode.removeChild(container);
   }
-}
-
-function isPortBlock(block) {
-  return block.isPortBlock;
-}
-
-function isInputBlock(block) {
-  return isPortBlock(block) && block.y === 0;
-}
-
-function isOutputBlock(block) {
-  return isPortBlock(block) && !isInputBlock(block);
 }

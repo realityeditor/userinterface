@@ -329,6 +329,19 @@ body {
   }
 }
 
+.inputIndicator {
+  background-color: black;
+  position: absolute;
+  top: 0;
+}
+
+.outputIndicator {
+  background-color: black;
+  position: absolute;
+}
+
+
+
 /* block settings */
 
 #blockSettingsContainer {

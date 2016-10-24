@@ -66,7 +66,11 @@ function pointerMove(e) {
         // if you moved to a different cell, go to TS_CONNECT
         if (!areCellsEqual(cell, tappedContents.cell)) {
             styleBlockForHolding(tappedContents, false);
-            touchState = TS_CONNECT;
+            if (canDrawLineFrom(tappedContents)) {
+                touchState = TS_CONNECT;
+            } else {
+                touchState = TS_NONE;
+            }
         
         // otherwise if enough time has passed, change to TS_HOLD
         } else if (!isPortBlock(contents.block)) {
@@ -163,6 +167,7 @@ function pointerUp(e, didPointerLeave) {
             resetTempLink();        
         } else {
             resetLinkLine();
+            resetTempLink(); // TODO: decide whether it's better to resetTempLink, or create a permanent link here with the last updated templink
         }
 
     } else if (touchState === TS_MOVE) {
@@ -188,45 +193,4 @@ function pointerUp(e, didPointerLeave) {
     touchState = TS_NONE;
 
     console.log("pointerUp ->" + touchState + "(" + didPointerLeave + ")");//, e.target, e.currentTarget);
-}
-
-// function pointerLeave(e) {
-//     if (e.target !== e.currentTarget) return;
-
-// }
-
-// function pointerLeave(e) {
-//     if (e.target !== e.currentTarget) return; // prevents event bubbling
-
-//     var bounds = e.currentTarget.getBoundingClientRect();
-//     if (e.pageX > bounds.width) {
-//         console.log("pointer leave");
-//         pointerUp(e, true);
-//     } else {
-//         console.log("pointer up");
-//         pointerUp(e, false);
-//     }
-
-//     // console.log("pointerLeave ->" + touchState);//, e.target, e.currentTarget);
-// }
-
-function addBlockFromMenu(blockJSON, pointerX, pointerY) {
-    // var name = blockJSON.name;
-    // var width = blockJSON.width;
-    var globalId = generateBlockGlobalId();
-    var addedBlock = addBlock(-1, -1, blockJSON, globalId);
-    addDomElementForBlock(addedBlock, globalStates.currentLogic.grid, true);
-
-    globalStates.currentLogic.tappedContents = {
-        block: addedBlock,
-        item: 0,
-        cell: null
-    };
-    touchState = TS_MOVE;
-
-    pointerMove({
-        pageX: pointerX,
-        pageY: pointerY
-    });
-
 }

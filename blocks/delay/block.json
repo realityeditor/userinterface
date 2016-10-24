@@ -3,8 +3,8 @@
   "width": 1,
   "activeInputs": [true, false, false, false],
   "activeOutputs": [true, false, false, false],
-  "nameInput":["","","",""],
-  "nameOutput":["","","",""],
+  "nameInput":["x","","",""],
+  "nameOutput":["delayed x","","",""],
   "publicData":{
     "delayTime":1000
   },
