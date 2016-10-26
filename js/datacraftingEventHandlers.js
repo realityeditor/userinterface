@@ -150,8 +150,10 @@ function pointerUp(e, didPointerLeave) {
         // but in the future -> this will open the block settings screen
         styleBlockForHolding(tappedContents, false);
 
-        if (Date.now() - startTapTime < (HOLD_TIME_THRESHOLD/2)) {
-            openBlockSettings(tappedContents.block);
+        if (!isPortBlock(contents.block)) {
+            if (Date.now() - startTapTime < (HOLD_TIME_THRESHOLD/2)) {
+                openBlockSettings(tappedContents.block);
+            }
         }
 
     } else if (touchState === TS_HOLD) {

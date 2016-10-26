@@ -365,11 +365,27 @@ function openBlockSettings(block) {
   console.log(block);
   var craftingBoard = document.getElementById('craftingBoard');
   var blockSettingsContainer = document.createElement('iframe');
+  blockSettingsContainer.addEventListener('load', function() {
+    blockSettingsContainer.contentWindow.openSettingsWithHandler(handleBlockSettingsChange, block);
+  });
   blockSettingsContainer.setAttribute('id', 'blockSettingsContainer');
   blockSettingsContainer.src = 'blocks/'+block.name+'/settings.html';
   craftingBoard.appendChild(blockSettingsContainer);
-
 }
+
+function handleBlockSettingsChange(block, params) {
+  console.log("new settings values = ", params);
+  for (key in params) {
+    if (block.publicData.hasOwnProperty(key)) {
+      block.publicData[key] = params[key];
+    }
+  }
+  console.log(block.publicData);
+}
+
+// function updateBlockSettings(params) {
+//   console.log(params);
+// }
 
 function hideBlockSettings() {
   var container = document.getElementById('blockSettingsContainer');

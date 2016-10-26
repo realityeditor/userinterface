@@ -117,10 +117,12 @@ function GUI() {
 
     document.getElementById("guiButtonImage1").addEventListener("touchend", function () {
         if (!globalStates.UIOffMode)      document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
-        if (DEBUG_DATACRAFTING) {
-            craftingBoardVisible(); // TODO: BEN DEBUG - revert to previous line
-        } else {
-            craftingBoardHide();
+        if (globalStates.guiState !== "logic") {
+            if (DEBUG_DATACRAFTING) {
+                craftingBoardVisible(); // TODO: BEN DEBUG - revert to previous line
+            } else {
+                craftingBoardHide();
+            }
         }
     });
     ec++;
