@@ -334,8 +334,8 @@ function action(actionData) {
     if (thisAction.loadMemory) {
         getData(url, id, function (req, thisKey) {
             cout('received memory', req.memory);
-            objectExp[thisKey].memory = req.memory;
-            addObjectMemory(objectExp[thisKey]);
+            objects[thisKey].memory = req.memory;
+            addObjectMemory(objects[thisKey]);
         });
     }
 }
@@ -1295,19 +1295,19 @@ function addElementInPreferences() {
         htmlContent += "<div class='Interfaces objectEntry objectName' id='" +
             "name" + keyPref +
             "' style='" + bgcolor + "'>" +
-            objectExp[keyPref].name
+            objects[keyPref].name
             + "</div>";
 
         htmlContent += "<div class='Interfaces objectEntry objectIP' id='" +
             "ip" + keyPref +
             "' style='" + bgcolor + "'>" +
-            objectExp[keyPref].ip
+            objects[keyPref].ip
             + "</div>";
 
         htmlContent += "<div class='Interfaces objectEntry objectVersion' id='" +
             "version" + keyPref +
             "' style='" + bgcolor + "'>" +
-            objectExp[keyPref].version
+            objects[keyPref].version
             + "</div>";
 
         var anzahl = 0;
@@ -1472,66 +1472,13 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, type, globalStates)
 
                     console.log(globalProgram.logicSelector);
                 });
-||||||| merged common ancestors
-        //  window.location.href = "of://objectloaded_" + globalStates.notLoading;
+                addLogic.appendChild(svgContainer);
 
-        var addDoc = document.createElement('div');
-        addDoc.id = "thisObject" + thisKey;
-        addDoc.style.width = globalStates.height + "px";
-        addDoc.style.height = globalStates.width + "px";
-        addDoc.style.display = "none";
-        addDoc.style.border = 0;
-        addDoc.className = "main";
-        document.getElementById("GUI").appendChild(addDoc);
+                addOverlay.appendChild(addLogic);
+                globalDOMCach["logic" + nodeKey] = addLogic;
 
-        var tempAddContent =
-            "<iframe id='iframe" + thisKey + "' onload='on_load(\"" +
-            generalObject + "\",\"" + thisKey + "\")' frameBorder='0' " +
-            "style='width:0px; height:0px;" +
-            "top:" + ((globalStates.width - thisObject.frameSizeX) / 2) + "px; left:" +
-            ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' " +
-            "src='" + thisUrl + "' class='main' sandbox='allow-forms allow-pointer-lock allow-same-origin allow-scripts'>" +
-            "</iframe>";
-
-
-        tempAddContent += "<div id='" + thisKey + "' frameBorder='0' style='width:" + thisObject.frameSizeX + "px; height:" + thisObject.frameSizeY + "px;" +
-            "top:" + ((globalStates.width - thisObject.frameSizeX) / 2) + "px; left:" + ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' class='mainEditing'>" +
-            "<canvas id='canvas" + thisKey + "'style='width:100%; height:100%;' class='mainCanvas'></canvas>" +
-            "</div>" +
-            "";
-
-        tempAddContent += "<div id='text" + thisKey + "' frameBorder='0' style='width:5px; height:5px;" +
-            "top:" + ((globalStates.width) / 2 + thisObject.frameSizeX / 2) + "px; left:" + ((globalStates.height - thisObject.frameSizeY) / 2) + "px; visibility: hidden;' class='mainProgram'><font color='white'>" + thisObject.name + "</font></div>" +
-            "";
-
-        document.getElementById("thisObject" + thisKey).innerHTML = tempAddContent;
-        var theObject = document.getElementById(thisKey);
-        theObject.style["touch-action"] = "none";
-        theObject["handjs_forcePreventDefault"] = true;
-        theObject.addEventListener("pointerdown", touchDown, false);
-        ec++;
-        theObject.addEventListener("pointerup", trueTouchUp, false);
-        ec++;
-        theObject.addEventListener("pointerenter", function (e) {
-
-
-            var contentForFeedback;
-
-            if (globalProgram.locationInA === this.id || globalProgram.locationInA === false) {
-                contentForFeedback = 3;
-            } else {
-
-                if (checkForNetworkLoop(globalProgram.ObjectA, globalProgram.locationInA, this.ObjectId, this.location))
-                    contentForFeedback = 2; // overlayImg.src = overlayImage[2].src;
-                else
-                    contentForFeedback = 0; // overlayImg.src = overlayImage[0].src;
-            }
-            addLogic.appendChild(svgContainer);
-
-            addOverlay.appendChild(addLogic);
-            globalDOMCach["logic" + nodeKey] = addLogic;
-
-        };
+            };
+        }
 
         var addCanvas = document.createElement('canvas');
         addCanvas.id = "canvas" + nodeKey;

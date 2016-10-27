@@ -356,9 +356,6 @@ function GUI() {
 
             overlayDiv.style.display = "inline";
 
-            consoleHide();
-
-
             if (globalStates.UIOffMode) {
                 // If clearSky is hiding the buttons, make sure the buttons are
                 // hidden as preferences appears.

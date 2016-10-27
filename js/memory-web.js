@@ -15,8 +15,8 @@ function createMemoryWeb() {
         .attr('height', height)
         .attr('class', 'memoryWeb');
 
-    var nodes = Object.keys(objectExp).map(function(id) {
-        return {id: id, obj: objectExp[id]};
+    var nodes = Object.keys(objects).map(function(id) {
+        return {id: id, obj: objects[id]};
     }).filter(function(node) {
         return node.obj.memory;
     });

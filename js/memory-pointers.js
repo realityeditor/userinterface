@@ -36,17 +36,17 @@ function MemoryPointer(link, isObjectA) {
 
 MemoryPointer.prototype.getObject = function() {
     if (this.isObjectA) {
-        return objectExp[this.link.ObjectA];
+        return objects[this.link.ObjectA];
     } else {
-        return objectExp[this.link.ObjectB];
+        return objects[this.link.ObjectB];
     }
 };
 
 MemoryPointer.prototype.getConnectedObject = function() {
     if (this.isObjectA) {
-        return objectExp[this.link.ObjectB];
+        return objects[this.link.ObjectB];
     } else {
-        return objectExp[this.link.ObjectA];
+        return objects[this.link.ObjectA];
     }
 };
 
