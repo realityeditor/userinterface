@@ -1,8 +1,3 @@
-// objectId: {
-//   objectLinks: {},
-//   objectValues: {}
-// }
-
 (function(exports) {
 var memoryElements = [];
 
@@ -40,10 +35,10 @@ function createMemoryWeb() {
     var links = [];
     nodes.forEach(function(node) {
         var obj = node.obj;
-        for (var linkId in obj.objectLinks) {
+        for (var linkId in obj.links) {
             links.push({
-                source: obj.objectLinks[linkId].ObjectA,
-                target: obj.objectLinks[linkId].ObjectB,
+                source: obj.links[linkId].objectA,
+                target: obj.links[linkId].objectB,
             });
         }
     });

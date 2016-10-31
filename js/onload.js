@@ -65,7 +65,6 @@ window.onload = function () {
     uiButtons = document.getElementById("GUI");
     guiButtonImage= document.getElementById("guiButtonImage");
     overlayDiv = document.getElementById('overlay');
-    globalSVGCach["overlayImgRing"] = document.getElementById('overlayImg').getElementById('overlayImgRing');
 
     GUI();
     initMemoryBar();

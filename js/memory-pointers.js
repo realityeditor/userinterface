@@ -36,25 +36,25 @@ function MemoryPointer(link, isObjectA) {
 
 MemoryPointer.prototype.getObject = function() {
     if (this.isObjectA) {
-        return objects[this.link.ObjectA];
+        return objects[this.link.objectA];
     } else {
-        return objects[this.link.ObjectB];
+        return objects[this.link.objectB];
     }
 };
 
 MemoryPointer.prototype.getConnectedObject = function() {
     if (this.isObjectA) {
-        return objects[this.link.ObjectB];
+        return objects[this.link.objectB];
     } else {
-        return objects[this.link.ObjectA];
+        return objects[this.link.objectA];
     }
 };
 
 MemoryPointer.prototype.getConnectedValue = function() {
     if (this.isObjectA) {
-        return this.getConnectedObject().objectValues[this.link.locationInB];
+        return this.getConnectedObject().objectValues[this.link.nodeB];
     } else {
-        return this.getConnectedObject().objectValues[this.link.locationInA];
+        return this.getConnectedObject().objectValues[this.link.nodeA];
     }
 };
 
@@ -65,7 +65,7 @@ MemoryPointer.prototype.update = function() {
         this.remove();
         return
     }
-    if (object.ObjectVisible || !connectedObject.ObjectVisible) {
+    if (object.objectVisible || !connectedObject.objectVisible) {
         this.remove();
         return;
     }

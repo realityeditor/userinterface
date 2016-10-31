@@ -159,8 +159,6 @@ var pocketItem  = {"pocket" : new Objects()};
 var pocketItemId = "";
 
 
-var globalSVGCach = {};
-
 var globalDOMCach = {};
 
 var globalObjects = "";

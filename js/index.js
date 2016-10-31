@@ -152,6 +152,9 @@ function addHeartbeatObject(beat) {
 
                     }
                     cout(JSON.stringify(objects[thisKey]));
+
+                    addObjectMemory(objects[thisKey]);
+
                     addElementInPreferences();
                 }
             });
@@ -261,10 +264,7 @@ function setStates(developerState, extendedTrackingState, clearSkyState, externa
  * @param action
  **/
 
-function action(actionData) {
-    cout('action', actionData);
-    var id = actionData.id;
-    var url = 'http://' + actionData.ip + ':' + httpPort + '/object/' + id;
+function action(thisAction) {
 
     if (thisAction.reloadLink) {
         getData('http://' + thisAction.reloadLink.ip + ':' + httpPort + '/object/' + thisAction.reloadLink.id, thisAction.reloadLink.id, function (req, thisKey) {
@@ -303,7 +303,7 @@ function action(actionData) {
             objects[thisKey].scale = req.scale;
 
             if (objects[thisKey].integerVersion < 170) {
-                objects[thisKey].nodes = req.objectValues;
+                rename(objects[thisKey], "objectValues", "nodes");
 
                 for (var nodeKey in objects[thisKey].nodes) {
                     thisObject = objects[thisKey].nodes[nodeKey];
@@ -329,9 +329,10 @@ function action(actionData) {
         });
     }
 
-    cout("found action: " + action);
-
     if (thisAction.loadMemory) {
+        var id = thisAction.loadMemory.id;
+        var url = 'http://' + thisAction.loadMemory.ip + ':' + httpPort + '/object/' + id;
+
         getData(url, id, function (req, thisKey) {
             cout('received memory', req.memory);
             objects[thisKey].memory = req.memory;
@@ -528,14 +529,8 @@ function update(visibleObjects) {
     }
 
 
-    if (globalStates.feezeButtonState == false) {
-        globalObjects = visibleObjects;
-    }
-    /* if (consoleText !== "") {
-     consoleText = "";
-     document.getElementById("consolelog").innerHTML = "";
-     }
-     conalt = "";*/
+    globalObjects = visibleObjects;
+
     var thisGlobalCanvas = globalCanvas;
     if (thisGlobalCanvas.hasContent === true) {
         thisGlobalCanvas.context.clearRect(0, 0, globalCanvas.canvas.width, globalCanvas.canvas.height);
@@ -605,6 +600,7 @@ function update(visibleObjects) {
 
                 if (globalStates.guiState ==="node") {
                     drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, generalNode.type, thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
+
 
                     addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, thisGlobalStates);
 
@@ -1499,7 +1495,6 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, type, globalStates)
 
         var theObject = addOverlay;
         globalDOMCach[nodeKey].style["touch-action"] = "none";
-        globalDOMCach[nodeKey]["handjs_forcePreventDefault"] = true;
 
         globalDOMCach[nodeKey].addEventListener("pointerdown", touchDown, false);
         ec++;

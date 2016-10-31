@@ -216,7 +216,6 @@ MemoryContainer.prototype.onPointerEnter = function() {
     if (!this.memory) {
         return;
     }
-    // We are drawing a connection or otherwise not caring about memories
     this.remember();
 };
 
@@ -250,17 +249,6 @@ MemoryContainer.prototype.remove = function() {
     this.element.removeEventListener('pointerup', this.onPointerUp);
     this.element.removeEventListener('pointerenter', this.onPointerEnter);
     this.removeImage();
-};
-
-MemoryContainer.prototype.onPointerEnter = function() {
-    if (!overlayDiv.classList.contains('overlayMemory') && this.memory) {
-        // We are drawing a connection or otherwise not caring about memories
-        if (this.dragging || this.dragTimer) {
-            return;
-        }
-        // We are also not dragging or preparing to drag
-        this.remember();
-    }
 };
 
 MemoryContainer.prototype.createImage = function() {
@@ -369,11 +357,30 @@ function getMemoryWithId(id) {
     return null;
 }
 
+function memoryCanCreate() {
+    // Exactly one visible object
+    if (Object.keys(globalObjects).length !== 1 || typeof globalObjects.dummy !== 'undefined') {
+        return false;
+    }
+    // User is in ui mode
+    if (globalStates.guiState !== 'ui') {
+        return false;
+    }
+    if (globalStates.freezeButtonState) {
+        return false;
+    }
+    if (pocketShown()) {
+        return false;
+    }
+    return true;
+}
+
 exports.initMemoryBar = initMemoryBar;
 exports.removeMemoryBar = removeMemoryBar;
 exports.receiveThumbnail = receiveThumbnail;
 exports.addObjectMemory = addObjectMemory;
 exports.MemoryContainer = MemoryContainer;
 exports.getMemoryWithId = getMemoryWithId;
+exports.memoryCanCreate = memoryCanCreate;
 
 }(window));

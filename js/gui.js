@@ -328,7 +328,7 @@ function GUI() {
 
         if (globalStates.preferencesButtonState === true) {
             preferencesHide();
-            overlayDiv.style.display = "none";
+            overlayDiv.style.visibility = "visible";
 
             if (globalStates.editingMode) {
                 document.getElementById('resetButton').style.visibility = "visible";
@@ -354,7 +354,7 @@ function GUI() {
 
             preferencesVisible();
 
-            overlayDiv.style.display = "inline";
+            overlayDiv.style.visibility = "hidden";
 
             if (globalStates.UIOffMode) {
                 // If clearSky is hiding the buttons, make sure the buttons are
@@ -406,25 +406,9 @@ function GUI() {
     /**
      * Pocket Button
      */
-    var thisPocket =  document.getElementById("pocketButton");
  /*
+    var thisPocket =  document.getElementById("pocketButton");
 
-    document.getElementById("pocketButton").addEventListener("touchstart", function () {
-        if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1].src;
-    });
-    ec++;
-    document.getElementById("pocketButton").addEventListener("touchend", function () {
-        if (globalStates.pocketButtonState === true) {
-            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
-            globalStates.pocketButtonState = false;
-
-        }
-        else {
-            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2].src;
-        }
-    });
-
-*/
     thisPocket.addEventListener("pointerdown", function () {console.log("pointerdown");
         globalStates.pocketButtonDown = true;
 
@@ -535,6 +519,7 @@ function GUI() {
         // globalStates.pocketButtonDown = false;
        // globalStates.pocketButtonUp = false;
     }, false);
+    ec++;
 
     function pocketButtonAction() {
 
@@ -563,8 +548,8 @@ function GUI() {
         }
 
     }
+*/
 
-    ec++;
     document.getElementById("reloadButton").addEventListener("touchstart", function () {
         if (!globalStates.UIOffMode)    document.getElementById('reloadButton').src = reloadButtonImage[0].src;
         window.location.href = "of://reload";
@@ -702,23 +687,6 @@ function blockMenuHide() {
         }
     }
 }
-
-function pocketElement() {
-    return document.querySelector('.pocket');
-}
-
-function pocketShown() {
-    return pocketElement().classList.contains('pocketShown');
-}
-
-function pocketHide() {
-    pocketElement().classList.remove('pocketShown');
-}
-
-function pocketShow() {
-    pocketElement().classList.add('pocketShown');
-}
-
 
 /**********************************************************************************************************************
  ******************************************* datacrafting GUI  *******************************************************

@@ -15,7 +15,6 @@ var uiButtons;
 var button;
 var bigPocketButton;
 var bigTrashButton;
-var pointerOverPocketButton = false;
 
 function pocketInit() {
     preload(buttonImages,
@@ -35,48 +34,49 @@ function pocketInit() {
     bigTrashButton = document.getElementById('bigTrashButton');
 
     button.addEventListener('pointerenter', function() {
-        if (!pointerOverPocketButton) {
-            toggleShown();
+        if (pocketButtonIsBig()) {
+            return;
         }
-        pointerOverPocketButton = true;
+
+        toggleShown();
         // Show hover
         button.src = buttonImages[1].src;
-
-        if (pocketShown() && !overlayDiv.classList.contains('overlayMemory')) {
-            overlayDiv.classList.add('overlayMemoryInstant');
-            overlayDiv.classList.add('overlayMemory');
-        }
     });
+
     ec++;
 
     button.addEventListener('pointerleave', function() {
-        if (!uiButtons.classList.contains('bigPocket')) {
-            pointerOverPocketButton = false;
-        }
         // Undo the hover state
         updateButtons();
     });
     ec++;
 
     bigPocketButton.addEventListener('pointerenter', function() {
-        if (!pointerOverPocketButton) {
-            toggleShown();
+        if (!pocketButtonIsBig()) {
+            return;
         }
-        pointerOverPocketButton = true;
+
+        if (memoryCanCreate()) {
+            overlayDiv.classList.add('overlayMemoryInstant');
+            overlayDiv.classList.add('overlayMemory');
+        }
+
+        toggleShown();
         bigPocketButton.src = bigPocketImages[1].src;
     });
     ec++;
 
     bigPocketButton.addEventListener('pointerleave', function() {
-        if (uiButtons.classList.contains('bigPocket')) {
-            pointerOverPocketButton = false;
-        }
         // Undo the hover state
         updateButtons();
     });
     ec++;
 
     element = document.querySelector('.pocket');
+}
+
+function pocketButtonIsBig() {
+    return uiButtons.classList.contains('bigPocket');
 }
 
 function toggleShown() {
@@ -95,6 +95,8 @@ function pocketShow() {
 
 function pocketHide() {
     element.classList.remove('pocketShown');
+    uiButtons.classList.remove('bigPocket');
+    uiButtons.classList.remove('bigTrash');
     updateButtons();
 }
 

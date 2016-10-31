@@ -198,21 +198,17 @@ function touchEnter () {
 
     if (globalProgram.nodeA === this.id || globalProgram.nodeA === false) {
         contentForFeedback = 3;
-        globalSVGCach["overlayImgRing"].setAttribute("r", "58");
-        globalSVGCach["overlayImgRing"].setAttribute("stroke", '#f9f90a');
-
+        overlayDiv.classList.add('overlayAction');
     } else {
 
         if (checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, globalProgram.logicA, this.objectId, this.nodeId, 0)) {
             contentForFeedback = 2; // overlayImg.src = overlayImage[2].src;
-            globalSVGCach["overlayImgRing"].setAttribute("r", "58");
-            globalSVGCach["overlayImgRing"].setAttribute("stroke", '#3af431');
+            overlayDiv.classList.add('overlayPositive');
         }
 
         else {
             contentForFeedback = 0; // overlayImg.src = overlayImage[0].src;
-            globalSVGCach["overlayImgRing"].setAttribute("r", "58");
-            globalSVGCach["overlayImgRing"].setAttribute("stroke", '#ff019f');
+            overlayDiv.classList.add('overlayNegative');
         }
     }
 
@@ -231,10 +227,9 @@ function touchLeave () {
 
         globalProgram.logicSelector = 4;
 
-        globalSVGCach["overlayImgRing"].setAttribute("r", "30");
-        globalSVGCach["overlayImgRing"].setAttribute("stroke", '#00ffff');
-
-        // document.getElementById('overlayImg').src = overlayImage[1].src;
+    overlayDiv.classList.remove('overlayPositive');
+    overlayDiv.classList.remove('overlayNegative');
+    overlayDiv.classList.remove('overlayAction');
 
         cout("leave");
 
@@ -282,9 +277,8 @@ function getPossition(evt) {
 
     globalStates.pointerPosition = [evt.clientX, evt.clientY];
 
-    overlayDiv.style.left = evt.clientX - 60;
-    overlayDiv.style.top = evt.clientY - 60;
-
+    // Translate up 6px to be above pocket layer
+    overlayDiv.style.transform = 'translate3d(' + evt.clientX + 'px,' + evt.clientY + 'px,6px)';
 
     setPocketPossition(evt);
 
@@ -396,9 +390,9 @@ function documentPointerUp(evt) {
 
     overlayDiv.classList.remove('overlayMemory');
     overlayDiv.classList.remove('overlayMemoryInstant');
+    pocketOnMemoryCreationStop();
     if (overlayDiv.style.backgroundImage !== 'none') {
         overlayDiv.style.backgroundImage = 'none';
-        pocketOnMemoryCreationStop();
         window.location.href = 'of://clearMemory';
     }
 
@@ -421,10 +415,9 @@ function documentPointerUp(evt) {
 function documentPointerDown(evt) {
     globalStates.pointerPosition = [evt.clientX, evt.clientY];
 
-    // overlayImg.src = overlayImage[globalStates.overlay].src;
-    overlayDiv.style.display = "inline";
-    overlayDiv.style.left = evt.clientX - 60;
-    overlayDiv.style.top = evt.clientY - 60;
+    overlayDiv.style.visibility = "visible";
+    // Translate up 6px to be above pocket layer
+    overlayDiv.style.transform = 'translate3d(' + evt.clientX + 'px,' + evt.clientY + 'px,6px)';
     if (globalStates.guiButtonState && !globalStates.freezeButtonState) {
         // If the event is hitting the background
         if (evt.target.id === 'canvas') {
@@ -432,7 +425,6 @@ function documentPointerDown(evt) {
         }
     }
 
-/*
     // todo for testing only
 
     pocketItemId = uuidTime();
@@ -443,10 +435,8 @@ function documentPointerDown(evt) {
 
     var thisItem = pocketItem.pocket.nodes[pocketItemId];
 
-
-    if(globalLogic.farFrontElement==="") {
-        thisItem.x = evt.clientX - (globalStates.height / 2);
-        thisItem.y = evt.clientY - (globalStates.width / 2);
+    if (memoryCanCreate()) {
+        pocketOnMemoryCreationStart();
     }
    // else {
        // var matrixTouch =  screenCoordinatesToMatrixXY(thisItem, [evt.clientX,evt.clientY]);
@@ -480,8 +470,6 @@ function documentPointerDown(evt) {
 
     //addElement("pocket", pocketItemId, "nodes/" + thisItem.type + "/index.html",  pocketItem.pocket, "logic",globalStates);
 
-
-*/
     cout("documentPointerDown");
 }
 

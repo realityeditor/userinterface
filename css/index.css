@@ -513,17 +513,17 @@ body {
 
 .memoryWeb > .memoryContainer {
     position: absolute;
-    margin-left: -67px;
-    margin-top: -37.5px;
+    margin-left: -33.5px;
+    margin-top: -18.75px;
 }
 
 .memoryContainer {
     display: inline-block;
-    margin: 5px;
+    margin: 2px;
     padding: 0;
     border: 2px solid #01FFFC;
-    width: 134px;
-    height: 75px;
+    width: 67px;
+    height: 37.5px;
 }
 
 .memoryContainer.memoryPlaceholder {
@@ -559,19 +559,19 @@ body {
 
 .memoryPointer {
     position: absolute;
-    margin-left: -67px;
-    margin-top: -37.5px;
+    margin-left: -33.5px;
+    margin-top: -18.75px;
 }
 
 .memory {
     display: block;
-    width: 134px;
-    height: 75px;
+    width: 67px;
+    height: 37.5px;
     margin: 0;
     padding: 0;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
-    opacity: 0;
+    opacity: 0.8;
 }
 
 .memory.memoryLoaded {
@@ -604,15 +604,25 @@ body {
 
 #overlay.overlayMemoryInstant {
     transition: width 0.01s linear, height 0.01s linear, border-radius 0.01s linear, border-width 0.01s linear;
+    margin-top: -18.75px;
+    margin-left: -33.5px;
+    width: 67px;
+    height: 37.5px;
+    border-radius: 0px;
+    border: 2px solid #01FFFC;
 }
 
 #overlay.overlayMemory {
-  margin-top: -37.5px;
-  margin-left: -67px;
-  width: 134px;
-  height: 75px;
-  border-radius: 0px;
-  border: 2px solid #01FFFC;
+}
+
+#overlay.overlayPositive,
+#overlay.overlayNegative,
+#overlay.overlayAction {
+    width: 120px;
+    height: 120px;
+    margin-left: -60px;
+    margin-top: -60px;
+    border-radius: 120px;
 }
 
 #overlay.overlayPositive {

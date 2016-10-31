@@ -70,12 +70,18 @@ function deleteLines(x21, y21, x22, y22) {
             var l = thisObject.links[subKeysome];
             var oA = thisObject;
             var oB = objects[l.objectB];
+
+            if (typeof(oA) === 'undefined' || typeof(oB) === 'undefined') {
+                continue;
+            }
+
             var bA = oA.nodes[l.nodeA];
             var bB = oB.nodes[l.nodeB]
 
-            if (bA === undefined || bB === undefined || oA === undefined || oB === undefined) {
+            if (typeof(bA) === 'undefined' || typeof(bB) === 'undefined') {
                 continue; //should not be undefined
             }
+
             if (checkLineCross(bA.screenX, bA.screenY, bB.screenX, bB.screenY, x21, y21, x22, y22, globalCanvas.canvas.width, globalCanvas.canvas.height)) {
                 delete thisObject.links[subKeysome];
                 cout("iam executing link deletion");

@@ -409,9 +409,10 @@ function randomIntInc(min, max) {
 };
 
 /**
- * @desc rename an object (more or less)
- * @param
- * @param
+ * @desc rename object[before] to object[after], deleting object[before]
+ * @param {Object} object
+ * @param {String} before
+ * @param {String} after
  * @return {Object}
  **/
 
