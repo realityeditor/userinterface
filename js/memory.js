@@ -323,6 +323,10 @@ function receiveThumbnail(thumbnailUrl) {
 }
 
 function addObjectMemory(obj) {
+    if (!obj.memory || Object.keys(obj.memory) === 0) {
+        return;
+    }
+
     var freeMemory;
     if (pendingMemorizations.hasOwnProperty(obj.objectId)) {
         freeMemory = pendingMemorizations[obj.objectId];
