@@ -176,6 +176,7 @@ MemoryContainer.prototype.stopDragging = function() {
 MemoryContainer.prototype.onPointerUp = function() {
     if (this.dragTimer) {
         clearTimeout(this.dragTimer);
+        this.dragTimer = null;
     }
 
     if (activeThumbnail) {
@@ -210,7 +211,7 @@ MemoryContainer.prototype.onPointerEnter = function() {
     if (overlayDiv.classList.contains('overlayMemory')) {
         return;
     }
-    if (this.dragging) {
+    if (this.dragTimer) {
         return;
     }
     if (!this.memory) {
