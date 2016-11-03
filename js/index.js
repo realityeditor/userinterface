@@ -1253,7 +1253,7 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
         addContainer.style.height = globalStates.width + "px";
         addContainer.style.display = "none";
         addContainer.style.border = 0;
-        addContainer.setAttribute("background-color", "lightblue");
+       // addContainer.setAttribute("background-color", "lightblue");
 
         addContainer.className = "main";
 

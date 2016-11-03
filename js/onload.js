@@ -325,12 +325,13 @@ console.log(msgContent.sendAcceleration);
                 }
             }
         }
+    }
 
         if (typeof msgContent.fullScreen === "boolean") {
             // console.log("gotfullscreenmessage");
             if (msgContent.fullScreen === true) {
                 tempThisObject.fullScreen = true;
-
+                console.log("fullscreen: "+tempThisObject.fullScreen);
                 document.getElementById("thisObject" + msgContent.node).style.webkitTransform =
                     'matrix3d(1, 0, 0, 0,' +
                     '0, 1, 0, 0,' +
@@ -344,5 +345,5 @@ console.log(msgContent.sendAcceleration);
             }
 
         }
-    }
+
 };

@@ -540,11 +540,11 @@ function MultiTouchEnd(evt) {
         }
 
         // todo for now we just send nodes but no logic locations.
-        if(globalStates.editingModeKind=== "node") {
+      //  if(globalStates.editingModeKind=== "node") {
             if (typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
                 postData('http://' + objects[globalStates.editingModeObject].ip + ':' + httpPort + '/object/' + globalStates.editingModeObject + "/size/" + globalStates.editingModeLocation, content);
             }
-        }
+       // }
 
         globalStates.editingModeHaveObject = false;
         globalCanvas.hasContent = true;
