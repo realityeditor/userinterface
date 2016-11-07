@@ -34,6 +34,10 @@ function pocketInit() {
     bigTrashButton = document.getElementById('bigTrashButton');
 
     button.addEventListener('pointerenter', function() {
+        if (globalStates.guiState !== "ui") {
+            return;
+        }
+
         if (pocketButtonIsBig()) {
             return;
         }
@@ -46,12 +50,20 @@ function pocketInit() {
     ec++;
 
     button.addEventListener('pointerleave', function() {
+        if (globalStates.guiState !== "ui") {
+            return;
+        }
+
         // Undo the hover state
         updateButtons();
     });
     ec++;
 
     bigPocketButton.addEventListener('pointerenter', function() {
+        if (globalStates.guiState !== "ui") {
+            return;
+        }
+
         if (!pocketButtonIsBig()) {
             return;
         }
@@ -67,6 +79,10 @@ function pocketInit() {
     ec++;
 
     bigPocketButton.addEventListener('pointerleave', function() {
+        if (globalStates.guiState !== "ui") {
+            return;
+        }
+
         // Undo the hover state
         updateButtons();
     });

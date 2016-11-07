@@ -406,15 +406,23 @@ function GUI() {
     /**
      * Pocket Button
      */
- /*
+
     var thisPocket =  document.getElementById("pocketButton");
 
     thisPocket.addEventListener("pointerdown", function () {console.log("pointerdown");
+        if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
+            return;
+        }
+
         globalStates.pocketButtonDown = true;
 
     }, false);
 
     thisPocket.addEventListener("pointerup", function () { console.log("pointerup");
+        if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
+            return;
+        }
+
        if(globalStates.pocketButtonDown){
            pocketButtonAction()
        }
@@ -423,6 +431,9 @@ function GUI() {
     }, false);
 
     thisPocket.addEventListener("pointerenter", function () { console.log("pointerenter");
+        if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
+            return;
+        }
 
         var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
         if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1+indexChange].src;
@@ -444,6 +455,9 @@ function GUI() {
 
 
     thisPocket.addEventListener("pointerleave", function (evt) { console.log("pointerleave");
+        if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
+            return;
+        }
 
         var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
         if (globalStates.pocketButtonState === true) {
@@ -548,7 +562,6 @@ function GUI() {
         }
 
     }
-*/
 
     document.getElementById("reloadButton").addEventListener("touchstart", function () {
         if (!globalStates.UIOffMode)    document.getElementById('reloadButton').src = reloadButtonImage[0].src;

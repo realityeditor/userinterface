@@ -435,7 +435,7 @@ function documentPointerDown(evt) {
 
     var thisItem = pocketItem.pocket.nodes[pocketItemId];
 
-    if (memoryCanCreate()) {
+    if (memoryCanCreate() && window.innerWidth - evt.clientX > 65) {
         pocketOnMemoryCreationStart();
     }
    // else {
