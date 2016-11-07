@@ -34,7 +34,7 @@ function pocketInit() {
     bigTrashButton = document.getElementById('bigTrashButton');
 
     button.addEventListener('pointerenter', function() {
-        if (globalStates.guiState !== "ui") {
+        if (globalStates.guiState !== "ui" && !globalProgram.objectA) {
             return;
         }
 
@@ -50,7 +50,7 @@ function pocketInit() {
     ec++;
 
     button.addEventListener('pointerleave', function() {
-        if (globalStates.guiState !== "ui") {
+        if (globalStates.guiState !== "ui" && !globalProgram.objectA) {
             return;
         }
 
