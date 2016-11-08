@@ -361,8 +361,10 @@ function addBlockFromMenu(blockJSON, pointerX, pointerY) {
 
 }
 
+// TODO: handle differently if can't load iframe? don't display at all?
+  // (do some blocks not have settings and therefore opening the settings
+  // page should be disabled?)
 function openBlockSettings(block) {
-  console.log(block);
   var craftingBoard = document.getElementById('craftingBoard');
   var blockSettingsContainer = document.createElement('iframe');
   blockSettingsContainer.addEventListener('load', function() {
@@ -370,22 +372,17 @@ function openBlockSettings(block) {
   });
   blockSettingsContainer.setAttribute('id', 'blockSettingsContainer');
   blockSettingsContainer.src = 'blocks/'+block.name+'/settings.html';
+  // blockSettingsContainer... //post default settings to page
   craftingBoard.appendChild(blockSettingsContainer);
 }
 
 function handleBlockSettingsChange(block, params) {
-  console.log("new settings values = ", params);
   for (key in params) {
     if (block.publicData.hasOwnProperty(key)) {
       block.publicData[key] = params[key];
     }
   }
-  console.log(block.publicData);
 }
-
-// function updateBlockSettings(params) {
-//   console.log(params);
-// }
 
 function hideBlockSettings() {
   var container = document.getElementById('blockSettingsContainer');

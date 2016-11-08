@@ -260,9 +260,10 @@ function postMessage(e) {
         for (var i = 0; i < iframes.length; i++) {
 
             if (iframes[i].id !== "iframe" + msgContent.node && iframes[i].style.visibility !== "hidden") {
-                if (iframes[i].integerVersion >= 32) {
+                var receivingObject = objects[iframes[i].id.substr(6)];
+                if (receivingObject.integerVersion >= 32) {
                     var msg = {};
-                    if (iframes[i].integerVersion >= 170) {
+                    if (receivingObject.integerVersion >= 170) {
                         msg = {globalMessage: msgContent.globalMessage};
                     } else {
                         msg = {ohGlobalMessage: msgContent.ohGlobalMessage};
