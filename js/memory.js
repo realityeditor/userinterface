@@ -10,6 +10,7 @@
 function MemoryContainer(element) {
     this.element = element;
     this.image = null;
+    this.backgroundImage = null;
     this.memory = null;
     this.dragging = false;
     this.dragTimer = null;
@@ -28,6 +29,11 @@ MemoryContainer.prototype.set = function(obj) {
     this.obj = obj;
     var urlBase = 'http://' + obj.ip + ':8080/obj/' + obj.name + '/memory/';
     var image = urlBase + 'memory.jpg';
+
+    this.backgroundImage = document.createElement('img');
+    this.backgroundImage.classList.add('memoryBackgroundImage');
+    this.backgroundImage.src = image;
+
     var thumbnail = urlBase + 'memoryThumbnail.jpg';
 
     this.memory = {
@@ -237,7 +243,9 @@ MemoryContainer.prototype.remember = function() {
     pocketHide();
 
     var memoryBackground = document.querySelector('.memoryBackground');
-    memoryBackground.style.backgroundImage = url(this.memory.image);
+    memoryBackground.innerHTML = '';
+    memoryBackground.appendChild(this.backgroundImage);
+
     window.location.href = 'of://remember/?data=' + encodeURIComponent(JSON.stringify(
         {id: this.memory.id, matrix: this.memory.matrix}
     ));

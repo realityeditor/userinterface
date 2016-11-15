@@ -380,7 +380,7 @@ function GUI() {
             document.getElementById('freezeButton').src = freezeButtonImage[0].src;
             globalStates.freezeButtonState = false;
             var memoryBackground = document.querySelector('.memoryBackground');
-            memoryBackground.style.backgroundImage = 'none';
+            memoryBackground.innerHTML = '';
             window.location.href = "of://unfreeze";
         }
         else {
