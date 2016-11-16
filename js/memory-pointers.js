@@ -26,6 +26,12 @@ function MemoryPointer(link, isObjectA) {
     this.memory.set(this.getObject());
     this.x = 0;
     this.y = 0;
+
+    var globalIndex = Object.keys(objects).indexOf(object.objectId);
+    var theta = 2 * Math.PI * globalIndex / Object.keys(objects).length;
+    this.offsetX = Math.cos(theta) * 150;
+    this.offsetY = Math.sin(theta) * 150;
+
     this.alive = true;
 
     this.update = this.update.bind(this);
@@ -80,8 +86,8 @@ MemoryPointer.prototype.update = function() {
 
 MemoryPointer.prototype.draw = function() {
     var connectedValue = this.getConnectedValue();
-    this.x = connectedValue.screenX - 150;
-    this.y = connectedValue.screenY - 50;
+    this.x = connectedValue.screenX - this.offsetX;
+    this.y = connectedValue.screenY - this.offsetY;
     this.element.style.transform = 'translate(' + this.x + 'px,' + this.y + 'px)';
 };
 
