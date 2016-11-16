@@ -526,10 +526,6 @@ body {
     height: 37.5px;
 }
 
-.memoryContainer.memoryPlaceholder {
-    opacity: 0.2;
-}
-
 .memoryContainer.memoryDragging {
     z-index: 4;
     position: fixed;
@@ -571,11 +567,6 @@ body {
     padding: 0;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
-    opacity: 0.8;
-}
-
-.memory.memoryLoaded {
-    opacity: 1;
 }
 
 #overlay {

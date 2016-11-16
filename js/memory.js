@@ -48,12 +48,6 @@ MemoryContainer.prototype.set = function(obj) {
         this.createImage();
     }
 
-    this.element.classList.add('memoryPlaceholder');
-
-    this.image.onload = function() {
-        this.element.classList.remove('memoryPlaceholder');
-        this.image.classList.add('memoryLoaded');
-    }.bind(this);
     this.image.src = thumbnail;
 };
 
@@ -190,7 +184,6 @@ MemoryContainer.prototype.onPointerUp = function() {
             this.createImage();
         }
         this.image.src = activeThumbnail;
-        this.element.classList.add('memoryPlaceholder');
 
         overlayDiv.style.backgroundImage = 'none';
         overlayDiv.classList.remove('overlayMemory');
@@ -201,14 +194,21 @@ MemoryContainer.prototype.onPointerUp = function() {
         if (potentialObjects.length !== 1) {
             console.warn('Memorization attempted with multiple objects');
         } else {
-            pendingMemorizations[potentialObjects[0] || ''] = this;
+            var objId = potentialObjects[0];
+            barContainers.forEach(function(container) {
+                if (container.memory && container.memory.id === objId) {
+                    container.clear();
+                }
+            });
+
+            pendingMemorizations[objId || ''] = this;
             window.location.href = 'of://memorize';
             event.stopPropagation();
         }
         pocketOnMemoryCreationStop();
     } else if (this.dragging) {
         return;
-    } else if (this.memory) {
+    } else {
         this.remember();
     }
 };
@@ -218,9 +218,6 @@ MemoryContainer.prototype.onPointerEnter = function() {
         return;
     }
     if (this.dragTimer) {
-        return;
-    }
-    if (!this.memory) {
         return;
     }
     this.remember();
@@ -236,6 +233,10 @@ MemoryContainer.prototype.onTouchEnd = function() {
 
 
 MemoryContainer.prototype.remember = function() {
+    if (!this.memory && !this.image) {
+        return;
+    }
+
     if (document.querySelector('.memoryWeb')) {
         removeMemoryWeb();
     }
@@ -246,9 +247,16 @@ MemoryContainer.prototype.remember = function() {
     memoryBackground.innerHTML = '';
     memoryBackground.appendChild(this.backgroundImage);
 
-    window.location.href = 'of://remember/?data=' + encodeURIComponent(JSON.stringify(
-        {id: this.memory.id, matrix: this.memory.matrix}
-    ));
+    var href = 'of://remember/';
+
+    if (this.memory) {
+        href += '?data=' + encodeURIComponent(JSON.stringify(
+            {id: this.memory.id, matrix: this.memory.matrix}
+        ));
+    }
+
+    window.location.href = href;
+
     document.getElementById('freezeButton').src = freezeButtonImage[2].src;
     globalStates.freezeButtonState = true;
 };
