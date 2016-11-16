@@ -274,13 +274,13 @@ function action(thisAction) {
                 for (var linkKey in objects[thisKey].links) {
                     thisObject = objects[thisKey].links[linkKey];
 
-                    rename(thisObject, "objectA", "objectA");
-                    rename(thisObject, "nodeA", "nodeA");
-                    rename(thisObject, "nameA", "nameA");
+                    rename(thisObject, "ObjectA", "objectA");
+                    rename(thisObject, "locationInA", "nodeA");
+                    rename(thisObject, "ObjectNameA", "nameA");
 
-                    rename(thisObject, "objectB", "objectB");
-                    rename(thisObject, "nodeB", "nodeB");
-                    rename(thisObject, "nameB", "nameB");
+                    rename(thisObject, "ObjectB", "objectB");
+                    rename(thisObject, "locationInB", "nodeB");
+                    rename(thisObject, "ObjectNameB", "nameB");
                     rename(thisObject, "endlessLoop", "loop");
                     rename(thisObject, "countLinkExistance", "health");
                 }
