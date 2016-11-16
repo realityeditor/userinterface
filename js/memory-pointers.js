@@ -52,9 +52,9 @@ MemoryPointer.prototype.getConnectedObject = function() {
 
 MemoryPointer.prototype.getConnectedValue = function() {
     if (this.isObjectA) {
-        return this.getConnectedObject().objectValues[this.link.nodeB];
+        return this.getConnectedObject().nodes[this.link.nodeB];
     } else {
-        return this.getConnectedObject().objectValues[this.link.nodeA];
+        return this.getConnectedObject().nodes[this.link.nodeA];
     }
 };
 
@@ -69,7 +69,7 @@ MemoryPointer.prototype.update = function() {
         this.remove();
         return;
     }
-    if (globalStates.guiButtonState || globalStates.editingMode) {
+    if (globalStates.guiState !== 'node') {
         // Remove if no longer in connection-drawing mode
         this.remove();
         return;
@@ -92,9 +92,7 @@ MemoryPointer.prototype.remove = function() {
 };
 
 function getMemoryPointerWithId(id) {
-    if (pointers[id]) {
-        return pointers[id];
-    }
+    return pointers[id];
 }
 
 exports.MemoryPointer = MemoryPointer;
