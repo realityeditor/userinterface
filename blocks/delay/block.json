@@ -1,0 +1,12 @@
+{
+  "name": "delay",
+  "width": 1,
+  "activeInputs": [true, false, false, false],
+  "activeOutputs": [true, false, false, false],
+  "nameInput":["x","","",""],
+  "nameOutput":["delayed x","","",""],
+  "publicData":{
+    "delayTime":1000
+  },
+  "privateData":{}
+}

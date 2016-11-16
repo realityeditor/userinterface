@@ -205,9 +205,13 @@ function Logic() {
 
     this.links = {};
     this.blocks = {};
+
+    // BEN TODO: these should be cleaned up
     this.tempLink = null;
     this.tempBlock = null;
-
+    this.tappedContents = null;
+    this.tempIncomingLinks = [];
+    this.tempOutgoingLinks = [];
 }
 
 /**
@@ -273,6 +277,10 @@ function Block() {
     this.text = "";
     // indicates how much calls per second is happening on this block
     this.stress = 0;
+
+    // BEN TODO: are both of these used?
+    this.isTempBlock = false;
+    this.isPortBlock = false;
 }
 
 /**

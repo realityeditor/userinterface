@@ -1,0 +1,12 @@
+{
+  "name": "threshold",
+  "width": 1,
+  "activeInputs": [true, false, false, false],
+  "activeOutputs": [true, false, false, false],
+  "nameInput":["x","","",""],
+  "nameOutput":["x if x>min","","",""],
+  "publicData":{
+    "minValueToSend":0.5
+  },
+  "privateData":{}
+}

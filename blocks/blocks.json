@@ -1,0 +1,21 @@
+{
+  "blockDirs":[
+    [
+      "delay",
+      "threshold",
+      "switch"
+    ],
+    [],
+    [
+      "acceleration",
+      "rotation"
+    ],
+    [
+      "scale",
+      "add-2",
+      "add-3",
+      "add-4"
+   ],
+   []
+ ]
+}

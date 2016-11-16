@@ -1,0 +1,66 @@
+<html>
+<head>
+  <style>
+
+  body {
+    display:-webkit-box;
+    -webkit-box-pack:center;
+    -webkit-box-align:center;
+    font-size: 24px;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  #settingsContents {
+    display: inline;
+    text-align: center;
+  }
+
+  input[type='range'] {
+    -webkit-appearance: none !important;
+    background:#C4C4C4;
+    height:52px;
+    border-radius: 24px;
+    border: 4px solid #A5A5A5;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+      -webkit-appearance: none !important;
+      background:white;
+      height:44px;
+      width:44px;
+      border-radius: 22px;
+  }
+
+  #delaySlider {
+    width: 300px;
+  }
+
+  </style>
+</head>
+<body>
+  <div id='settingsContents'>
+    <p id="delayTimerDisplay">Timer: <span id="delaySliderCurrentValue">0.01</span>s</p>
+    <p><input id="delaySlider" type="range" min="1" max="9999" step="1" value="1"/></p>
+    <script type="text/javascript">
+      function openSettingsWithHandler(changeHandler, blockReference) {
+      var delaySlider = document.getElementById("delaySlider");
+      var valueDisplay = document.getElementById("delaySliderCurrentValue");
+        delaySlider.addEventListener("input", updateCurrentDelayValue);
+        delaySlider.addEventListener("change", savePublicData);
+        function updateCurrentDelayValue() {
+          valueDisplay.innerHTML = parseFloat(delaySlider.value / 1000).toFixed(2);
+        }
+        function savePublicData() {
+          var newPublicData = {'delayTime': delaySlider.value};
+          changeHandler(blockReference, newPublicData);
+        }
+        updateCurrentDelayValue();
+      }
+    </script>
+  </div>
+</body>
+</html>

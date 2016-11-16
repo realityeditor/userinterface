@@ -1,0 +1,10 @@
+{
+  "name": "rotation",
+  "width": 3,
+  "activeInputs": [false, false, false, false],
+  "activeOutputs": [true, true, true, false],
+  "nameInput":["","","",""],
+  "nameOutput":["yaw","pitch","roll",""],
+  "publicData":{},
+  "privateData":{}
+}

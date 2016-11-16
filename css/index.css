@@ -199,15 +199,16 @@ body {
     visibility: hidden;
     -webkit-transform-style: preserve-3d;
     position: fixed;
-    height: 100%;
-    width: 100%;
+    width: 506px;
+    height: 320px;
     margin: 0;
     padding: 0;
     background-color: #969696;
+    -webkit-user-select: none;
+    user-select: none;
 
     -webkit-transform: translateZ(1px);
 }
-
 
 .Interfaces {
     -webkit-transform-style: preserve-3d;
@@ -226,8 +227,6 @@ body {
     z-index: 0;
     -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
-
-
 
 /*
 *
@@ -276,4 +275,235 @@ Logic Interface CSS
     animation-duration: 100ms;
     -webkit-animation-fill-mode: forwards;
     -webkit-animation-timing-function: ease-in;
+}
+
+#blocks {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#blockPlaceholdersContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.blockPlaceholder {
+    width: 92px;
+    height: 46px;
+    margin-right: 46px;
+    margin-bottom: 46px;
+    display: inline-block;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    opacity: 0.75;
+}
+
+.blockPlaceholderLastCol {
+    width: 92px;
+    height: 46px;
+    margin-bottom: 46px;
+    display: inline-block;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    opacity: 0.75;
+}
+
+#datacraftingCanvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: #B7B7B7;
+}
+
+#datacraftingEventDiv {
+  position: absolute;
+  left: 0;
+  top: 0;
+  /*width: 100%;*/
+  /*height: 100%;*/
+  width: 568px;
+  height: 320px;
+}
+
+#sidebarBackground {
+    position: absolute;
+    right: -70px;
+    top: 0;
+    background-color: #B7B7B7;
+    height: 100%;
+    width: 70px;
+}
+
+.blockDivPlaced {
+  position: absolute;
+  color: #000000;
+  user-select:none;
+  -webkit-user-select:none;
+  display:-webkit-box;
+  -webkit-box-pack:center;
+  -webkit-box-align:center;
+  /*width: 100%;*/
+  /*height: 100%;*/
+  background-color: #E6E6E6;
+  border: 1px solid black;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+
+.blockDivHighlighted {
+  position: absolute;
+  color: #000000;
+  user-select:none;
+  -webkit-user-select:none;
+  display:-webkit-box;
+  -webkit-box-pack:center;
+  -webkit-box-align:center;
+  border: 1px solid #646464;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+
+  background-color: #FFFFFF;
+  animation-name: blockDivHighlightedKeyframes;
+  animation-duration: 0.5s;
+}
+
+@keyframes blockDivHighlightedKeyframes {
+  from {
+    background-color: #E6E6E6;
+    border: 1px solid black;
+  }
+  to {
+    background-color: #FFFFFF;
+    border: 1px solid #646464;
+  }
+}
+
+.inputIndicator {
+  background-color: black;
+  position: absolute;
+  top: 0;
+}
+
+.outputIndicator {
+  background-color: black;
+  position: absolute;
+}
+
+/* block settings */
+
+#blockSettingsContainer {
+  background-color: #B7B7B7; /*#969696;*/
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 506px;
+  height: 320px;
+}
+
+/* block menu */
+
+#menuContainer {
+  background-color: #B7B7B7; /*#969696;*/
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 506px;
+  height: 320px;
+}
+
+#menuBlockContainer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 400px;
+  height: 320px;
+}
+
+#menuSideContainer {
+  position: absolute;
+  left: 400px;
+  top: 0;
+  width: 106px;
+  height: 320px;
+}
+
+.menuBlock {
+  width: 92px;
+  height: 46px;
+  display: inline-block;
+  background-color: #E6E6E6;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border: solid 2px #898989;
+  margin: 3.5px;
+}
+
+.menuBlockContents {
+  width: 100%;
+  height: 100%;
+  display:-webkit-box;
+  -webkit-box-pack:center;
+  -webkit-box-align:center;
+  user-select:none;
+  -webkit-user-select:none;
+  color: #000000;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+}
+
+  @keyframes blockSelectedKeyframes {
+    from {background-color: #E6E6E6;}
+    to {background-color: #FFFFFF;}
+  }
+
+.menuBlockSelected {
+  width: 92px;
+  height: 46px;
+  display: inline-block;
+  background-color: #FFFFFF;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border: solid 2px #898989;
+  margin: 3.5px;
+  animation-name: blockSelectedKeyframes;
+  animation-duration: 0.25s;
+}
+
+.menuTab {
+  width: 106px;
+  height: 59.5px;
+  margin-top: 3.5px;
+  margin-bottom: 3.5px;
+  background-color: #E6E6E6;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border: solid 2px #898989;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-right: none;
+  display:-webkit-box;
+  -webkit-box-pack:center;
+  -webkit-box-align:center;
+}
+
+.menuTabSelected {
+  width: 106px;
+  height: 59.5px;
+  margin-top: 3.5px;
+  margin-bottom: 3.5px;
+  background-color: #FFFFFF;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border: solid 2px #898989;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-right: none;
+  display:-webkit-box;
+  -webkit-box-pack:center;
+  -webkit-box-align:center;
+}
+
+.menuTabIcon {
+  height: 75%;
+  opacity: 0.5;
 }

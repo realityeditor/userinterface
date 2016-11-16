@@ -65,6 +65,7 @@ var unconstButtonImage = [];
 var editingButtonImage = [];
 var pocketButtonImage = [];
 var loadNewUiImage = [];
+var blockTabImage = [];
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
@@ -104,6 +105,10 @@ function GUI() {
         'png/load.png', 'png/loadOver.png'
     );
 
+    preload(blockTabImage,
+        'png/iconBlocks.png', 'png/iconEvents.png', 'png/iconSignals.png', 'png/iconMath.png', 'png/iconWeb.png'
+    );
+
     document.getElementById("guiButtonImage1").addEventListener("touchstart", function () {
         if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[0].src;
         // kickoff();
@@ -111,11 +116,14 @@ function GUI() {
     ec++;
 
     document.getElementById("guiButtonImage1").addEventListener("touchend", function () {
-
-            if (!globalStates.UIOffMode)      document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
-            globalStates.guiState = "ui";
-
-        craftingBoardHide();
+        if (!globalStates.UIOffMode)      document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
+        if (globalStates.guiState !== "logic") {
+            if (DEBUG_DATACRAFTING) {
+                craftingBoardVisible(); // TODO: BEN DEBUG - revert to previous line
+            } else {
+                craftingBoardHide();
+            }
+        }
     });
     ec++;
 
@@ -126,9 +134,8 @@ function GUI() {
 
     document.getElementById("guiButtonImage2").addEventListener("touchend", function () {
 
-            if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
-            globalStates.guiState = "node";
-
+        if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
+        globalStates.guiState = "node";
         craftingBoardHide();
     });
     ec++;
@@ -311,6 +318,13 @@ function GUI() {
     ec++;
 
     document.getElementById("preferencesButton").addEventListener("touchend", function () {
+
+        if (globalStates.guiState === "logic") {
+            hideBlockSettings();
+            document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
+            return;
+        }
+
         if (globalStates.preferencesButtonState === true) {
             preferencesHide();
             overlayDiv.style.display = "none";
@@ -422,8 +436,8 @@ function GUI() {
 
     thisPocket.addEventListener("pointerenter", function () { console.log("pointerenter");
 
-
-        if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1].src;
+        var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
+        if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1+indexChange].src;
 
         // this is where the virtual point disapears!
 
@@ -443,11 +457,12 @@ function GUI() {
 
     thisPocket.addEventListener("pointerleave", function (evt) { console.log("pointerleave");
 
+        var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
         if (globalStates.pocketButtonState === true) {
-            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0+indexChange].src;
         }
         else {
-            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2].src;
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2+indexChange].src;
         }
 
         // this is where the virtual point creates object
@@ -495,6 +510,26 @@ function GUI() {
         }
         setPocketPossition(evt);
 
+        //TODO: this is a debug method to create random blocks by dragging out from the pocket button while in crafting mode. should be removed eventually.
+        /*
+        if (globalStates.pocketButtonDown === true && globalStates.guiState === "logic" && !globalStates.currentLogic.tempBlock) {
+            console.log("create new block from pocket");
+
+            // Returns a random integer between min (included) and max (excluded)
+            // Using Math.round() will give you a non-uniform distribution!
+            function getRandomInt(min, max) {
+              min = Math.ceil(min);
+              max = Math.floor(max);
+              return Math.floor(Math.random() * (max - min)) + min;
+            }
+
+            var blockWidth = getRandomInt(1,5); //1;
+            var itemSelected = 0;
+
+            createTempBlockOnPointer(blockWidth, evt.pageX, evt.pageY, itemSelected);
+        }
+        */
+
         // globalStates.pocketButtonDown = false;
        // globalStates.pocketButtonUp = false;
     }, false);
@@ -504,15 +539,28 @@ function GUI() {
 
     function pocketButtonAction() {
 
+        console.log("state: " + globalStates.pocketButtonState);
+
+        var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
+
         if (globalStates.pocketButtonState === true) {
             console.log("buttonon");
-            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0+indexChange].src;
             globalStates.pocketButtonState = false;
+
+            if (globalStates.guiState === 'logic') {
+                blockMenuVisible();
+                console.log("blockMenuVisible");
+            }
         }
         else {
             console.log("buttonoff");
-            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2].src;
+            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2+indexChange].src;
             globalStates.pocketButtonState = true;
+
+            if (globalStates.guiState === 'logic') {
+                blockMenuHide();
+            }
         }
 
     }
@@ -565,13 +613,23 @@ function preferencesVisible() {
  **/
 
 function craftingBoardVisible(objectKey, nodeKey) {
+    // update side menu buttons
     document.getElementById('guiButtonImage').src = guiButtonImage[5].src;
     document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
+    globalStates.pocketButtonState = true;
     document.getElementById('pocketButton').src = pocketButtonImage[4].src;
-globalStates.guiState ="logic";
-    document.getElementById("craftingBoard").style.visibility = "visible"; //
-    document.getElementById("craftingBoard").style.display = "inline"; //= "hidden";
+    globalStates.guiState = "logic";
+    document.getElementById("craftingBoard").style.visibility = "visible";
+    document.getElementById("craftingBoard").style.display = "inline";
     cout("craftingBoardVisible for object: " + objectKey + " and node: "+nodeKey);
+
+    if (DEBUG_DATACRAFTING) { // TODO: BEN DEBUG - turn off debugging!
+        var logic = new Logic();
+        initializeDatacraftingGrid(logic); 
+    } else {
+        var nodeLogic = objects[objectKey].logic[nodeKey];
+        initializeDatacraftingGrid(nodeLogic);
+    }
 }
 
 /**
@@ -579,11 +637,407 @@ globalStates.guiState ="logic";
  **/
 
 function craftingBoardHide() {
+    // remove the block menu if it's showing
+    resetBlockMenu();
+    // reset side menu buttons
     document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
     document.getElementById('pocketButton').src = pocketButtonImage[0].src;
-    document.getElementById("craftingBoard").style.visibility = "hidden"; //= "hidden";
-    document.getElementById("craftingBoard").style.dispaly = "none"; //= "hidden";
-    cout("craftingBoardHide");
+    // hide the crafting board div
+    document.getElementById("craftingBoard").style.visibility = "hidden";
+    document.getElementById("craftingBoard").style.display = "none";
+    // reset the contents of the crafting board div so that another node's logic can be fresh loaded into it
+    resetCraftingBoard();
+}
+
+/**
+ * @desc
+ **/
+
+function blockMenuVisible() {
+    // create the menu if it doesn't already exist, otherwise just show it
+    var existingMenu = document.getElementById('menuContainer');
+    if (existingMenu) {
+        existingMenu.style.display = 'inline';
+        redisplayTabSelection();
+        redisplayBlockSelection();
+    } else {
+        initializeBlockMenu(globalStates.currentLogic, function() {
+          redisplayTabSelection(); // wait for callback to ensure menu fully loaded
+          redisplayBlockSelection();
+        });
+    }
+}
+
+/**
+ * @desc
+ **/
+
+function blockMenuHide() {
+    var existingMenu = document.getElementById('menuContainer');
+    if (existingMenu) {
+        existingMenu.style.display = 'none';
+        if (!globalStates.pocketButtonState) {
+          globalStates.pocketButtonState = true;
+          document.getElementById('pocketButton').src = pocketButtonImage[4].src;
+        }
+    }
+}
+
+/**********************************************************************************************************************
+ ******************************************* datacrafting GUI  *******************************************************
+ **********************************************************************************************************************/
+
+function addDatacraftingEventListeners() {
+    if (globalStates.currentLogic) {
+        var datacraftingEventDiv = document.getElementById('datacraftingEventDiv');
+        datacraftingEventDiv.addEventListener("pointerdown", pointerDown);
+        datacraftingEventDiv.addEventListener("pointermove", pointerMove);
+        datacraftingEventDiv.addEventListener("pointerup", pointerUp);
+    }
+}
+
+function removeDatacraftingEventListeners() {
+    if (globalStates.currentLogic) {
+        var datacraftingEventDiv = document.getElementById('datacraftingEventDiv');
+        datacraftingEventDiv.removeEventListener("pointerdown", pointerDown);
+        datacraftingEventDiv.removeEventListener("pointermove", pointerMove);
+        datacraftingEventDiv.removeEventListener("pointerup", pointerUp);
+    }
+}
+
+function resetCraftingBoard() {
+    removeDatacraftingEventListeners();
+    resetTempLogicState(globalStates.currentLogic);
+    var container = document.getElementById('craftingBoard');
+    while (container.hasChildNodes()) {
+        container.removeChild(container.lastChild);
+    }
+    globalStates.currentLogic = null;
+}
+
+function resetTempLogicState(logic) {
+    logic.tempLink = null;
+    logic.tappedContents = null;
+    logic.tempIncomingLinks = [];
+    logic.tempOutgoingLinks = [];
+}
+
+// should only be called once to initialize a blank datacrafting interface and data model
+function initializeDatacraftingGrid(logic) {
+    globalStates.currentLogic = logic;
+
+    var container = document.getElementById('craftingBoard');
+
+    // initializes the data model for the datacrafting board
+    logic.grid = new Grid(container.clientWidth, container.clientHeight);
+
+    var datacraftingCanvas = document.createElement('canvas');
+    datacraftingCanvas.setAttribute('id', 'datacraftingCanvas');
+    container.appendChild(datacraftingCanvas);
+
+    var sidebarBackground = document.createElement('div');
+    sidebarBackground.setAttribute('id', 'sidebarBackground');
+    container.appendChild(sidebarBackground);
+
+    var dimensions = logic.grid.getPixelDimensions();
+    datacraftingCanvas.width = dimensions.width;
+    datacraftingCanvas.style.width = dimensions.width;
+    datacraftingCanvas.height = dimensions.height;
+    datacraftingCanvas.style.height = dimensions.height;
+
+    // holds the colored background blocks
+    var blockPlaceholdersContainer = document.createElement('div');
+    blockPlaceholdersContainer.setAttribute('id', 'blockPlaceholders');
+    container.appendChild(blockPlaceholdersContainer);
+
+    for (var rowNum = 0; rowNum < logic.grid.size; rowNum+=2) {
+        var rowDiv = document.createElement('div');
+        rowDiv.setAttribute("class", "row");
+        blockPlaceholdersContainer.appendChild(rowDiv);
+
+        for (var colNum = 0; colNum < logic.grid.size; colNum++) {
+            if (colNum % 2 === 0) {
+                var blockPlaceholder = document.createElement('div');
+                var className = (colNum === logic.grid.size - 1) ? "blockPlaceholderLastCol" : "blockPlaceholder";
+                blockPlaceholder.setAttribute("class", className);
+                var colorMapKey = (rowNum === 0 || rowNum === 6) ? "bright" : "faded";
+                blockPlaceholder.style.backgroundColor = blockColorMap[colorMapKey][colNum/2];
+                rowDiv.appendChild(blockPlaceholder);
+            }
+        }
+    }
+
+    var portCells = logic.grid.cells.filter(function(cell) {
+        return cell.canHaveBlock() && (cell.location.row === 0 || cell.location.row === logic.grid.size-1);
+    });
+    replacePortBlocksIfNecessary(portCells);
+
+    // add a container where the real blocks will eventually be added
+    var blocksContainer = document.createElement('div');
+    blocksContainer.setAttribute('id', 'blocks');
+    container.appendChild(blocksContainer);
+
+    // an invisible div on top captures all the touch events and handles them properly
+    var datacraftingEventDiv = document.createElement('div');
+    datacraftingEventDiv.setAttribute('id', 'datacraftingEventDiv');
+    datacraftingEventDiv.setAttribute("touch-action", "none");
+    container.appendChild(datacraftingEventDiv);
+
+    // debug: uncomment to add some default blocks to the initial grid
+    //addBlock(0, 0, {name:"delay",width:1}, "block1"+uuidTime());
+    //addBlock(1, 3, {name:"delay",width:1}, "block2"+uuidTime());
+    //addBlock(3, 2, {name:"delay",width:1}, "block2"+uuidTime());
+
+    updateGrid(logic.grid);
+    addDatacraftingEventListeners();
+}
+
+// TODO: update as more properties get taken from JSON instead of null
+function toBlockJSON(name, width, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput) {
+    return {
+        name: name,
+        width: width,
+        privateData: privateData,
+        publicData: publicData,
+        activeInputs: activeInputs,
+        activeOutputs: activeOutputs,
+        nameInput: nameInput,
+        nameOutput: nameOutput
+    };
+}
+
+// TODO: decide where these global variables should live... perhaps in a blockMenu object in logic
+var menuSelectedBlock = null;
+var menuIsPointerDown = false;
+
+var menuSelectedTab = 0;
+var menuTabs = [];
+var menuBlockData = defaultBlockData();
+var menuBlockDivs = [];
+var menuBlockToAdd = null;
+
+function initializeBlockMenu(logic, callback) {
+    var craftingBoard = document.getElementById('craftingBoard');
+
+    var container = document.createElement('div');
+    container.setAttribute('id', 'menuContainer');
+    craftingBoard.appendChild(container);
+
+    var menuBlockContainer = document.createElement('div');
+    menuBlockContainer.setAttribute('id', 'menuBlockContainer');
+    container.appendChild(menuBlockContainer);
+
+    var menuSideContainer = document.createElement('div');
+    menuSideContainer.setAttribute('id', 'menuSideContainer');
+    container.appendChild(menuSideContainer);
+
+    var menuCols = 4;
+    var menuRows = 6;
+    var menuNumTabs = 5;
+    menuSelectedTab = 0;
+    menuTabs = [];
+    menuIsPointerDown = false;
+    menuSelectedBlock = null;
+    menuBlockDivs = [];
+
+    // create menu tabs for block categories
+    for (var i = 0; i < menuNumTabs; i++) {
+        var menuTab = document.createElement('div');
+        menuTab.setAttribute('class', 'menuTab');
+        menuTab.setAttribute('tabIndex', i);
+        menuTab.setAttribute('touch-action', 'none');
+        menuTab.addEventListener('pointerdown', menuTabSelected);
+
+        var menuTabIcon = document.createElement('img');
+        menuTabIcon.setAttribute('class', 'menuTabIcon');
+        menuTabIcon.setAttribute('src', blockTabImage[i].src);
+        menuTabIcon.setAttribute('touch-action', 'none');
+        // menuTabIcon.addEventListener('pointerdown', menuTabIconSelected);
+
+        menuTab.appendChild(menuTabIcon);
+
+        menuTabs.push(menuTab);
+        menuSideContainer.appendChild(menuTab);
+    }
+
+    menuLoadBlocks( function(blockData) {
+        for (var i = 0; i < menuNumTabs; i++) {
+            menuBlockData[i] = blockData[i];
+        }  
+        for (var r = 0; r < menuRows; r++) {
+            var row = document.createElement('div');
+            menuBlockContainer.appendChild(row);
+            for (var c = 0; c < menuCols; c++) {
+                var block = document.createElement('div');
+                block.setAttribute('class', 'menuBlock');
+                var blockContents = document.createElement('div');
+                blockContents.setAttribute('class', 'menuBlockContents');
+                blockContents.setAttribute("touch-action", "none");
+                blockContents.addEventListener('pointerdown', blockMenuPointerDown);
+                blockContents.addEventListener('pointerup', blockMenuPointerUp);
+                blockContents.addEventListener('pointerleave', blockMenuPointerLeave);
+                blockContents.addEventListener('pointermove', blockMenuPointerMove);
+                block.appendChild(blockContents);
+                menuBlockDivs.push(block);
+                row.appendChild(block);
+            }
+        }
+        callback();
+    });
+}
+
+function resetBlockMenu() {
+    menuBlockDivs.forEach(function(blockDiv) {
+        blockDiv.firstChild.removeEventListener('pointerdown', blockMenuPointerDown);
+        blockDiv.firstChild.removeEventListener('pointerup', blockMenuPointerUp);
+        blockDiv.firstChild.removeEventListener('pointerleave', blockMenuPointerLeave);
+        blockDiv.firstChild.removeEventListener('pointermove', blockMenuPointerMove);
+    });
+    var container = document.getElementById('menuContainer');
+    if (container) {
+        while (container.hasChildNodes()) {
+            container.removeChild(container.lastChild);
+        }
+    }
+}
+
+function readTextFile(file, callback) {
+    var rawFile = new XMLHttpRequest();
+    rawFile.overrideMimeType("application/json");
+    rawFile.open("GET", file, true);
+    rawFile.onreadystatechange = function() {
+        if (rawFile.readyState === 4 && rawFile.status == "200") {
+            callback(rawFile.responseText);
+        }
+    }
+    rawFile.send(null);
+}
+
+// TODO: how to load json file and html page from local directory without using XHR request?
+function menuLoadBlocks(callback) {
+    var filename = 'blocks/blocks.json';
+    readTextFile(filename, function(fileText){
+        var blockJSON = JSON.parse(fileText);
+        console.log(blockJSON);
+        var blockDirs = blockJSON['blockDirs'];
+        var blockData = {};
+        var numBlocksLoaded = 0;
+
+        console.log(blockDirs);
+        blockDirs.forEach( function(category, i) {
+            blockData[i] = {};
+            category.forEach( function(blockDirName) {
+                var blockPath = 'blocks/' + blockDirName + '/block.json';
+                readTextFile(blockPath, function(blockFileText) {
+                    blockData[i][blockDirName] = JSON.parse(blockFileText);
+                    numBlocksLoaded++;
+                    if (numBlocksLoaded === blockDirs.length) {
+                        callback(blockData);
+                    }
+                });
+            });
+        });
+    });
+}
+
+// TODO: in the future, cache some blocks that can be loaded immeditately
+//       instead of requesting data from another file
+function defaultBlockData() {
+    return [ [], [], [], [], [] ];
+}
+
+function menuTabSelected(e) {
+    e.preventDefault();
+
+    menuSelectedTab = e.target.tabIndex;
+    if (menuSelectedTab < 0) menuSelectedTab = e.target.parentNode.tabIndex;
+    if (menuSelectedTab < 0) menuSelectedTab = 0;
+    redisplayTabSelection();
+    redisplayBlockSelection();
+}
+
+function redisplayTabSelection() {
+    menuTabs.forEach(function(tab) {
+        if (menuSelectedTab === tab.tabIndex) {
+            tab.setAttribute('class', 'menuTabSelected');
+            console.log(tab);
+        } else {
+            tab.setAttribute('class', 'menuTab');
+        }
+    });
+}
+
+function redisplayBlockSelection() {
+    var blocksObject = menuBlockData[menuSelectedTab];
+    var blocksInThisSection = [];
+    for (var key in blocksObject) {
+        blocksInThisSection.push(blocksObject[key]);
+    }
+    console.log(blocksInThisSection);
+
+    // reassign as many divs as needed to the current set of blocks
+    for (var i = 0; i < blocksInThisSection.length; i++) {
+        var blockDiv = menuBlockDivs[i];
+        var thisBlockData = blocksInThisSection[i];
+        blockDiv.blockData = thisBlockData;
+        blockDiv.firstChild.innerHTML = thisBlockData['name'];
+        blockDiv.style.display = 'inline-block';
+    }
+
+    // clear the remaining block divs
+    for (var i = blocksInThisSection.length; i < menuBlockDivs.length; i++) {
+        var blockDiv = menuBlockDivs[i];
+        blockDiv.blockData = '';
+        blockDiv.style.display = 'none';
+    }
+}
+
+function blockMenuPointerDown(e) {
+  e.preventDefault();
+
+  menuBlockToAdd = null;
+  menuIsPointerDown = true;
+  console.log('pressed block');
+  menuSelectedBlock = e.target;
+  menuSelectedBlock.parentNode.setAttribute('class', 'menuBlockSelected');
+  menuBlockToAdd = e.target.parentNode;
+}
+
+function blockMenuPointerUp(e) {
+    e.preventDefault();
+
+    menuIsPointerDown = false;
+    if (menuSelectedBlock) {
+        menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');
+    }
+    menuSelectedBlock = null;
+    menuBlockToAdd = null;
+}
+
+function blockMenuPointerLeave(e) {
+    e.preventDefault();
+
+    if (menuIsPointerDown) {
+        if (menuSelectedBlock) {
+            menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');        
+        }
+    }
+    menuSelectedBlock = null;
+    menuBlockToAdd = null;
+}
+
+function blockMenuPointerMove(e) {
+    e.preventDefault();
+
+    if (menuBlockToAdd) {
+        var blockJSON = menuBlockToAdd.blockData;
+        var blockRect = menuBlockToAdd.getBoundingClientRect();
+        var pointerX = blockRect.left + blockRect.width/2;
+        var pointerY = blockRect.top + blockRect.height/2;
+        addBlockFromMenu(blockJSON, pointerX, pointerY);
+        menuBlockToAdd = null;
+        blockMenuHide();
+    }
 }
 
 /**********************************************************************************************************************

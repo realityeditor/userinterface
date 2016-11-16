@@ -1,0 +1,10 @@
+{
+  "name": "add-3",
+  "width": 3,
+  "activeInputs": [true, true, true, false],
+  "activeOutputs": [true, false, false, false],
+  "nameInput":["x","y","z",""],
+  "nameOutput":["x+y+z","","",""],
+  "publicData":{},
+  "privateData":{}
+}

@@ -1,0 +1,12 @@
+{
+  "name": "scale",
+  "width": 1,
+  "activeInputs": [true, false, false, false],
+  "activeOutputs": [true, false, false, false],
+  "nameInput":["x","","",""],
+  "nameOutput":["c*x","","",""],
+  "publicData":{
+    "scaleFactor":1.0
+  },
+  "privateData":{}
+}

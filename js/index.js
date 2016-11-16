@@ -476,8 +476,8 @@ function update(visibleObjects) {
     //uiButtons.style.display = 'none';
 
 
-    if (globalStates.datacraftingVisible) {
-        updateDatacrafting();
+    if (globalStates.guiState === "logic") {
+        window.requestAnimationFrame(redrawDatacrafting);
     }
 
 
@@ -1037,22 +1037,80 @@ function updateGrid(grid) {
     // *** this does all the backend work ***
     grid.recalculateAllRoutes();
 
-    // updates the visuals for the blocks
-    grid.forEachPossibleBlockCell( function(cell) {
-        if (cell.blockAtThisLocation() !== null) {
-            displayCellBlock(cell);
-        } else {
-            hideCellBlock(cell);
+    // reset all domElements //TODO: only change blocks that were modified??
+    for (var domKey in blockDomElements) {
+        var blockDomElement = blockDomElements[domKey];
+        blockDomElement.parentNode.removeChild(blockDomElement);
+        delete blockDomElements[domKey];
+    }
+
+    // add new domElement for each block
+    for (var blockKey in globalStates.currentLogic.blocks) {
+        var block = globalStates.currentLogic.blocks[blockKey];
+        if (block.isPortBlock) continue; // don't render invisible input/output blocks
+        addDomElementForBlock(block, grid);
+    }
+}
+
+function addDomElementForBlock(block, grid, isTempBlock) {
+    var blockDomElement = document.createElement('div');
+    blockDomElement.setAttribute('class','blockDivPlaced');
+    blockDomElement.innerHTML = block.text; //TODO: use block.iconImage if it has one
+
+    // if we're adding a temp block, it doesn't have associated cells it can use to calculate position. we need to remember to set position to pointer afterwards
+    if (!isTempBlock) { //TODO: is there a way to set position for new blocks consistently?
+        var firstCell = getCellForBlock(grid, block, 0);
+        var firstCellCenterX = grid.getCellCenterX(firstCell);
+        blockDomElement.style.left = firstCellCenterX - grid.blockColWidth/2;
+        blockDomElement.style.top = grid.getCellCenterY(firstCell) - grid.blockRowHeight/2;
+    }
+
+    blockDomElement.style.width = getBlockPixelWidth(block,grid);
+    blockDomElement.style.height = grid.blockRowHeight;
+
+    var indicatorWidth = 10;
+    
+    for (var i=0; i < block.blockSize; i++) {
+        var isActiveInput = block.activeInputs[i];
+        var isActiveOutput = block.activeOutputs[i];
+        if (isActiveInput) {
+            var inputIndicatorDiv = document.createElement('div');
+            inputIndicatorDiv.setAttribute('class', 'inputIndicator');
+            inputIndicatorDiv.style.width = indicatorWidth;
+            inputIndicatorDiv.style.height = 0.5 * indicatorWidth;
+            inputIndicatorDiv.style.left = offsetForItem(i) - 0.5 * indicatorWidth;
+            inputIndicatorDiv.style.borderBottomLeftRadius = 0.5 * indicatorWidth;
+            inputIndicatorDiv.style.borderBottomRightRadius = 0.5 * indicatorWidth;
+            blockDomElement.appendChild(inputIndicatorDiv);
         }
-    });
+        if (isActiveOutput) {
+            var outputIndicatorDiv = document.createElement('div');
+            outputIndicatorDiv.setAttribute('class', 'outputIndicator');
+            outputIndicatorDiv.style.width = indicatorWidth;
+            outputIndicatorDiv.style.height = 0.5 * indicatorWidth;
+            outputIndicatorDiv.style.left = offsetForItem(i) - 0.5 * indicatorWidth;
+            outputIndicatorDiv.style.bottom = -0.5 * indicatorWidth;
+            outputIndicatorDiv.style.borderBottomLeftRadius = 0.5 * indicatorWidth;
+            outputIndicatorDiv.style.borderBottomRightRadius = 0.5 * indicatorWidth;
+            blockDomElement.appendChild(outputIndicatorDiv);
+        }
+    }
+
+    var blockContainer = document.getElementById('blocks');
+    blockContainer.appendChild(blockDomElement);
+
+    blockDomElements[block.globalId] = blockDomElement;
 }
 
-// updates the visuals for the datacrafting each frame
-function updateDatacrafting() {
-    window.requestAnimationFrame(redrawDatacrafting);
+// TODO: move somewhere better... just a utility
+function getBlockPixelWidth(block, grid) {
+    var numBlockCols = block.blockSize;
+    var numMarginCols = block.blockSize - 1;
+    return grid.blockColWidth * numBlockCols + grid.marginColWidth * numMarginCols;
 }
 
-// renders all the links for a datacrafting grid, and draws a cut line if present
+// updates datacrafting visuals each frame
+// renders all the links for a datacrafting grid, draws cut line if present, draws temp block if present
 function redrawDatacrafting() {
     if (!globalStates.currentLogic) return;
     var grid = globalStates.currentLogic.grid;
@@ -1061,55 +1119,52 @@ function redrawDatacrafting() {
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    grid.forEachLink( function(link) {
-        var startCell =  grid.getCellXY(link.blockA.x, link.blockA.y);
-        var endCell =  grid.getCellXY(link.blockB.x, link.blockB.y);
-
+    forEachLink( function(link) {
+        var startCell =  getCellForBlock(grid, link.blockA, link.itemA);
+        var endCell =  getCellForBlock(grid, link.blockB, link.itemB);
         drawDatacraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
     });
 
-    if (cutLine.start !== null && cutLine.end !== null) {
-        ctx.strokeStyle = "#FFFFFF";
-        ctx.beginPath();
-        ctx.moveTo(cutLine.start.x, cutLine.start.y);
-        ctx.lineTo(cutLine.end.x, cutLine.end.y);
-        ctx.stroke();
+    if (cutLine.start && cutLine.end) {
+        drawSimpleLine(ctx, cutLine.start.x, cutLine.start.y, cutLine.end.x, cutLine.end.y, "#FFFFFF", 3);
     }
-}
 
-function checkForCutIntersections() {
-    var grid = globalStates.currentLogic.grid;
-    var didRemoveAnyLinks = false;
-    for (var blockLinkKey in globalStates.currentLogic.links) {
-        var didIntersect = false;
-        var blockLink = globalStates.currentLogic.links[blockLinkKey];
-        var points = grid.getPointsForLink(blockLink);
-        for (var j = 1; j < points.length; j++) {
-            var start = points[j - 1];
-            var end = points[j];
-            if (checkLineCross(start.screenX, start.screenY, end.screenX, end.screenY, cutLine.start.x, cutLine.start.y, cutLine.end.x, cutLine.end.y)) {
-                didIntersect = true;
-            }
-            if (didIntersect) {
-                // grid.links.splice(i, 1);
-                removeBlockLink(blockLinkKey);
-                didRemoveAnyLinks = true;
-            }
-        }
+    if (tempLine.start && tempLine.end) {
+        drawSimpleLine(ctx, tempLine.start.x, tempLine.start.y, tempLine.end.x, tempLine.end.y, tempLine.color, 3);
     }
-    if (didRemoveAnyLinks) {
-        updateGrid(grid);
+
+    var tappedContents = globalStates.currentLogic.tappedContents;
+    if (tappedContents) {
+        var domElement = getDomElementForBlock(tappedContents.block);
+
+        globalStates.currentLogic.tempIncomingLinks.forEach( function(linkData) {
+            var startCell = getCellForBlock(grid, linkData.blockA, linkData.itemA);
+            var startX = grid.getCellCenterX(startCell);
+            var startY = grid.getCellCenterY(startCell);
+
+            var xOffset =  0.5 * grid.blockColWidth + (grid.blockColWidth + grid.marginColWidth) * linkData.itemB;
+            var endX = parseInt(domElement.style.left) + xOffset;
+            var endY = parseInt(domElement.style.top) + domElement.clientHeight/2;
+            var startColor = startCell.getColorHSL();
+            var lineColor = 'hsl('+startColor.h+','+startColor.s+'%,'+startColor.l+'%)';
+
+            drawSimpleLine(ctx, startX, startY, endX, endY, lineColor, 2);
+        });
+
+        globalStates.currentLogic.tempOutgoingLinks.forEach( function(linkData) {
+            var xOffset =  0.5 * grid.blockColWidth + (grid.blockColWidth + grid.marginColWidth) * linkData.itemA;
+            var startX = parseInt(domElement.style.left) + xOffset;
+            var startY = parseInt(domElement.style.top) + domElement.clientHeight/2;
+
+            var endCell = getCellForBlock(grid, linkData.blockB, linkData.itemB);
+            var endX = grid.getCellCenterX(endCell);
+            var endY = grid.getCellCenterY(endCell);
+            var endColor = endCell.getColorHSL();
+            var lineColor = 'hsl('+endColor.h+','+endColor.s+'%,'+endColor.l+'%)';
+
+            drawSimpleLine(ctx, startX, startY, endX, endY, lineColor, 2);
+        });
     }
-}
-
-function displayCellBlock(cell) {
-    cell.domElement.setAttribute("src", blockImgMap["filled"][cell.location.col/2]);
-    cell.domElement.style.opacity = '1.00';
-}
-
-function hideCellBlock(cell) {
-    cell.domElement.setAttribute("src", blockImgMap["empty"][cell.location.col/2]);
-    cell.domElement.style.opacity = '0.50';
 }
 
 /**********************************************************************************************************************
