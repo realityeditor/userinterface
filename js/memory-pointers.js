@@ -86,8 +86,11 @@ MemoryPointer.prototype.update = function() {
 
 MemoryPointer.prototype.draw = function() {
     var connectedValue = this.getConnectedValue();
-    this.x = connectedValue.screenX - this.offsetX;
-    this.y = connectedValue.screenY - this.offsetY;
+    var deltaX = connectedValue.screenX - this.offsetX - this.x;
+    var deltaY = connectedValue.screenY - this.offsetY - this.y;
+    var alpha = 0.5;
+    this.x += deltaX * alpha;
+    this.y += deltaY * alpha;
     this.element.style.transform = 'translate(' + this.x + 'px,' + this.y + 'px)';
 };
 
