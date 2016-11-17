@@ -1037,17 +1037,23 @@ function updateGrid(grid) {
     // *** this does all the backend work ***
     grid.recalculateAllRoutes();
 
+    var guiState = globalStates.currentLogic.guiState;
+
     // reset all domElements //TODO: only change blocks that were modified??
-    for (var domKey in blockDomElements) {
-        var blockDomElement = blockDomElements[domKey];
+    for (var domKey in guiState.blockDomElements) {
+        var blockDomElement = guiState.blockDomElements[domKey];
         blockDomElement.parentNode.removeChild(blockDomElement);
-        delete blockDomElements[domKey];
+        delete guiState.blockDomElements[domKey];
     }
 
     // add new domElement for each block
     for (var blockKey in globalStates.currentLogic.blocks) {
         var block = globalStates.currentLogic.blocks[blockKey];
         if (block.isPortBlock) continue; // don't render invisible input/output blocks
+        if (isBlockOutsideGrid(block, grid)) { // cleanup incorrectly setup blocks // TODO: prevent this in the first place rather than checking each time
+            removeBlock(globalStates.currentLogic, block);
+            continue;
+        }
         addDomElementForBlock(block, grid);
     }
 }
@@ -1099,7 +1105,8 @@ function addDomElementForBlock(block, grid, isTempBlock) {
     var blockContainer = document.getElementById('blocks');
     blockContainer.appendChild(blockDomElement);
 
-    blockDomElements[block.globalId] = blockDomElement;
+    var guiState = globalStates.currentLogic.guiState;
+    guiState.blockDomElements[block.globalId] = blockDomElement;
 }
 
 // TODO: move somewhere better... just a utility
@@ -1125,19 +1132,22 @@ function redrawDatacrafting() {
         drawDatacraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
     });
 
+    var cutLine = globalStates.currentLogic.guiState.cutLine;
     if (cutLine.start && cutLine.end) {
         drawSimpleLine(ctx, cutLine.start.x, cutLine.start.y, cutLine.end.x, cutLine.end.y, "#FFFFFF", 3);
     }
 
+    var tempLine = globalStates.currentLogic.guiState.tempLine;
     if (tempLine.start && tempLine.end) {
         drawSimpleLine(ctx, tempLine.start.x, tempLine.start.y, tempLine.end.x, tempLine.end.y, tempLine.color, 3);
     }
 
-    var tappedContents = globalStates.currentLogic.tappedContents;
+    var tappedContents = globalStates.currentLogic.guiState.tappedContents;
     if (tappedContents) {
         var domElement = getDomElementForBlock(tappedContents.block);
+        if (!domElement) return;
 
-        globalStates.currentLogic.tempIncomingLinks.forEach( function(linkData) {
+        globalStates.currentLogic.guiState.tempIncomingLinks.forEach( function(linkData) {
             var startCell = getCellForBlock(grid, linkData.blockA, linkData.itemA);
             var startX = grid.getCellCenterX(startCell);
             var startY = grid.getCellCenterY(startCell);
@@ -1151,7 +1161,7 @@ function redrawDatacrafting() {
             drawSimpleLine(ctx, startX, startY, endX, endY, lineColor, 2);
         });
 
-        globalStates.currentLogic.tempOutgoingLinks.forEach( function(linkData) {
+        globalStates.currentLogic.guiState.tempOutgoingLinks.forEach( function(linkData) {
             var xOffset =  0.5 * grid.blockColWidth + (grid.blockColWidth + grid.marginColWidth) * linkData.itemA;
             var startX = parseInt(domElement.style.left) + xOffset;
             var startY = parseInt(domElement.style.top) + domElement.clientHeight/2;

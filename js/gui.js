@@ -661,7 +661,7 @@ function blockMenuVisible() {
         redisplayTabSelection();
         redisplayBlockSelection();
     } else {
-        initializeBlockMenu(globalStates.currentLogic, function() {
+        initializeBlockMenu(function() {
           redisplayTabSelection(); // wait for callback to ensure menu fully loaded
           redisplayBlockSelection();
         });
@@ -716,10 +716,12 @@ function resetCraftingBoard() {
 }
 
 function resetTempLogicState(logic) {
-    logic.tempLink = null;
-    logic.tappedContents = null;
-    logic.tempIncomingLinks = [];
-    logic.tempOutgoingLinks = [];
+    if (logic) {
+        logic.guiState.tempLink = null;
+        logic.guiState.tappedContents = null;
+        logic.guiState.tempIncomingLinks = [];
+        logic.guiState.tempOutgoingLinks = [];
+    }
 }
 
 // should only be called once to initialize a blank datacrafting interface and data model
@@ -783,16 +785,10 @@ function initializeDatacraftingGrid(logic) {
     datacraftingEventDiv.setAttribute("touch-action", "none");
     container.appendChild(datacraftingEventDiv);
 
-    // debug: uncomment to add some default blocks to the initial grid
-    //addBlock(0, 0, {name:"delay",width:1}, "block1"+uuidTime());
-    //addBlock(1, 3, {name:"delay",width:1}, "block2"+uuidTime());
-    //addBlock(3, 2, {name:"delay",width:1}, "block2"+uuidTime());
-
     updateGrid(logic.grid);
     addDatacraftingEventListeners();
 }
 
-// TODO: update as more properties get taken from JSON instead of null
 function toBlockJSON(name, width, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput) {
     return {
         name: name,
@@ -806,17 +802,9 @@ function toBlockJSON(name, width, privateData, publicData, activeInputs, activeO
     };
 }
 
-// TODO: decide where these global variables should live... perhaps in a blockMenu object in logic
-var menuSelectedBlock = null;
-var menuIsPointerDown = false;
+function initializeBlockMenu(callback) {
+    var logic = globalStates.currentLogic;
 
-var menuSelectedTab = 0;
-var menuTabs = [];
-var menuBlockData = defaultBlockData();
-var menuBlockDivs = [];
-var menuBlockToAdd = null;
-
-function initializeBlockMenu(logic, callback) {
     var craftingBoard = document.getElementById('craftingBoard');
 
     var container = document.createElement('div');
@@ -834,11 +822,11 @@ function initializeBlockMenu(logic, callback) {
     var menuCols = 4;
     var menuRows = 6;
     var menuNumTabs = 5;
-    menuSelectedTab = 0;
-    menuTabs = [];
-    menuIsPointerDown = false;
-    menuSelectedBlock = null;
-    menuBlockDivs = [];
+    logic.guiState.menuSelectedTab = 0;
+    logic.guiState.menuTabDivs = [];
+    logic.guiState.menuIsPointerDown = false;
+    logic.guiState.menuSelectedBlock = null;
+    logic.guiState.menuBlockDivs = [];
 
     // create menu tabs for block categories
     for (var i = 0; i < menuNumTabs; i++) {
@@ -856,13 +844,13 @@ function initializeBlockMenu(logic, callback) {
 
         menuTab.appendChild(menuTabIcon);
 
-        menuTabs.push(menuTab);
+        logic.guiState.menuTabDivs.push(menuTab);
         menuSideContainer.appendChild(menuTab);
     }
 
     menuLoadBlocks( function(blockData) {
         for (var i = 0; i < menuNumTabs; i++) {
-            menuBlockData[i] = blockData[i];
+            logic.guiState.menuBlockData[i] = blockData[i];
         }  
         for (var r = 0; r < menuRows; r++) {
             var row = document.createElement('div');
@@ -878,7 +866,7 @@ function initializeBlockMenu(logic, callback) {
                 blockContents.addEventListener('pointerleave', blockMenuPointerLeave);
                 blockContents.addEventListener('pointermove', blockMenuPointerMove);
                 block.appendChild(blockContents);
-                menuBlockDivs.push(block);
+                logic.guiState.menuBlockDivs.push(block);
                 row.appendChild(block);
             }
         }
@@ -887,12 +875,15 @@ function initializeBlockMenu(logic, callback) {
 }
 
 function resetBlockMenu() {
-    menuBlockDivs.forEach(function(blockDiv) {
-        blockDiv.firstChild.removeEventListener('pointerdown', blockMenuPointerDown);
-        blockDiv.firstChild.removeEventListener('pointerup', blockMenuPointerUp);
-        blockDiv.firstChild.removeEventListener('pointerleave', blockMenuPointerLeave);
-        blockDiv.firstChild.removeEventListener('pointermove', blockMenuPointerMove);
-    });
+    if (globalStates.currentLogic) {
+        var guiState = globalStates.currentLogic.guiState;
+        guiState.menuBlockDivs.forEach(function(blockDiv) {
+            blockDiv.firstChild.removeEventListener('pointerdown', blockMenuPointerDown);
+            blockDiv.firstChild.removeEventListener('pointerup', blockMenuPointerUp);
+            blockDiv.firstChild.removeEventListener('pointerleave', blockMenuPointerLeave);
+            blockDiv.firstChild.removeEventListener('pointermove', blockMenuPointerMove);
+        });
+    }
     var container = document.getElementById('menuContainer');
     if (container) {
         while (container.hasChildNodes()) {
@@ -949,18 +940,20 @@ function defaultBlockData() {
 function menuTabSelected(e) {
     e.preventDefault();
 
-    menuSelectedTab = e.target.tabIndex;
-    if (menuSelectedTab < 0) menuSelectedTab = e.target.parentNode.tabIndex;
-    if (menuSelectedTab < 0) menuSelectedTab = 0;
+    var guiState = globalStates.currentLogic.guiState;
+    guiState.menuSelectedTab = e.target.tabIndex;
+    if (guiState.menuSelectedTab < 0) guiState.menuSelectedTab = e.target.parentNode.tabIndex;
+    if (guiState.menuSelectedTab < 0) guiState.menuSelectedTab = 0;
     redisplayTabSelection();
     redisplayBlockSelection();
 }
 
 function redisplayTabSelection() {
-    menuTabs.forEach(function(tab) {
-        if (menuSelectedTab === tab.tabIndex) {
+
+    var guiState = globalStates.currentLogic.guiState;
+    guiState.menuTabDivs.forEach(function(tab) {
+        if (guiState.menuSelectedTab === tab.tabIndex) {
             tab.setAttribute('class', 'menuTabSelected');
-            console.log(tab);
         } else {
             tab.setAttribute('class', 'menuTab');
         }
@@ -968,7 +961,9 @@ function redisplayTabSelection() {
 }
 
 function redisplayBlockSelection() {
-    var blocksObject = menuBlockData[menuSelectedTab];
+    var guiState = globalStates.currentLogic.guiState;
+
+    var blocksObject = guiState.menuBlockData[guiState.menuSelectedTab];
     var blocksInThisSection = [];
     for (var key in blocksObject) {
         blocksInThisSection.push(blocksObject[key]);
@@ -977,7 +972,7 @@ function redisplayBlockSelection() {
 
     // reassign as many divs as needed to the current set of blocks
     for (var i = 0; i < blocksInThisSection.length; i++) {
-        var blockDiv = menuBlockDivs[i];
+        var blockDiv = guiState.menuBlockDivs[i];
         var thisBlockData = blocksInThisSection[i];
         blockDiv.blockData = thisBlockData;
         blockDiv.firstChild.innerHTML = thisBlockData['name'];
@@ -985,8 +980,8 @@ function redisplayBlockSelection() {
     }
 
     // clear the remaining block divs
-    for (var i = blocksInThisSection.length; i < menuBlockDivs.length; i++) {
-        var blockDiv = menuBlockDivs[i];
+    for (var i = blocksInThisSection.length; i < guiState.menuBlockDivs.length; i++) {
+        var blockDiv = guiState.menuBlockDivs[i];
         blockDiv.blockData = '';
         blockDiv.style.display = 'none';
     }
@@ -995,47 +990,50 @@ function redisplayBlockSelection() {
 function blockMenuPointerDown(e) {
   e.preventDefault();
 
-  menuBlockToAdd = null;
-  menuIsPointerDown = true;
-  console.log('pressed block');
-  menuSelectedBlock = e.target;
-  menuSelectedBlock.parentNode.setAttribute('class', 'menuBlockSelected');
-  menuBlockToAdd = e.target.parentNode;
+  var guiState = globalStates.currentLogic.guiState;
+  guiState.menuBlockToAdd = null;
+  guiState.menuIsPointerDown = true;
+  guiState.menuSelectedBlock = e.target;
+  guiState.menuSelectedBlock.parentNode.setAttribute('class', 'menuBlockSelected');
+  guiState.menuBlockToAdd = e.target.parentNode;
 }
 
 function blockMenuPointerUp(e) {
     e.preventDefault();
-
-    menuIsPointerDown = false;
-    if (menuSelectedBlock) {
-        menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');
+  
+    var guiState = globalStates.currentLogic.guiState;
+    guiState.menuIsPointerDown = false;
+    if (guiState.menuSelectedBlock) {
+        guiState.menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');
     }
-    menuSelectedBlock = null;
-    menuBlockToAdd = null;
+    guiState.menuSelectedBlock = null;
+    guiState.menuBlockToAdd = null;
 }
 
 function blockMenuPointerLeave(e) {
     e.preventDefault();
 
-    if (menuIsPointerDown) {
-        if (menuSelectedBlock) {
-            menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');        
+    var guiState = globalStates.currentLogic.guiState;
+    if (guiState.menuIsPointerDown) {
+        if (guiState.menuSelectedBlock) {
+            guiState.menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');        
         }
     }
-    menuSelectedBlock = null;
-    menuBlockToAdd = null;
+    guiState.menuSelectedBlock = null;
+    guiState.menuBlockToAdd = null;
 }
 
 function blockMenuPointerMove(e) {
     e.preventDefault();
 
-    if (menuBlockToAdd) {
-        var blockJSON = menuBlockToAdd.blockData;
-        var blockRect = menuBlockToAdd.getBoundingClientRect();
+    var guiState = globalStates.currentLogic.guiState;
+    if (guiState.menuBlockToAdd) {
+        var blockJSON = guiState.menuBlockToAdd.blockData;
+        var blockRect = guiState.menuBlockToAdd.getBoundingClientRect();
         var pointerX = blockRect.left + blockRect.width/2;
         var pointerY = blockRect.top + blockRect.height/2;
         addBlockFromMenu(blockJSON, pointerX, pointerY);
-        menuBlockToAdd = null;
+        guiState.menuBlockToAdd = null;
         blockMenuHide();
     }
 }

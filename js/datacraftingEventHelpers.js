@@ -39,6 +39,7 @@ function convertToTempBlock(contents) {
 function moveBlockDomToPosition(contents, pointerX, pointerY) {
   var grid = globalStates.currentLogic.grid;
   var domElement = getDomElementForBlock(contents.block); 
+  if (!domElement) return;
   domElement.style.left = pointerX - offsetForItem(contents.item);
   domElement.style.top = pointerY - grid.blockRowHeight/2;
 }
@@ -180,14 +181,14 @@ function updateTempLinkOutlinesForBlock(contents) {
   for (var linkKey in globalStates.currentLogic.links) {
     var link = globalStates.currentLogic.links[linkKey];
     if (link.blockB === contents.block) {
-      globalStates.currentLogic.tempIncomingLinks.push({
+      globalStates.currentLogic.guiState.tempIncomingLinks.push({
           blockA: link.blockA,
           itemA: link.itemA,
           itemB: link.itemB
       });
     
     } else if (link.blockA === contents.block) {
-      globalStates.currentLogic.tempOutgoingLinks.push({
+      globalStates.currentLogic.guiState.tempOutgoingLinks.push({
           itemA: link.itemA,
           blockB: link.blockB,
           itemB: link.itemB
@@ -199,13 +200,13 @@ function updateTempLinkOutlinesForBlock(contents) {
 }
 
 function convertTempLinkOutlinesToLinks(contents) {
-  globalStates.currentLogic.tempIncomingLinks.forEach( function(linkData) {
+  globalStates.currentLogic.guiState.tempIncomingLinks.forEach( function(linkData) {
     if (blocksExist(linkData.blockA, contents.block)) {
       addBlockLink(linkData.blockA, contents.block, linkData.itemA, linkData.itemB, true);      
     }
   });
 
-  globalStates.currentLogic.tempOutgoingLinks.forEach( function(linkData) {
+  globalStates.currentLogic.guiState.tempOutgoingLinks.forEach( function(linkData) {
     if (blocksExist(linkData.blockB, contents.block)) {
       addBlockLink(contents.block, linkData.blockB, linkData.itemA, linkData.itemB, true);
     }
@@ -220,8 +221,8 @@ function blocksExist(block1, block2) {
 }
 
 function resetTempLinkOutlines() {
-  globalStates.currentLogic.tempIncomingLinks = [];
-  globalStates.currentLogic.tempOutgoingLinks = [];
+  globalStates.currentLogic.guiState.tempIncomingLinks = [];
+  globalStates.currentLogic.guiState.tempOutgoingLinks = [];
 }
 
 function removeTappedContents(contents) {
@@ -253,6 +254,7 @@ function resetTempLink() {
 
 function drawLinkLine(contents, endX, endY) {
   var grid = globalStates.currentLogic.grid;
+  var tempLine = globalStates.currentLogic.guiState.tempLine;
   // actual drawing happens in index.js loop, we just need to set endpoint here
   var startX = grid.getCellCenterX(contents.cell);
   var startY = grid.getCellCenterY(contents.cell);
@@ -270,18 +272,21 @@ function drawLinkLine(contents, endX, endY) {
 }
 
 function resetLinkLine() {
+  var tempLine = globalStates.currentLogic.guiState.tempLine;
   tempLine.start = null;
   tempLine.end = null;
   tempLine.color = null;
 }
 
 function drawCutLine(start, end) {
+  var cutLine = globalStates.currentLogic.guiState.cutLine;
   // actual drawing happens in index.js loop, we just need to set endpoint here
   cutLine.start = start;
   cutLine.end = end;
 }
 
 function resetCutLine() {
+  var cutLine = globalStates.currentLogic.guiState.cutLine;
   cutLine.start = null;
   cutLine.end = null;
 }
@@ -295,6 +300,8 @@ function createLink(contents1, contents2, tempLink) {
 }
 
 function cutIntersectingLinks() {
+  var cutLine = globalStates.currentLogic.guiState.cutLine;
+  if (!cutLine || !cutLine.start || !cutLine.end) return;
   var didRemoveAnyLinks = false;
   for (var linkKey in globalStates.currentLogic.links) {
       var didIntersect = false;
@@ -319,7 +326,7 @@ function cutIntersectingLinks() {
 
 function getDomElementForBlock(block) {
   if (isPortBlock(block)) return;
-  return blockDomElements[block.globalId];
+  return globalStates.currentLogic.guiState.blockDomElements[block.globalId];
 }
 
 function generateBlockGlobalId() {
@@ -347,7 +354,7 @@ function addBlockFromMenu(blockJSON, pointerX, pointerY) {
     var addedBlock = addBlock(-1, -1, blockJSON, globalId);
     addDomElementForBlock(addedBlock, globalStates.currentLogic.grid, true);
 
-    globalStates.currentLogic.tappedContents = {
+    globalStates.currentLogic.guiState.tappedContents = {
         block: addedBlock,
         item: 0,
         cell: null

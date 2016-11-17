@@ -228,39 +228,11 @@ var overlayDiv;
  ***************************************** datacrafting variables  ****************************************************
  **********************************************************************************************************************/
 
-// BEN TODO: remove global variables so it works for multiple logic nodes
-
-var tempStartBlock = null; // the block you started dragging from
-var tempEndBlock = null; // the block you dragged onto
-var tempStartItem = 0; // the item of the the block you started dragging from
-var isPointerDown = false; // always tells you whether the pointer is currently down or up
-var isTempLinkBeingDrawn = false; // becomes true when you start dragging out of a block
-var isPointerInActiveBlock = false; // always tells you whether the pointer is over a filled block
-var isCutLineBeingDrawn = false; // true iff you are dragging a cut line
-var cellToMoveBlockFrom = null; // original block location, so you can return it there if needed
-var isMarginSelected = false; // whether you started dragging the (multi-column) block from between its columns
-
-var blockColorMap = {
+ var blockColorMap = {
     bright:["#2DFFFE", "#29FD2F", "#FFFD38", "#FC157D"], // blue, green, yellow, red
     faded:["#EAFFFF", "#EAFFEB", "#FFFFEB", "#FFE8F2"] // lighter: blue, green, yellow, red
 }
-
 var activeBlockColor = "#E6E6E6"; // added blocks are grey
 var movingBlockColor = "#FFFFFF"; // blocks turn white when you start to drag them
 
-var cutLine = { // endpoints of line used to cut links
-    start: null,
-    end: null
-};
-
-var tempLine = { // endpoints of visual-feedback line showing you the new link you are drawing
-    start: null,
-    end: null,
-    color: null
-}
-
-var blockDomElements = {};
-
-// var blockMoveTimeout = null; // adds a delay so that tapping and holding on a block lets you move it
-
-var DEBUG_DATACRAFTING = false; // TRUE -> show crafting board just by tapping on first menu item (DEBUG mode)
+var DEBUG_DATACRAFTING = false; // when TRUE -> shows crafting board just by tapping on first menu item (DEBUG mode)

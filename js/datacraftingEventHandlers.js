@@ -29,7 +29,7 @@ function pointerDown(e) {
         touchState = TS_TAP_BLOCK;
         // var block = contents.block;
         // var item = contents.item;
-        globalStates.currentLogic.tappedContents = contents;
+        globalStates.currentLogic.guiState.tappedContents = contents;
 
         // TODO: holding changes to TS_HOLD
             // one way of doing this is to record the tap down time
@@ -39,7 +39,7 @@ function pointerDown(e) {
 
         startTapTime = Date.now();
 
-        styleBlockForHolding(globalStates.currentLogic.tappedContents, true);
+        styleBlockForHolding(globalStates.currentLogic.guiState.tappedContents, true);
 
     } else {
         touchState = TS_CUT;
@@ -59,7 +59,7 @@ function pointerMove(e) {
         return pointerUp(e, true);
     }
     var contents = getCellContents(cell);
-    var tappedContents = globalStates.currentLogic.tappedContents;
+    var tappedContents = globalStates.currentLogic.guiState.tappedContents;
 
     if (touchState === TS_TAP_BLOCK) {
 
@@ -143,7 +143,7 @@ function pointerUp(e, didPointerLeave) {
 
     var cell = getCellOverPointer(e.pageX, e.pageY);
     var contents = getCellContents(cell);
-    var tappedContents = globalStates.currentLogic.tappedContents;
+    var tappedContents = globalStates.currentLogic.guiState.tappedContents;
 
     if (touchState === TS_TAP_BLOCK) {
         // for now -> do nothing
@@ -165,7 +165,7 @@ function pointerUp(e, didPointerLeave) {
 
         // if you are over an elligible block, remove temp link and add real link
         if (contents && canConnectBlocks(tappedContents, contents)) {
-            createLink(tappedContents, contents, globalStates.currentLogic.tempLink);
+            createLink(tappedContents, contents, globalStates.currentLogic.guiState.tempLink);
             resetTempLink();        
         } else {
             resetLinkLine();
@@ -190,7 +190,7 @@ function pointerUp(e, didPointerLeave) {
         resetCutLine();
     }
 
-    globalStates.currentLogic.tappedContents = null;
+    globalStates.currentLogic.guiState.tappedContents = null;
     cutLineStart = null;
     touchState = TS_NONE;
 

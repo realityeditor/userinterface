@@ -821,6 +821,10 @@ function getBlockOverlappingPosition(x, y) {
     return null;
 }
 
+function isBlockOutsideGrid(block, grid) {
+    return (block.x < 0 || block.y < 0 || block.y > 4 || (block.x + (block.blockSize-1)) > 4);
+}
+
 function convertGridPosToBlockPos(col, row) {
     return {
         x: Math.floor(col/2),
@@ -879,8 +883,8 @@ function forEachLink(action) {
     for (var linkKey in globalStates.currentLogic.links) {
         action(globalStates.currentLogic.links[linkKey]);
     }
-    if (globalStates.currentLogic.tempLink) {
-        action(globalStates.currentLogic.tempLink);
+    if (globalStates.currentLogic.guiState.tempLink) {
+        action(globalStates.currentLogic.guiState.tempLink);
     }
 }
 
@@ -894,7 +898,7 @@ function allLinks() {
 
 function setTempLink(newTempLink) {
     if (!doesLinkAlreadyExist(newTempLink)) {
-        globalStates.currentLogic.tempLink = newTempLink;
+        globalStates.currentLogic.guiState.tempLink = newTempLink;
     }
 }
 
@@ -904,11 +908,11 @@ function removeBlockLink(linkKey) {
 
 function removeBlock(logic, block) {
     removeLinksForBlock(logic, block);
-    var domElement = blockDomElements[block.globalId];
+    var domElement = logic.guiState.blockDomElements[block.globalId];
     if (domElement) {
         domElement.parentNode.removeChild(domElement);
     }
-    delete blockDomElements[block.globalId]; // TODO: associate this with a particular logic object
+    delete logic.guiState.blockDomElements[block.globalId];
     for (var blockKey in logic.blocks) {
         if (logic.blocks[blockKey] === block) {
             delete logic.blocks[blockKey];

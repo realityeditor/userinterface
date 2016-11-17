@@ -206,58 +206,49 @@ function Logic() {
     this.links = {};
     this.blocks = {};
 
-    // BEN TODO: these should be cleaned up
-    this.tempLink = null;
-    this.tempBlock = null;
-    this.tappedContents = null;
-    this.tempIncomingLinks = [];
-    this.tempOutgoingLinks = [];
-
-    // this.guiState = new LogicGUIState();
+    this.guiState = new LogicGUIState();
 }
 
+/**
+ * @desc Constructor used to define temporary state for drawing the GUI of a Logic node's crafting board
+ **/
+
 function LogicGUIState() {
-
-    this.blockDomElements = {}; // lookup table for all the current dom elements for the UI of the blocks
-
-    // moved directly from Logic
+    // lookup table for all the current dom elements for the UI of the blocks
+    this.blockDomElements = {};
+    // block link currently being drawn
     this.tempLink = null;
-    this.tempBlock = null;
+    // keeps track of which block/item are currently being interacted with
     this.tappedContents = null;
+    // when moving a block, traces outlines of incoming links and re-adds them
     this.tempIncomingLinks = [];
+    // when moving a block, traces outlines of outgoing links and re-adds them
     this.tempOutgoingLinks = [];
-
-    // global variables taken from gui.js
-    this.menuSelectedBlock = null;
-    this.menuIsPointerDown = false;
-    this.menuSelectedTab = 0;
-    this.menuTabs = [];
-    this.menuBlockData = [ [], [], [], [], [] ]; //defaultBlockData(); //TODO: load cached blocks instead of empty
-    this.menuBlockDivs = [];
-    this.menuBlockToAdd = null;
-
-    // global variables taken from globalVariables.js
-
-    this.tempStartBlock = null; // the block you started dragging from
-    this.tempEndBlock = null; // the block you dragged onto
-    this.tempStartItem = 0; // the item of the the block you started dragging from
-    this.isPointerDown = false; // always tells you whether the pointer is currently down or up
-    this.isTempLinkBeingDrawn = false; // becomes true when you start dragging out of a block
-    this.isPointerInActiveBlock = false; // always tells you whether the pointer is over a filled block
-    this.isCutLineBeingDrawn = false; // true iff you are dragging a cut line
-    this.cellToMoveBlockFrom = null; // original block location, so you can return it there if needed
-    this.isMarginSelected = false; // whether you started dragging the (multi-column) block from between its columns
-
-    this.cutLine = { // endpoints of line used to cut links
+    // endpoints of line used to cut links
+    this.cutLine = {
         start: null,
         end: null
     };
-
-    this.tempLine = { // endpoints of visual-feedback line showing you the new link you are drawing
+    // endpoints of visual-feedback line showing you the new link you are drawing
+    this.tempLine = {
         start: null,
         end: null,
         color: null
     }
+    // which block you tapped on in the block menu
+    this.menuSelectedBlock = null;
+    // block to add to crafting board when menu closes
+    this.menuBlockToAdd = null;
+    // touch interaction state in the menu
+    this.menuIsPointerDown = false;
+    // which menu tab is open
+    this.menuSelectedTab = 0;
+    // dom elements for the menu tab buttons
+    this.menuTabDivs = [];
+    // menuBlockData[i] stores an array of json data describing each block in the ith menu tab
+    this.menuBlockData = [ [], [], [], [], [] ]; //defaultBlockData(); //TODO: load cached blocks instead of empty
+    // dom elements for blocks in menu
+    this.menuBlockDivs = [];
 }
 
 /**
