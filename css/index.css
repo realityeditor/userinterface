@@ -511,10 +511,10 @@ body {
 }
 */
 
-.memoryWeb > .memoryContainer {
+.memoryWeb > .memoryContainer, .memoryPointer {
     position: absolute;
-    margin-left: -33.5px;
-    margin-top: -18.75px;
+    margin-left: -20px;
+    margin-top: -20px;
 }
 
 .memoryContainer {
@@ -522,8 +522,10 @@ body {
     margin: 2px;
     padding: 0;
     border: 2px solid #01FFFC;
-    width: 67px;
-    height: 37.5px;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .memoryContainer.memoryDragging {
@@ -553,20 +555,10 @@ body {
     z-index: 2;
 }
 
-.memoryPointer {
-    position: absolute;
-    margin-left: -18.75px;
-    margin-top: -18.75px;
-    width: 37.5px;
-    height: 37.5px;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
 .memory {
     display: block;
-    width: 67px;
-    height: 37.5px;
+    width: 40px;
+    height: 40px;
     margin: 0;
     padding: 0;
     -webkit-user-select: none;
@@ -599,11 +591,11 @@ body {
 
 #overlay.overlayMemoryInstant {
     transition: width 0.01s linear, height 0.01s linear, border-radius 0.01s linear, border-width 0.01s linear;
-    margin-top: -18.75px;
-    margin-left: -33.5px;
-    width: 67px;
-    height: 37.5px;
-    border-radius: 0px;
+    margin-top: -20px;
+    margin-left: -20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
     border: 2px solid #01FFFC;
 }
 
