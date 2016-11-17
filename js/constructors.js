@@ -212,6 +212,52 @@ function Logic() {
     this.tappedContents = null;
     this.tempIncomingLinks = [];
     this.tempOutgoingLinks = [];
+
+    // this.guiState = new LogicGUIState();
+}
+
+function LogicGUIState() {
+
+    this.blockDomElements = {}; // lookup table for all the current dom elements for the UI of the blocks
+
+    // moved directly from Logic
+    this.tempLink = null;
+    this.tempBlock = null;
+    this.tappedContents = null;
+    this.tempIncomingLinks = [];
+    this.tempOutgoingLinks = [];
+
+    // global variables taken from gui.js
+    this.menuSelectedBlock = null;
+    this.menuIsPointerDown = false;
+    this.menuSelectedTab = 0;
+    this.menuTabs = [];
+    this.menuBlockData = [ [], [], [], [], [] ]; //defaultBlockData(); //TODO: load cached blocks instead of empty
+    this.menuBlockDivs = [];
+    this.menuBlockToAdd = null;
+
+    // global variables taken from globalVariables.js
+
+    this.tempStartBlock = null; // the block you started dragging from
+    this.tempEndBlock = null; // the block you dragged onto
+    this.tempStartItem = 0; // the item of the the block you started dragging from
+    this.isPointerDown = false; // always tells you whether the pointer is currently down or up
+    this.isTempLinkBeingDrawn = false; // becomes true when you start dragging out of a block
+    this.isPointerInActiveBlock = false; // always tells you whether the pointer is over a filled block
+    this.isCutLineBeingDrawn = false; // true iff you are dragging a cut line
+    this.cellToMoveBlockFrom = null; // original block location, so you can return it there if needed
+    this.isMarginSelected = false; // whether you started dragging the (multi-column) block from between its columns
+
+    this.cutLine = { // endpoints of line used to cut links
+        start: null,
+        end: null
+    };
+
+    this.tempLine = { // endpoints of visual-feedback line showing you the new link you are drawing
+        start: null,
+        end: null,
+        color: null
+    }
 }
 
 /**
