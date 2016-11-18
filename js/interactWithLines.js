@@ -153,6 +153,8 @@ function drawAllLines(thisObject, context) {
                 bB.screenY = -10;
                 bB.screenZ = bA.screenZ;
             }
+            bB.screenZ = bA.screenZ;
+            bB.screenLinearZ = bA.screenLinearZ;
         }
 
         if (!oA.objectVisible) {
@@ -165,15 +167,15 @@ function drawAllLines(thisObject, context) {
 
                 bA.screenX = memoryPointer.x;
                 bA.screenY = memoryPointer.y;
-                bA.screenZ = bB.screenZ;
             } else {
                 bA.screenX = bB.screenX;
                 bA.screenY = -10;
-                bA.screenZ = bB.screenZ;
             }
+            bA.screenZ = bB.screenZ;
+            bA.screenLinearZ = bB.screenLinearZ;
         }
 
-        // linearize a non linear zBuffer
+        // linearize a non linear zBuffer (see index.js)
         var bAScreenZ =   bA.screenLinearZ;
         var bBScreenZ = bB.screenLinearZ;
 
