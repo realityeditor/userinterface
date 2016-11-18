@@ -516,21 +516,19 @@ body {
 }
 */
 
-.memoryWeb > .memoryContainer, .memoryPointer {
-    position: absolute;
-    margin-left: -20px;
-    margin-top: -20px;
+.memoryContainer, #overlay.overlayMemoryInstant {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    border: 2px solid #01FFFC;
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .memoryContainer {
-    display: inline-block;
     margin: 2px;
-    padding: 0;
-    border: 2px solid #01FFFC;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    overflow: hidden;
 }
 
 .memoryContainer.memoryDragging {
@@ -538,6 +536,13 @@ body {
     position: fixed;
     top: 0;
     left: 0;
+}
+
+#overlay.overlayMemoryInstant, .memoryContainer.memoryPointer,
+.memoryWeb > .memoryContainer {
+    position: absolute;
+    margin-left: -30px;
+    margin-top: -30px;
 }
 
 .memoryDragContainer {
@@ -562,10 +567,10 @@ body {
 
 .memory {
     display: block;
-    width: 40px;
-    height: 40px;
     margin: 0;
     padding: 0;
+    width: 56px;
+    height: 56px;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
 }
@@ -596,15 +601,6 @@ body {
 
 #overlay.overlayMemoryInstant {
     transition: width 0.01s linear, height 0.01s linear, border-radius 0.01s linear, border-width 0.01s linear;
-    margin-top: -20px;
-    margin-left: -20px;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    border: 2px solid #01FFFC;
-}
-
-#overlay.overlayMemory {
 }
 
 #overlay.overlayPositive,
