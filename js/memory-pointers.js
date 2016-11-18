@@ -27,10 +27,10 @@ function MemoryPointer(link, isObjectA) {
     this.x = 0;
     this.y = 0;
 
-    var globalIndex = Object.keys(objects).indexOf(object.objectId);
+    var globalIndex = Object.keys(objects).indexOf(this.getObject().objectId);
     var theta = 2 * Math.PI * globalIndex / Object.keys(objects).length;
-    this.offsetX = Math.cos(theta) * 150;
-    this.offsetY = Math.sin(theta) * 150;
+    this.offsetX = Math.cos(theta) * 10;
+    this.offsetY = Math.sin(theta) * 10;
 
     this.alive = true;
 
@@ -86,12 +86,17 @@ MemoryPointer.prototype.update = function() {
 
 MemoryPointer.prototype.draw = function() {
     var connectedValue = this.getConnectedValue();
-    var deltaX = connectedValue.screenX - this.offsetX - this.x;
-    var deltaY = connectedValue.screenY - this.offsetY - this.y;
-    var alpha = 0.5;
+    var cvX = connectedValue.screenX || 0;
+    var cvY = connectedValue.screenY || 0;
+    var cvZ = connectedValue.screenLinearZ || 10;
+    var scale = cvZ / 10;
+
+    var deltaX = cvX - this.offsetX * cvZ - this.x;
+    var deltaY = cvY - this.offsetY * cvZ - this.y;
+    var alpha = 0.9;
     this.x += deltaX * alpha;
     this.y += deltaY * alpha;
-    this.element.style.transform = 'translate(' + this.x + 'px,' + this.y + 'px)';
+    this.element.style.transform = 'translate(' + this.x + 'px,' + this.y + 'px) scale(' + scale + ')';
 };
 
 MemoryPointer.prototype.remove = function() {
