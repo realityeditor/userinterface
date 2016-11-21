@@ -769,6 +769,8 @@ function initializeDatacraftingGrid(logic) {
         }
     }
 
+    initLogicInOutBlocks();
+
     var portCells = logic.grid.cells.filter(function(cell) {
         return cell.canHaveBlock() && (cell.location.row === 0 || cell.location.row === logic.grid.size-1);
     });
@@ -789,6 +791,21 @@ function initializeDatacraftingGrid(logic) {
     addDatacraftingEventListeners();
 }
 
+function initLogicInOutBlocks() {
+    for (var y = -1; y <= 4; y+= 5) {
+        var namePrefix = y === -1 ? "in" : "out";
+        for (var x = 0; x <= 3; x++) {
+            var name = namePrefix + x;
+            var activeInputs = (y === -1) ? [false, false, false, false] : [true, false, false, false];
+            var activeOutputs = (y === -1) ? [true, false, false, false] : [false, false, false, false];
+            var blockJSON = toBlockJSON(name, 1, {}, {}, activeInputs, activeOutputs, ["","","",""], ["","","",""]);
+            var globalId = name;
+            var block = addBlock(x, y, blockJSON, globalId);
+            block.isPortBlock = true;
+        }
+    }
+}
+
 function toBlockJSON(name, width, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput) {
     return {
         name: name,
@@ -800,6 +817,90 @@ function toBlockJSON(name, width, privateData, publicData, activeInputs, activeO
         nameInput: nameInput,
         nameOutput: nameOutput
     };
+}
+
+function toLogicJSON(logic) {
+    // can't just run JSON.stringify(logic) because logic has a cyclic object value in links and grid
+    // http://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
+
+    console.log(logic);
+
+    var logicServer = {};
+
+    var keysToSkip = ["guiState", "grid", "links", "blocks"];
+    for (var key in logic) {
+        if (!logic.hasOwnProperty(key)) continue;
+        if (keysToSkip.indexOf(key) > -1) continue;
+        logicServer[key] = logic[key];
+    }
+
+    // add specific metadata to reconstruct blocks and links
+
+    logicServer["blockData"] = {};
+    for (var key in logic.blocks) {
+        if (!logic.blocks.hasOwnProperty(key)) continue;
+
+        var re = /^(in|out)\d$/;
+        var isInOutBlock = re.test(key);
+        if (!isInOutBlock) {
+            logicServer.blockData[key] = logic.blocks[key];
+        }
+    }
+
+    logicServer["linkData"] = {};
+    for (var key in logic.links) {
+        if (!logic.links.hasOwnProperty(key)) continue;
+
+        var link = logic.links[key];
+        logicServer.linkData[key] = {
+            blockAID: link.blockA.globalId,
+            blockBID: link.blockB.globalId,
+            itemA: link.itemA,
+            itemB: link.itemB
+        }
+    }
+
+    return JSON.stringify(logicServer);
+}
+
+function parseJSONToLogic(logicJSON) {
+    var logicServer = JSON.parse(logicJSON);
+    console.log("logicServer", logicServer);
+
+    var logic = new Logic();
+    globalStates.currentLogic = logic;
+    var keysToSkip = ["linkData", "blockData"];
+    for (var key in logicServer) {
+        if (!logicServer.hasOwnProperty(key)) continue;
+        if (keysToSkip.indexOf(key) > -1) continue;
+        logic[key] = logicServer[key];
+    }
+    var container = document.getElementById('craftingBoard');
+    logic.grid = new Grid(container.clientWidth, container.clientHeight);
+
+    // recreate links and blocks
+
+    for (var key in logicServer.blockData) {
+        if (!logicServer.blockData.hasOwnProperty(key)) continue;
+
+        logic.blocks[key] = logicServer.blockData[key];
+    }
+    // then add in/out blocks
+    initLogicInOutBlocks()
+
+    for (var key in logicServer.linkData) {
+        if (!logicServer.linkData.hasOwnProperty(key)) continue;
+
+        var linkData = logicServer.linkData[key];
+        var blockA = logic.blocks[linkData.blockAID];
+        var blockB = logic.blocks[linkData.blockBID];
+        addBlockLink(blockA, blockB, linkData.itemA, linkData.itemB, true);
+    }
+
+    // update the grid to calculate routes for any links added
+    updateGrid(logic.grid);
+
+    return logic;
 }
 
 function initializeBlockMenu(callback) {

@@ -1050,7 +1050,7 @@ function updateGrid(grid) {
     for (var blockKey in globalStates.currentLogic.blocks) {
         var block = globalStates.currentLogic.blocks[blockKey];
         if (block.isPortBlock) continue; // don't render invisible input/output blocks
-        if (isBlockOutsideGrid(block, grid)) { // cleanup incorrectly setup blocks // TODO: prevent this in the first place rather than checking each time
+        if (isBlockOutsideGrid(block, grid) && !isPortBlock(block)) { // cleanup incorrectly setup blocks // TODO: prevent this in the first place rather than checking each time
             removeBlock(globalStates.currentLogic, block);
             continue;
         }
