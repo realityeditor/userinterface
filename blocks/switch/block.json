@@ -1,9 +1,9 @@
 {
   "name": "switch",
-  "width": 3,
-  "activeInputs": [true, true, true, false],
+  "width": 1,
+  "activeInputs": [true, false, false, false],
   "activeOutputs": [true, false, false, false],
-  "nameInput":["x","on","off",""],
+  "nameInput":["x","","",""],
   "nameOutput":["x","","",""],
   "publicData":{},
   "privateData":{}

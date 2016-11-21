@@ -123,12 +123,27 @@ function placeBlockInCell(contents, cell) {
     var newCellsOver = grid.getCellsOver(cell, contents.block.blockSize, contents.item);
 
     // if it's being moved to the top or bottom rows, delete the invisible port block underneath
-    removePortBlocksIfNecessary(newCellsOver);
+    // this also saves the links connected to those port blocks so we can add them to the new block
+    var portLinkData = removePortBlocksIfNecessary(newCellsOver);
 
     contents.block.x = Math.floor((cell.location.col / 2) - (contents.item));
     contents.block.y = (cell.location.row / 2);
     contents.block.isTempBlock = false;
     convertTempLinkOutlinesToLinks(contents);
+
+    portLinkData.forEach( function(linkData) {
+      // if we deleted a link from the top row, add it to this block if possible
+      if (!linkData.blockA && linkData.blockB) {
+        if (contents.block.activeOutputs[linkData.itemA] === true) {
+          addBlockLink(contents.block, linkData.blockB, linkData.itemA, linkData.itemB, true);          
+        }
+      // if we deleted a link to the bottom row, add it to this block if possible
+      } else if (linkData.blockA && !linkData.blockB) {
+        if (contents.block.activeInputs[linkData.itemB] === true) {
+          addBlockLink(linkData.blockA, contents.block, linkData.itemA, linkData.itemB, true);      
+        }
+      }
+    });
 
     // if it's being moved away from the top or bottom rows, re-add the invisible port block underneath
     if (prevCell) {
@@ -144,14 +159,59 @@ function placeBlockInCell(contents, cell) {
 }
 
 function removePortBlocksIfNecessary(cells) {
-  cells.forEach( function(cell) {
+  var portLinkData = [];
+  cells.forEach( function(cell, i) {
     if (cell) {
       var existingBlock = cell.blockAtThisLocation();
       if (existingBlock && isPortBlock(existingBlock)) {
+          if (isInputBlock(existingBlock)) {
+            var outgoingLinks = getOutgoingLinks(existingBlock);
+            outgoingLinks.forEach(function(link) {
+              portLinkData.push({
+                blockA: null,
+                blockB: link.blockB,
+                itemA: i,
+                itemB: link.itemB
+              });
+            });
+          } else if (isOutputBlock(existingBlock)) {
+            var incomingLinks = getIncomingLinks(existingBlock);
+            incomingLinks.forEach(function(link) {
+              portLinkData.push({
+                blockA: link.blockA,
+                blockB: null,
+                itemA: link.itemA,
+                itemB: i
+              });
+            });
+          }
           removeBlock(globalStates.currentLogic, existingBlock);
       }
     }
   });
+  return portLinkData;
+}
+
+function getOutgoingLinks(block) {
+  var outgoingLinks = [];
+  for (var linkKey in globalStates.currentLogic.links) {
+    var link = globalStates.currentLogic.links[linkKey];
+    if (link.blockA === block) {
+      outgoingLinks.push(link);
+    }
+  }
+  return outgoingLinks;
+}
+
+function getIncomingLinks(block) {
+  var incomingLinks = [];
+  for (var linkKey in globalStates.currentLogic.links) {
+    var link = globalStates.currentLogic.links[linkKey];
+    if (link.blockB === block) {
+      incomingLinks.push(link);
+    }
+  }
+  return incomingLinks;
 }
 
 function replacePortBlocksIfNecessary(cells) {

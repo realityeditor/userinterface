@@ -179,9 +179,9 @@ function pointerUp(e, didPointerLeave) {
             removeTappedContents(tappedContents);
         } else {
             if (canPlaceBlockInCell(tappedContents, cell)) {
-                placeBlockInCell(tappedContents, cell);
+                placeBlockInCell(tappedContents, cell); // move the block to the cell you're over
             } else {
-                placeBlockInCell(tappedContents, tappedContents.cell);
+                placeBlockInCell(tappedContents, tappedContents.cell); // return the block to its original cell
             }
         }
 
