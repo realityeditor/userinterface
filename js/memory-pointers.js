@@ -29,8 +29,8 @@ function MemoryPointer(link, isObjectA) {
 
     var globalIndex = Object.keys(objects).indexOf(this.getObject().objectId);
     var theta = 2 * Math.PI * globalIndex / Object.keys(objects).length;
-    this.offsetX = Math.cos(theta) * 10;
-    this.offsetY = Math.sin(theta) * 10;
+    this.offsetX = Math.cos(theta) * 20;
+    this.offsetY = Math.sin(theta) * 20;
 
     this.alive = true;
 
