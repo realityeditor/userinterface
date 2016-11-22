@@ -7,6 +7,8 @@
  */
 
 (function(exports) {
+var imageCache = {};
+
 function MemoryContainer(element) {
     this.element = element;
     this.image = null;
@@ -44,11 +46,18 @@ MemoryContainer.prototype.set = function(obj) {
     };
     this.element.dataset.objectId = this.memory.id;
 
-    if (!this.image) {
+    var cachedImage = imageCache[thumbnail];
+    if (cachedImage && !cachedImage.parentNode && cachedImage.src === thumbnail) {
+        this.image = cachedImage;
         this.createImage();
     }
 
-    this.image.src = thumbnail;
+    if (!this.image) {
+        this.createImage();
+        this.image.src = thumbnail;
+    }
+
+    imageCache[thumbnail] = this.image;
 };
 
 MemoryContainer.prototype.clear = function() {
@@ -269,7 +278,9 @@ MemoryContainer.prototype.remove = function() {
 };
 
 MemoryContainer.prototype.createImage = function() {
-    this.image = document.createElement('img');
+    if (!this.image) {
+        this.image = document.createElement('img');
+    }
     this.image.classList.add('memory');
     this.image.addEventListener('touchstart', this.onTouchStart);
     this.image.addEventListener('touchmove', this.onTouchMove);
