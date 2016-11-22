@@ -96,7 +96,7 @@ MemoryPointer.prototype.draw = function() {
     var alpha = 0.66;
     this.x += deltaX * alpha;
     this.y += deltaY * alpha;
-    this.element.style.transform = 'translate(' + this.x + 'px,' + this.y + 'px) scale(' + scale + ')';
+    this.element.style.transform = 'translate3d(' + this.x + 'px,' + this.y + 'px, 2px) scale(' + scale + ')';
 };
 
 MemoryPointer.prototype.remove = function() {
