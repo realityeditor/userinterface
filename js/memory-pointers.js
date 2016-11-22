@@ -93,7 +93,7 @@ MemoryPointer.prototype.draw = function() {
 
     var deltaX = cvX - this.offsetX * cvZ - this.x;
     var deltaY = cvY - this.offsetY * cvZ - this.y;
-    var alpha = 0.9;
+    var alpha = 0.66;
     this.x += deltaX * alpha;
     this.y += deltaY * alpha;
     this.element.style.transform = 'translate(' + this.x + 'px,' + this.y + 'px) scale(' + scale + ')';
