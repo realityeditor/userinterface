@@ -145,6 +145,10 @@ function placeBlockInCell(contents, cell) {
       }
     });
 
+    if (contents.block.y === 0 || contents.block.y === 3) {
+      updateInOutLinks(contents.block.globalId);        
+    }
+
     // if it's being moved away from the top or bottom rows, re-add the invisible port block underneath
     if (prevCell) {
       var prevCellsOver = grid.getCellsOver(prevCell, contents.block.blockSize, contents.item);
