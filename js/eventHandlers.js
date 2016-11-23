@@ -337,6 +337,8 @@ function documentPointerUp(evt) {
 
                 globalDOMCach[pocketItemId].objectId = globalLogic.farFrontElement;
 
+                uploadNewLogicNode(objects[globalLogic.farFrontElement].ip, globalLogic.farFrontElement, pocketItemId, thisItem);
+
             }
             hideTransformed("pocket", pocketItemId, pocketItem.pocket.logic[pocketItemId], "logic");
             delete pocketItem.pocket.logic[pocketItemId];
@@ -711,6 +713,108 @@ function deleteLinkFromObject(ip, thisObjectKey, thisKey) {
     deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/" + thisKey);
     cout("deleteLinkFromObject");
 }
+
+/**
+ * @desc
+ * @param ip
+ * @param thisObjectKey
+ * @param thisKey
+ * @param content
+ **/
+
+function uploadNewLogicNode(ip, thisObjectKey, thisLogicKey, logic) {
+    cout("sending Logic Node");
+    // /logic/*/*/node/
+    var simpleLogic = convertLogicToServerFormat(logic);
+    postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/node/", simpleLogic);
+    // postData('http://' +ip+ ':' + httpPort+"/", content);
+    cout("uploadNewLogicNode");
+}
+
+/**
+ * @desc
+ * @param ip
+ * @param thisObjectKey
+ * @param thisKey
+ * @param content
+ **/
+
+function uploadNewBlock(ip, thisObjectKey, thisLogicKey, thisBlockKey, block) {
+    cout("sending Block");
+    // /logic/*/*/block/*/
+    postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/block/" + thisBlockKey, block);
+    // postData('http://' +ip+ ':' + httpPort+"/", content);
+    cout("uploadNewBlock");
+}
+
+/**
+ * @desc
+ * @param ip
+ * @param thisObjectKey
+ * @param thisKey
+ * @return
+ **/
+
+function deleteBlockFromObject(ip, thisObjectKey, thisLogicKey, thisBlockKey) {
+// generate action for all links to be reloaded after upload
+    cout("I am deleting a block: " + ip);
+    // /logic/*/*/block/*/
+    deleteData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/block/" + thisBlockKey);
+    cout("deleteBlockFromObject");
+}
+
+/**
+ * @desc
+ * @param ip
+ * @param thisObjectKey
+ * @param thisKey
+ * @return
+ **/
+
+function moveBlockPosition(ip, thisObjectKey, thisLogicKey, thisBlockKey, content) {
+// generate action for all links to be reloaded after upload
+    cout("I am moving a block: " + ip);
+    // /logic/*/*/block/*/
+    if (typeof content.x === "number" && typeof content.y === "number") {
+        postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey +"/blockPosition/" + thisBlockKey, content);
+        cout("moveBlockPosition");
+    }
+}
+
+/**
+ * @desc
+ * @param ip
+ * @param thisObjectKey
+ * @param thisKey
+ * @param content
+ **/
+
+function uploadNewBlockLink(ip, thisObjectKey, thisLogicKey, thisBlockLinkKey, blockLink) {
+    cout("sending Block");
+    var simpleBlockLink = convertBlockLinkToServerFormat(blockLink);
+
+    // /logic/*/*/link/*/
+    postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/link/" + thisBlockLinkKey, simpleBlockLink);
+    // postData('http://' +ip+ ':' + httpPort+"/", content);
+    cout("uploadNewBlockLink");
+}
+
+/**
+ * @desc
+ * @param ip
+ * @param thisObjectKey
+ * @param thisKey
+ * @return
+ **/
+
+function deleteBlockLinkFromObject(ip, thisObjectKey, thisLogicKey, thisBlockLinkKey) {
+// generate action for all links to be reloaded after upload
+    cout("I am deleting a block: " + ip);
+    // /logic/*/*/link/*/
+    deleteData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/link/" + thisBlockLinkKey);
+    cout("deleteBlockLinkFromObject");
+}
+
 
 /**
  * @desc

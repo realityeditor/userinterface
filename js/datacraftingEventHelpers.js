@@ -76,8 +76,8 @@ function areBlocksTempConnected(contents1, contents2) {
   var tempLink = globalStates.currentLogic.tempLink;
   if (!tempLink) return false;
 
-  return areBlocksEqual(tempLink.blockA, contents1.block) &&
-          areBlocksEqual(tempLink.blockB, contents2.block) &&
+  return areBlocksEqual(blockWithID(tempLink.blockA, globalStates.currentLogic), contents1.block) &&
+          areBlocksEqual(blockWithID(tempLink.blockB, globalStates.currentLogic), contents2.block) &&
           tempLink.itemA === contents1.item &&
           tempLink.itemB === contents2.item;
 }
@@ -116,6 +116,31 @@ function styleBlockForPlacement(contents, shouldHighlight) {
   }
 }
 
+function shouldUploadBlock(block) {
+  return !isInOutBlock(block.globalId) && !isPortBlock(block);
+}
+
+function shouldUploadBlockLink(blockLink) {
+  if (!blockLink) return false;
+  return !isInOutLink(blockLink);
+}
+
+function getServerObjectLogicKeys(logic) {
+  for (var key in objects) {
+    var object = objects[key];
+    for (var logicKey in object.logic) {
+      if (object.logic[logicKey] === logic) {
+        return {
+          ip: objects[key].ip,
+          objectKey: key,
+          logicKey: logicKey
+        }
+      }
+    }
+  }
+  return null;
+}
+
 function placeBlockInCell(contents, cell) {
   var grid = globalStates.currentLogic.grid;
   if (cell) {
@@ -129,18 +154,39 @@ function placeBlockInCell(contents, cell) {
     contents.block.x = Math.floor((cell.location.col / 2) - (contents.item));
     contents.block.y = (cell.location.row / 2);
     contents.block.isTempBlock = false;
+
+    if (shouldUploadBlock(contents.block)) {
+      var keys = getServerObjectLogicKeys(globalStates.currentLogic);
+      moveBlockPosition(keys.ip, keys.objectKey, keys.logicKey, contents.block.globalId, {x: contents.block.x, y: contents.block.y});
+    }
+
+    //if (!isInOutBlock(contents.block.globalId) && !isPortBlock(contents.block)) {
+    //  for (var key in objects) {
+    //    var object = objects[key];
+    //    for (var logicKey in object.logic) {
+    //      if (object.logic[logicKey] === globalStates.currentLogic) {
+    //        moveBlockPosition(objects[key].ip, key, logicKey, contents.block.globalId, {x: contents.block.x, y: contents.block.y});
+    //      }
+    //    }
+    //  }
+    //}
+
     convertTempLinkOutlinesToLinks(contents);
 
     portLinkData.forEach( function(linkData) {
+
+      var blockA = blockWithID(linkData.blockA, globalStates.currentLogic);
+      var blockB = blockWithID(linkData.blockB, globalStates.currentLogic);
+
       // if we deleted a link from the top row, add it to this block if possible
-      if (!linkData.blockA && linkData.blockB) {
+      if (blockB && !blockA) {
         if (contents.block.activeOutputs[linkData.itemA] === true) {
-          addBlockLink(contents.block, linkData.blockB, linkData.itemA, linkData.itemB, true);          
+          addBlockLink(contents.block.globalId, linkData.blockB, linkData.itemA, linkData.itemB, true);
         }
       // if we deleted a link to the bottom row, add it to this block if possible
-      } else if (linkData.blockA && !linkData.blockB) {
+      } else if (blockA && !blockB) {
         if (contents.block.activeInputs[linkData.itemB] === true) {
-          addBlockLink(linkData.blockA, contents.block, linkData.itemA, linkData.itemB, true);      
+          addBlockLink(linkData.blockA, contents.block.globalId, linkData.itemA, linkData.itemB, true);
         }
       }
     });
@@ -189,7 +235,7 @@ function removePortBlocksIfNecessary(cells) {
               });
             });
           }
-          removeBlock(globalStates.currentLogic, existingBlock);
+          removeBlock(globalStates.currentLogic, existingBlock.globalId);
       }
     }
   });
@@ -200,7 +246,7 @@ function getOutgoingLinks(block) {
   var outgoingLinks = [];
   for (var linkKey in globalStates.currentLogic.links) {
     var link = globalStates.currentLogic.links[linkKey];
-    if (link.blockA === block) {
+    if (link.blockA === block.globalId) {
       outgoingLinks.push(link);
     }
   }
@@ -211,7 +257,7 @@ function getIncomingLinks(block) {
   var incomingLinks = [];
   for (var linkKey in globalStates.currentLogic.links) {
     var link = globalStates.currentLogic.links[linkKey];
-    if (link.blockB === block) {
+    if (link.blockB === block.globalId) {
       incomingLinks.push(link);
     }
   }
@@ -223,7 +269,6 @@ function replacePortBlocksIfNecessary(cells) {
     if (cell && !cell.blockAtThisLocation()) {
       if (cell.location.row === 0 || cell.location.row === globalStates.currentLogic.grid.size-1) {
         // var blockJSON = toBlockJSON("edge", 1); //TODO: encode all info here
-        var name = "edge";
         var width = 1;
         var privateData = {};
         var publicData = {};
@@ -231,11 +276,12 @@ function replacePortBlocksIfNecessary(cells) {
         var activeOutputs = (cell.location.row === 0) ? [true, false, false, false] : [false, false, false, false];
         var nameInput = ["","","",""];
         var nameOutput = ["","","",""];
-        var blockJSON = toBlockJSON(name, width, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput);
         var blockPos = convertGridPosToBlockPos(cell.location.col, cell.location.row);
-        var globalId = "edgeBlock" + uuidTime();
-        var block = addBlock(blockPos.x, blockPos.y, blockJSON, globalId);
-        block.isPortBlock = true;
+        var inOrOut = blockPos.y === 0 ? "In" : "Out";
+        var name = "edgePlaceholder" + inOrOut + blockPos.x;
+        var globalId = name;
+        var blockJSON = toBlockJSON(name, width, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput);
+        var block = addBlock(blockPos.x, blockPos.y, blockJSON, globalId, true);
       }
     }
   });
@@ -244,14 +290,14 @@ function replacePortBlocksIfNecessary(cells) {
 function updateTempLinkOutlinesForBlock(contents) {
   for (var linkKey in globalStates.currentLogic.links) {
     var link = globalStates.currentLogic.links[linkKey];
-    if (link.blockB === contents.block) {
+    if (link.blockB === contents.block.globalId) {
       globalStates.currentLogic.guiState.tempIncomingLinks.push({
           blockA: link.blockA,
           itemA: link.itemA,
           itemB: link.itemB
       });
     
-    } else if (link.blockA === contents.block) {
+    } else if (link.blockA === contents.block.globalId) {
       globalStates.currentLogic.guiState.tempOutgoingLinks.push({
           itemA: link.itemA,
           blockB: link.blockB,
@@ -260,28 +306,28 @@ function updateTempLinkOutlinesForBlock(contents) {
     }
   }
 
-  removeLinksForBlock(globalStates.currentLogic, contents.block);
+  removeLinksForBlock(globalStates.currentLogic, contents.block.globalId);
 }
 
 function convertTempLinkOutlinesToLinks(contents) {
   globalStates.currentLogic.guiState.tempIncomingLinks.forEach( function(linkData) {
-    if (blocksExist(linkData.blockA, contents.block)) {
-      addBlockLink(linkData.blockA, contents.block, linkData.itemA, linkData.itemB, true);      
+    if (blocksExist(linkData.blockA, contents.block.globalId)) {
+      addBlockLink(linkData.blockA, contents.block.globalId, linkData.itemA, linkData.itemB, true);
     }
   });
 
   globalStates.currentLogic.guiState.tempOutgoingLinks.forEach( function(linkData) {
-    if (blocksExist(linkData.blockB, contents.block)) {
-      addBlockLink(contents.block, linkData.blockB, linkData.itemA, linkData.itemB, true);
+    if (blocksExist(linkData.blockB, contents.block.globalId)) {
+      addBlockLink(contents.block.globalId, linkData.blockB, linkData.itemA, linkData.itemB, true);
     }
   });
 
   resetTempLinkOutlines();
 }
 
-function blocksExist(block1, block2) {
+function blocksExist(block1ID, block2ID) {
   var blocks = globalStates.currentLogic.blocks;
-  return !!(blocks[block1.globalId]) && !!(blocks[block2.globalId]);
+  return !!(blocks[block1ID]) && !!(blocks[block2ID]);
 }
 
 function resetTempLinkOutlines() {
@@ -292,7 +338,7 @@ function resetTempLinkOutlines() {
 function removeTappedContents(contents) {
   var grid = globalStates.currentLogic.grid;
   resetTempLinkOutlines();
-  removeBlock(globalStates.currentLogic, contents.block);
+  removeBlock(globalStates.currentLogic, contents.block.globalId);
 
   // replace port blocks if necessary
   var prevCell = getCellForBlock(grid, contents.block, contents.item);
@@ -306,7 +352,7 @@ function removeTappedContents(contents) {
 }
 
 function createTempLink(contents1, contents2) {
-  newTempLink = addBlockLink(contents1.block, contents2.block, contents1.item, contents2.item, false);
+  var newTempLink = addBlockLink(contents1.block.globalId, contents2.block.globalId, contents1.item, contents2.item, false);
   setTempLink(newTempLink);
   updateGrid(globalStates.currentLogic.grid);
 }
@@ -356,7 +402,7 @@ function resetCutLine() {
 }
 
 function createLink(contents1, contents2, tempLink) {
-  var addedLink = addBlockLink(contents1.block, contents2.block, contents1.item, contents2.item, true);
+  var addedLink = addBlockLink(contents1.block.globalId, contents2.block.globalId, contents1.item, contents2.item, true);
   if (addedLink && tempLink) {
       addedLink.route = tempLink.route; // copy over the route rather than recalculating everything
       addedLink.ballAnimationCount = tempLink.ballAnimationCount;

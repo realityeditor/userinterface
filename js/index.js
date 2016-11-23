@@ -102,6 +102,17 @@ function addHeartbeatObject(beat) {
                         if (thisObject.matrix === null || typeof thisObject.matrix !== "object") {
                             thisObject.matrix = [];
                         }
+                        thisObject.loaded = false;
+                        thisObject.visible = false;
+                    }
+
+                    for (var nodeKey in objects[thisKey].logic) {
+                        thisObject = objects[thisKey].logic[nodeKey];
+                        thisObject.loaded = false;
+                        thisObject.visible = false;
+                        thisObject.guiState = new LogicGUIState();
+                        var container = document.getElementById('craftingBoard');
+                        thisObject.grid = new Grid(container.clientWidth, container.clientHeight);
                     }
 
                     if (!thisObject.protocol) {
@@ -1034,6 +1045,8 @@ function hideTransformed(objectKey, nodeKey, thisObject, kind) {
  **********************************************************************************************************************/
 
 function updateGrid(grid) {
+    console.log("update grid!");
+
     // *** this does all the backend work ***
     grid.recalculateAllRoutes();
 
@@ -1051,7 +1064,7 @@ function updateGrid(grid) {
         var block = globalStates.currentLogic.blocks[blockKey];
         if (block.isPortBlock) continue; // don't render invisible input/output blocks
         if (isBlockOutsideGrid(block, grid) && !isPortBlock(block)) { // cleanup incorrectly setup blocks // TODO: prevent this in the first place rather than checking each time
-            removeBlock(globalStates.currentLogic, block);
+            removeBlock(globalStates.currentLogic, blockKey);
             continue;
         }
         addDomElementForBlock(block, grid);
@@ -1127,8 +1140,8 @@ function redrawDatacrafting() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     forEachLink( function(link) {
-        var startCell =  getCellForBlock(grid, link.blockA, link.itemA);
-        var endCell =  getCellForBlock(grid, link.blockB, link.itemB);
+        var startCell =  getCellForBlock(grid, blockWithID(link.blockA, globalStates.currentLogic), link.itemA);
+        var endCell =  getCellForBlock(grid, blockWithID(link.blockB, globalStates.currentLogic), link.itemB);
         drawDatacraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
     });
 
@@ -1148,7 +1161,7 @@ function redrawDatacrafting() {
         if (!domElement) return;
 
         globalStates.currentLogic.guiState.tempIncomingLinks.forEach( function(linkData) {
-            var startCell = getCellForBlock(grid, linkData.blockA, linkData.itemA);
+            var startCell = getCellForBlock(grid, blockWithID(linkData.blockA, globalStates.currentLogic), linkData.itemA);
             var startX = grid.getCellCenterX(startCell);
             var startY = grid.getCellCenterY(startCell);
 
@@ -1166,7 +1179,7 @@ function redrawDatacrafting() {
             var startX = parseInt(domElement.style.left) + xOffset;
             var startY = parseInt(domElement.style.top) + domElement.clientHeight/2;
 
-            var endCell = getCellForBlock(grid, linkData.blockB, linkData.itemB);
+            var endCell = getCellForBlock(grid, blockWithID(linkData.blockB, globalStates.currentLogic), linkData.itemB);
             var endX = grid.getCellCenterX(endCell);
             var endY = grid.getCellCenterY(endCell);
             var endColor = endCell.getColorHSL();
@@ -1286,6 +1299,8 @@ function addElementInPreferences() {
 function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates) {
 
     if (globalStates.notLoading !== true && globalStates.notLoading !== nodeKey && thisObject.loaded !== true) {
+
+        console.log("did load object " + objectKey + ", node " + nodeKey);
 
         thisObject.animationScale =0;
         thisObject.loaded = true;

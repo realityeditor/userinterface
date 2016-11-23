@@ -373,6 +373,7 @@ Grid.prototype.resetCellRouteCounts = function() {
 // next, offsets each so that they don't visually overlap
 // lastly, prepares points so that they can be easily rendered
 Grid.prototype.recalculateAllRoutes = function() {
+    console.log("reculculate all routes!");
     var that = this;
 
     that.resetCellRouteCounts();
@@ -392,8 +393,12 @@ Grid.prototype.recalculateAllRoutes = function() {
 // given a link, calculates all the corner points between the start block and end block,
 // and sets the route of the link to contain the corner points and all the cells between
 Grid.prototype.calculateLinkRoute = function(link) {
-    var startLocation = convertBlockPosToGridPos(link.blockA.x + link.itemA, link.blockA.y);
-    var endLocation = convertBlockPosToGridPos(link.blockB.x + link.itemB, link.blockB.y);
+
+    var blockA = blockWithID(link.blockA, globalStates.currentLogic);
+    var blockB = blockWithID(link.blockB, globalStates.currentLogic);
+
+    var startLocation = convertBlockPosToGridPos(blockA.x + link.itemA, blockA.y);
+    var endLocation = convertBlockPosToGridPos(blockB.x + link.itemB, blockB.y);
     var route = new Route([startLocation]);
 
     // by default lines loop around the right of blocks, except for last column or if destination is to left of start
@@ -529,11 +534,16 @@ Grid.prototype.determineMaxOverlaps = function() {
             var horizontalOrder = p1.horizontal - p2.horizontal;
             var verticalOrder = p1.vertical - p2.vertical;
 
-            var startCellLocation1 = convertBlockPosToGridPos(link1.blockA.x, link1.blockA.y);
-            var endCellLocation1 = convertBlockPosToGridPos(link1.blockB.x, link1.blockB.y);
+            var block1A = blockWithID(link1.blockA, globalStates.currentLogic);
+            var block1B = blockWithID(link1.blockB, globalStates.currentLogic);
+            var block2A = blockWithID(link2.blockA, globalStates.currentLogic);
+            var block2B = blockWithID(link2.blockB, globalStates.currentLogic);
 
-            var startCellLocation2 = convertBlockPosToGridPos(link2.blockA.x, link2.blockA.y);
-            var endCellLocation2 = convertBlockPosToGridPos(link2.blockB.x, link2.blockB.y);
+            var startCellLocation1 = convertBlockPosToGridPos(block1A.x, block1A.y);
+            var endCellLocation1 = convertBlockPosToGridPos(block1B.x, block1B.y);
+
+            var startCellLocation2 = convertBlockPosToGridPos(block2A.x, block2A.y);
+            var endCellLocation2 = convertBlockPosToGridPos(block2B.x, block2B.y);
 
             // special case if link stays in same column as the start block
             var dCol1 = endCellLocation1.col - startCellLocation1.col;
@@ -847,6 +857,23 @@ function addBlockLink(blockA, blockB, itemA, itemB, addToLogic) {
             var linkKey = "blockLink" + uuidTime();
             if (!doesLinkAlreadyExist(blockLink)) {
                 globalStates.currentLogic.links[linkKey] = blockLink;
+
+                //if (!isInOutLink(blockLink)) {
+                //    for (var key in objects) {
+                //        var object = objects[key];
+                //        for (var logicKey in object.logic) {
+                //            if (object.logic[logicKey] === globalStates.currentLogic) {
+                //                uploadNewBlockLink(objects[key].ip, key, logicKey, linkKey, blockLink);
+                //            }
+                //        }
+                //    }
+                //}
+
+                if (shouldUploadBlockLink(blockLink)) {
+                    var keys = getServerObjectLogicKeys(globalStates.currentLogic);
+                    uploadNewBlockLink(keys.ip, keys.objectKey, keys.logicKey, linkKey, blockLink);
+                }
+
                 return blockLink;
             }
         } else {
@@ -856,8 +883,12 @@ function addBlockLink(blockA, blockB, itemA, itemB, addToLogic) {
     return null;
 }
 
+function blockWithID(globalID, logic) {
+    return logic.blocks[globalID];
+}
+
 // TODO: populate all constructor values using fields from blockJSON
-function addBlock(x,y,blockJSON,globalId) {
+function addBlock(x,y,blockJSON,globalId,isEdgeBlock) {
     var block = new Block();
 
     block.name = blockJSON.name;
@@ -874,11 +905,31 @@ function addBlock(x,y,blockJSON,globalId) {
     block.nameOutput = blockJSON.nameOutput;
     block.iconImage = null; //TODO: implement this!!
     block.text = block.name; //TODO: should this be different?
+    if (isEdgeBlock) block.isPortBlock = true;
     
     globalStates.currentLogic.blocks[block.globalId] = block;
 
     if (block.y === 0 || block.y === 3) {
         updateInOutLinks(globalId);        
+    }
+
+    // TODO: figure out how to not need to upload edgeBlocks - can they be eliminated entirely?
+    // or given a fixed name scheme that allows them to be regenerated when needed...
+    // seems redundant to have both edgeBlocks and in0-out3
+    //if (!isInOutBlock(block.globalId) && !isPortBlock(block)) {
+    //    for (var key in objects) {
+    //        var object = objects[key];
+    //        for (var logicKey in object.logic) {
+    //            if (object.logic[logicKey] === globalStates.currentLogic) {
+    //                uploadNewBlock(objects[key].ip, key, logicKey, block.globalId, block);
+    //            }
+    //        }
+    //    }
+    //}
+
+    if (shouldUploadBlock(block)) {
+        var keys = getServerObjectLogicKeys(globalStates.currentLogic);
+        uploadNewBlock(keys.ip, keys.objectKey, keys.logicKey, block.globalId, block);
     }
 
     return block;
@@ -900,15 +951,15 @@ function updateInOutLinks(addedBlockId) {
             if (!globalStates.currentLogic.links.hasOwnProperty(key)) continue;
 
             var link = globalStates.currentLogic.links[key];
-            if (link.blockA.globalId === inOutName || link.blockB.globalId === inOutName) {
+            if (link.blockA === inOutName || link.blockB === inOutName) {
                 removeBlockLink(key);
             }
         }
 
         if (addedBlock.y === 0) {
-            addBlockLink(globalStates.currentLogic.blocks[inOutName], addedBlock, 0, i, true);
+            addBlockLink(inOutName, addedBlock.globalId, 0, i, true);
         } else {
-            addBlockLink(addedBlock, globalStates.currentLogic.blocks[inOutName], i, 0, true);
+            addBlockLink(addedBlock.globalId, inOutName, i, 0, true);
         }
 
     }
@@ -918,9 +969,9 @@ function isInOutLink(link) {
     return (isInOutBlock(link.blockA) || isInOutBlock(link.blockB));
 }
 
-function isInOutBlock(block) {
+function isInOutBlock(blockID) {
     var re = /^(in|out)\d$/;
-    return re.test(block.globalId);
+    return re.test(blockID);
 }
 
 function forEachLink(action) {
@@ -948,27 +999,35 @@ function setTempLink(newTempLink) {
 }
 
 function removeBlockLink(linkKey) {
+    if (shouldUploadBlockLink(globalStates.currentLogic.links[linkKey])) {
+        var keys = getServerObjectLogicKeys(globalStates.currentLogic);
+        deleteBlockLinkFromObject(keys.ip, keys.objectKey, keys.logicKey, linkKey);
+    }
     delete globalStates.currentLogic.links[linkKey];
 }
 
-function removeBlock(logic, block) {
-    removeLinksForBlock(logic, block);
-    var domElement = logic.guiState.blockDomElements[block.globalId];
+function removeBlock(logic, blockID) {
+    removeLinksForBlock(logic, blockID);
+    var domElement = logic.guiState.blockDomElements[blockID];
     if (domElement) {
         domElement.parentNode.removeChild(domElement);
     }
-    delete logic.guiState.blockDomElements[block.globalId];
-    for (var blockKey in logic.blocks) {
-        if (logic.blocks[blockKey] === block) {
-            delete logic.blocks[blockKey];
-        }
+    if (shouldUploadBlock(logic.blocks[blockID])) {
+        var keys = getServerObjectLogicKeys(logic);
+        deleteBlockFromObject(keys.ip, keys.objectKey, keys.logicKey, blockID);
     }
+    delete logic.guiState.blockDomElements[blockID];
+    delete logic.blocks[blockID];
 }
 
-function removeLinksForBlock(logic, block) {
+function removeLinksForBlock(logic, blockID) {
     for (var linkKey in logic.links) {
         var link = logic.links[linkKey];
-        if (link.blockA === block || link.blockB === block) {
+        if (link.blockA === blockID || link.blockB === blockID) {
+            if (shouldUploadBlockLink(link)) {
+                var keys = getServerObjectLogicKeys(logic);
+                deleteBlockLinkFromObject(keys.ip, keys.objectKey, keys.logicKey, linkKey);
+            }
             delete logic.links[linkKey];
         }
     }

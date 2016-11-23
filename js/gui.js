@@ -800,8 +800,7 @@ function initLogicInOutBlocks() {
             var activeOutputs = (y === -1) ? [true, false, false, false] : [false, false, false, false];
             var blockJSON = toBlockJSON(name, 1, {}, {}, activeInputs, activeOutputs, ["","","",""], ["","","",""]);
             var globalId = name;
-            var block = addBlock(x, y, blockJSON, globalId);
-            block.isPortBlock = true;
+            var block = addBlock(x, y, blockJSON, globalId, true);
         }
     }
 }
@@ -819,46 +818,74 @@ function toBlockJSON(name, width, privateData, publicData, activeInputs, activeO
     };
 }
 
-function toLogicJSON(logic) {
-    // can't just run JSON.stringify(logic) because logic has a cyclic object value in links and grid
-    // http://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
+function convertBlockLinkToServerFormat(blockLink) {
+    var serverLink = {};
 
-    console.log(logic);
+    var keysToSkip = ["route"]; //, "blockA", "blockB"
+    for (var key in blockLink) {
+        if (!blockLink.hasOwnProperty(key)) continue;
+        if (keysToSkip.indexOf(key) > -1) continue;
+        serverLink[key] = blockLink[key];
+    }
+
+    serverLink["route"] = null;
+    //serverLink["blockA"] = blockLink.blockA.globalId;
+    //serverLink["blockB"] = blockLink.blockB.globalId;
+
+    return serverLink;
+}
+
+function convertLogicToServerFormat(logic) {
+
+    //console.log(logic);
 
     var logicServer = {};
 
-    var keysToSkip = ["guiState", "grid", "links", "blocks"];
+    var keysToSkip = ["guiState", "grid", "blocks"]; //"links",
     for (var key in logic) {
         if (!logic.hasOwnProperty(key)) continue;
         if (keysToSkip.indexOf(key) > -1) continue;
         logicServer[key] = logic[key];
     }
 
+    // VERY IMPORTANT: otherwise the node will think it's already loaded
+    // and won't load from the server next time you open the app
+    logicServer["loaded"] = false;
+    logicServer["visible"] = false;
+
     // add specific metadata to reconstruct blocks and links
 
-    logicServer["blockData"] = {};
+    logicServer["blocks"] = {};
     for (var key in logic.blocks) {
         if (!logic.blocks.hasOwnProperty(key)) continue;
-
-        var re = /^(in|out)\d$/;
-        var isInOutBlock = re.test(key);
-        if (!isInOutBlock) {
+        //var re = /^(in|out)\d$/; // or  /^out(0|1|2|3)$/
+        //var isInOutBlock = re.test(key);
+        if (!isInOutBlock(key)) {
             logicServer.blockData[key] = logic.blocks[key];
         }
     }
 
-    logicServer["linkData"] = {};
-    for (var key in logic.links) {
-        if (!logic.links.hasOwnProperty(key)) continue;
+    //logicServer["links"] = {};
+    //for (var key in logic.links) {
+    //    if (!logic.links.hasOwnProperty(key)) continue;
+    //
+    //    var link = logic.links[key];
+    //    logicServer.linkData[key] = {
+    //        blockA: link.blockA.globalId,
+    //        blockB: link.blockB.globalId,
+    //        itemA: link.itemA,
+    //        itemB: link.itemB
+    //    }
+    //}
 
-        var link = logic.links[key];
-        logicServer.linkData[key] = {
-            blockAID: link.blockA.globalId,
-            blockBID: link.blockB.globalId,
-            itemA: link.itemA,
-            itemB: link.itemB
-        }
-    }
+    return logicServer;
+}
+
+function toLogicJSON(logic) {
+    // can't just run JSON.stringify(logic) because logic has a cyclic object value in links and grid
+    // http://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
+
+    var logicServer = convertLogicToServerFormat(logic);
 
     return JSON.stringify(logicServer);
 }
@@ -869,7 +896,7 @@ function parseJSONToLogic(logicJSON) {
 
     var logic = new Logic();
     globalStates.currentLogic = logic;
-    var keysToSkip = ["linkData", "blockData"];
+    var keysToSkip = ["blocks"]; //"links",
     for (var key in logicServer) {
         if (!logicServer.hasOwnProperty(key)) continue;
         if (keysToSkip.indexOf(key) > -1) continue;
@@ -880,22 +907,22 @@ function parseJSONToLogic(logicJSON) {
 
     // recreate links and blocks
 
-    for (var key in logicServer.blockData) {
-        if (!logicServer.blockData.hasOwnProperty(key)) continue;
+    for (var key in logicServer.blocks) {
+        if (!logicServer.blocks.hasOwnProperty(key)) continue;
 
-        logic.blocks[key] = logicServer.blockData[key];
+        logic.blocks[key] = logicServer.blocks[key];
     }
     // then add in/out blocks
-    initLogicInOutBlocks()
+    initLogicInOutBlocks();
 
-    for (var key in logicServer.linkData) {
-        if (!logicServer.linkData.hasOwnProperty(key)) continue;
-
-        var linkData = logicServer.linkData[key];
-        var blockA = logic.blocks[linkData.blockAID];
-        var blockB = logic.blocks[linkData.blockBID];
-        addBlockLink(blockA, blockB, linkData.itemA, linkData.itemB, true);
-    }
+    //for (var key in logicServer.links) {
+    //    if (!logicServer.links.hasOwnProperty(key)) continue;
+    //
+    //    var links = logicServer.links[key];
+    //    var blockA = logic.blocks[links.blockA];
+    //    var blockB = logic.blocks[links.blockB];
+    //    addBlockLink(blockA, blockB, links.itemA, links.itemB, true);
+    //}
 
     // update the grid to calculate routes for any links added
     updateGrid(logic.grid);
@@ -949,10 +976,19 @@ function initializeBlockMenu(callback) {
         menuSideContainer.appendChild(menuTab);
     }
 
+    menuLoadBlocksNew( function(blockData) {
+        console.log("menuLoadBlocksNew callback", blockData);
+        for (var key in blockData) {
+            if (!blockData.hasOwnProperty(key)) continue;
+            var block = blockData[key];
+
+        }
+    });
+
     menuLoadBlocks( function(blockData) {
         for (var i = 0; i < menuNumTabs; i++) {
             logic.guiState.menuBlockData[i] = blockData[i];
-        }  
+        }
         for (var r = 0; r < menuRows; r++) {
             var row = document.createElement('div');
             menuBlockContainer.appendChild(row);
@@ -1003,6 +1039,17 @@ function readTextFile(file, callback) {
         }
     }
     rawFile.send(null);
+}
+
+function menuLoadBlocksNew(callback) {
+    console.log("should get available blocks");
+    var keys = getServerObjectLogicKeys(globalStates.currentLogic);
+    getData('http://' + keys.ip + ':' + httpPort + '/availableLogicBlocks', keys.objectKey, function (req, thisKey) {
+        console.log("did get available blocks");
+        console.log(req);
+        console.log(thisKey);
+        callback(req);
+    });
 }
 
 // TODO: how to load json file and html page from local directory without using XHR request?

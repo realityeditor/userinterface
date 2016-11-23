@@ -237,4 +237,4 @@ var overlayDiv;
 var activeBlockColor = "#E6E6E6"; // added blocks are grey
 var movingBlockColor = "#FFFFFF"; // blocks turn white when you start to drag them
 
-var DEBUG_DATACRAFTING = true; // when TRUE -> shows crafting board just by tapping on first menu item (DEBUG mode)
+var DEBUG_DATACRAFTING = false; // when TRUE -> shows crafting board just by tapping on first menu item (DEBUG mode)

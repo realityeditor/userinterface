@@ -182,6 +182,12 @@ function Logic() {
     this.scale = 0.5;
     // Unconstrained positioning in 3D space
     this.matrix = [];
+
+    // Used internally from the reality editor to indicate if an object should be rendered or not.
+    this.visible = false;
+    // Used internally from the reality editor to indicate the editing status.
+    this.visibleEditing = false;
+
     // if showLastSettingFirst is true then lastSetting is the name of the last block that was moved or set.
     this.lastSetting = false;
 
