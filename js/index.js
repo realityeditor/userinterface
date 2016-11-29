@@ -104,6 +104,11 @@ function addHeartbeatObject(beat) {
                         }
                         thisObject.loaded = false;
                         thisObject.visible = false;
+
+                        if(thisObject.appearance === "logic"){
+                            objects[thisKey].logic[nodeKey] = thisObject;
+                            delete objects[thisKey].nodes[nodeKey]
+                        }
                     }
 
                     for (var nodeKey in objects[thisKey].logic) {

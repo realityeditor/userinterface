@@ -92,7 +92,7 @@ function deleteLines(x21, y21, x22, y22) {
                 delete thisObject.links[subKeysome];
                 cout("iam executing link deletion");
                 //todo this is a work around to not crash the server. only temporarly for testing
-                if(l.logicA === false && l.logicB === false)
+               // if(l.logicA === false && l.logicB === false)
                 deleteLinkFromObject(thisObject.ip, keysome, subKeysome);
             }
         }

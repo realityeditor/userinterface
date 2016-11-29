@@ -155,7 +155,7 @@ function Node() {
     // defines the nodeInterface that is used to process data of this type. It also defines the visual representation
     // in the Reality Editor. Such data points interfaces can be found in the nodeInterface folder.
     // todo appearance should be removed eventually as there is only one kind of appearance
-    this.appearance = "logicNode";
+    this.appearance = "logic";
     // todo implement src
     this.src = "";
     // defines the origin Hardware interface of the IO Point. For example if this is arduinoYun the Server associates
@@ -207,7 +207,7 @@ function Logic() {
      [[null, 0], [null, 0], [null, 0], [null, 0]]
      ];*/
 
-    this.appearance = "logicNode";
+    this.appearance = "logic";
 
     this.links = {};
     this.blocks = {};

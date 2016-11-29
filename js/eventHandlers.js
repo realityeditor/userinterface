@@ -150,9 +150,9 @@ function trueTouchUp() {
 
                 // push new connection to objectA
                 //todo this is a work around to not crash the server. only temporarly for testing
-                if(globalProgram.logicA === false && globalProgram.logicB === false) {
+              //  if(globalProgram.logicA === false && globalProgram.logicB === false) {
                     uploadNewLink(thisTempObject.ip, globalProgram.objectA, thisKeyId, thisTempObjectLinks[thisKeyId]);
-                }
+              //  }
             }
 
             // set everything back to false
