@@ -47,15 +47,16 @@ MemoryContainer.prototype.set = function(obj) {
     };
     this.element.dataset.objectId = this.memory.id;
 
-    var cachedImage = imageCache[thumbnail];
-    if (cachedImage && !cachedImage.parentNode && cachedImage.src === thumbnail) {
-        this.image = cachedImage;
-        this.createImage();
-    }
 
     if (!this.image) {
-        this.createImage();
-        this.image.src = thumbnail;
+        var cachedImage = imageCache[thumbnail];
+        if (cachedImage && !cachedImage.parentNode && cachedImage.src === thumbnail) {
+            this.image = cachedImage;
+            this.createImage();
+        } else {
+            this.createImage();
+            this.image.src = thumbnail;
+        }
     }
 
     imageCache[thumbnail] = this.image;
@@ -143,12 +144,10 @@ MemoryContainer.prototype.stopDragging = function() {
 
     var imageRect = this.image.getBoundingClientRect();
 
-    if (this.image) {
-        this.image.style.transform = '';
-        this.image.classList.remove('memoryDragging');
-        this.image.parentNode.removeChild(this.image);
-        this.element.appendChild(this.image);
-    }
+    this.image.style.transform = '';
+    this.image.classList.remove('memoryDragging');
+    this.image.parentNode.removeChild(this.image);
+    this.element.appendChild(this.image);
 
     if (isBar) {
         var rightMostContainer = barContainers[barContainers.length - 1];
@@ -282,12 +281,15 @@ MemoryContainer.prototype.createImage = function() {
     if (!this.image) {
         this.image = document.createElement('img');
     }
+    if (!this.image.parentNode) {
+        this.element.appendChild(this.image);
+    }
+    this.image.setAttribute('touch-action', 'none');
     this.image.classList.add('memory');
     this.image.addEventListener('touchstart', this.onTouchStart);
     this.image.addEventListener('touchmove', this.onTouchMove);
     this.image.addEventListener('touchend', this.onTouchEnd);
 
-    this.element.appendChild(this.image);
 };
 
 
