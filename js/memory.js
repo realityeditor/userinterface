@@ -70,10 +70,11 @@ MemoryContainer.prototype.clear = function() {
 };
 
 MemoryContainer.prototype.removeImage = function() {
-    this.image.parentNode.removeChild(this.image);
     this.image.removeEventListener('touchstart', this.onTouchStart);
     this.image.removeEventListener('touchmove', this.onTouchMove);
     this.image.removeEventListener('touchend', this.onTouchEnd);
+    this.image.removeEventListener('pointerenter', this.onPointerEnter);
+    this.image.parentNode.removeChild(this.image);
     this.image = null;
 };
 
@@ -289,6 +290,7 @@ MemoryContainer.prototype.createImage = function() {
     this.image.addEventListener('touchstart', this.onTouchStart);
     this.image.addEventListener('touchmove', this.onTouchMove);
     this.image.addEventListener('touchend', this.onTouchEnd);
+    this.image.addEventListener('pointerenter', this.onPointerEnter);
 
 };
 
