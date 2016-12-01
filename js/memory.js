@@ -34,6 +34,7 @@ MemoryContainer.prototype.set = function(obj) {
 
     this.backgroundImage = document.createElement('img');
     this.backgroundImage.classList.add('memoryBackgroundImage');
+    this.backgroundImage.setAttribute('touch-action', 'none');
     this.backgroundImage.src = image;
 
     var thumbnail = urlBase + 'memoryThumbnail.jpg';
