@@ -351,7 +351,7 @@ function receiveThumbnail(thumbnailUrl) {
 }
 
 function addObjectMemory(obj) {
-    if (!obj.memory || Object.keys(obj.memory) === 0) {
+    if (!obj.memory || Object.keys(obj.memory).length === 0) {
         return;
     }
 
