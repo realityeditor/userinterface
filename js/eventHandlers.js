@@ -59,7 +59,12 @@ function touchDown(evt) {
             if (!globalProgram.objectA) {
                 globalProgram.objectA = this.objectId;
                 globalProgram.nodeA = this.nodeId;
-               // if(this.kind === "logic")
+
+                if(objects[this.objectId].nodes[this.nodeId].type === "logic"){
+                    globalProgram.logicA = 0;
+                }
+
+               // if(this.type === "logic")
                  //   globalProgram.logicA = globalProgram.logicSelector;
             }
         }
@@ -83,6 +88,7 @@ function falseTouchUp() {
         globalProgram.objectA = false;
         globalProgram.nodeA = false;
         globalProgram.logicA = false;
+        globalProgram.logicSelector = 4;
     }
     globalCanvas.hasContent = true;
     cout("falseTouchUp");
@@ -99,7 +105,7 @@ function trueTouchUp() {
     if (globalStates.guiState ==="node") {
         if (globalProgram.objectA) {
 
-            if(this.nodeId === globalProgram.nodeA && this.kind === "logic"){
+            if(this.nodeId === globalProgram.nodeA && this.type === "logic"){
                 craftingBoardVisible(this.objectId, this.nodeId);
             }
 
@@ -108,7 +114,7 @@ function trueTouchUp() {
 
             globalProgram.objectB = this.objectId;
             globalProgram.nodeB = this.nodeId;
-          //  if(this.kind === "logic")
+          //  if(this.type === "logic")
             //    globalProgram.logicB = globalProgram.logicSelector;
 
             var thisOtherTempObject = objects[globalProgram.objectB];
@@ -123,13 +129,29 @@ function trueTouchUp() {
                 var namesA, namesB;
 
                     if(globalProgram.logicA !== false){
-                        namesA = "";
+
+                        var color;
+
+                        if(globalProgram.logicA === 0) color = "BLUE";
+                        if(globalProgram.logicA === 1) color = "GREEN";
+                        if(globalProgram.logicA === 2) color = "YELLOW";
+                        if(globalProgram.logicA === 3) color = "RED";
+
+                        namesA = [thisTempObject.name, thisTempObject.nodes[globalProgram.nodeA].name +":"+color];
                     } else {
                         namesA =  [thisTempObject.name, thisTempObject.nodes[globalProgram.nodeA].name];
                     }
 
                     if(globalProgram.logicB !== false){
-                        namesB = "";
+
+                        var color;
+
+                        if(globalProgram.logicB === 0) color = "BLUE";
+                        if(globalProgram.logicB === 1) color = "GREEN";
+                        if(globalProgram.logicB === 2) color = "YELLOW";
+                        if(globalProgram.logicB === 3) color = "RED";
+
+                        namesB = [thisOtherTempObject.name, thisOtherTempObject.nodes[globalProgram.nodeB].name +":"+color];
                     } else {
                         namesB =  [thisOtherTempObject.name, thisOtherTempObject.nodes[globalProgram.nodeB].name];
                     }
@@ -162,6 +184,7 @@ function trueTouchUp() {
             globalProgram.objectB = false;
             globalProgram.nodeB = false;
             globalProgram.logicB = false;
+            globalProgram.logicSelector = 4;
         }
     }
     globalCanvas.hasContent = true;
@@ -205,6 +228,9 @@ function touchEnter () {
 
 
 function touchLeave () {
+
+        globalProgram.logicSelector = 4;
+
         globalSVGCach["overlayImgRing"].setAttribute("r", "30");
         globalSVGCach["overlayImgRing"].setAttribute("stroke", '#00ffff');
 
@@ -266,10 +292,10 @@ function getPossition(evt) {
 function setPocketPossition (evt){
 
 
-    if(pocketItem.pocket.logic[pocketItemId]){
+    if(pocketItem.pocket.nodes[pocketItemId]){
 
 
-        var thisItem = pocketItem.pocket.logic[pocketItemId];
+        var thisItem = pocketItem.pocket.nodes[pocketItemId];
 
         if(globalLogic.farFrontElement==="") {
             thisItem.x = evt.clientX - (globalStates.height / 2);
@@ -318,7 +344,7 @@ function documentPointerUp(evt) {
     if (globalStates.pocketButtonDown) {
         pocketItem.pocket.objectVisible = false;
 
-        if (pocketItem.pocket.logic[pocketItemId]) {
+        if (pocketItem.pocket.nodes[pocketItemId]) {
 
             globalLogic.farFrontElement = "";
             globalLogic.frontDepth = 10000000000;
@@ -330,18 +356,27 @@ function documentPointerUp(evt) {
                 }
             }
 
-            var thisItem = pocketItem.pocket.logic[pocketItemId];
+            var thisItem = pocketItem.pocket.nodes[pocketItemId];
 
             if (globalLogic.farFrontElement !== "" && thisItem.screenZ !== 2 && thisItem.screenZ) {
-                objects[globalLogic.farFrontElement].logic[pocketItemId] = thisItem;
+
+                var logicCount = 0;
+                for(var key in objects[globalLogic.farFrontElement].nodes) {
+                    if(objects[globalLogic.farFrontElement].nodes[key].type === "logic"){
+                      logicCount++;
+                    }
+                }
+                thisItem.name = "LOGIC"+logicCount;
+
+                objects[globalLogic.farFrontElement].nodes[pocketItemId] = thisItem;
 
                 globalDOMCach[pocketItemId].objectId = globalLogic.farFrontElement;
 
                 uploadNewLogicNode(objects[globalLogic.farFrontElement].ip, globalLogic.farFrontElement, pocketItemId, thisItem);
 
             }
-            hideTransformed("pocket", pocketItemId, pocketItem.pocket.logic[pocketItemId], "logic");
-            delete pocketItem.pocket.logic[pocketItemId];
+            hideTransformed("pocket", pocketItemId, pocketItem.pocket.nodes[pocketItemId], "logic");
+            delete pocketItem.pocket.nodes[pocketItemId];
         }
     }
 
@@ -391,10 +426,10 @@ function documentPointerDown(evt) {
     pocketItemId = uuidTime();
 
 
-  pocketItem.pocket.logic[pocketItemId] = new Logic();
+  pocketItem.pocket.nodes[pocketItemId] = new Logic();
 
 
-    var thisItem = pocketItem.pocket.logic[pocketItemId];
+    var thisItem = pocketItem.pocket.nodes[pocketItemId];
 
 
     if(globalLogic.farFrontElement==="") {
@@ -420,7 +455,7 @@ function documentPointerDown(evt) {
     thisObject.loaded = false;
     thisObject.integerVersion = 170;
         thisObject.matrix = [];
-       // thisObject.logic = {};
+       // thisObject.nodes = {};
         thisObject.protocol = "R1";
 
 
@@ -431,7 +466,7 @@ function documentPointerDown(evt) {
     thisObject.visibleCounter = timeForContentLoaded;
     thisObject.objectVisible = true;
 
-    //addElement("pocket", pocketItemId, "nodes/" + thisItem.appearance + "/index.html",  pocketItem.pocket, "logic",globalStates);
+    //addElement("pocket", pocketItemId, "nodes/" + thisItem.type + "/index.html",  pocketItem.pocket, "logic",globalStates);
 
 
 */
@@ -451,7 +486,7 @@ function MultiTouchStart(evt) {
         console.log("--------------------------------"+this.objectId);
         globalStates.editingModeObject = this.objectId;
         globalStates.editingModeLocation = this.nodeId;
-        globalStates.editingModeKind = this.kind;
+        globalStates.editingModeKind = this.type;
         globalStates.editingModeHaveObject = true;
     }
     globalMatrix.matrixtouchOn = this.nodeId;
@@ -479,10 +514,8 @@ function MultiTouchMove(evt) {
 
         var tempThisObject = {};
         if (globalStates.editingModeObject !== globalStates.editingModeLocation) {
-            if(globalStates.editingModeKind=== "node")
+
             tempThisObject = objects[globalStates.editingModeObject].nodes[globalStates.editingModeLocation];
-            if(globalStates.editingModeKind=== "logic")
-              tempThisObject = objects[globalStates.editingModeObject].logic[globalStates.editingModeLocation];
            // console.log(objects[globalStates.editingModeObject]);
         } else {
             tempThisObject = objects[globalStates.editingModeObject];
@@ -521,10 +554,7 @@ function MultiTouchEnd(evt) {
         var tempThisObject = {};
         if (globalStates.editingModeObject != globalStates.editingModeLocation) {
 
-            if(globalStates.editingModeKind=== "node")
                 tempThisObject = objects[globalStates.editingModeObject].nodes[globalStates.editingModeLocation];
-            if(globalStates.editingModeKind=== "logic")
-                tempThisObject = objects[globalStates.editingModeObject].logic[globalStates.editingModeLocation];
 
         } else {
             tempThisObject = objects[globalStates.editingModeObject];
@@ -541,7 +571,7 @@ function MultiTouchEnd(evt) {
 
         }
 
-        // todo for now we just send nodes but no logic locations.
+        // todo for now we just send nodes but no logic locations. ---- Became obsolete because the logic nodes are now normal nodes
       //  if(globalStates.editingModeKind=== "node") {
             if (typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
                 postData('http://' + objects[globalStates.editingModeObject].ip + ':' + httpPort + '/object/' + globalStates.editingModeObject + "/size/" + globalStates.editingModeLocation, content);
@@ -872,27 +902,6 @@ function addEventHandlers() {
                     //}
                 }
             }
-
-            for (var thisSubKey in generalObject2.logic) {
-                if (document.getElementById(thisSubKey)) {
-                    var thisObject2 = document.getElementById(thisSubKey);
-
-                    //thisObject2.className = "mainProgram";
-
-                    var thisObject5 = document.getElementById("canvas" + thisSubKey);
-                    thisObject5.style.display = "inline";
-
-                    //if(thisObject.developer) {
-                    thisObject2.addEventListener("touchstart", MultiTouchStart, false);
-                    ec++;
-                    thisObject2.addEventListener("touchmove", MultiTouchMove, false);
-                    ec++;
-                    thisObject2.addEventListener("touchend", MultiTouchEnd, false);
-                    ec++;
-                    //}
-                }
-            }
-
         }
     }
 
@@ -945,24 +954,6 @@ function removeEventHandlers() {
                     //  }
                 }
             }
-
-            for (var thisSubKey in generalObject2.logic) {
-                if (document.getElementById(thisSubKey)) {
-                    var thisObject2 = document.getElementById(thisSubKey);
-                    //thisObject2.className = "mainEditing";
-                    document.getElementById("canvas" + thisSubKey).style.display = "none";
-
-                    //    if(thisObject.developer) {
-                    thisObject2.removeEventListener("touchstart", MultiTouchStart, false);
-                    thisObject2.removeEventListener("touchmove", MultiTouchMove, false);
-                    thisObject2.removeEventListener("touchend", MultiTouchEnd, false);
-                    ec--;
-                    ec--;
-                    ec--;
-                    //  }
-                }
-            }
-
         }
     }
 

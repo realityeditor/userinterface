@@ -117,6 +117,9 @@ function GUI() {
 
     document.getElementById("guiButtonImage1").addEventListener("touchend", function () {
         if (!globalStates.UIOffMode)      document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
+
+        globalStates.guiState = "ui";
+
         if (globalStates.guiState !== "logic") {
             if (DEBUG_DATACRAFTING) {
                 craftingBoardVisible(); // TODO: BEN DEBUG - revert to previous line
@@ -221,19 +224,8 @@ function GUI() {
                    // tempResetValue.y = randomIntInc(0, 200) - 100;
                     tempResetValue.scale = 1;
 
-                    sendResetContent(key, subKey, "node");
+                    sendResetContent(key, subKey, tempResetValue.type);
                 }
-
-
-
-            for (var subKey in tempResetObject.logic) {
-                var tempResetValue = tempResetObject.logic[subKey];
-
-                    tempResetValue.matrix = [];
-
-                    sendResetContent(key, subKey, "logic");
-                }
-
             }
 
         }
@@ -247,16 +239,17 @@ function GUI() {
      * @param node
      **/
 
-    function sendResetContent(object, node, kind) {
+    function sendResetContent(object, node, type) {
 // generate action for all links to be reloaded after upload
 
         var tempThisObject = {};
-        if (kind === "node") {
+        if (type === "node") {
             tempThisObject = objects[object].nodes[node];
-        } else if(kind === "logic"){
-            // This needs to be filled once the UI is cleared
+        } else if(type === "logic"){
+            // todo might result in error??
+            tempThisObject = objects[object].nodes[node];
         }
-        else if (kind === "ui"){
+        else if (type === "ui"){
             tempThisObject = objects[object];
         }
         var content = {};
@@ -442,12 +435,12 @@ function GUI() {
         // this is where the virtual point disapears!
 
 
-        if (pocketItem.pocket.logic[pocketItemId]) {
+        if (pocketItem.pocket.nodes[pocketItemId]) {
             pocketItem.pocket.objectVisible = false;
 
 
-                hideTransformed("pocket", pocketItemId, pocketItem.pocket.logic[pocketItemId], "logic");
-                delete pocketItem.pocket.logic[pocketItemId];
+                hideTransformed("pocket", pocketItemId, pocketItem.pocket.nodes[pocketItemId], "logic");
+                delete pocketItem.pocket.nodes[pocketItemId];
             }
 
 
@@ -474,9 +467,9 @@ function GUI() {
 
             pocketItemId = uuidTime();
             console.log(pocketItemId);
-            pocketItem.pocket.logic[pocketItemId] = new Logic();
+            pocketItem.pocket.nodes[pocketItemId] = new Logic();
 
-            var thisItem = pocketItem.pocket.logic[pocketItemId];
+            var thisItem = pocketItem.pocket.nodes[pocketItemId];
 
             thisItem.x = globalStates.pointerPosition[0] - (globalStates.height / 2);
             thisItem.y = globalStates.pointerPosition[1] - (globalStates.width / 2);
@@ -499,13 +492,13 @@ function GUI() {
             thisObject.loaded = false;
             thisObject.integerVersion = 170;
             thisObject.matrix = [];
-            // thisObject.logic = {};
+            // thisObject.nodes = {};
             thisObject.protocol = "R1";
 
            //
             //thisObject.visibleCounter = timeForContentLoaded;
 
-            //addElement("pocket", pocketItemId, "nodes/" + thisItem.appearance + "/index.html",  pocketItem.pocket, "logic",globalStates);
+            //addElement("pocket", pocketItemId, "nodes/" + thisItem.type + "/index.html",  pocketItem.pocket, "logic",globalStates);
 
         }
         setPocketPossition(evt);
@@ -627,7 +620,7 @@ function craftingBoardVisible(objectKey, nodeKey) {
         var logic = new Logic();
         initializeDatacraftingGrid(logic); 
     } else {
-        var nodeLogic = objects[objectKey].logic[nodeKey];
+        var nodeLogic = objects[objectKey].nodes[nodeKey];
         initializeDatacraftingGrid(nodeLogic);
     }
 }
@@ -821,7 +814,7 @@ function toBlockJSON(name, width, privateData, publicData, activeInputs, activeO
 function convertBlockLinkToServerFormat(blockLink) {
     var serverLink = {};
 
-    var keysToSkip = ["route"]; //, "blockA", "blockB"
+    var keysToSkip = ["route"]; //, "nodeA", "nodeB"
     for (var key in blockLink) {
         if (!blockLink.hasOwnProperty(key)) continue;
         if (keysToSkip.indexOf(key) > -1) continue;
@@ -829,8 +822,8 @@ function convertBlockLinkToServerFormat(blockLink) {
     }
 
     serverLink["route"] = null;
-    //serverLink["blockA"] = blockLink.blockA.globalId;
-    //serverLink["blockB"] = blockLink.blockB.globalId;
+    //serverLink["nodeA"] = blockLink.nodeA.globalId;
+    //serverLink["nodeB"] = blockLink.nodeB.globalId;
 
     return serverLink;
 }
@@ -871,10 +864,10 @@ function convertLogicToServerFormat(logic) {
     //
     //    var link = logic.links[key];
     //    logicServer.linkData[key] = {
-    //        blockA: link.blockA.globalId,
-    //        blockB: link.blockB.globalId,
-    //        itemA: link.itemA,
-    //        itemB: link.itemB
+    //        nodeA: link.nodeA.globalId,
+    //        nodeB: link.nodeB.globalId,
+    //        logicA: link.logicA,
+    //        logicB: link.logicB
     //    }
     //}
 
@@ -919,9 +912,9 @@ function parseJSONToLogic(logicJSON) {
     //    if (!logicServer.links.hasOwnProperty(key)) continue;
     //
     //    var links = logicServer.links[key];
-    //    var blockA = logic.blocks[links.blockA];
-    //    var blockB = logic.blocks[links.blockB];
-    //    addBlockLink(blockA, blockB, links.itemA, links.itemB, true);
+    //    var nodeA = logic.blocks[links.nodeA];
+    //    var nodeB = logic.blocks[links.nodeB];
+    //    addBlockLink(nodeA, nodeB, links.logicA, links.itemB, true);
     //}
 
     // update the grid to calculate routes for any links added

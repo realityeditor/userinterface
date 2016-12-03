@@ -274,7 +274,7 @@ Grid.prototype.getCellCenterY = function(cell) {
     }
 };
 
-// utility - gets x position for a column 
+// utility - gets x position for a column
 Grid.prototype.getColumnCenterX = function(col) {
     return this.getCellCenterX(this.getCell(col,0));
 };
@@ -394,11 +394,11 @@ Grid.prototype.recalculateAllRoutes = function() {
 // and sets the route of the link to contain the corner points and all the cells between
 Grid.prototype.calculateLinkRoute = function(link) {
 
-    var blockA = blockWithID(link.blockA, globalStates.currentLogic);
-    var blockB = blockWithID(link.blockB, globalStates.currentLogic);
+    var nodeA = blockWithID(link.nodeA, globalStates.currentLogic);
+    var nodeB = blockWithID(link.nodeB, globalStates.currentLogic);
 
-    var startLocation = convertBlockPosToGridPos(blockA.x + link.itemA, blockA.y);
-    var endLocation = convertBlockPosToGridPos(blockB.x + link.itemB, blockB.y);
+    var startLocation = convertBlockPosToGridPos(nodeA.x + link.logicA, nodeA.y);
+    var endLocation = convertBlockPosToGridPos(nodeB.x + link.logicB, nodeB.y);
     var route = new Route([startLocation]);
 
     // by default lines loop around the right of blocks, except for last column or if destination is to left of start
@@ -534,10 +534,10 @@ Grid.prototype.determineMaxOverlaps = function() {
             var horizontalOrder = p1.horizontal - p2.horizontal;
             var verticalOrder = p1.vertical - p2.vertical;
 
-            var block1A = blockWithID(link1.blockA, globalStates.currentLogic);
-            var block1B = blockWithID(link1.blockB, globalStates.currentLogic);
-            var block2A = blockWithID(link2.blockA, globalStates.currentLogic);
-            var block2B = blockWithID(link2.blockB, globalStates.currentLogic);
+            var block1A = blockWithID(link1.nodeA, globalStates.currentLogic);
+            var block1B = blockWithID(link1.nodeB, globalStates.currentLogic);
+            var block2A = blockWithID(link2.nodeA, globalStates.currentLogic);
+            var block2B = blockWithID(link2.nodeB, globalStates.currentLogic);
 
             var startCellLocation1 = convertBlockPosToGridPos(block1A.x, block1A.y);
             var endCellLocation1 = convertBlockPosToGridPos(block1B.x, block1B.y);
@@ -846,13 +846,13 @@ function convertBlockPosToGridPos(x, y) {
     return new CellLocation(x * 2, y * 2);
 }
 
-function addBlockLink(blockA, blockB, itemA, itemB, addToLogic) {
-    if (blockA && blockB) {
+function addBlockLink(nodeA, nodeB, logicA, logicB, addToLogic) {
+    if (nodeA && nodeB) {
         var blockLink = new BlockLink();
-        blockLink.blockA = blockA;
-        blockLink.blockB = blockB;
-        blockLink.itemA = itemA;
-        blockLink.itemB = itemB;
+        blockLink.nodeA = nodeA;
+        blockLink.nodeB = nodeB;
+        blockLink.logicA = logicA;
+        blockLink.logicB = logicB;
         if (addToLogic) {
             var linkKey = "blockLink" + uuidTime();
             if (!doesLinkAlreadyExist(blockLink)) {
@@ -861,8 +861,8 @@ function addBlockLink(blockA, blockB, itemA, itemB, addToLogic) {
                 //if (!isInOutLink(blockLink)) {
                 //    for (var key in objects) {
                 //        var object = objects[key];
-                //        for (var logicKey in object.logic) {
-                //            if (object.logic[logicKey] === globalStates.currentLogic) {
+                //        for (var logicKey in object.nodes) {
+                //            if (object.nodes[logicKey] === globalStates.currentLogic) {
                 //                uploadNewBlockLink(objects[key].ip, key, logicKey, linkKey, blockLink);
                 //            }
                 //        }
@@ -906,11 +906,11 @@ function addBlock(x,y,blockJSON,globalId,isEdgeBlock) {
     block.iconImage = null; //TODO: implement this!!
     block.text = block.name; //TODO: should this be different?
     if (isEdgeBlock) block.isPortBlock = true;
-    
+
     globalStates.currentLogic.blocks[block.globalId] = block;
 
     if (block.y === 0 || block.y === 3) {
-        updateInOutLinks(globalId);        
+        updateInOutLinks(globalId);
     }
 
     // TODO: figure out how to not need to upload edgeBlocks - can they be eliminated entirely?
@@ -919,8 +919,8 @@ function addBlock(x,y,blockJSON,globalId,isEdgeBlock) {
     //if (!isInOutBlock(block.globalId) && !isPortBlock(block)) {
     //    for (var key in objects) {
     //        var object = objects[key];
-    //        for (var logicKey in object.logic) {
-    //            if (object.logic[logicKey] === globalStates.currentLogic) {
+    //        for (var logicKey in object.nodes) {
+    //            if (object.nodes[logicKey] === globalStates.currentLogic) {
     //                uploadNewBlock(objects[key].ip, key, logicKey, block.globalId, block);
     //            }
     //        }
@@ -951,7 +951,7 @@ function updateInOutLinks(addedBlockId) {
             if (!globalStates.currentLogic.links.hasOwnProperty(key)) continue;
 
             var link = globalStates.currentLogic.links[key];
-            if (link.blockA === inOutName || link.blockB === inOutName) {
+            if (link.nodeA === inOutName || link.nodeB === inOutName) {
                 removeBlockLink(key);
             }
         }
@@ -966,7 +966,7 @@ function updateInOutLinks(addedBlockId) {
 }
 
 function isInOutLink(link) {
-    return (isInOutBlock(link.blockA) || isInOutBlock(link.blockB));
+    return (isInOutBlock(link.nodeA) || isInOutBlock(link.nodeB));
 }
 
 function isInOutBlock(blockID) {
@@ -1023,7 +1023,7 @@ function removeBlock(logic, blockID) {
 function removeLinksForBlock(logic, blockID) {
     for (var linkKey in logic.links) {
         var link = logic.links[linkKey];
-        if (link.blockA === blockID || link.blockB === blockID) {
+        if (link.nodeA === blockID || link.nodeB === blockID) {
             if (shouldUploadBlockLink(link)) {
                 var keys = getServerObjectLogicKeys(logic);
                 deleteBlockLinkFromObject(keys.ip, keys.objectKey, keys.logicKey, linkKey);
@@ -1045,8 +1045,8 @@ function doesLinkAlreadyExist(blockLink) {
 }
 
 function areBlockLinksEqual(blockLink1, blockLink2) {
-    if (blockLink1.blockA === blockLink2.blockA && blockLink1.itemA === blockLink2.itemA) {
-        if (blockLink1.blockB === blockLink2.blockB && blockLink1.itemB === blockLink2.itemB) {
+    if (blockLink1.nodeA === blockLink2.nodeA && blockLink1.logicA === blockLink2.logicA) {
+        if (blockLink1.nodeB === blockLink2.nodeB && blockLink1.logicB === blockLink2.logicB) {
             return true;
         }
     }

@@ -217,17 +217,14 @@ function postMessage(e) {
         } else
             if (msgContent.node in objects[msgContent.object].nodes) {
                 tempThisObject = objects[msgContent.object].nodes[msgContent.node];
-            } else
-            if (msgContent.node in objects[msgContent.object].logic) {
-                tempThisObject = objects[msgContent.object].logic[msgContent.node];
             } else return;
 
     } else if(msgContent.object in pocketItem){
         if (msgContent.node === msgContent.object) {
             tempThisObject = pocketItem[msgContent.object];
         } else {
-            if (msgContent.node in pocketItem[msgContent.object].logic) {
-                tempThisObject = pocketItem[msgContent.object].logic[msgContent.node];
+            if (msgContent.node in pocketItem[msgContent.object].nodes) {
+                tempThisObject = pocketItem[msgContent.object].nodes[msgContent.node];
             } else return;
         }
 

@@ -172,7 +172,7 @@ var globalProgram = {
     objectB: false,
     nodeB: false,
     logicB:false,
-    logicSelector:0
+    logicSelector:4
 };
 
 var objects = {};

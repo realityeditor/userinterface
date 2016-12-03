@@ -93,10 +93,6 @@ function addHeartbeatObject(beat) {
                         thisObject.matrix = [];
                     }
 
-                    if (thisObject.logic === null || typeof thisObject.logic !== "object") {
-                        thisObject.logic = {};
-                    }
-
                     for (var nodeKey in objects[thisKey].nodes) {
                         thisObject = objects[thisKey].nodes[nodeKey];
                         if (thisObject.matrix === null || typeof thisObject.matrix !== "object") {
@@ -105,19 +101,11 @@ function addHeartbeatObject(beat) {
                         thisObject.loaded = false;
                         thisObject.visible = false;
 
-                        if(thisObject.appearance === "logic"){
-                            objects[thisKey].logic[nodeKey] = thisObject;
-                            delete objects[thisKey].nodes[nodeKey]
+                        if(thisObject.type === "logic") {
+                            thisObject.guiState = new LogicGUIState();
+                            var container = document.getElementById('craftingBoard');
+                            thisObject.grid = new Grid(container.clientWidth, container.clientHeight);
                         }
-                    }
-
-                    for (var nodeKey in objects[thisKey].logic) {
-                        thisObject = objects[thisKey].logic[nodeKey];
-                        thisObject.loaded = false;
-                        thisObject.visible = false;
-                        thisObject.guiState = new LogicGUIState();
-                        var container = document.getElementById('craftingBoard');
-                        thisObject.grid = new Grid(container.clientWidth, container.clientHeight);
                     }
 
                     if (!thisObject.protocol) {
@@ -147,9 +135,10 @@ function addHeartbeatObject(beat) {
 
                         for (var nodeKey in objects[thisKey].nodes) {
                             thisObject = objects[thisKey].nodes[nodeKey];
-                            rename(thisObject, "plugin", "appearance");
-                            thisObject.item = {
-                                number: thisObject.value,
+                            rename(thisObject, "plugin", "type");
+                            rename(thisObject, "appearance", "type");
+                            thisObject.data = {
+                                value: thisObject.value,
                                 mode: thisObject.mode,
                                 unit: "",
                                 unitMin: 0,
@@ -283,9 +272,10 @@ function action(action) {
 
                 for (var nodeKey in objects[thisKey].nodes) {
                     thisObject = objects[thisKey].nodes[nodeKey];
-                    rename(thisObject, "plugin", "appearance");
-                    thisObject.item = {
-                        number: thisObject.value,
+                    rename(thisObject, "plugin", "type");
+                    rename(thisObject, "appearance", "type");
+                    thisObject.data = {
+                        value: thisObject.value,
                         mode: thisObject.mode,
                         unit: "",
                         unitMin: 0,
@@ -573,27 +563,12 @@ function update(visibleObjects) {
                 generalNode = generalObject.nodes[nodeKey];
 
                 if (globalStates.guiState ==="node") {
-                    drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, "node", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
+                    drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, generalNode.type, thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
 
-                    addElement(objectKey, nodeKey, "nodes/" + generalNode.appearance + "/index.html", generalNode, "node", thisGlobalStates);
-
-                } else {
-                    hideTransformed(objectKey, nodeKey, generalNode, "node");
-                }
-            }
-
-            for (var nodeKey in generalObject.logic) {
-                // if (!generalObject.nodes.hasOwnProperty(nodeKey)) { continue; }
-
-                generalNode = generalObject.logic[nodeKey];
-
-                if (globalStates.guiState ==="node") {
-                    drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, "logic", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
-
-                    addElement(objectKey, nodeKey, "nodes/" + generalNode.appearance + "/index.html", generalNode, "logic", thisGlobalStates);
+                    addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, thisGlobalStates);
 
                 } else {
-                    hideTransformed(objectKey, nodeKey, generalNode, "logic");
+                    hideTransformed(objectKey, nodeKey, generalNode, generalNode.type);
                 }
             }
         }
@@ -605,12 +580,7 @@ function update(visibleObjects) {
 
             for (var nodeKey in generalObject.nodes) {
                 // if (!generalObject.nodes.hasOwnProperty(nodeKey)) {  continue;  }
-                hideTransformed(objectKey, nodeKey, generalObject.nodes[nodeKey], "node");
-            }
-
-            for (var nodeKey in generalObject.logic) {
-                // if (!generalObject.nodes.hasOwnProperty(nodeKey)) {  continue;  }
-                hideTransformed(objectKey, nodeKey, generalObject.logic[nodeKey], "logic");
+                hideTransformed(objectKey, nodeKey, generalObject.nodes[nodeKey], generalObject.nodes[nodeKey].type);
             }
 
             killObjects(objectKey, generalObject);
@@ -632,7 +602,7 @@ function update(visibleObjects) {
 
     // todo finishing up this
 
-    if(pocketItem.pocket.logic[pocketItemId]) {
+    if(pocketItem.pocket.nodes[pocketItemId]) {
         var generalObject = pocketItem["pocket"];
         // if(  globalStates.pointerPosition[0]>0)
         //console.log(generalObject);
@@ -671,22 +641,22 @@ function update(visibleObjects) {
             ]
         }
 
+        for (var nodeKey in generalObject.nodes) {
+            //console.log(document.getElementById("iframe"+ nodeKey));
+            generalNode = generalObject.nodes[nodeKey];
 
-    for (var nodeKey in generalObject.logic) {
-        //console.log(document.getElementById("iframe"+ nodeKey));
-        generalNode = generalObject.logic[nodeKey];
+            if (globalStates.guiState === "node" && generalNode.type === "logic") {
+                drawTransformed(objectKey, nodeKey, generalNode,
+                    thisMatrix, generalNode.type, globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix);
 
-        drawTransformed(objectKey, nodeKey, generalNode,
-            thisMatrix, "logic", globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix);
+                addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, globalStates);
 
-        addElement(objectKey, nodeKey, "nodes/" + generalNode.appearance + "/index.html", generalNode, "logic", globalStates);
-
-        /* } else {
-         hideTransformed("pocket", nodeKey, generalNode, "logic");
-         }*/
+                /* } else {
+                 hideTransformed("pocket", nodeKey, generalNode, "logic");
+                 }*/
+            }
+        }
     }
-    }
-
     /// todo Test
 
     if(globalStates.acceleration.motion!= 0){
@@ -721,14 +691,14 @@ var thisTransform = [];
 var thisKey;
 var thisSubKey;
 
-function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix) {
+function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, type, globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix) {
 
 
     var objectKey = objectKey;
     var nodeKey = nodeKey;
     var thisObject = thisObject;
     var thisTransform2 = thisTransform2;
-    var kind = kind;
+    var type = type;
     var globalCanvas = globalCanvas;
     var globalStates = globalStates;
     var globalLogic = globalLogic;
@@ -748,7 +718,7 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                         visibility: "visible"
                     }), '*');
 
-            if (kind === "node") {
+            if (type === "node") {
                 globalDOMCach[nodeKey].style.visibility = 'visible';
                 // document.getElementById("text" + nodeKey).style.visibility = 'visible';
                 if (globalStates.editingMode) {
@@ -756,7 +726,7 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                 } else {
                     globalDOMCach["canvas" + nodeKey].style.display = 'none';
                 }
-            } else if (kind === "ui") {
+            } else if (type === "ui") {
                 if (globalStates.editingMode) {
                     if (!thisObject.visibleEditing && thisObject.developer) {
                         thisObject.visibleEditing = true;
@@ -772,7 +742,7 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
             }
 
 
-            else if (kind === "logic") {
+            else if (type === "logic") {
                 thisObject.temp = copyMatrix(thisTransform2);
                 globalDOMCach[nodeKey].style.visibility = 'visible';
                 // document.getElementById("text" + nodeKey).style.visibility = 'visible';
@@ -784,7 +754,7 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
             }
 
             /*
-            else if (kind === "logic") {
+            else if (type === "logic") {
 
 
                     thisObject.temp = copyMatrix(thisTransform2);
@@ -818,7 +788,7 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                 if (globalStates.editingMode) {
 
                     // todo test if this can be made touch related
-                    if (kind === "logic") {
+                    if (type === "logic") {
                         thisObject.temp = copyMatrix(thisTransform2);
                     }
 
@@ -903,7 +873,7 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
                 thisObject.screenZ = thisTransform[14];
 
             }
-            if (kind === "ui") {
+            if (type === "ui") {
 
                 if (thisObject.sendMatrix === true || thisObject.sendAcceleration === true) {
 
@@ -932,7 +902,7 @@ function drawTransformed(objectKey, nodeKey, thisObject, thisTransform2, kind, g
             }
 
 
-            if (kind === "logic" && objectKey!=="pocket"){
+            if (type === "logic" && objectKey!=="pocket"){
 
                 if (globalStates.pointerPosition[0] > -1 && globalProgram.objectA) {
 
@@ -1025,7 +995,7 @@ function webkitTransformMatrix3d(thisDom, thisTransform) {
  * @return
  **/
 
-function hideTransformed(objectKey, nodeKey, thisObject, kind) {
+function hideTransformed(objectKey, nodeKey, thisObject, type) {
     if (thisObject.visible === true) {
         globalDOMCach["thisObject" + nodeKey].style.display = 'none';
         globalDOMCach["iframe" + nodeKey].style.visibility = 'hidden';
@@ -1145,8 +1115,8 @@ function redrawDatacrafting() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     forEachLink( function(link) {
-        var startCell =  getCellForBlock(grid, blockWithID(link.blockA, globalStates.currentLogic), link.itemA);
-        var endCell =  getCellForBlock(grid, blockWithID(link.blockB, globalStates.currentLogic), link.itemB);
+        var startCell =  getCellForBlock(grid, blockWithID(link.nodeA, globalStates.currentLogic), link.logicA);
+        var endCell =  getCellForBlock(grid, blockWithID(link.nodeB, globalStates.currentLogic), link.logicB);
         drawDatacraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
     });
 
@@ -1166,11 +1136,11 @@ function redrawDatacrafting() {
         if (!domElement) return;
 
         globalStates.currentLogic.guiState.tempIncomingLinks.forEach( function(linkData) {
-            var startCell = getCellForBlock(grid, blockWithID(linkData.blockA, globalStates.currentLogic), linkData.itemA);
+            var startCell = getCellForBlock(grid, blockWithID(linkData.nodeA, globalStates.currentLogic), linkData.logicA);
             var startX = grid.getCellCenterX(startCell);
             var startY = grid.getCellCenterY(startCell);
 
-            var xOffset =  0.5 * grid.blockColWidth + (grid.blockColWidth + grid.marginColWidth) * linkData.itemB;
+            var xOffset =  0.5 * grid.blockColWidth + (grid.blockColWidth + grid.marginColWidth) * linkData.logicB;
             var endX = parseInt(domElement.style.left) + xOffset;
             var endY = parseInt(domElement.style.top) + domElement.clientHeight/2;
             var startColor = startCell.getColorHSL();
@@ -1180,11 +1150,11 @@ function redrawDatacrafting() {
         });
 
         globalStates.currentLogic.guiState.tempOutgoingLinks.forEach( function(linkData) {
-            var xOffset =  0.5 * grid.blockColWidth + (grid.blockColWidth + grid.marginColWidth) * linkData.itemA;
+            var xOffset =  0.5 * grid.blockColWidth + (grid.blockColWidth + grid.marginColWidth) * linkData.logicA;
             var startX = parseInt(domElement.style.left) + xOffset;
             var startY = parseInt(domElement.style.top) + domElement.clientHeight/2;
 
-            var endCell = getCellForBlock(grid, blockWithID(linkData.blockB, globalStates.currentLogic), linkData.itemB);
+            var endCell = getCellForBlock(grid, blockWithID(linkData.nodeB, globalStates.currentLogic), linkData.logicB);
             var endX = grid.getCellCenterX(endCell);
             var endY = grid.getCellCenterY(endCell);
             var endColor = endCell.getColorHSL();
@@ -1301,9 +1271,11 @@ function addElementInPreferences() {
  * @return
  **/
 
-function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates) {
+function addElement(objectKey, nodeKey, thisUrl, thisObject, type, globalStates) {
 
     if (globalStates.notLoading !== true && globalStates.notLoading !== nodeKey && thisObject.loaded !== true) {
+
+
 
         console.log("did load object " + objectKey + ", node " + nodeKey);
 
@@ -1370,7 +1342,7 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
         // todo the lines need to end at the center of the square.
 
 
-        if(kind=== "logic") {
+        if(type=== "logic") {
             var addLogic;
             var size = 200;
             addLogic = document.createElement('div');
@@ -1475,12 +1447,12 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, kind, globalStates)
         }
         theObject.objectId = objectKey;
         theObject.nodeId = nodeKey;
-        theObject.kind = kind;
+        theObject.type = type;
 
-        if (kind === "node") {
+        if (type === "node") {
             theObject.style.visibility = "visible";
             // theObject.style.display = "initial";
-        } else if (kind === "logic") {
+        } else if (type === "logic") {
             theObject.style.visibility = "visible";
         }
         else {

@@ -100,7 +100,6 @@ function Objects() {
 
     this.frames = {};
     // The arrangement of nodes for crafting.
-    this.logic = {};
 }
 
 /**
@@ -114,7 +113,7 @@ function Link() {
     // The origin IOPoint from where the link is taking its data from
     this.nodeA = null;
     // if origin location is a Logic Node then set to Logic Node output location (which is a number between 0 and 3) otherwise null
-    this.logicA = null;
+    this.logicA = false;
     // Defines the type of the link origin. Currently this function is not in use.
     this.namesA = ["",""];
     // The destination object to where the origin object is sending data to.
@@ -124,7 +123,7 @@ function Link() {
     // objectB and nodeB will be send with each data package.
     this.nodeB = null;
     // if destination location is a Logic Node then set to logic block input location (which is a number between 0 and 3) otherwise null
-    this.logicB = null;
+    this.logicB = false;
     // Defines the type of the link destination. Currently this function is not in use.
     this.namesB = ["",""];
     // check that there is no endless loop in the system
@@ -143,7 +142,7 @@ function Node() {
     // the name of each link. It is used in the Reality Editor to show the IO name.
     this.name = "";
     // the actual data of the node
-    this.item = [new Data(), {}, {}, {}]; // todo maybe value
+    this.data = [new Data(), {}, {}, {}]; // todo maybe value
     // Reality Editor: This is used to possition the UI element within its x axis in 3D Space. Relative to Marker origin.
     this.x = 0;
     // Reality Editor: This is used to possition the UI element within its y axis in 3D Space. Relative to Marker origin.
@@ -154,13 +153,10 @@ function Node() {
     this.matrix = [];
     // defines the nodeInterface that is used to process data of this type. It also defines the visual representation
     // in the Reality Editor. Such data points interfaces can be found in the nodeInterface folder.
-    // todo appearance should be removed eventually as there is only one kind of appearance
-    this.appearance = "logic";
+    this.type = "node";
     // todo implement src
     this.src = "";
     // defines the origin Hardware interface of the IO Point. For example if this is arduinoYun the Server associates
-    // this IO Point with the Arduino Yun hardware interface.
-    //this.type = "arduinoYun"; // todo "arduinoYun", "virtual", "edison", ... make sure to define yours in your internal_module file
     // indicates how much calls per second is happening on this node
     this.stress = 0;
 }
@@ -173,7 +169,7 @@ function Node() {
 function Logic() {
     this.name = "";
     // data for logic blocks. depending on the blockSize which one is used.
-    this.item = [new Data(), new Data(), new Data(), new Data()];
+    this.data = [new Data(), new Data(), new Data(), new Data()];
     // Reality Editor: This is used to possition the UI element within its x axis in 3D Space. Relative to Marker origin.
     this.x = 0;
     // Reality Editor: This is used to possition the UI element within its y axis in 3D Space. Relative to Marker origin.
@@ -207,7 +203,7 @@ function Logic() {
      [[null, 0], [null, 0], [null, 0], [null, 0]]
      ];*/
 
-    this.appearance = "logic";
+    this.type = "logic";
 
     this.links = {};
     this.blocks = {};
@@ -264,13 +260,13 @@ function LogicGUIState() {
 
 function BlockLink() {
     // origin block UUID
-    this.blockA = null;
+    this.nodeA = null;
     // item in that block
-    this.itemA = 0;
+    this.logicA = 0;
     // destination block UUID
-    this.blockB = null;
+    this.nodeB = null;
     // item in that block
-    this.itemB = 0;
+    this.logicB = 0;
     // check if the links are looped.
     this.loop = false;
     // Will be used to test if a link is still able to find its destination.
@@ -300,7 +296,7 @@ function Block() {
     // the checksum should be identical with the checksum for the persistent package files of the reference block design.
     this.checksum = null; // checksum of the files for the program
     // data for logic blocks. depending on the blockSize which one is used.
-    this.item = [new Data(), new Data(), new Data(), new Data()];
+    this.data = [new Data(), new Data(), new Data(), new Data()];
     // experimental. This are objects for data storage. Maybe it makes sense to store data in the general object
     // this would allow the the packages to be persistent. // todo discuss usability with Ben.
     this.privateData = {};
@@ -327,13 +323,25 @@ function Block() {
 }
 
 /**
+ * @desc Constructor used to define special blocks that are connecting the logic crafting with the outside system.
+ **/
+function BlockDummy() {
+    // name of the block
+    this.name = "";
+    // data for logic blocks. depending on the blockSize which one is used.
+    this.data = [new Data(), new Data(), new Data(), new Data()];
+    // indicates how much calls per second is happening on this block
+    this.stress = 0;
+}
+
+/**
  * @desc Definition for Values that are sent around.
  **/
 
 function Data() {
     // storing the numerical content send between nodes. Range is between 0 and 1.
-    this.number = 0;
-    // Defines the kind of data send. At this point we have 3 active data modes and one future possibility.
+    this.value = 0;
+    // Defines the type of data send. At this point we have 3 active data modes and one future possibility.
     // (f) defines floating point values between 0 and 1. This is the default value.
     // (d) defines a digital value exactly 0 or 1.
     // (+) defines a positive step with a floating point value for compatibility.

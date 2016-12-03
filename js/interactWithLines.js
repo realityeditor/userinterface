@@ -70,20 +70,8 @@ function deleteLines(x21, y21, x22, y22) {
             var l = thisObject.links[subKeysome];
             var oA = thisObject;
             var oB = objects[l.objectB];
-            var bA;
-                if(l.logicA !== false){
-                    bA = oA.logic[l.nodeA];
-                } else {
-                    bA = oA.nodes[l.nodeA];
-                }
-
-            var bB;
-
-            if(l.logicB !== false){
-                bB = oB.logic[l.nodeB];
-            } else {
-                bB = oB.nodes[l.nodeB];
-            }
+            var bA = oA.nodes[l.nodeA];
+            var bB = oB.nodes[l.nodeB]
 
             if (bA === undefined || bB === undefined || oA === undefined || oB === undefined) {
                 continue; //should not be undefined
@@ -123,40 +111,16 @@ function drawAllLines(thisObject, context) {
             continue;
         }
         var oB = objects[l.objectB];
-        if(l.logicA !== false) {
-            if (!oA.logic.hasOwnProperty(l.nodeA)) {
-                continue;
-            }
-        } else {
-            if (!oA.nodes.hasOwnProperty(l.nodeA)) {
-                continue;
-            }
+        if (!oA.nodes.hasOwnProperty(l.nodeA)) {
+            continue;
+        }
+        if (!oB.nodes.hasOwnProperty(l.nodeB)) {
+            continue;
         }
 
-        if(l.logicB !== false) {
-            if (!oB.logic.hasOwnProperty(l.nodeB)) {
-                continue;
-            }
-        } else {
-            if (!oB.nodes.hasOwnProperty(l.nodeB)) {
-                continue;
-            }
-        }
+        var bA = oA.nodes[l.nodeA];
 
-        var bA;
-        if(l.logicA !== false){
-            bA = oA.logic[l.nodeA];
-        } else {
-            bA = oA.nodes[l.nodeA];
-        }
-
-        var bB;
-
-        if(l.logicB !== false){
-            bB = oB.logic[l.nodeB];
-        } else {
-            bB = oB.nodes[l.nodeB];
-        }
+        var bB = oB.nodes[l.nodeB];
 
         if (bA === undefined || bB === undefined || oA === undefined || oB === undefined) {
             continue; //should not be undefined
@@ -206,7 +170,6 @@ function drawAllLines(thisObject, context) {
  **/
 
 function drawInteractionLines() {
-
     // this function here needs to be more precise
 
     if (globalProgram.objectA) {
@@ -214,11 +177,7 @@ function drawInteractionLines() {
         var oA = objects[globalProgram.objectA];
 
 
-        var tempStart;
-        if(globalProgram.logicA !== false)
-            tempStart = oA.logic[globalProgram.nodeA];
-        else
-            tempStart = oA.nodes[globalProgram.nodeA];
+        var tempStart = oA.nodes[globalProgram.nodeA];
 
         // this is for making sure that the line is drawn out of the screen... Don't know why this got lost somewhere down the road.
         // linearize a non linear zBuffer
