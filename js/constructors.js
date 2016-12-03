@@ -142,7 +142,7 @@ function Node() {
     // the name of each link. It is used in the Reality Editor to show the IO name.
     this.name = "";
     // the actual data of the node
-    this.data = [new Data(), {}, {}, {}]; // todo maybe value
+    this.data = new Data(); // todo maybe value
     // Reality Editor: This is used to possition the UI element within its x axis in 3D Space. Relative to Marker origin.
     this.x = 0;
     // Reality Editor: This is used to possition the UI element within its y axis in 3D Space. Relative to Marker origin.
@@ -169,7 +169,7 @@ function Node() {
 function Logic() {
     this.name = "";
     // data for logic blocks. depending on the blockSize which one is used.
-    this.data = [new Data(), new Data(), new Data(), new Data()];
+    this.data = new Data();
     // Reality Editor: This is used to possition the UI element within its x axis in 3D Space. Relative to Marker origin.
     this.x = 0;
     // Reality Editor: This is used to possition the UI element within its y axis in 3D Space. Relative to Marker origin.
