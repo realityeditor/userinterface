@@ -325,7 +325,7 @@ function Block() {
 /**
  * @desc Constructor used to define special blocks that are connecting the logic crafting with the outside system.
  **/
-function BlockDummy() {
+function EdgeBlock() {
     // name of the block
     this.name = "";
     // data for logic blocks. depending on the blockSize which one is used.
