@@ -230,23 +230,22 @@ function setStates(developerState, extendedTrackingState, clearSkyState, externa
  **/
 
 function action(action) {
-    var thisAction = JSON.parse(action);
 
-    if (thisAction.reloadLink) {
-        getData('http://' + thisAction.reloadLink.ip + ':' + httpPort + '/object/' + thisAction.reloadLink.id, thisAction.reloadLink.id, function (req, thisKey) {
+    if (typeof action.reloadLink !== "undefined") {
+        getData('http://' + action.reloadLink.ip + ':' + httpPort + '/object/' + action.reloadLink.id, action.reloadLink.id, function (req, thisKey) {
 
             if (objects[thisKey].integerVersion < 170) {
                 objects[thisKey].links = req.links;
                 for (var linkKey in objects[thisKey].links) {
-                    thisObject = objects[thisKey].links[linkKey];
+                  var  thisObject = objects[thisKey].links[linkKey];
 
-                    rename(thisObject, "objectA", "objectA");
-                    rename(thisObject, "nodeA", "nodeA");
-                    rename(thisObject, "nameA", "nameA");
+                    rename(thisObject, "ObjectA", "objectA");
+                    rename(thisObject, "locationInA", "nodeA");
+                    rename(thisObject, "ObjectNameA", "nameA");
 
-                    rename(thisObject, "objectB", "objectB");
-                    rename(thisObject, "nodeB", "nodeB");
-                    rename(thisObject, "nameB", "nameB");
+                    rename(thisObject, "ObjectB", "objectB");
+                    rename(thisObject, "locationInB", "nodeB");
+                    rename(thisObject, "ObjectNameB", "nameB");
                     rename(thisObject, "endlessLoop", "loop");
                     rename(thisObject, "countLinkExistance", "health");
                 }
@@ -261,17 +260,18 @@ function action(action) {
 
     }
 
-    if (thisAction.reloadObject) {
-        getData('http://' + thisAction.reloadObject.ip + ':' + httpPort + '/object/' + thisAction.reloadObject.id, thisAction.reloadObject.id, function (req, thisKey) {
+    if (typeof action.reloadObject !== "undefined") {
+        getData('http://' + action.reloadObject.ip + ':' + httpPort + '/object/' + action.reloadObject.id, action.reloadObject.id, function (req, thisKey) {
             objects[thisKey].x = req.x;
             objects[thisKey].y = req.y;
             objects[thisKey].scale = req.scale;
+            objects[thisKey].developer = req.developer;
 
             if (objects[thisKey].integerVersion < 170) {
                 objects[thisKey].nodes = req.objectValues;
 
                 for (var nodeKey in objects[thisKey].nodes) {
-                    thisObject = objects[thisKey].nodes[nodeKey];
+                  var  thisObject = objects[thisKey].nodes[nodeKey];
                     rename(thisObject, "plugin", "type");
                     rename(thisObject, "appearance", "type");
                     thisObject.data = {
@@ -286,6 +286,8 @@ function action(action) {
                 }
             }
             else {
+
+                objects[thisKey].matrix = req.matrix;
                 objects[thisKey].nodes = req.nodes;
             }
 
@@ -294,9 +296,14 @@ function action(action) {
         });
     }
 
-    cout("found action: " + action);
+    if (typeof action.advertiseConnection !== "undefined") {
 
+        cout("I found a new advertisement:" + JSON.stringify(action.advertiseConnection));
+    }
+
+    cout("found action: " + JSON.stringify(action));
 }
+
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
