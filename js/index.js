@@ -231,8 +231,13 @@ function setStates(developerState, extendedTrackingState, clearSkyState, externa
 
 function action(action) {
 
+
+    // reload links for a specific object.
+
     if (typeof action.reloadLink !== "undefined") {
-        getData('http://' + action.reloadLink.ip + ':' + httpPort + '/object/' + action.reloadLink.id, action.reloadLink.id, function (req, thisKey) {
+
+        if(action.reloadLink.object in objects)
+        getData('http://' + objects[action.reloadLink.object].ip + ':' + httpPort + '/object/' + action.reloadLink.object, action.reloadLink.object, function (req, thisKey) {
 
             if (objects[thisKey].integerVersion < 170) {
                 objects[thisKey].links = req.links;
@@ -260,48 +265,54 @@ function action(action) {
 
     }
 
+
+    console.log(action.reloadObject);
+
     if (typeof action.reloadObject !== "undefined") {
-        getData('http://' + action.reloadObject.ip + ':' + httpPort + '/object/' + action.reloadObject.id, action.reloadObject.id, function (req, thisKey) {
+
+        if(action.reloadObject.object in objects)
+        getData('http://' + objects[action.reloadObject.object].ip + ':' + httpPort + '/object/' + action.reloadObject.object, action.reloadObject.object, function (req, thisKey) {
             objects[thisKey].x = req.x;
             objects[thisKey].y = req.y;
             objects[thisKey].scale = req.scale;
             objects[thisKey].developer = req.developer;
 
-            if (objects[thisKey].integerVersion < 170) {
-                objects[thisKey].nodes = req.objectValues;
+            var getNodes;
 
-                for (var nodeKey in objects[thisKey].nodes) {
-                  var  thisObject = objects[thisKey].nodes[nodeKey];
-                    rename(thisObject, "plugin", "type");
-                    rename(thisObject, "appearance", "type");
-                    thisObject.data = {
-                        value: thisObject.value,
-                        mode: thisObject.mode,
-                        unit: "",
-                        unitMin: 0,
-                        unitMax: 1
-                    };
-                    delete thisObject.value;
-                    delete thisObject.mode;
-                }
+            if (objects[thisKey].integerVersion < 170) {
+                if(typeof req.objectValues !== "undefined")
+                getNodes = req.objectValues;
             }
             else {
-
                 objects[thisKey].matrix = req.matrix;
-                objects[thisKey].nodes = req.nodes;
+
+                if(typeof req.objectValues !== "undefined")
+                getNodes = req.nodes;
             }
 
-            // cout(objects[thisKey]);
-            cout("got links");
+
+            if(typeof getNodes !== "undefined")
+                for (var nodeKey in getNodes) {
+                    var  thisObject = objects[thisKey].nodes[nodeKey];
+
+                    thisObject.x = getNodes[nodeKey].x;
+                    thisObject.y = getNodes[nodeKey].y;
+                    thisObject.scale = getNodes[nodeKey].scale;
+                    thisObject.matrix = getNodes[nodeKey].matrix;
+                }
+                
+            cout("got object and nodes");
         });
     }
 
     if (typeof action.advertiseConnection !== "undefined") {
-
+        if(action.advertiseConnection.object in objects)
         cout("I found a new advertisement:" + JSON.stringify(action.advertiseConnection));
     }
 
-    cout("found action: " + JSON.stringify(action));
+    for(var key in action) {
+        cout("found action: " + JSON.stringify(key));
+    }
 }
 
 
