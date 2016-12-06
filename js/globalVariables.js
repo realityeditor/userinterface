@@ -137,7 +137,10 @@ var globalStates = {
     angX: 0,
     angY: 0,
     angZ: 0,
-    unconstrainedPositioning: false
+    unconstrainedPositioning: false,
+    thisAndthat : {
+        interval: undefined
+    }
 };
 
 var g = globalStates; // BEN TODO: REMOVE DEBUG ALIAS
@@ -173,6 +176,17 @@ var globalProgram = {
     nodeB: false,
     logicB:false,
     logicSelector:4
+};
+
+var globalAdvertisedLinks = {
+    objectA: false,
+    nodeA: false,
+    logicA:false,
+    namesA:false,
+    objectB: false,
+    nodeB: false,
+    logicB:false,
+    namesB:false
 };
 
 var objects = {};
