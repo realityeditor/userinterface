@@ -68,7 +68,6 @@ window.onload = function () {
     globalSVGCach["overlayImgRing"] = document.getElementById('overlayImg').getElementById('overlayImgRing');
 
     GUI();
-    advertsier();
 
     console.log(globalStates.platform);
 

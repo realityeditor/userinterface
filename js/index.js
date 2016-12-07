@@ -303,75 +303,13 @@ function action(action) {
     }
 
     if (typeof action.advertiseConnection !== "undefined") {
-        if(action.advertiseConnection.object in objects) {
-            if (globalAdvertisedLinks.objectA === false) {
-
-              var thisConnectionPage =  document.getElementById("advertisedConnections");
-                console.log("visible");
-                thisConnectionPage.style.display = "inline";
-
-                globalAdvertisedLinks.objectA = action.advertiseConnection.object;
-                globalAdvertisedLinks.nodeA = action.advertiseConnection.node;
-                globalAdvertisedLinks.logicA = action.advertiseConnection.logic;
-                globalAdvertisedLinks.namesA = action.advertiseConnection.names;
-
-
-                drawUI(globalAdvertisedLinks.namesA[0],globalAdvertisedLinks.namesA[1],false,false, "waiting");
-
-            } else {
-
-                var thisConnectionPage =  document.getElementById("advertisedConnections");
-                console.log("hidden");
-              //  thisConnectionPage.style.visibility = "hidden";
-
-                globalAdvertisedLinks.objectB = action.advertiseConnection.object;
-                globalAdvertisedLinks.nodeB = action.advertiseConnection.node;
-                globalAdvertisedLinks.logicB = action.advertiseConnection.logic;
-                globalAdvertisedLinks.namesB = action.advertiseConnection.names;
-
-                var deleteLink = false;
-                var thisObjectA = objects[globalAdvertisedLinks.objectA].links;
-
-                for (var key in thisObjectA) {
-                    for (var key2 in thisObjectA[key]) {
-                        if (thisObjectA[key][key2] === globalAdvertisedLinks[key2]) {
-                            deleteLink = key;
-                        }
-                    }
-                }
-
-                if (deleteLink !== false) {
-                    deleteLinkFromObject(objects[globalAdvertisedLinks.objectA].ip, globalAdvertisedLinks.objectA, deleteLink);
-                    delete thisObjectA[deleteLink];
-
-                    drawUI(globalAdvertisedLinks.namesA[0],globalAdvertisedLinks.namesA[1],
-                        globalAdvertisedLinks.namesB[0],globalAdvertisedLinks.namesB[1], "disconnected");
-
-                } else {
-                    sendLinkToServer(globalAdvertisedLinks, objects);
-                    drawUI(globalAdvertisedLinks.namesA[0],globalAdvertisedLinks.namesA[1],
-                        globalAdvertisedLinks.namesB[0],globalAdvertisedLinks.namesB[1], "connected");
-                }
-
-                // set everything back to false
-                globalAdvertisedLinks.objectA = false;
-                globalAdvertisedLinks.nodeA = false;
-                globalAdvertisedLinks.logicA = false;
-                globalAdvertisedLinks.namesA = false;
-                globalAdvertisedLinks.objectB = false;
-                globalAdvertisedLinks.nodeB = false;
-                globalAdvertisedLinks.logicB = false;
-                globalAdvertisedLinks.namesB = false;
-
-            }
-        }
+        realityEditor.advertisement.logic(action.advertiseConnection);
     }
 
     for(var key in action) {
         cout("found action: " + JSON.stringify(key));
     }
 }
-
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
