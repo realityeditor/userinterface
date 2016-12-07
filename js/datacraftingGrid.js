@@ -771,6 +771,12 @@ function getCellForBlock(grid, block, item) {
     return grid.getCell(gridPos.col, gridPos.row);
 }
 
+function getBlockPixelWidth(block, grid) {
+    var numBlockCols = block.blockSize;
+    var numMarginCols = block.blockSize - 1;
+    return grid.blockColWidth * numBlockCols + grid.marginColWidth * numMarginCols;
+}
+
 Grid.prototype.getCellsOver = function (firstCell,blockWidth,itemSelected,includeMarginCells) {
     var cells = [];
     var increment = includeMarginCells ? 1 : 2;
@@ -858,17 +864,6 @@ function addBlockLink(nodeA, nodeB, logicA, logicB, addToLogic) {
             if (!doesLinkAlreadyExist(blockLink)) {
                 globalStates.currentLogic.links[linkKey] = blockLink;
 
-                //if (!isInOutLink(blockLink)) {
-                //    for (var key in objects) {
-                //        var object = objects[key];
-                //        for (var logicKey in object.nodes) {
-                //            if (object.nodes[logicKey] === globalStates.currentLogic) {
-                //                uploadNewBlockLink(objects[key].ip, key, logicKey, linkKey, blockLink);
-                //            }
-                //        }
-                //    }
-                //}
-
                 if (shouldUploadBlockLink(blockLink)) {
                     var keys = getServerObjectLogicKeys(globalStates.currentLogic);
                     uploadNewBlockLink(keys.ip, keys.objectKey, keys.logicKey, linkKey, blockLink);
@@ -887,7 +882,6 @@ function blockWithID(globalID, logic) {
     return logic.blocks[globalID];
 }
 
-// TODO: populate all constructor values using fields from blockJSON
 function addBlock(x,y,blockJSON,globalId,isEdgeBlock) {
     var block = new Block();
 
@@ -912,20 +906,6 @@ function addBlock(x,y,blockJSON,globalId,isEdgeBlock) {
     if (block.y === 0 || block.y === 3) {
         updateInOutLinks(globalId);
     }
-
-    // TODO: figure out how to not need to upload edgeBlocks - can they be eliminated entirely?
-    // or given a fixed name scheme that allows them to be regenerated when needed...
-    // seems redundant to have both edgeBlocks and in0-out3
-    //if (!isInOutBlock(block.globalId) && !isPortBlock(block)) {
-    //    for (var key in objects) {
-    //        var object = objects[key];
-    //        for (var logicKey in object.nodes) {
-    //            if (object.nodes[logicKey] === globalStates.currentLogic) {
-    //                uploadNewBlock(objects[key].ip, key, logicKey, block.globalId, block);
-    //            }
-    //        }
-    //    }
-    //}
 
     if (shouldUploadBlock(block)) {
         var keys = getServerObjectLogicKeys(globalStates.currentLogic);

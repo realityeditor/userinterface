@@ -1079,48 +1079,25 @@ function getBlockForDom(blockDomElement) {
 function addDomElementForBlock(block, grid, isTempBlock) {
     var blockDomElement = document.createElement('div');
     blockDomElement.setAttribute('class','blockDivPlaced');
-    
-    // blockDomElement.innerHTML = block.text; //TODO: use block.iconImage if it has one
 
-        var blockContents = document.createElement('div');
-        blockContents.setAttribute('class', 'menuBlockContents');
-        blockContents.setAttribute("touch-action", "none");
-        blockDomElement.appendChild(blockContents);
+    var blockContents = document.createElement('div');
+    blockContents.setAttribute('class', 'menuBlockContents');
+    blockContents.setAttribute("touch-action", "none");
+    blockDomElement.appendChild(blockContents);
 
-        if (block.name) {
+    // add icon and title to block
+    if (block.name) {
+        var iconImage = document.createElement("img");
+        iconImage.setAttribute('class', 'blockIcon');
+        iconImage.src = getBlockIcon(globalStates.currentLogic, block.name).src;
+        blockContents.appendChild(iconImage);
 
-            // var keys = getServerObjectLogicKeys(globalStates.currentLogic);
-            // var iconUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + block.name + "/icon.png";
-            // e.g. logicBlock/switch/icon.png
-            // var iconImageP = document.createElement('p');
-            var iconImage = document.createElement("img");
-            iconImage.setAttribute('class', 'blockIcon');
-            // iconImage.src = iconUrl;
-
-            iconImage.src = getBlockIcon(globalStates.currentLogic, block.name).src;
-
-
-            // var iconImage = getBlockIcon(globalStates.currentLogic, block.name);
-            // iconImage.setAttribute('class', 'blockIcon');
-
-                    // blockDiv.firstChild.innerHTML = thisBlockData['name'];
-            // iconImageP.appendChild(iconImage);
-            blockContents.appendChild(iconImage);
-
-            var blockTitle = document.createElement('div');
-            blockTitle.setAttribute('class', 'blockTitle');
-            blockTitle.innerHTML = block.text;
-
-            // blockDiv.firstChild.appendChild(document.createElement('br'));
-
-            blockContents.appendChild(blockTitle);
-
-        }
-
-        // blockDiv.firstChild.setAttribute('class', 'example');
-
-        blockDomElement.style.display = 'inline-block';
-
+        var blockTitle = document.createElement('div');
+        blockTitle.setAttribute('class', 'blockTitle');
+        blockTitle.innerHTML = block.text;
+        blockContents.appendChild(blockTitle);
+    }
+    blockDomElement.style.display = 'inline-block';
 
     // if we're adding a temp block, it doesn't have associated cells it can use to calculate position. we need to remember to set position to pointer afterwards
     if (!isTempBlock) { //TODO: is there a way to set position for new blocks consistently?
@@ -1166,13 +1143,6 @@ function addDomElementForBlock(block, grid, isTempBlock) {
 
     var guiState = globalStates.currentLogic.guiState;
     guiState.blockDomElements[block.globalId] = blockDomElement;
-}
-
-// TODO: move somewhere better... just a utility
-function getBlockPixelWidth(block, grid) {
-    var numBlockCols = block.blockSize;
-    var numMarginCols = block.blockSize - 1;
-    return grid.blockColWidth * numBlockCols + grid.marginColWidth * numMarginCols;
 }
 
 // updates datacrafting visuals each frame

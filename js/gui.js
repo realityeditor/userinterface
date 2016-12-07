@@ -822,19 +822,16 @@ function convertBlockLinkToServerFormat(blockLink) {
     }
 
     serverLink["route"] = null;
-    //serverLink["nodeA"] = blockLink.nodeA.globalId;
-    //serverLink["nodeB"] = blockLink.nodeB.globalId;
 
     return serverLink;
 }
 
+// strips away unnecessary data from logic node that can be easily regenerated
 function convertLogicToServerFormat(logic) {
-
-    //console.log(logic);
 
     var logicServer = {};
 
-    var keysToSkip = ["guiState", "grid", "blocks"]; //"links",
+    var keysToSkip = ["guiState", "grid", "blocks"];
     for (var key in logic) {
         if (!logic.hasOwnProperty(key)) continue;
         if (keysToSkip.indexOf(key) > -1) continue;
@@ -846,81 +843,16 @@ function convertLogicToServerFormat(logic) {
     logicServer["loaded"] = false;
     logicServer["visible"] = false;
 
-    // add specific metadata to reconstruct blocks and links
-
+    // don't upload in/out blocks, those are always the same and live in the editor?
     logicServer["blocks"] = {};
     for (var key in logic.blocks) {
         if (!logic.blocks.hasOwnProperty(key)) continue;
-        //var re = /^(in|out)\d$/; // or  /^out(0|1|2|3)$/
-        //var isInOutBlock = re.test(key);
         if (!isInOutBlock(key)) {
             logicServer.blockData[key] = logic.blocks[key];
         }
     }
 
-    //logicServer["links"] = {};
-    //for (var key in logic.links) {
-    //    if (!logic.links.hasOwnProperty(key)) continue;
-    //
-    //    var link = logic.links[key];
-    //    logicServer.linkData[key] = {
-    //        nodeA: link.nodeA.globalId,
-    //        nodeB: link.nodeB.globalId,
-    //        logicA: link.logicA,
-    //        logicB: link.logicB
-    //    }
-    //}
-
     return logicServer;
-}
-
-function toLogicJSON(logic) {
-    // can't just run JSON.stringify(logic) because logic has a cyclic object value in links and grid
-    // http://stackoverflow.com/questions/9382167/serializing-object-that-contains-cyclic-object-value
-
-    var logicServer = convertLogicToServerFormat(logic);
-
-    return JSON.stringify(logicServer);
-}
-
-function parseJSONToLogic(logicJSON) {
-    var logicServer = JSON.parse(logicJSON);
-    console.log("logicServer", logicServer);
-
-    var logic = new Logic();
-    globalStates.currentLogic = logic;
-    var keysToSkip = ["blocks"]; //"links",
-    for (var key in logicServer) {
-        if (!logicServer.hasOwnProperty(key)) continue;
-        if (keysToSkip.indexOf(key) > -1) continue;
-        logic[key] = logicServer[key];
-    }
-    var container = document.getElementById('craftingBoard');
-    logic.grid = new Grid(container.clientWidth, container.clientHeight);
-
-    // recreate links and blocks
-
-    for (var key in logicServer.blocks) {
-        if (!logicServer.blocks.hasOwnProperty(key)) continue;
-
-        logic.blocks[key] = logicServer.blocks[key];
-    }
-    // then add in/out blocks
-    initLogicInOutBlocks();
-
-    //for (var key in logicServer.links) {
-    //    if (!logicServer.links.hasOwnProperty(key)) continue;
-    //
-    //    var links = logicServer.links[key];
-    //    var nodeA = logic.blocks[links.nodeA];
-    //    var nodeB = logic.blocks[links.nodeB];
-    //    addBlockLink(nodeA, nodeB, links.logicA, links.itemB, true);
-    //}
-
-    // update the grid to calculate routes for any links added
-    updateGrid(logic.grid);
-
-    return logic;
 }
 
 function initializeBlockMenu(callback) {
@@ -969,7 +901,7 @@ function initializeBlockMenu(callback) {
         menuSideContainer.appendChild(menuTab);
     }
 
-    menuLoadBlocksNew( function(blockData) {
+    menuLoadBlocks( function(blockData) {
 
         // load each block from the downloaded json and add it to the appropriate category
         for (var key in blockData) {
@@ -1027,19 +959,7 @@ function resetBlockMenu() {
     }
 }
 
-function readTextFile(file, callback) {
-    var rawFile = new XMLHttpRequest();
-    rawFile.overrideMimeType("application/json");
-    rawFile.open("GET", file, true);
-    rawFile.onreadystatechange = function() {
-        if (rawFile.readyState === 4 && rawFile.status == "200") {
-            callback(rawFile.responseText);
-        }
-    }
-    rawFile.send(null);
-}
-
-function menuLoadBlocksNew(callback) {
+function menuLoadBlocks(callback) {
     console.log("should get available blocks");
     var keys = getServerObjectLogicKeys(globalStates.currentLogic);
     getData('http://' + keys.ip + ':' + httpPort + '/availableLogicBlocks', keys.objectKey, function (req, thisKey) {
@@ -1048,39 +968,6 @@ function menuLoadBlocksNew(callback) {
         console.log(thisKey);
         callback(req);
     });
-}
-
-// TODO: how to load json file and html page from local directory without using XHR request?
-function menuLoadBlocks(callback) {
-    var filename = 'blocks/blocks.json';
-    readTextFile(filename, function(fileText){
-        var blockJSON = JSON.parse(fileText);
-        console.log(blockJSON);
-        var blockDirs = blockJSON['blockDirs'];
-        var blockData = {};
-        var numBlocksLoaded = 0;
-
-        console.log(blockDirs);
-        blockDirs.forEach( function(category, i) {
-            blockData[i] = {};
-            category.forEach( function(blockDirName) {
-                var blockPath = 'blocks/' + blockDirName + '/block.json';
-                readTextFile(blockPath, function(blockFileText) {
-                    blockData[i][blockDirName] = JSON.parse(blockFileText);
-                    numBlocksLoaded++;
-                    if (numBlocksLoaded === blockDirs.length) {
-                        callback(blockData);
-                    }
-                });
-            });
-        });
-    });
-}
-
-// TODO: in the future, cache some blocks that can be loaded immeditately
-//       instead of requesting data from another file
-function defaultBlockData() {
-    return [ [], [], [], [], [] ];
 }
 
 function menuTabSelected(e) {
@@ -1133,60 +1020,24 @@ function redisplayBlockSelection() {
     for (var key in blocksObject) {
         blocksInThisSection.push(blocksObject[key]);
     }
-    console.log(blocksInThisSection);
-
-    var keys = getServerObjectLogicKeys(globalStates.currentLogic);
-
-    // if (blockIconCache[keys.logicKey] === undefined) {
-    //     blockIconCache[keys.logicKey] = {};
-    // }
 
     // reassign as many divs as needed to the current set of blocks
     for (var i = 0; i < blocksInThisSection.length; i++) {
         var blockDiv = guiState.menuBlockDivs[i];
         var thisBlockData = blocksInThisSection[i];
         blockDiv.blockData = thisBlockData;
-        // blockDiv.firstChild.innerHTML = thisBlockData['name'];
-        blockDiv.firstChild.innerHTML = "";
+        blockDiv.firstChild.innerHTML = ""; // reset block contents before adding anything
 
-        // load icon if possible
-        // if (blockIconCache[keys.logicKey][thisBlockData.name] === undefined) {
-        //     var iconUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + thisBlockData.name + "/icon.png";
-        //     var icon = new Image();
-        //     icon.src = iconUrl;
-        //     blockIconCache[keys.logicKey][thisBlockData.name] = icon;
-        // }
-
-
-
-    // var iconUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + thisBlockData.name + "/icon.png";
-        // e.g. logicBlock/switch/icon.png
-        // var iconImageP = document.createElement('p');
+        // load icon and title
         var iconImage = document.createElement("img");
         iconImage.setAttribute('class', 'blockIcon');
-    // iconImage.src = iconUrl;
-
-        // iconImage.src = blockIconCache[keys.logicKey][thisBlockData.name].src;
-
         iconImage.src = getBlockIcon(globalStates.currentLogic, thisBlockData.name).src;
-
-
-        // var iconImage = getBlockIcon(globalStates.currentLogic, thisBlockData.name);
-        // iconImage.setAttribute('class', 'blockIcon');
-
-                // blockDiv.firstChild.innerHTML = thisBlockData['name'];
-        // iconImageP.appendChild(iconImage);
         blockDiv.firstChild.appendChild(iconImage);
 
         var blockTitle = document.createElement('div');
         blockTitle.setAttribute('class', 'blockTitle');
         blockTitle.innerHTML = thisBlockData.text;
-
-        // blockDiv.firstChild.appendChild(document.createElement('br'));
-
         blockDiv.firstChild.appendChild(blockTitle);
-
-        // blockDiv.firstChild.setAttribute('class', 'example');
 
         blockDiv.style.display = 'inline-block';
     }

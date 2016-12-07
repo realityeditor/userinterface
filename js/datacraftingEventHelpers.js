@@ -459,11 +459,7 @@ function isOutputBlock(block) {
   return isPortBlock(block) && !isInputBlock(block);
 }
 
-// new functions
-
 function addBlockFromMenu(blockJSON, pointerX, pointerY) {
-    // var name = blockJSON.name;
-    // var width = blockJSON.width;
     var globalId = generateBlockGlobalId();
     var addedBlock = addBlock(-1, -1, blockJSON, globalId);
     addDomElementForBlock(addedBlock, globalStates.currentLogic.grid, true);
@@ -479,37 +475,16 @@ function addBlockFromMenu(blockJSON, pointerX, pointerY) {
         pageX: pointerX,
         pageY: pointerY
     });
-
 }
 
-// TODO: handle differently if can't load iframe? don't display at all?
-  // (do some blocks not have settings and therefore opening the settings
-  // page should be disabled?)
 function openBlockSettings(block) {
-
   var keys = getServerObjectLogicKeys(globalStates.currentLogic);
   var settingsUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + block.name + "/index.html";
   var craftingBoard = document.getElementById('craftingBoard');
   var blockSettingsContainer = document.createElement('iframe');
-
-/*
-  blockSettingsContainer.addEventListener('load', function() {
-    blockSettingsContainer.contentWindow.openSettingsWithHandler(handleBlockSettingsChange, block);
-  });
-*/
-
   blockSettingsContainer.setAttribute('id', 'blockSettingsContainer');
-  blockSettingsContainer.src = settingsUrl; //'blocks/'+block.name+'/settings.html';
-  // blockSettingsContainer... //post default settings to page
+  blockSettingsContainer.src = settingsUrl;
   craftingBoard.appendChild(blockSettingsContainer);
-}
-
-function handleBlockSettingsChange(block, params) {
-  for (key in params) {
-    if (block.publicData.hasOwnProperty(key)) {
-      block.publicData[key] = params[key];
-    }
-  }
 }
 
 function hideBlockSettings() {
