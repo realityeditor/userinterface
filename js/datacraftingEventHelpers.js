@@ -173,6 +173,8 @@ function placeBlockInCell(contents, cell) {
     //  }
     //}
 
+    removeBlockDom(contents.block); // remove do so it can be re-rendered in the correct place
+
     convertTempLinkOutlinesToLinks(contents);
 
     portLinkData.forEach( function(linkData) {
@@ -484,13 +486,20 @@ function addBlockFromMenu(blockJSON, pointerX, pointerY) {
   // (do some blocks not have settings and therefore opening the settings
   // page should be disabled?)
 function openBlockSettings(block) {
+
+  var keys = getServerObjectLogicKeys(globalStates.currentLogic);
+  var settingsUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + block.name + "/index.html";
   var craftingBoard = document.getElementById('craftingBoard');
   var blockSettingsContainer = document.createElement('iframe');
+
+/*
   blockSettingsContainer.addEventListener('load', function() {
     blockSettingsContainer.contentWindow.openSettingsWithHandler(handleBlockSettingsChange, block);
   });
+*/
+
   blockSettingsContainer.setAttribute('id', 'blockSettingsContainer');
-  blockSettingsContainer.src = 'blocks/'+block.name+'/settings.html';
+  blockSettingsContainer.src = settingsUrl; //'blocks/'+block.name+'/settings.html';
   // blockSettingsContainer... //post default settings to page
   craftingBoard.appendChild(blockSettingsContainer);
 }

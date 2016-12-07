@@ -1027,14 +1027,18 @@ function updateGrid(grid) {
 
     var guiState = globalStates.currentLogic.guiState;
 
-    // reset all domElements //TODO: only change blocks that were modified??
+    // reset domElements 
     for (var domKey in guiState.blockDomElements) {
         var blockDomElement = guiState.blockDomElements[domKey];
-        blockDomElement.parentNode.removeChild(blockDomElement);
-        delete guiState.blockDomElements[domKey];
+
+        // remove dom elements if their blocks are gone or needs to be reset
+        if (shouldRemoveBlockDom(blockDomElement)) {
+            blockDomElement.parentNode.removeChild(blockDomElement);
+            delete guiState.blockDomElements[domKey];
+        }
     }
 
-    // add new domElement for each block
+    // add new domElement for each block that needs one
     for (var blockKey in globalStates.currentLogic.blocks) {
         var block = globalStates.currentLogic.blocks[blockKey];
         if (block.isPortBlock) continue; // don't render invisible input/output blocks
@@ -1042,14 +1046,81 @@ function updateGrid(grid) {
             removeBlock(globalStates.currentLogic, blockKey);
             continue;
         }
-        addDomElementForBlock(block, grid);
+
+        // only add if the block doesn't already have one
+        var blockDomElement = guiState.blockDomElements[block.globalId];
+        if (!blockDomElement) {
+            addDomElementForBlock(block, grid);
+        }
+
     }
+}
+
+function removeBlockDom(block) {
+    var blockDomElement = getDomElementForBlock(block);
+    blockDomElement.parentNode.removeChild(blockDomElement);
+    delete globalStates.currentLogic.guiState.blockDomElements[block.globalId];
+}
+
+function shouldRemoveBlockDom(blockDomElement) {
+    return (getBlockForDom(blockDomElement) === null);
+}
+
+function getBlockForDom(blockDomElement) {
+    for (var blockKey in globalStates.currentLogic.blocks) {
+        var block = globalStates.currentLogic.blocks[blockKey];
+        if (globalStates.currentLogic.guiState.blockDomElements[block.globalId] === blockDomElement) {
+            return block;
+        }
+    }
+    return null;
 }
 
 function addDomElementForBlock(block, grid, isTempBlock) {
     var blockDomElement = document.createElement('div');
     blockDomElement.setAttribute('class','blockDivPlaced');
-    blockDomElement.innerHTML = block.text; //TODO: use block.iconImage if it has one
+    
+    // blockDomElement.innerHTML = block.text; //TODO: use block.iconImage if it has one
+
+        var blockContents = document.createElement('div');
+        blockContents.setAttribute('class', 'menuBlockContents');
+        blockContents.setAttribute("touch-action", "none");
+        blockDomElement.appendChild(blockContents);
+
+        if (block.name) {
+
+            // var keys = getServerObjectLogicKeys(globalStates.currentLogic);
+            // var iconUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + block.name + "/icon.png";
+            // e.g. logicBlock/switch/icon.png
+            // var iconImageP = document.createElement('p');
+            var iconImage = document.createElement("img");
+            iconImage.setAttribute('class', 'blockIcon');
+            // iconImage.src = iconUrl;
+
+            iconImage.src = getBlockIcon(globalStates.currentLogic, block.name).src;
+
+
+            // var iconImage = getBlockIcon(globalStates.currentLogic, block.name);
+            // iconImage.setAttribute('class', 'blockIcon');
+
+                    // blockDiv.firstChild.innerHTML = thisBlockData['name'];
+            // iconImageP.appendChild(iconImage);
+            blockContents.appendChild(iconImage);
+
+            var blockTitle = document.createElement('div');
+            blockTitle.setAttribute('class', 'blockTitle');
+            blockTitle.innerHTML = block.text;
+
+            // blockDiv.firstChild.appendChild(document.createElement('br'));
+
+            blockContents.appendChild(blockTitle);
+
+        }
+
+        // blockDiv.firstChild.setAttribute('class', 'example');
+
+        blockDomElement.style.display = 'inline-block';
+
 
     // if we're adding a temp block, it doesn't have associated cells it can use to calculate position. we need to remember to set position to pointer afterwards
     if (!isTempBlock) { //TODO: is there a way to set position for new blocks consistently?

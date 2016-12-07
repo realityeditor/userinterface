@@ -798,10 +798,10 @@ function initLogicInOutBlocks() {
     }
 }
 
-function toBlockJSON(name, width, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput) {
+function toBlockJSON(name, blockSize, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput) {
     return {
         name: name,
-        width: width,
+        blockSize: blockSize,
         privateData: privateData,
         publicData: publicData,
         activeInputs: activeInputs,
@@ -970,18 +970,23 @@ function initializeBlockMenu(callback) {
     }
 
     menuLoadBlocksNew( function(blockData) {
-        console.log("menuLoadBlocksNew callback", blockData);
+
+        // load each block from the downloaded json and add it to the appropriate category
         for (var key in blockData) {
             if (!blockData.hasOwnProperty(key)) continue;
             var block = blockData[key];
 
+            var categoryIndex = 0;
+            if (block.category) {
+              categoryIndex = block.category - 1;
+            }
+            var categoryMenu = logic.guiState.menuBlockData[categoryIndex];
+            categoryMenu[key] = block;
         }
-    });
 
-    menuLoadBlocks( function(blockData) {
-        for (var i = 0; i < menuNumTabs; i++) {
-            logic.guiState.menuBlockData[i] = blockData[i];
-        }
+        console.log("menuBlockData = ");
+        console.log(logic.guiState.menuBlockData);
+
         for (var r = 0; r < menuRows; r++) {
             var row = document.createElement('div');
             menuBlockContainer.appendChild(row);
@@ -1101,6 +1106,25 @@ function redisplayTabSelection() {
     });
 }
 
+function getBlockIcon(logic, blockName) {
+    var keys = getServerObjectLogicKeys(logic);
+
+    if (blockIconCache[keys.logicKey] === undefined) {
+        blockIconCache[keys.logicKey] = {};
+    }
+
+    // download icon to cache if not already there
+    if (blockIconCache[keys.logicKey][blockName] === undefined) {
+        var iconUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + blockName + "/icon.png";
+        var icon = new Image();
+        icon.src = iconUrl;
+        blockIconCache[keys.logicKey][blockName] = icon;
+    }
+
+    // otherwise just directly return from cache
+    return blockIconCache[keys.logicKey][blockName];
+}
+
 function redisplayBlockSelection() {
     var guiState = globalStates.currentLogic.guiState;
 
@@ -1111,12 +1135,59 @@ function redisplayBlockSelection() {
     }
     console.log(blocksInThisSection);
 
+    var keys = getServerObjectLogicKeys(globalStates.currentLogic);
+
+    // if (blockIconCache[keys.logicKey] === undefined) {
+    //     blockIconCache[keys.logicKey] = {};
+    // }
+
     // reassign as many divs as needed to the current set of blocks
     for (var i = 0; i < blocksInThisSection.length; i++) {
         var blockDiv = guiState.menuBlockDivs[i];
         var thisBlockData = blocksInThisSection[i];
         blockDiv.blockData = thisBlockData;
-        blockDiv.firstChild.innerHTML = thisBlockData['name'];
+        // blockDiv.firstChild.innerHTML = thisBlockData['name'];
+        blockDiv.firstChild.innerHTML = "";
+
+        // load icon if possible
+        // if (blockIconCache[keys.logicKey][thisBlockData.name] === undefined) {
+        //     var iconUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + thisBlockData.name + "/icon.png";
+        //     var icon = new Image();
+        //     icon.src = iconUrl;
+        //     blockIconCache[keys.logicKey][thisBlockData.name] = icon;
+        // }
+
+
+
+    // var iconUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + thisBlockData.name + "/icon.png";
+        // e.g. logicBlock/switch/icon.png
+        // var iconImageP = document.createElement('p');
+        var iconImage = document.createElement("img");
+        iconImage.setAttribute('class', 'blockIcon');
+    // iconImage.src = iconUrl;
+
+        // iconImage.src = blockIconCache[keys.logicKey][thisBlockData.name].src;
+
+        iconImage.src = getBlockIcon(globalStates.currentLogic, thisBlockData.name).src;
+
+
+        // var iconImage = getBlockIcon(globalStates.currentLogic, thisBlockData.name);
+        // iconImage.setAttribute('class', 'blockIcon');
+
+                // blockDiv.firstChild.innerHTML = thisBlockData['name'];
+        // iconImageP.appendChild(iconImage);
+        blockDiv.firstChild.appendChild(iconImage);
+
+        var blockTitle = document.createElement('div');
+        blockTitle.setAttribute('class', 'blockTitle');
+        blockTitle.innerHTML = thisBlockData.text;
+
+        // blockDiv.firstChild.appendChild(document.createElement('br'));
+
+        blockDiv.firstChild.appendChild(blockTitle);
+
+        // blockDiv.firstChild.setAttribute('class', 'example');
+
         blockDiv.style.display = 'inline-block';
     }
 
@@ -1134,9 +1205,9 @@ function blockMenuPointerDown(e) {
   var guiState = globalStates.currentLogic.guiState;
   guiState.menuBlockToAdd = null;
   guiState.menuIsPointerDown = true;
-  guiState.menuSelectedBlock = e.target;
+  guiState.menuSelectedBlock = e.currentTarget;
   guiState.menuSelectedBlock.parentNode.setAttribute('class', 'menuBlockSelected');
-  guiState.menuBlockToAdd = e.target.parentNode;
+  guiState.menuBlockToAdd = e.currentTarget.parentNode;
 }
 
 function blockMenuPointerUp(e) {

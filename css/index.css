@@ -441,14 +441,35 @@ Logic Interface CSS
 .menuBlockContents {
   width: 100%;
   height: 100%;
+
   display:-webkit-box;
   -webkit-box-pack:center;
   -webkit-box-align:center;
+  -webkit-box-orient:vertical;
+
   user-select:none;
   -webkit-user-select:none;
   color: #000000;
   font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
   font-size: 14px;
+  
+}
+
+.blockIcon {
+  text-align: center;
+  height: 20px;
+  /*width: 75%;*/
+/*  display:-webkit-box;
+  -webkit-box-pack:center;
+  -webkit-box-align:center;*/
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.blockTitle {
+  /*display: inline-block;*/
+  text-align: center;
+  /* height: 10px; */
 }
 
   @keyframes blockSelectedKeyframes {

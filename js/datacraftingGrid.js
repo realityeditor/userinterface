@@ -894,7 +894,7 @@ function addBlock(x,y,blockJSON,globalId,isEdgeBlock) {
     block.name = blockJSON.name;
     block.x = x;
     block.y = y;
-    block.blockSize = blockJSON.width;
+    block.blockSize = blockJSON.blockSize;
     block.globalId = globalId;
     block.checksum = null; // TODO: implement this!!
     block.privateData = blockJSON.privateData;
