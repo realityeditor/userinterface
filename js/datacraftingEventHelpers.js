@@ -134,7 +134,8 @@ function getServerObjectLogicKeys(logic) {
           return {
             ip: objects[key].ip,
             objectKey: key,
-            logicKey: logicKey
+            logicKey: logicKey,
+            blockKey: logic
           }
         }
       }
@@ -142,6 +143,30 @@ function getServerObjectLogicKeys(logic) {
   }
   return null;
 }
+
+function getServerObjectBlockKeys(logic,block) {
+  for (var key in objects) {
+    var object = objects[key];
+    for (var logicKey in object.nodes) {
+      if(object.nodes[logicKey].type === "logic") {
+        if (object.nodes[logicKey] === logic) {
+          for(var blockKey in logic.blocks){
+            if(logic.blocks[blockKey] === block) {
+            return {
+              ip: objects[key].ip,
+              object: key,
+              logic: logicKey,
+              block: blockKey
+            }
+            }
+          }
+        }
+      }
+    }
+  }
+  return null;
+}
+
 
 function placeBlockInCell(contents, cell) {
   var grid = globalStates.currentLogic.grid;
@@ -478,11 +503,14 @@ function addBlockFromMenu(blockJSON, pointerX, pointerY) {
 }
 
 function openBlockSettings(block) {
-  var keys = getServerObjectLogicKeys(globalStates.currentLogic);
+  var keys = getServerObjectBlockKeys(globalStates.currentLogic, block);
   var settingsUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + block.name + "/index.html";
   var craftingBoard = document.getElementById('craftingBoard');
   var blockSettingsContainer = document.createElement('iframe');
   blockSettingsContainer.setAttribute('id', 'blockSettingsContainer');
+
+  //console.log(JSON.stringify(block.publicData));
+ blockSettingsContainer.setAttribute("onload", "onLoadBlock('" + keys.object + "','" + keys.logic + "','" + keys.block + "','" + JSON.stringify(block.publicData) + "')");
   blockSettingsContainer.src = settingsUrl;
   craftingBoard.appendChild(blockSettingsContainer);
 }
@@ -492,4 +520,17 @@ function hideBlockSettings() {
   if (container) {
     container.parentNode.removeChild(container);
   }
+}
+
+
+function onLoadBlock(object,logic,block,publicData) {
+  var msg = {
+    object: object,
+    logic:  logic,
+    block:  block,
+    publicData: JSON.parse(publicData)
+  };
+
+  document.getElementById('blockSettingsContainer').contentWindow.postMessage(
+      JSON.stringify(msg), '*');
 }
