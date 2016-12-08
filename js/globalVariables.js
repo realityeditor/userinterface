@@ -109,12 +109,12 @@ var realityEditor = realityEditor || {
                 uuidTime: {},
                 uuidTimeShort: {},
                 randomIntInc: {}
-            }
+            },
         },
         network: {
             addHeartbeatObject: {},
             onAction: {},
-            onPostMessage: {},
+            onInternalPostMessage: {},
             deleteData: {},
             deleteLinkFromObject: {},
             deleteBlockFromObject: {},
