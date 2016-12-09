@@ -307,9 +307,10 @@ function replacePortBlocksIfNecessary(cells) {
         var nameOutput = ["","","",""];
         var blockPos = convertGridPosToBlockPos(cell.location.col, cell.location.row);
         var inOrOut = blockPos.y === 0 ? "In" : "Out";
+        var type = "edge";
         var name = "edgePlaceholder" + inOrOut + blockPos.x;
         var globalId = name;
-        var blockJSON = toBlockJSON(name, width, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput);
+        var blockJSON = toBlockJSON(type, name, width, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput);
         var block = addBlock(blockPos.x, blockPos.y, blockJSON, globalId, true);
       }
     }

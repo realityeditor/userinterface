@@ -788,18 +788,20 @@ function initLogicInOutBlocks() {
     for (var y = -1; y <= 4; y+= 5) {
         var namePrefix = y === -1 ? "in" : "out";
         for (var x = 0; x <= 3; x++) {
+            var type = namePrefix;
             var name = namePrefix + x;
             var activeInputs = (y === -1) ? [false, false, false, false] : [true, false, false, false];
             var activeOutputs = (y === -1) ? [true, false, false, false] : [false, false, false, false];
-            var blockJSON = toBlockJSON(name, 1, {}, {}, activeInputs, activeOutputs, ["","","",""], ["","","",""]);
+            var blockJSON = toBlockJSON(type, name, 1, {}, {}, activeInputs, activeOutputs, ["","","",""], ["","","",""]);
             var globalId = name;
             var block = addBlock(x, y, blockJSON, globalId, true);
         }
     }
 }
 
-function toBlockJSON(name, blockSize, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput) {
+function toBlockJSON(type, name, blockSize, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput) {
     return {
+        type: type,
         name: name,
         blockSize: blockSize,
         privateData: privateData,
@@ -1031,12 +1033,12 @@ function redisplayBlockSelection() {
         // load icon and title
         var iconImage = document.createElement("img");
         iconImage.setAttribute('class', 'blockIcon');
-        iconImage.src = getBlockIcon(globalStates.currentLogic, thisBlockData.name).src;
+        iconImage.src = getBlockIcon(globalStates.currentLogic, thisBlockData.type).src;
         blockDiv.firstChild.appendChild(iconImage);
 
         var blockTitle = document.createElement('div');
         blockTitle.setAttribute('class', 'blockTitle');
-        blockTitle.innerHTML = thisBlockData.text;
+        blockTitle.innerHTML = thisBlockData.name;
         blockDiv.firstChild.appendChild(blockTitle);
 
         blockDiv.style.display = 'inline-block';

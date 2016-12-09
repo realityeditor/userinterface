@@ -885,6 +885,7 @@ function blockWithID(globalID, logic) {
 function addBlock(x,y,blockJSON,globalId,isEdgeBlock) {
     var block = new Block();
 
+    block.type = blockJSON.type;
     block.name = blockJSON.name;
     block.x = x;
     block.y = y;
@@ -898,7 +899,6 @@ function addBlock(x,y,blockJSON,globalId,isEdgeBlock) {
     block.nameInput = blockJSON.nameInput;
     block.nameOutput = blockJSON.nameOutput;
     block.iconImage = null; //TODO: implement this!!
-    block.text = block.name; //TODO: should this be different?
     if (isEdgeBlock) block.isPortBlock = true;
 
     globalStates.currentLogic.blocks[block.globalId] = block;

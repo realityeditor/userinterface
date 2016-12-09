@@ -1089,12 +1089,12 @@ function addDomElementForBlock(block, grid, isTempBlock) {
     if (block.name) {
         var iconImage = document.createElement("img");
         iconImage.setAttribute('class', 'blockIcon');
-        iconImage.src = getBlockIcon(globalStates.currentLogic, block.name).src;
+        iconImage.src = getBlockIcon(globalStates.currentLogic, block.type).src;
         blockContents.appendChild(iconImage);
 
         var blockTitle = document.createElement('div');
         blockTitle.setAttribute('class', 'blockTitle');
-        blockTitle.innerHTML = block.text;
+        blockTitle.innerHTML = block.name;
         blockContents.appendChild(blockTitle);
     }
     blockDomElement.style.display = 'inline-block';

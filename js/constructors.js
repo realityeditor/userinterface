@@ -285,7 +285,7 @@ function BlockLink() {
 
 function Block() {
     // name of the block
-    this.name = "";
+    this.type = "";
 
     this.x = null;
     this.y = null;
@@ -313,7 +313,7 @@ function Block() {
     // A specific icon for the node, png or jpg.
     this.iconImage = null;
     // Text within the node, if no icon is available.
-    this.text = "";
+    this.name = "";
     // indicates how much calls per second is happening on this block
     this.stress = 0;
 
