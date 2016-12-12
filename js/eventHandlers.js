@@ -820,7 +820,7 @@ function moveBlockPosition(ip, thisObjectKey, thisLogicKey, thisBlockKey, conten
  **/
 
 function uploadNewBlockLink(ip, thisObjectKey, thisLogicKey, thisBlockLinkKey, blockLink) {
-    cout("sending Block");
+    cout("sending Block Link");
     var simpleBlockLink = convertBlockLinkToServerFormat(blockLink);
 
     // /logic/*/*/link/*/
@@ -839,7 +839,7 @@ function uploadNewBlockLink(ip, thisObjectKey, thisLogicKey, thisBlockLinkKey, b
 
 function deleteBlockLinkFromObject(ip, thisObjectKey, thisLogicKey, thisBlockLinkKey) {
 // generate action for all links to be reloaded after upload
-    cout("I am deleting a block: " + ip);
+    cout("I am deleting a block link: " + ip);
     // /logic/*/*/link/*/
     deleteData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/link/" + thisBlockLinkKey);
     cout("deleteBlockLinkFromObject");

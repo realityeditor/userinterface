@@ -105,6 +105,7 @@ function addHeartbeatObject(beat) {
                             thisObject.guiState = new LogicGUIState();
                             var container = document.getElementById('craftingBoard');
                             thisObject.grid = new Grid(container.clientWidth, container.clientHeight);
+                            convertLinksFromServer(thisObject);
                         }
                     }
 
@@ -156,6 +157,37 @@ function addHeartbeatObject(beat) {
             });
         }
     }
+}
+
+// convert links from in/out -> block not in edge row into 2 links, one from in/out->edge and another from edge->block
+// this puts the data in a format that is convenient for the UI while keeping the server data efficient
+function convertLinksFromServer(logic) {
+
+    globalStates.currentLogic = logic;
+
+    for (var linkKey in logic.links) {
+        var link = logic.links[linkKey];
+
+        if (isInOutBlock(link.nodeA) && logic.blocks[link.nodeB].y !== 0) {
+            // create separate links from in->edge and edge->block
+            var x = link.nodeA.slice(-1);
+            addBlockLink(link.nodeA, edgePlaceholderName(true, x), link.logicA, link.logicB, true);
+            addBlockLink(edgePlaceholderName(true, x), link.nodeB, link.logicA, link.logicB, true);
+
+            delete logic.links[linkKey];
+
+        } else if (isInOutBlock(link.nodeB) && logic.blocks[link.nodeA].y !== 3) {
+
+            // create separate links from block->edge and edge->out
+            var x = link.nodeB.slice(-1);
+            addBlockLink(link.nodeA, edgePlaceholderName(false, x), link.logicA, link.logicB, true);
+            addBlockLink(edgePlaceholderName(false, x), link.nodeB, link.logicA, link.logicB, true);
+
+            delete logic.links[linkKey];
+        }
+    }
+
+    globalStates.currentLogic = null;
 }
 
 /**
@@ -1178,6 +1210,10 @@ function redrawDatacrafting() {
 
         globalStates.currentLogic.guiState.tempIncomingLinks.forEach( function(linkData) {
             var startCell = getCellForBlock(grid, blockWithID(linkData.nodeA, globalStates.currentLogic), linkData.logicA);
+            if (!startCell && isInOutBlock(linkData.nodeA)) {
+                var col = linkData.nodeA.slice(-1) * 2;
+                startCell = grid.getCell(col, 0);
+            }
             var startX = grid.getCellCenterX(startCell);
             var startY = grid.getCellCenterY(startCell);
 
@@ -1196,6 +1232,10 @@ function redrawDatacrafting() {
             var startY = parseInt(domElement.style.top) + domElement.clientHeight/2;
 
             var endCell = getCellForBlock(grid, blockWithID(linkData.nodeB, globalStates.currentLogic), linkData.logicB);
+            if (!endCell && isInOutBlock(linkData.nodeB)) {
+                var col = linkData.nodeB.slice(-1) * 2;
+                endCell = grid.getCell(col, 6);
+            }
             var endX = grid.getCellCenterX(endCell);
             var endY = grid.getCellCenterY(endCell);
             var endColor = endCell.getColorHSL();

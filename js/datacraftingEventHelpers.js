@@ -122,7 +122,7 @@ function shouldUploadBlock(block) {
 
 function shouldUploadBlockLink(blockLink) {
   if (!blockLink) return false;
-  return !isInOutLink(blockLink);
+  return (!isEdgePlaceholderLink(blockLink)); // add links to surrounding instead of uploading itself
 }
 
 function getServerObjectLogicKeys(logic) {
@@ -186,17 +186,6 @@ function placeBlockInCell(contents, cell) {
       var keys = getServerObjectLogicKeys(globalStates.currentLogic);
       moveBlockPosition(keys.ip, keys.objectKey, keys.logicKey, contents.block.globalId, {x: contents.block.x, y: contents.block.y});
     }
-
-    //if (!isInOutBlock(contents.block.globalId) && !isPortBlock(contents.block)) {
-    //  for (var key in objects) {
-    //    var object = objects[key];
-    //    for (var logicKey in object.nodes) {
-    //      if (object.nodes[logicKey] === globalStates.currentLogic) {
-    //        moveBlockPosition(objects[key].ip, key, logicKey, contents.block.globalId, {x: contents.block.x, y: contents.block.y});
-    //      }
-    //    }
-    //  }
-    //}
 
     removeBlockDom(contents.block); // remove do so it can be re-rendered in the correct place
 
@@ -342,17 +331,43 @@ function updateTempLinkOutlinesForBlock(contents) {
 function convertTempLinkOutlinesToLinks(contents) {
   globalStates.currentLogic.guiState.tempIncomingLinks.forEach( function(linkData) {
     if (blocksExist(linkData.nodeA, contents.block.globalId)) {
-      addBlockLink(linkData.nodeA, contents.block.globalId, linkData.logicA, linkData.logicB, true);
+
+      if (!isInOutBlock(linkData.nodeA)) {
+        // add regular link back
+        addBlockLink(linkData.nodeA, contents.block.globalId, linkData.logicA, linkData.logicB, true);
+
+      } else {
+        // create separate links from in->edge and edge->block
+        var x = linkData.nodeA.slice(-1);
+        addBlockLink(linkData.nodeA, edgePlaceholderName(true, x), linkData.logicA, linkData.logicB, true);
+        addBlockLink(edgePlaceholderName(true, x), contents.block.globalId, linkData.logicA, linkData.logicB, true);
+      }
+
     }
   });
 
   globalStates.currentLogic.guiState.tempOutgoingLinks.forEach( function(linkData) {
     if (blocksExist(linkData.nodeB, contents.block.globalId)) {
-      addBlockLink(contents.block.globalId, linkData.nodeB, linkData.logicA, linkData.logicB, true);
+
+      if (!isInOutBlock(linkData.nodeB)) {
+        // add regular link back
+        addBlockLink(contents.block.globalId, linkData.nodeB, linkData.logicA, linkData.logicB, true);
+
+      } else {
+        // create separate links from block->edge and edge->out
+        var x = linkData.nodeB.slice(-1);
+        addBlockLink(contents.block.globalId, edgePlaceholderName(false, x), linkData.logicA, linkData.logicB, true);
+        addBlockLink(edgePlaceholderName(false, x), linkData.nodeB, linkData.logicA, linkData.logicB, true);
+      }
+
     }
   });
 
   resetTempLinkOutlines();
+}
+
+function edgePlaceholderName(isInBlock, x) {
+  return isInBlock ? "edgePlaceholderIn" + x : "edgePlaceholderOut" + x;
 }
 
 function blocksExist(block1ID, block2ID) {
