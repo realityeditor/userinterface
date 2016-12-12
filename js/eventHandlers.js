@@ -425,6 +425,11 @@ function documentPointerDown(evt) {
         }
     }
 
+    if (memoryCanCreate() && window.innerWidth - evt.clientX > 65) {
+        pocketOnMemoryCreationStart();
+    }
+
+/*
     // todo for testing only
 
     pocketItemId = uuidTime();
@@ -435,8 +440,10 @@ function documentPointerDown(evt) {
 
     var thisItem = pocketItem.pocket.nodes[pocketItemId];
 
-    if (memoryCanCreate() && window.innerWidth - evt.clientX > 65) {
-        pocketOnMemoryCreationStart();
+
+    if(globalLogic.farFrontElement==="") {
+        thisItem.x = evt.clientX - (globalStates.height / 2);
+        thisItem.y = evt.clientY - (globalStates.width / 2);
     }
    // else {
        // var matrixTouch =  screenCoordinatesToMatrixXY(thisItem, [evt.clientX,evt.clientY]);
@@ -470,6 +477,8 @@ function documentPointerDown(evt) {
 
     //addElement("pocket", pocketItemId, "nodes/" + thisItem.type + "/index.html",  pocketItem.pocket, "logic",globalStates);
 
+
+*/
     cout("documentPointerDown");
 }
 
