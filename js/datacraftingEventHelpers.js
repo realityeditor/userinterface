@@ -23,6 +23,7 @@ function getCellContents(cell) {
 }
 
 function areCellsEqual(cell1, cell2) {
+  if (!cell1 || !cell2) return false;
   return (cell1.location.col === cell2.location.col)
       && (cell1.location.row === cell2.location.row);
 }
@@ -49,7 +50,7 @@ function snapBlockToCellIfPossible(contents, cell, pointerX, pointerY) {
   if (canPlaceBlockInCell(contents, cell)) {
     var dX = Math.abs(pointerX - grid.getCellCenterX(cell)) / (grid.blockColWidth/2);
     var dY = Math.abs(pointerY - grid.getCellCenterY(cell)) / (grid.blockRowHeight/2);
-    var shouldSnap = (dX * dX + dY * dY) < 0.5; // only snaps to grid if tighter bound is overlapped
+    var shouldSnap = ((dX * dX + dY * dY) < 0.5) && (!areCellsEqual(contents.cell, cell)); // only snaps to grid if tighter bound is overlapped
     if (shouldSnap) {
       moveBlockDomToPosition(contents, grid.getCellCenterX(cell), grid.getCellCenterY(cell));
       return true;
@@ -99,7 +100,7 @@ function styleBlockForHolding(contents, startHold) {
   var domElement = getDomElementForBlock(contents.block);
   if (!domElement) return;
   if (startHold) {
-    domElement.setAttribute('class','blockDivHighlighted');
+    domElement.setAttribute('class','blockDivHighlighted blockDivMovingAble');
   } else {
     domElement.setAttribute('class','blockDivPlaced');
   }
@@ -110,9 +111,9 @@ function styleBlockForPlacement(contents, shouldHighlight) {
   var domElement = getDomElementForBlock(contents.block);
   if (!domElement) return;
   if (shouldHighlight) {
-    domElement.style.opacity = 1.00;
+    domElement.setAttribute('class','blockDivHighlighted blockDivMovingAble');
   } else {
-    domElement.style.opacity = 0.50;
+    domElement.setAttribute('class','blockDivHighlighted blockDivMovingUnable');
   }
 }
 

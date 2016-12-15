@@ -647,6 +647,12 @@ function craftingBoardHide() {
  **/
 
 function blockMenuVisible() {
+    //temporarily hide all other datacrafting divs. redisplay them when menu hides
+    document.getElementById("datacraftingCanvas").style.display = "none";
+    document.getElementById("blockPlaceholders").style.display = "none";
+    document.getElementById("blocks").style.display = "none";
+    document.getElementById("datacraftingEventDiv").style.display = "none";
+
     // create the menu if it doesn't already exist, otherwise just show it
     var existingMenu = document.getElementById('menuContainer');
     if (existingMenu) {
@@ -666,6 +672,14 @@ function blockMenuVisible() {
  **/
 
 function blockMenuHide() {
+
+    //temporarily hide all other datacrafting divs. redisplay them when menu hides
+    document.getElementById("datacraftingCanvas").style.display = "";
+    document.getElementById("blockPlaceholders").style.display = "";
+    document.getElementById("blocks").style.display = "";
+    document.getElementById("datacraftingEventDiv").style.display = "";
+
+
     var existingMenu = document.getElementById('menuContainer');
     if (existingMenu) {
         existingMenu.style.display = 'none';
@@ -674,6 +688,8 @@ function blockMenuHide() {
           document.getElementById('pocketButton').src = pocketButtonImage[4].src;
         }
     }
+
+
 }
 
 /**********************************************************************************************************************
@@ -724,15 +740,11 @@ function initializeDatacraftingGrid(logic) {
     var container = document.getElementById('craftingBoard');
 
     // initializes the data model for the datacrafting board
-    logic.grid = new Grid(container.clientWidth, container.clientHeight);
+    logic.grid = new Grid(container.clientWidth - menuBarWidth, container.clientHeight);
 
     var datacraftingCanvas = document.createElement('canvas');
     datacraftingCanvas.setAttribute('id', 'datacraftingCanvas');
     container.appendChild(datacraftingCanvas);
-
-    var sidebarBackground = document.createElement('div');
-    sidebarBackground.setAttribute('id', 'sidebarBackground');
-    container.appendChild(sidebarBackground);
 
     var dimensions = logic.grid.getPixelDimensions();
     datacraftingCanvas.width = dimensions.width;
@@ -745,6 +757,7 @@ function initializeDatacraftingGrid(logic) {
     blockPlaceholdersContainer.setAttribute('id', 'blockPlaceholders');
     container.appendChild(blockPlaceholdersContainer);
 
+    /*
     for (var rowNum = 0; rowNum < logic.grid.size; rowNum+=2) {
         var rowDiv = document.createElement('div');
         rowDiv.setAttribute("class", "row");
@@ -755,10 +768,73 @@ function initializeDatacraftingGrid(logic) {
                 var blockPlaceholder = document.createElement('div');
                 var className = (colNum === logic.grid.size - 1) ? "blockPlaceholderLastCol" : "blockPlaceholder";
                 blockPlaceholder.setAttribute("class", className);
-                var colorMapKey = (rowNum === 0 || rowNum === 6) ? "bright" : "faded";
-                blockPlaceholder.style.backgroundColor = blockColorMap[colorMapKey][colNum/2];
+                //var colorMapKey = (rowNum === 0 || rowNum === 6) ? "bright" : "faded";
+                //blockPlaceholder.style.backgroundColor = blockColorMap[colorMapKey][colNum/2];
+                blockPlaceholder.style.border = "2px solid " + blockColorMap[colNum/2]; //rgb(45, 255, 254);"
+                if (rowNum === 0 || rowNum === 6) {
+                    var labelContainer = document.createElement("div");
+                    labelContainer.setAttribute("class", "blockPlaceholderLabel");
+                    var label = document.createElement("div");
+                    label.style.color = blockColorMap[colNum/2];
+                    label.innerHTML = (rowNum === 0) ? "IN" : "OUT";
+                    labelContainer.appendChild(label);
+                    blockPlaceholder.appendChild(labelContainer);
+                }
                 rowDiv.appendChild(blockPlaceholder);
             }
+        }
+    }
+    */
+
+    for (var rowNum = 0; rowNum < logic.grid.size; rowNum++) {
+
+        if (rowNum % 2 === 0) {
+
+            var rowDiv = document.createElement('div');
+            rowDiv.setAttribute("class", "blockPlaceholderRow");
+            rowDiv.style.height = logic.grid.blockRowHeight;
+            blockPlaceholdersContainer.appendChild(rowDiv);
+
+            for (var colNum = 0; colNum < logic.grid.size; colNum++) {
+                if (colNum % 2 === 0) {
+                    var blockPlaceholder = document.createElement('div');
+                    var className = (colNum === logic.grid.size - 1) ? "blockPlaceholderLastCol" : "blockPlaceholder";
+                    blockPlaceholder.setAttribute("class", className);
+                    //var colorMapKey = (rowNum === 0 || rowNum === 6) ? "bright" : "faded";
+                    //blockPlaceholder.style.backgroundColor = blockColorMap[colorMapKey][colNum/2];
+                    blockPlaceholder.style.border = "2px solid " + blockColorMap[colNum / 2]; //rgb(45, 255, 254);"
+                    if (rowNum === 0 || rowNum === 6) {
+                        var labelContainer = document.createElement("div");
+                        labelContainer.setAttribute("class", "blockPlaceholderLabel");
+                        var label = document.createElement("div");
+                        label.style.color = blockColorMap[colNum / 2];
+                        label.innerHTML = (rowNum === 0) ? "IN" : "OUT";
+                        labelContainer.appendChild(label);
+                        blockPlaceholder.appendChild(labelContainer);
+                    }
+                    rowDiv.appendChild(blockPlaceholder);
+                }
+            }
+
+        } else {
+
+            var rowDiv = document.createElement('div');
+            rowDiv.setAttribute("class", "blockPlaceholderRow");
+            rowDiv.style.height = logic.grid.marginRowHeight;
+            blockPlaceholdersContainer.appendChild(rowDiv);
+
+            for (var colNum = 0; colNum < logic.grid.size; colNum++) {
+                if (colNum % 2 === 0) {
+                    var columnHighlight = document.createElement('div');
+                    var className = (colNum === logic.grid.size - 1) ? "columnHighlightLastCol" : "columnHighlight";
+                    columnHighlight.setAttribute("class", className);
+                    //var colorMapKey = (rowNum === 0 || rowNum === 6) ? "bright" : "faded";
+                    //blockPlaceholder.style.backgroundColor = blockColorMap[colorMapKey][colNum/2];
+                    columnHighlight.style.background = columnHighlightColorMap[colNum/2];
+                    rowDiv.appendChild(columnHighlight);
+                }
+            }
+
         }
     }
 
@@ -1059,7 +1135,7 @@ function blockMenuPointerDown(e) {
   guiState.menuBlockToAdd = null;
   guiState.menuIsPointerDown = true;
   guiState.menuSelectedBlock = e.currentTarget;
-  guiState.menuSelectedBlock.parentNode.setAttribute('class', 'menuBlockSelected');
+  guiState.menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock blockDivMovingAble');
   guiState.menuBlockToAdd = e.currentTarget.parentNode;
 }
 

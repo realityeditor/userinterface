@@ -12,7 +12,9 @@ var cutLineStart = null;
 
 var startTapTime;
 
-var HOLD_TIME_THRESHOLD = 500;
+var HOLD_TIME_THRESHOLD = 300;
+
+var activeHoldTimer = null;
 
 // var tempIncomingLinks = [];
 // var tempOutgoingLinks = [];
@@ -39,7 +41,15 @@ function pointerDown(e) {
 
         startTapTime = Date.now();
 
-        styleBlockForHolding(globalStates.currentLogic.guiState.tappedContents, true);
+        var thisTappedContents = contents;
+        activeHoldTimer = setTimeout( function() {
+            //if (globalStates.currentLogic.guiState.tappedContents === thisTappedContents &&
+            //    touchState === TS_TAP_BLOCK) {
+                styleBlockForHolding(thisTappedContents, true);
+            //}
+        }, HOLD_TIME_THRESHOLD);
+
+        //styleBlockForHolding(globalStates.currentLogic.guiState.tappedContents, true);
 
     } else {
         touchState = TS_CUT;
@@ -68,8 +78,10 @@ function pointerMove(e) {
             styleBlockForHolding(tappedContents, false);
             if (canDrawLineFrom(tappedContents)) {
                 touchState = TS_CONNECT;
+                clearTimeout(activeHoldTimer);
             } else {
                 touchState = TS_NONE;
+                clearTimeout(activeHoldTimer);
             }
         
         // otherwise if enough time has passed, change to TS_HOLD
@@ -78,6 +90,8 @@ function pointerMove(e) {
             if (Date.now() - startTapTime > HOLD_TIME_THRESHOLD) {
                 console.log("enough time has passed -> HOLD (" + (Date.now() - startTapTime) + ")");
                 touchState = TS_HOLD;
+                clearTimeout(activeHoldTimer);
+                styleBlockForHolding(globalStates.currentLogic.guiState.tappedContents, true);
             }
         }
 
@@ -86,11 +100,11 @@ function pointerMove(e) {
         // if you moved to a different cell, go to TS_MOVE
         // remove the block and create a temp block
 
-        if (!areCellsEqual(cell, tappedContents.cell)) {
+        //if (!areCellsEqual(cell, tappedContents.cell)) {
             touchState = TS_MOVE;
             convertToTempBlock(tappedContents);
             moveBlockDomToPosition(tappedContents, e.pageX, e.pageY);
-        }
+        //}
 
     } else if (touchState === TS_CONNECT) {
 
@@ -149,6 +163,7 @@ function pointerUp(e, didPointerLeave) {
         // for now -> do nothing
         // but in the future -> this will open the block settings screen
         styleBlockForHolding(tappedContents, false);
+        clearTimeout(activeHoldTimer);
 
         if (!isPortBlock(contents.block)) {
             if (Date.now() - startTapTime < (HOLD_TIME_THRESHOLD/2)) {

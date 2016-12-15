@@ -104,7 +104,7 @@ function addHeartbeatObject(beat) {
                         if(thisObject.type === "logic") {
                             thisObject.guiState = new LogicGUIState();
                             var container = document.getElementById('craftingBoard');
-                            thisObject.grid = new Grid(container.clientWidth, container.clientHeight);
+                            thisObject.grid = new Grid(container.clientWidth - menuBarWidth, container.clientHeight);
                             convertLinksFromServer(thisObject);
                         }
                     }

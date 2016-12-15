@@ -230,12 +230,16 @@ var overlayDiv;
  ***************************************** datacrafting variables  ****************************************************
  **********************************************************************************************************************/
 
- var blockColorMap = {
-    bright:["#2DFFFE", "#29FD2F", "#FFFD38", "#FC157D"], // blue, green, yellow, red
-    faded:["#EAFFFF", "#EAFFEB", "#FFFFEB", "#FFE8F2"] // lighter: blue, green, yellow, red
-}
-var activeBlockColor = "#E6E6E6"; // added blocks are grey
-var movingBlockColor = "#FFFFFF"; // blocks turn white when you start to drag them
+// var blockColorMap = {
+//    bright:["#2DFFFE", "#29FD2F", "#FFFD38", "#FC157D"], // blue, green, yellow, red
+//    faded:["#EAFFFF", "#EAFFEB", "#FFFFEB", "#FFE8F2"] // lighter: blue, green, yellow, red
+//}
+
+var menuBarWidth = 62;
+var blockColorMap = ["#00FFFF", "#00FF00", "#FFFF00", "#FF007C"];
+var columnHighlightColorMap = ["rgba(0,255,255,0.15)", "rgba(0,255,0,0.15)", "rgba(255,255,0,0.15)", "rgba(255,0,124,0.15)"];
+//var activeBlockColor = "#E6E6E6"; // added blocks are grey
+//var movingBlockColor = "#FFFFFF"; // blocks turn white when you start to drag them
 
 var DEBUG_DATACRAFTING = false; // when TRUE -> shows crafting board just by tapping on first menu item (DEBUG mode)
 

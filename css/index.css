@@ -199,11 +199,14 @@ body {
     visibility: hidden;
     -webkit-transform-style: preserve-3d;
     position: fixed;
-    width: 506px;
+    /*width: 506px;*/
+    width: 568px;
     height: 320px;
     margin: 0;
     padding: 0;
-    background-color: #969696;
+    background-color: rgba(20,20,20,0.5);
+    -webkit-backdrop-filter: blur(30px);
+    /*background-color: #969696;*/
     -webkit-user-select: none;
     user-select: none;
 
@@ -289,94 +292,108 @@ Logic Interface CSS
   left: 0;
 }
 
+.blockPlaceholderRow {
+    width: 100%;
+}
+
 .blockPlaceholder {
     width: 92px;
-    height: 46px;
+    height:100%;
     margin-right: 46px;
-    margin-bottom: 46px;
     display: inline-block;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     box-sizing: border-box;         /* Opera/IE 8+ */
-    opacity: 0.75;
 }
 
 .blockPlaceholderLastCol {
     width: 92px;
-    height: 46px;
-    margin-bottom: 46px;
+    height:100%;
     display: inline-block;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     box-sizing: border-box;         /* Opera/IE 8+ */
-    opacity: 0.75;
+}
+
+.blockPlaceholderLabel {
+    width: 100%;
+    height: 100%;
+    display: -webkit-box;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 24px;
+}
+
+.columnHighlight {
+    width: 92px;
+    height:100%;
+    margin-right: 46px;
+    display: inline-block;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+.columnHighlightLastCol {
+    width: 92px;
+    height:100%;
+    display: inline-block;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    box-sizing: border-box;         /* Opera/IE 8+ */
 }
 
 #datacraftingCanvas {
     position: absolute;
     left: 0;
     top: 0;
-    background-color: #B7B7B7;
 }
 
 #datacraftingEventDiv {
   position: absolute;
   left: 0;
   top: 0;
-  /*width: 100%;*/
-  /*height: 100%;*/
   width: 568px;
   height: 320px;
 }
 
-#sidebarBackground {
-    position: absolute;
-    right: -70px;
-    top: 0;
-    background-color: #B7B7B7;
-    height: 100%;
-    width: 70px;
-}
-
 .blockDivPlaced {
   position: absolute;
-  color: #000000;
+  color: white;
   user-select:none;
   -webkit-user-select:none;
   display:-webkit-box;
   -webkit-box-pack:center;
   -webkit-box-align:center;
-  /*width: 100%;*/
-  /*height: 100%;*/
-  background-color: #E6E6E6;
-  border: 1px solid black;
+  background-color: rgb(73,73,73);
+  border: 2px solid white;
   font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 }
 
 .blockDivHighlighted {
   position: absolute;
-  color: #000000;
+  color: white;
   user-select:none;
   -webkit-user-select:none;
   display:-webkit-box;
   -webkit-box-pack:center;
   -webkit-box-align:center;
-  border: 1px solid #646464;
+    background-color: rgb(73,73,73);
+    border: 2px solid white;
   font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 
-  background-color: #FFFFFF;
-  animation-name: blockDivHighlightedKeyframes;
-  animation-duration: 0.5s;
+  /*background-color: #FFFFFF;*/
+  /*animation-name: blockDivHighlightedKeyframes;*/
+  /*animation-duration: 0.5s;*/
 }
 
-@keyframes blockDivHighlightedKeyframes {
-  from {
-    background-color: #E6E6E6;
-    border: 1px solid black;
-  }
-  to {
-    background-color: #FFFFFF;
-    border: 1px solid #646464;
-  }
-}
+/*@keyframes blockDivHighlightedKeyframes {*/
+  /*from {*/
+    /*background-color: #E6E6E6;*/
+    /*border: 1px solid black;*/
+  /*}*/
+  /*to {*/
+    /*background-color: #FFFFFF;*/
+    /*border: 1px solid #646464;*/
+  /*}*/
+/*}*/
 
 .inputIndicator {
   background-color: black;
@@ -403,7 +420,7 @@ Logic Interface CSS
 /* block menu */
 
 #menuContainer {
-  background-color: #B7B7B7; /*#969696;*/
+  /*background-color: #B7B7B7; !*#969696;*!*/
   position: absolute;
   left: 0;
   top: 0;
@@ -421,7 +438,8 @@ Logic Interface CSS
 
 #menuSideContainer {
   position: absolute;
-  left: 400px;
+  /*left: 400px;*/
+  left: 398px;
   top: 0;
   width: 106px;
   height: 320px;
@@ -431,10 +449,11 @@ Logic Interface CSS
   width: 92px;
   height: 46px;
   display: inline-block;
-  background-color: #E6E6E6;
+  /*background-color: #E6E6E6;*/
+  background-color: rgb(73,73,73);
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  border: solid 2px #898989;
+  border: solid 2px white;
   margin: 3.5px;
 }
 
@@ -449,7 +468,8 @@ Logic Interface CSS
 
   user-select:none;
   -webkit-user-select:none;
-  color: #000000;
+  /*color: #000000;*/
+  color: white;
   font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
   font-size: 14px;
   
@@ -464,6 +484,7 @@ Logic Interface CSS
   -webkit-box-align:center;*/
   user-select:none;
   -webkit-user-select:none;
+  -webkit-filter: invert(100%); /*TODO: temporary fix until icon colors are preset to white*/
 }
 
 .blockTitle {
@@ -472,36 +493,36 @@ Logic Interface CSS
   /* height: 10px; */
 }
 
-  @keyframes blockSelectedKeyframes {
-    from {background-color: #E6E6E6;}
-    to {background-color: #FFFFFF;}
-  }
+  /*@keyframes blockSelectedKeyframes {*/
+    /*from {background-color: #E6E6E6;}*/
+    /*to {background-color: #FFFFFF;}*/
+  /*}*/
 
-.menuBlockSelected {
-  width: 92px;
-  height: 46px;
-  display: inline-block;
-  background-color: #FFFFFF;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  border: solid 2px #898989;
-  margin: 3.5px;
-  animation-name: blockSelectedKeyframes;
-  animation-duration: 0.25s;
-}
+/*.menuBlockSelected {*/
+  /*width: 92px;*/
+  /*height: 46px;*/
+  /*display: inline-block;*/
+  /*background-color: #FFFFFF;*/
+  /*-webkit-box-sizing: border-box;*/
+  /*box-sizing: border-box;*/
+  /*border: solid 2px #898989;*/
+  /*margin: 3.5px;*/
+  /*!*animation-name: blockSelectedKeyframes;*!*/
+  /*!*animation-duration: 0.25s;*!*/
+/*}*/
 
 .menuTab {
   width: 106px;
   height: 59.5px;
   margin-top: 3.5px;
   margin-bottom: 3.5px;
-  background-color: #E6E6E6;
+  /*background-color: #E6E6E6;*/
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  border: solid 2px #898989;
+  border: solid 2px rgb(0, 255, 255);
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-  border-right: none;
+  /*border-right: none;*/
   display:-webkit-box;
   -webkit-box-pack:center;
   -webkit-box-align:center;
@@ -512,13 +533,14 @@ Logic Interface CSS
   height: 59.5px;
   margin-top: 3.5px;
   margin-bottom: 3.5px;
-  background-color: #FFFFFF;
+  /*background-color: #FFFFFF;*/
+  background-color: rgba(0, 255, 255, 0.4);
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
-  border: solid 2px #898989;
+  border: solid 2px rgb(0, 255, 255);
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-  border-right: none;
+  /*border-right: none;*/
   display:-webkit-box;
   -webkit-box-pack:center;
   -webkit-box-align:center;
@@ -526,5 +548,21 @@ Logic Interface CSS
 
 .menuTabIcon {
   height: 75%;
-  opacity: 0.5;
+  /*opacity: 0.5;*/
+    -webkit-filter: invert(100%);
+}
+
+.blockDivMovingAble {
+    border: 2px solid rgb(0,255,0);
+    background: repeating-linear-gradient(-45deg, rgb(73, 73, 73), rgb(73, 73, 73) 16px, rgb(0, 255, 0) 16px, rgb(0, 255, 0) 32px);
+}
+
+.blockDivMovingUnable {
+    border: 2px solid rgb(255,0,124);
+    background: repeating-linear-gradient(-45deg, rgb(73, 73, 73), rgb(73, 73, 73) 16px, rgb(255,0,124) 16px, rgb(255,0,124) 32px);
+}
+
+.blockDivMovingSaveOrDeletable {
+    border: 2px solid rgb(255,255,0);
+    background: repeating-linear-gradient(-45deg, rgb(73, 73, 73), rgb(73, 73, 73) 16px, rgb(255,255,0) 16px, rgb(255,255,0) 32px);
 }
