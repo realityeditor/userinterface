@@ -569,8 +569,9 @@ body {
     display: block;
     margin: 0;
     padding: 0;
-    width: 56px;
+    width: 100px;
     height: 56px;
+    margin-left: calc(56px/2 - 100px/2);
     -webkit-user-select: none;
     -webkit-touch-callout: none;
 }
