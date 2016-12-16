@@ -375,35 +375,9 @@ Logic Interface CSS
   display:-webkit-box;
   -webkit-box-pack:center;
   -webkit-box-align:center;
-    background-color: rgb(73,73,73);
-    border: 2px solid white;
+  background-color: rgb(73,73,73);
+  border: 2px solid white;
   font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-
-  /*background-color: #FFFFFF;*/
-  /*animation-name: blockDivHighlightedKeyframes;*/
-  /*animation-duration: 0.5s;*/
-}
-
-/*@keyframes blockDivHighlightedKeyframes {*/
-  /*from {*/
-    /*background-color: #E6E6E6;*/
-    /*border: 1px solid black;*/
-  /*}*/
-  /*to {*/
-    /*background-color: #FFFFFF;*/
-    /*border: 1px solid #646464;*/
-  /*}*/
-/*}*/
-
-.inputIndicator {
-  background-color: black;
-  position: absolute;
-  top: 0;
-}
-
-.outputIndicator {
-  background-color: black;
-  position: absolute;
 }
 
 /* block settings */
@@ -449,7 +423,6 @@ Logic Interface CSS
   width: 92px;
   height: 46px;
   display: inline-block;
-  /*background-color: #E6E6E6;*/
   background-color: rgb(73,73,73);
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
@@ -460,19 +433,15 @@ Logic Interface CSS
 .menuBlockContents {
   width: 100%;
   height: 100%;
-
   display:-webkit-box;
   -webkit-box-pack:center;
   -webkit-box-align:center;
   -webkit-box-orient:vertical;
-
   user-select:none;
   -webkit-user-select:none;
-  /*color: #000000;*/
   color: white;
   font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
   font-size: 14px;
-  
 }
 
 .blockIcon {
@@ -493,36 +462,16 @@ Logic Interface CSS
   /* height: 10px; */
 }
 
-  /*@keyframes blockSelectedKeyframes {*/
-    /*from {background-color: #E6E6E6;}*/
-    /*to {background-color: #FFFFFF;}*/
-  /*}*/
-
-/*.menuBlockSelected {*/
-  /*width: 92px;*/
-  /*height: 46px;*/
-  /*display: inline-block;*/
-  /*background-color: #FFFFFF;*/
-  /*-webkit-box-sizing: border-box;*/
-  /*box-sizing: border-box;*/
-  /*border: solid 2px #898989;*/
-  /*margin: 3.5px;*/
-  /*!*animation-name: blockSelectedKeyframes;*!*/
-  /*!*animation-duration: 0.25s;*!*/
-/*}*/
-
 .menuTab {
   width: 106px;
   height: 59.5px;
   margin-top: 3.5px;
   margin-bottom: 3.5px;
-  /*background-color: #E6E6E6;*/
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   border: solid 2px rgb(0, 255, 255);
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-  /*border-right: none;*/
   display:-webkit-box;
   -webkit-box-pack:center;
   -webkit-box-align:center;
@@ -533,14 +482,12 @@ Logic Interface CSS
   height: 59.5px;
   margin-top: 3.5px;
   margin-bottom: 3.5px;
-  /*background-color: #FFFFFF;*/
   background-color: rgba(0, 255, 255, 0.4);
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   border: solid 2px rgb(0, 255, 255);
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-  /*border-right: none;*/
   display:-webkit-box;
   -webkit-box-pack:center;
   -webkit-box-align:center;
@@ -548,8 +495,7 @@ Logic Interface CSS
 
 .menuTabIcon {
   height: 75%;
-  /*opacity: 0.5;*/
-    -webkit-filter: invert(100%);
+  -webkit-filter: invert(100%);
 }
 
 .blockDivMovingAble {

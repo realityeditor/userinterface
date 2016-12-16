@@ -1142,34 +1142,6 @@ function addDomElementForBlock(block, grid, isTempBlock) {
     blockDomElement.style.width = getBlockPixelWidth(block,grid);
     blockDomElement.style.height = grid.blockRowHeight;
 
-    var indicatorWidth = 10;
-    
-    for (var i=0; i < block.blockSize; i++) {
-        var isActiveInput = block.activeInputs[i];
-        var isActiveOutput = block.activeOutputs[i];
-        if (isActiveInput) {
-            var inputIndicatorDiv = document.createElement('div');
-            inputIndicatorDiv.setAttribute('class', 'inputIndicator');
-            inputIndicatorDiv.style.width = indicatorWidth;
-            inputIndicatorDiv.style.height = 0.5 * indicatorWidth;
-            inputIndicatorDiv.style.left = offsetForItem(i) - 0.5 * indicatorWidth;
-            inputIndicatorDiv.style.borderBottomLeftRadius = 0.5 * indicatorWidth;
-            inputIndicatorDiv.style.borderBottomRightRadius = 0.5 * indicatorWidth;
-            blockDomElement.appendChild(inputIndicatorDiv);
-        }
-        if (isActiveOutput) {
-            var outputIndicatorDiv = document.createElement('div');
-            outputIndicatorDiv.setAttribute('class', 'outputIndicator');
-            outputIndicatorDiv.style.width = indicatorWidth;
-            outputIndicatorDiv.style.height = 0.5 * indicatorWidth;
-            outputIndicatorDiv.style.left = offsetForItem(i) - 0.5 * indicatorWidth;
-            outputIndicatorDiv.style.bottom = -0.5 * indicatorWidth;
-            outputIndicatorDiv.style.borderBottomLeftRadius = 0.5 * indicatorWidth;
-            outputIndicatorDiv.style.borderBottomRightRadius = 0.5 * indicatorWidth;
-            blockDomElement.appendChild(outputIndicatorDiv);
-        }
-    }
-
     var blockContainer = document.getElementById('blocks');
     blockContainer.appendChild(blockDomElement);
 
