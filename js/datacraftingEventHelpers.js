@@ -100,9 +100,12 @@ function styleBlockForHolding(contents, startHold) {
   var domElement = getDomElementForBlock(contents.block);
   if (!domElement) return;
   if (startHold) {
-    domElement.setAttribute('class','blockDivHighlighted blockDivMovingAble');
+    //domElement.setAttribute('class','blockDivHighlighted blockDivMovingAble');
+    domElement.setAttribute('class','blockDivHighlighted blockDivMovingAbleBorder');
+    domElement.firstChild.lastChild.setAttribute('class','blockMoveDiv blockDivMovingAble');
   } else {
     domElement.setAttribute('class','blockDivPlaced');
+    domElement.firstChild.lastChild.setAttribute('class','blockMoveDiv');
   }
 
 }
@@ -111,9 +114,13 @@ function styleBlockForPlacement(contents, shouldHighlight) {
   var domElement = getDomElementForBlock(contents.block);
   if (!domElement) return;
   if (shouldHighlight) {
-    domElement.setAttribute('class','blockDivHighlighted blockDivMovingAble');
+    //domElement.setAttribute('class','blockDivHighlighted blockDivMovingAble');
+    domElement.setAttribute('class','blockDivHighlighted blockDivMovingAbleBorder');
+    domElement.firstChild.lastChild.setAttribute('class','blockMoveDiv blockDivMovingAble');
   } else {
-    domElement.setAttribute('class','blockDivHighlighted blockDivMovingUnable');
+    //domElement.setAttribute('class','blockDivHighlighted blockDivMovingUnable');
+    domElement.setAttribute('class','blockDivHighlighted blockDivMovingUnableBorder');
+    domElement.firstChild.lastChild.setAttribute('class','blockMoveDiv blockDivMovingUnable');
   }
 }
 

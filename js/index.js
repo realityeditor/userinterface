@@ -1119,15 +1119,27 @@ function addDomElementForBlock(block, grid, isTempBlock) {
 
     // add icon and title to block
     if (block.name) {
-        var iconImage = document.createElement("img");
-        iconImage.setAttribute('class', 'blockIcon');
-        iconImage.src = getBlockIcon(globalStates.currentLogic, block.type).src;
-        blockContents.appendChild(iconImage);
 
-        var blockTitle = document.createElement('div');
-        blockTitle.setAttribute('class', 'blockTitle');
-        blockTitle.innerHTML = block.name;
-        blockContents.appendChild(blockTitle);
+        // show image full width and height of block if able to find
+        var blockIcon = getBlockIcon(globalStates.currentLogic, block.type);
+        if (blockIcon) {
+            var iconImage = document.createElement("img");
+            iconImage.setAttribute('class', 'blockIcon');
+            iconImage.src = blockIcon.src;
+            blockContents.appendChild(iconImage);
+
+        // Show name if there isn't an image to show
+        } else {
+            var blockTitle = document.createElement('div');
+            blockTitle.setAttribute('class', 'blockTitle');
+            blockTitle.innerHTML = block.name;
+            blockContents.appendChild(blockTitle);
+        }
+
+        // add a transparent div on top to display stripes when moving the block
+        var moveDiv = document.createElement("div");
+        moveDiv.setAttribute('class', 'blockMoveDiv');
+        blockContents.appendChild(moveDiv);
     }
     blockDomElement.style.display = 'inline-block';
 

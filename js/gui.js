@@ -726,10 +726,8 @@ function resetCraftingBoard() {
 
 function resetTempLogicState(logic) {
     if (logic) {
-        logic.guiState.tempLink = null;
-        logic.guiState.tappedContents = null;
-        logic.guiState.tempIncomingLinks = [];
-        logic.guiState.tempOutgoingLinks = [];
+        delete logic.guiState;
+        logic.guiState = new LogicGUIState();
     }
 }
 
