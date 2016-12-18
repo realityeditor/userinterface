@@ -60,7 +60,6 @@
  **/
 
 window.onload = function () {
-
     console.log("starting up GUI");
     uiButtons = document.getElementById("GUI");
     guiButtonImage= document.getElementById("guiButtonImage");
