@@ -262,7 +262,13 @@ function setStates(developerState, extendedTrackingState, clearSkyState, externa
  **/
 
 function action(action) {
-    var thisAction = JSON.parse(action);
+    var thisAction;
+    if(typeof action === "object")
+    {
+        thisAction = action;
+    } else {
+        thisAction = JSON.parse(action);
+    }
 
     if (thisAction.reloadLink) {
         getData('http://' + thisAction.reloadLink.ip + ':' + httpPort + '/object/' + thisAction.reloadLink.id, thisAction.reloadLink.id, function (req, thisKey) {

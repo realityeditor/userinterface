@@ -226,7 +226,8 @@ function drawInteractionLines() {
  * @return
  **/
 
-function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEndWeight, linkObject, timeCorrector, startColor, endColor) {
+function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEndWeight, linkObject, timeCorrector, startColor, endColor, speed) {
+    if(!speed) speed = 1;
     var angle = Math.atan2((lineStartPoint[1] - lineEndPoint[1]), (lineStartPoint[0] - lineEndPoint[0]));
     var possitionDelta = 0;
     var length1 = lineEndPoint[0] - lineStartPoint[0];
@@ -263,7 +264,7 @@ function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEn
         context.arc(x__, y__, ballSize, 0, mathPI);
         context.fill();
     }
-    linkObject.ballAnimationCount += (lineStartWeight * timeCorrector.delta)+1;
+    linkObject.ballAnimationCount += (lineStartWeight * timeCorrector.delta)+speed;
 }
 
 /**********************************************************************************************************************
