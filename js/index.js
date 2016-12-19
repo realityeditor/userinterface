@@ -152,6 +152,9 @@ function addHeartbeatObject(beat) {
 
                     }
                     cout(JSON.stringify(objects[thisKey]));
+
+                    addObjectMemory(objects[thisKey]);
+
                     addElementInPreferences();
                 }
             });
@@ -278,13 +281,13 @@ function action(action) {
                 for (var linkKey in objects[thisKey].links) {
                     thisObject = objects[thisKey].links[linkKey];
 
-                    rename(thisObject, "objectA", "objectA");
-                    rename(thisObject, "nodeA", "nodeA");
-                    rename(thisObject, "nameA", "nameA");
+                    rename(thisObject, "ObjectA", "objectA");
+                    rename(thisObject, "locationInA", "nodeA");
+                    rename(thisObject, "ObjectNameA", "nameA");
 
-                    rename(thisObject, "objectB", "objectB");
-                    rename(thisObject, "nodeB", "nodeB");
-                    rename(thisObject, "nameB", "nameB");
+                    rename(thisObject, "ObjectB", "objectB");
+                    rename(thisObject, "locationInB", "nodeB");
+                    rename(thisObject, "ObjectNameB", "nameB");
                     rename(thisObject, "endlessLoop", "loop");
                     rename(thisObject, "countLinkExistance", "health");
                 }
@@ -294,6 +297,7 @@ function action(action) {
             }
 
             // cout(objects[thisKey]);
+
             cout("got links");
         });
 
@@ -306,7 +310,7 @@ function action(action) {
             objects[thisKey].scale = req.scale;
 
             if (objects[thisKey].integerVersion < 170) {
-                objects[thisKey].nodes = req.objectValues;
+                rename(objects[thisKey], "objectValues", "nodes");
 
                 for (var nodeKey in objects[thisKey].nodes) {
                     thisObject = objects[thisKey].nodes[nodeKey];
@@ -332,8 +336,16 @@ function action(action) {
         });
     }
 
-    cout("found action: " + action);
+    if (thisAction.loadMemory) {
+        var id = thisAction.loadMemory.id;
+        var url = 'http://' + thisAction.loadMemory.ip + ':' + httpPort + '/object/' + id;
 
+        getData(url, id, function (req, thisKey) {
+            cout('received memory', req.memory);
+            objects[thisKey].memory = req.memory;
+            addObjectMemory(objects[thisKey]);
+        });
+    }
 }
 
 /**********************************************************************************************************************
@@ -511,7 +523,6 @@ function setProjectionMatrix(matrix) {
  **/
 
 
-
 function update(visibleObjects) {
 
 //    console.log(JSON.stringify(visibleObjects));
@@ -525,14 +536,8 @@ function update(visibleObjects) {
     }
 
 
-    if (globalStates.feezeButtonState == false) {
-        globalObjects = visibleObjects;
-    }
-    /* if (consoleText !== "") {
-     consoleText = "";
-     document.getElementById("consolelog").innerHTML = "";
-     }
-     conalt = "";*/
+    globalObjects = visibleObjects;
+
     var thisGlobalCanvas = globalCanvas;
     if (thisGlobalCanvas.hasContent === true) {
         thisGlobalCanvas.context.clearRect(0, 0, globalCanvas.canvas.width, globalCanvas.canvas.height);
@@ -602,6 +607,7 @@ function update(visibleObjects) {
 
                 if (globalStates.guiState ==="node") {
                     drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, generalNode.type, thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
+
 
                     addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, thisGlobalStates);
 
@@ -1240,32 +1246,26 @@ function redrawDatacrafting() {
  **********************************************************************************************************************/
 
 /**
- * @desc
- **/
-
+ * Construct and insert the list of objects into the preferences display
+ */
 function addElementInPreferences() {
     cout("addedObject");
 
     var htmlContent = "";
 
-    htmlContent += "<div class='Interfaces'" +
-        " style='position: relative;  float: left; height: 20px; width: 34%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell; font-family: Helvetica Neue, Helvetica, Arial;background-color: #a0a0a0; -webkit-transform-style: preserve-3d;'>" +
-        "Name</div>";
-    htmlContent += "<div class='Interfaces'" +
-        " style='position: relative;  float: left; height: 20px; width: 30%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial;background-color: #a0a0a0; -webkit-transform-style: preserve-3d;'>" +
-        "IP</div>";
+    htmlContent += "<div class='Interfaces objectEntry objectName'>Name</div>";
 
-    htmlContent += "<div class='Interfaces'" +
-        " style='position: relative;  float: left; height: 20px; width: 14%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial;background-color: #a0a0a0; -webkit-transform-style: preserve-3d; '>" +
-        "Version</div>";
+    htmlContent += "<div class='Interfaces objectEntry objectIP'>IP</div>";
 
-    htmlContent += "<div class='Interfaces'" +
-        " style='position: relative;  float: left; height: 20px; width: 11%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial; background-color: #a0a0a0;-webkit-transform-style: preserve-3d;'>" +
-        "Nodes</div>";
+    htmlContent += "<div class='Interfaces objectEntry objectVersion'>Version</div>";
 
-    htmlContent += "<div class='Interfaces'" +
-        " style='position: relative;  float: left; height: 20px; width: 11%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial; background-color: #a0a0a0;-webkit-transform-style: preserve-3d;'>" +
-        "Links</div>";
+    htmlContent += "<div class='Interfaces objectEntry objectIO'>Nodes</div>";
+
+    htmlContent += "<div class='Interfaces objectEntry objectLinks'>Links</div>";
+
+
+    // Construct the entries for each current object. Turns into a row through
+    // convenient wrapping
 
     var bgSwitch = false;
     var bgcolor = "";
@@ -1279,24 +1279,21 @@ function addElementInPreferences() {
             bgSwitch = true;
         }
 
-        htmlContent += "<div class='Interfaces' id='" +
+        htmlContent += "<div class='Interfaces objectEntry objectName' id='" +
             "name" + keyPref +
-            "' style='position: relative;  float: left; height: 20px; width: 35%; text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell; font-family: Helvetica Neue, Helvetica, Arial;" + bgcolor + " -webkit-transform-style: preserve-3d; " +
-            "'>";
+            "' style='" + bgcolor + "'>" +
+            objects[keyPref].name
+            + "</div>";
 
-        htmlContent += objects[keyPref].name;
-
-        htmlContent += "</div><div class='Interfaces' id='" +
-            "name" + keyPref +
-            "' style='position: relative;  float: left; height: 20px; width: 30%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial;" + bgcolor + " -webkit-transform-style: preserve-3d; " +
-            "'>" +
+        htmlContent += "<div class='Interfaces objectEntry objectIP' id='" +
+            "ip" + keyPref +
+            "' style='" + bgcolor + "'>" +
             objects[keyPref].ip
             + "</div>";
 
-        htmlContent += "<div class='Interfaces' id='" +
+        htmlContent += "<div class='Interfaces objectEntry objectVersion' id='" +
             "version" + keyPref +
-            "' style='position: relative;  float: left; height: 20px; width: 16%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell; font-family: Helvetica Neue, Helvetica, Arial; " + bgcolor + "-webkit-transform-style: preserve-3d;" +
-            "'>" +
+            "' style='" + bgcolor + "'>" +
             objects[keyPref].version
             + "</div>";
 
@@ -1306,10 +1303,9 @@ function addElementInPreferences() {
             anzahl++;
         }
 
-        htmlContent += "<div class='Interfaces' id='" +
+        htmlContent += "<div class='Interfaces objectEntry objectIO' id='" +
             "io" + keyPref +
-            "' style='position: relative;  float: left; height: 20px; width: 7%;   text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial;" + bgcolor + "-webkit-transform-style: preserve-3d;" +
-            "'>" +
+            "' style='" + bgcolor + "'>" +
             anzahl
             + "</div>";
 
@@ -1319,10 +1315,9 @@ function addElementInPreferences() {
             anzahl++;
         }
 
-        htmlContent += "<div class='Interfaces' id='" +
+        htmlContent += "<div class='Interfaces objectEntry objectLinks' id='" +
             "links" + keyPref +
-            "' style='position: relative;  float: left; height: 20px; width: 12%;  text-align: center;  line-height: 20px; vertical-align: middle;display: table-cell;  font-family: Helvetica Neue, Helvetica, Arial;" + bgcolor + "-webkit-transform-style: preserve-3d;" +
-            "'>" +
+            "' style='" + bgcolor + "'>" +
             anzahl
             + "</div>";
 
@@ -1464,13 +1459,13 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, type, globalStates)
 
                     console.log(globalProgram.logicSelector);
                 });
-            }
-            addLogic.appendChild(svgContainer);
+                addLogic.appendChild(svgContainer);
 
-            addOverlay.appendChild(addLogic);
-            globalDOMCach["logic" + nodeKey] = addLogic;
+                addOverlay.appendChild(addLogic);
+                globalDOMCach["logic" + nodeKey] = addLogic;
 
-        };
+            };
+        }
 
         var addCanvas = document.createElement('canvas');
         addCanvas.id = "canvas" + nodeKey;
@@ -1491,7 +1486,6 @@ function addElement(objectKey, nodeKey, thisUrl, thisObject, type, globalStates)
 
         var theObject = addOverlay;
         globalDOMCach[nodeKey].style["touch-action"] = "none";
-        globalDOMCach[nodeKey]["handjs_forcePreventDefault"] = true;
 
         globalDOMCach[nodeKey].addEventListener("pointerdown", touchDown, false);
         ec++;

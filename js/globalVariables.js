@@ -99,7 +99,7 @@ var globalStates = {
     pocketButtonState: false,
     pocketButtonDown: false,
     pocketButtonUp: false,
-    feezeButtonState: false,
+    freezeButtonState: false,
     logButtonState: false,
     editingMode: false,
     guiURL: "",
@@ -158,8 +158,6 @@ y:0,
 var pocketItem  = {"pocket" : new Objects()};
 var pocketItemId = "";
 
-
-var globalSVGCach = {};
 
 var globalDOMCach = {};
 

@@ -409,9 +409,10 @@ function randomIntInc(min, max) {
 };
 
 /**
- * @desc rename an object (more or less)
- * @param
- * @param
+ * @desc rename object[before] to object[after], deleting object[before]
+ * @param {Object} object
+ * @param {String} before
+ * @param {String} after
  * @return {Object}
  **/
 
@@ -481,12 +482,10 @@ function checkForNetworkLoop(globalObjectA, globalLocationInA, globalLogicA, glo
 
 /**
  * @desc function to print to console based on debug mode set to true
- * @param {String} e any text that should be printed
  **/
-
-function cout(e) {
-    if (globalStates.debug) {
-        console.log(e);
+function cout() {
+    if (globalStates.debug){
+        console.log.apply(this, arguments);
     }
 }
 

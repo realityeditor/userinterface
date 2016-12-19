@@ -198,21 +198,20 @@ function touchEnter () {
 
     if (globalProgram.nodeA === this.id || globalProgram.nodeA === false) {
         contentForFeedback = 3;
-        globalSVGCach["overlayImgRing"].setAttribute("r", "58");
-        globalSVGCach["overlayImgRing"].setAttribute("stroke", '#f9f90a');
 
+        // todo why is the globalDomCash not used?
+
+        overlayDiv.classList.add('overlayAction');
     } else {
 
         if (checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, globalProgram.logicA, this.objectId, this.nodeId, 0)) {
             contentForFeedback = 2; // overlayImg.src = overlayImage[2].src;
-            globalSVGCach["overlayImgRing"].setAttribute("r", "58");
-            globalSVGCach["overlayImgRing"].setAttribute("stroke", '#3af431');
+            overlayDiv.classList.add('overlayPositive');
         }
 
         else {
             contentForFeedback = 0; // overlayImg.src = overlayImage[0].src;
-            globalSVGCach["overlayImgRing"].setAttribute("r", "58");
-            globalSVGCach["overlayImgRing"].setAttribute("stroke", '#ff019f');
+            overlayDiv.classList.add('overlayNegative');
         }
     }
 
@@ -231,10 +230,9 @@ function touchLeave () {
 
         globalProgram.logicSelector = 4;
 
-        globalSVGCach["overlayImgRing"].setAttribute("r", "30");
-        globalSVGCach["overlayImgRing"].setAttribute("stroke", '#00ffff');
-
-        // document.getElementById('overlayImg').src = overlayImage[1].src;
+    overlayDiv.classList.remove('overlayPositive');
+    overlayDiv.classList.remove('overlayNegative');
+    overlayDiv.classList.remove('overlayAction');
 
         cout("leave");
 
@@ -256,6 +254,7 @@ function touchLeave () {
  **/
 
 function canvasPointerDown(evt) {
+    evt.preventDefault();
     if (globalStates.guiState ==="node" && !globalStates.editingMode) {
         if (!globalProgram.objectA) {
             globalStates.drawDotLine = true;
@@ -277,12 +276,12 @@ function canvasPointerDown(evt) {
  **/
 
 function getPossition(evt) {
+    evt.preventDefault();
 
     globalStates.pointerPosition = [evt.clientX, evt.clientY];
 
-    overlayDiv.style.left = evt.clientX - 60;
-    overlayDiv.style.top = evt.clientY - 60;
-
+    // Translate up 6px to be above pocket layer
+    overlayDiv.style.transform = 'translate3d(' + evt.clientX + 'px,' + evt.clientY + 'px,6px)';
 
     setPocketPossition(evt);
 
@@ -293,7 +292,6 @@ function setPocketPossition (evt){
 
 
     if(pocketItem.pocket.nodes[pocketItemId]){
-
 
         var thisItem = pocketItem.pocket.nodes[pocketItemId];
 
@@ -322,7 +320,6 @@ function setPocketPossition (evt){
 
 
     }
-
 
 }
 
@@ -392,7 +389,17 @@ function documentPointerUp(evt) {
     }
     globalCanvas.hasContent = true;
 
-    overlayDiv.style.display = "none";
+    // todo why is this just hidden and not display none??
+
+    overlayDiv.style.visibility = "hidden";
+
+    overlayDiv.classList.remove('overlayMemory');
+    overlayDiv.classList.remove('overlayMemoryInstant');
+    pocketOnMemoryCreationStop();
+    if (overlayDiv.style.backgroundImage !== 'none') {
+        overlayDiv.style.backgroundImage = 'none';
+        window.location.href = 'of://clearMemory';
+    }
 
     cout("documentPointerUp");
 
@@ -405,20 +412,27 @@ function documentPointerUp(evt) {
 };
 
 /**
- * @desc
+ * When the pointer goes down, show the overlay and position it at the
+ * pointer's location. If in GUI mode, mark the overlay as holding a memory
+ * Save its location to globalStates.pointerPosition
  * @param evt
- **/
-
+ */
 function documentPointerDown(evt) {
-
     globalStates.pointerPosition = [evt.clientX, evt.clientY];
 
-    // overlayImg.src = overlayImage[globalStates.overlay].src;
+    overlayDiv.style.visibility = "visible";
+    // Translate up 6px to be above pocket layer
+    overlayDiv.style.transform = 'translate3d(' + evt.clientX + 'px,' + evt.clientY + 'px,6px)';
+    if (globalStates.guiButtonState && !globalStates.freezeButtonState) {
+        // If the event is hitting the background
+        if (evt.target.id === 'canvas') {
+            overlayDiv.classList.add('overlayMemory');
+        }
+    }
 
-    overlayDiv.style.display = "inline";
-    overlayDiv.style.left = evt.clientX - 60;
-    overlayDiv.style.top = evt.clientY - 60;
-
+    if (memoryCanCreate() && window.innerWidth - evt.clientX > 65) {
+        pocketOnMemoryCreationStart();
+    }
 
 /*
     // todo for testing only
@@ -959,3 +973,4 @@ function removeEventHandlers() {
 
     cout("removeEventHandlers");
 }
+

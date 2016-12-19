@@ -47,6 +47,7 @@
  -->
 <html>
 <head>
+    <meta charset="utf-8">
     <meta http-equiv="cache-control" content="max-age=0"/>
     <meta http-equiv="cache-control" content="no-cache"/>
     <meta http-equiv="expires" content="0"/>
@@ -61,12 +62,17 @@
 
     <!-- Javascript -->
     <script src="thirdPartyCode/switchery.js"></script>
-    <script src="thirdPartyCode/hand.1.3.8.js"></script>
+    <script src="thirdPartyCode/pep.min.js"></script>
+    <script src="thirdPartyCode/d3.min.js"></script>
     <script src="js/constructors.js"></script>
     <script src="js/globalVariables.js"></script>
     <script src="js/utilities.js"></script>
     <script src="js/index.js"></script>
     <script src="js/gui.js"></script>
+    <script src="js/memory.js"></script>
+    <script src="js/memory-web.js"></script>
+    <script src="js/memory-pointers.js"></script>
+    <script src="js/pocket.js"></script>
     <script src="js/eventHandlers.js"></script>
     <script src="js/interactWithLines.js"></script>
     <script src="js/onload.js"></script>
@@ -75,7 +81,7 @@
     <script src="js/datacraftingEventHelpers.js"></script>
 
 </head>
-<body text="#ffffff">
+<body touch-action="none">
 
 <div class='main' id="GUI"></div>
 
@@ -85,93 +91,50 @@
 
 <div class='Interfaces' id="preferences">
 
-    <div id="content1" class='Interfaces'
-         style="position: fixed; left: 5%; top: 7%; right: 58%; bottom: 10%;  -webkit-transform-style: preserve-3d;
-             background-color: #a0a0a0;">
-
-        <div class='Interfaces'
-             style='position: relative;  float: left; height: 10px; width: 100%; box-sizing: border-box; padding: 5px;
-               text-align: center; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
+    <div id="content1" class='Interfaces'>
+        <div id="content1Padding" class='Interfaces PrefTitle'>
         </div>
 
-        <div id="content11" class='Interfaces'
-             style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box;   padding-top: 5px;padding-left: 13px;
-               text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
+        <div id="content11" class='Interfaces PrefTitle'>
             <b>Authoring: Position UI</b><br>
         </div>
 
-        <div id="content12" class='Interfaces'
-             style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box; padding: 5px; padding-left: 13px;
-               text-align: center; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
-            <input type="checkbox" name="editingModeSwitch" id="editingModeSwitch" class="js-switch"/>
+        <div id="content12" class='Interfaces PrefTitle'>
+            <input type="checkbox" name="editingModeSwitch" id="editingModeSwitch"  class="js-switch"/>
         </div>
-        <div id="content13" class='Interfaces'
-             style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box;  padding-top: 5px;padding-left: 13px;
-               text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
+
+        <div id="content13" class='Interfaces PrefTitle'>
             <b>Extended Tracking</b><br>
         </div>
 
-        <div id="content14" class='Interfaces'
-             style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box;  padding: 5px; padding-left: 13px;
-               text-align: center; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
-            <input type="checkbox" name="extendedTrackingSwitch" id="extendedTrackingSwitch" class="js-switch"
-                   oninput='setExtendetTracking()'/>
+        <div id="content14" class='Interfaces PrefTitle'>
+            <input type="checkbox" name="extendedTrackingSwitch" id="extendedTrackingSwitch" class="js-switch" oninput='setExtendetTracking()'/>
         </div>
 
-
-        <div id="content15" class='Interfaces'
-             style='position: relative;  float: left; height: 50px; width: 50%;  box-sizing: border-box;  padding-top: 5px;padding-left: 13px;
-             vertical-align: middle; text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
-
+        <div id="content15" class='Interfaces PrefTitle'>
             <b>External User Interface</b><br>
-
         </div>
 
-        <div id="content16" class='Interfaces'
-             style='position: relative;  float: left; height: 50px; width: 50%; padding-top: 5px; box-sizing: border-box; padding-left: 13px;
-               text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'><img id="loadNewUI" src="png/load.png"
-                                                                                      style="width: 99px;height: 40px;">
+        <div id="content16" class='Interfaces PrefTitle'>
+            <img id="loadNewUI" src="png/load.png" width="99" height="40" alt="Load New UI"/>
         </div>
 
-        <div id="content20" class='Interfaces'
-             style='position: relative;  float: left; height: 55px; width: 100%;  box-sizing: border-box; padding-left: 13px;  padding-top: 5px; padding-bottom: 10px; margin-bottom: 3px;  padding-right: 13px;
-               text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
+        <div id="content20" class='Interfaces PrefTitle'>
             <input id="newURLText"
-                   style='text-align: left; font-family: Helvetica Neue, Helvetica, Arial; font-size: large;   -webkit-user-select: text;'
-                   type="url" name="newURL" size="15" placeholder="http://..." value="http://"
-                   oninput='newURLTextLoad()'><br>
+                   type="url" name="newURL"  size="15" placeholder="http://..." value="http://" oninput='newURLTextLoad()'><br>
         </div>
 
-        <div id="content30" class='Interfaces'
-             style='position: relative;  float: left; height: 55px; width: 50%;  box-sizing: border-box;  padding-top: 5px;padding-left: 13px;
-               text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
+        <div id="content30" class='Interfaces PrefTitle'>
             <b>Clear Sky<br>(No Buttons)</b><br>
         </div>
 
-        <div id="content31" class='Interfaces'
-             style='position: relative;  float: left; height: 55px; width: 50%;  box-sizing: border-box; right:0px; padding: 5px; padding-left: 0px;
-               text-align: center; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
-            <input type="checkbox" name="extendedTrackingSwitch" id="turnOffUISwitch" class="js-switch"
-                   oninput='setTurnOffUISwitch()'/>
+        <div id="content31" class='Interfaces PrefTitle'>
+            <input type="checkbox" name="extendedTrackingSwitch" id="turnOffUISwitch" class="js-switch" oninput='setTurnOffUISwitch()'/>
         </div>
 
 
-        <div id="content18" class='Interfaces'
-             style='position: relative;  float: left; height: 320px; width: 100%;  box-sizing: border-box; padding-top: 13px;padding-left: 13px; padding-right: 13px;
-               text-align: left; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
-
-            <b>Move & Scale UI</b> activate the ability to move and scale virtual user interfaces on developer objects.
+        <div id="content18" class='Interfaces PrefTitle'>
+            <b>Move &amp; Scale UI</b> activate the ability to move and scale virtual user interfaces on developer objects.
             <br><br>
             <b>Extended Tracking</b> allows you to interact with virtual interfaces that extend the marker size, even if
             the marker moves outside the video frame.
@@ -179,132 +142,113 @@
             <b>External User Interface</b> allows you to load a modified Reality Editor from an external web server.
             Learn more about such modifications here: https://github.com/openhybrid/editor.
             <br>
-
         </div>
 
 
-        <div class='Interfaces'
-             style='position: relative;  float: left; height: 10px; width: 100%;  box-sizing: border-box; padding: 5px;
-               text-align: center; font-family: Helvetica Neue, Helvetica, Arial;
-               background-color: #aaaaaa; -webkit-transform-style: preserve-3d;'>
+        <div id="contentPadding" class='Interfaces PrefTitle'>
         </div>
-
     </div>
 
-
-    <div id="content1title" class='Interfaces'
-         style="position: fixed; left: 5%; top: 2%; right: 58%; bottom: 89%;
-           font-family: Helvetica Neue, Helvetica, Arial; font-size: 18pt;
-
-             -webkit-transform-style: preserve-3d;
-            text-align: center;
-
-             ">Settings
-
+    <div id="content1title" class='Interfaces'>
+        Settings
     </div>
 
-
-    <div id="content2" class='Interfaces'
-         style="position: fixed; left: 47%; top: 7%; right: 17%; bottom: 10%;  -webkit-transform-style: preserve-3d;
-            background-color: #a0a0a0;">
-
-    </div>
-    <div id="content2title" class='Interfaces'
-         style="position: fixed; left: 47%; top: 2%; right: 17%; bottom: 89%;
-           font-family: Helvetica Neue, Helvetica, Arial; font-size: 18pt;
-
-             -webkit-transform-style: preserve-3d;
-            text-align: center;
-
-             ">Found Objects in this Network
-
+    <div id="content2" class='Interfaces'>
     </div>
 
-
+    <div id="content2title" class='Interfaces'>
+        Found Objects in this Network
+    </div>
 </div>
+
 <!-- This is the Interface frontend GUI part -->
 
-<div class='Interfaces' id="UIButtons" style="
-  -webkit-transform-style: preserve-3d;
-   visibility: hidden;
-position: fixed;
-    width: 100%;
-    height: 100%;
-   /* right: 18px;
-    top: 18px;*/
-
-   /* this is a hack for adding the interface in front of the transformed web interface */
--webkit-transform: translateZ(1px);
-">
+<div class='Interfaces' id="UIButtons">
     <!-- guiButtonImage    -->
-    <div class='Interfaces'
-         style="position: fixed; width: 60px;height: 125px;right: 0px; top: 0px;  -webkit-transform-style: preserve-3d;  visibility: visible;">
-        <img class='Interfaces' id="guiButtonImage" src="png/intOneSelect.png" width="60" height="125" alt=""></div>
-
+    <div class='Interfaces UIButton' id="guiButtonDiv">
+        <img class='Interfaces' id="guiButtonImage" src="png/intOneSelect.png" width="60" height="125" alt="">
+    </div>
 
     <!-- pocketButton    -->
-    <div class='Interfaces' id="pocketButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; top: 130px;  -webkit-transform-style: preserve-3d; visibility: visible;">
-        <img class='Interfaces' id="pocketButton" src="png/pocket.png" width="60" height="60" alt=""/></div>
-
-    <!-- feezeButton    -->
-    <div class='Interfaces' id="feezeButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; top: 260px;  -webkit-transform-style: preserve-3d; visibility: visible;">
-        <img class='Interfaces' id="feezeButton" src="png/freeze.png" width="60" height="60" alt=""/></div>
-    <!--  guiButtonImage1   -->
-    <div class='Interfaces' id="guiButtonImage1"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; top:0px;  -webkit-transform-style: preserve-3d; visibility: visible;">
+    <div class='Interfaces UIButton' id="pocketButtonDiv">
+        <img class='Interfaces' id="pocketButton" src="png/pocket.png"
+             width="60" height="60" alt="Pocket" touch-action="none"/>
     </div>
+    <div class='Interfaces UIButton' id="guiButtonImage1">
+    </div>
+
+    <!-- freezeButton    -->
+    <div class='Interfaces UIButton' id="freezeButtonDiv">
+        <img class='Interfaces' id="freezeButton" src="png/freeze.png" width="60" height="60" alt=""/>
+    </div>
+
     <!--  guiButtonImage2   -->
-    <div class='Interfaces' id="guiButtonImage2"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; top:62px;  -webkit-transform-style: preserve-3d; visibility: visible;">
+    <div class='Interfaces UIButton' id="guiButtonImage2">
     </div>
+
     <!--   reloadButtonDiv -- only visible in ipad -->
-    <div class='Interfaces' id="reloadButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; top: 325px;  -webkit-transform-style: preserve-3d; visibility: visible;">
-        <img class='Interfaces' id="reloadButton" src="png/reload.png" width="60" height="60" alt=""/></div>
+    <div class='Interfaces UIButton' id="reloadButtonDiv">
+        <img class='Interfaces' id="reloadButton" src="png/reload.png" width="60" height="60" alt=""/>
+    </div>
+
     <!--  logButtonDiv -- Outdated   -->
-    <div id="logButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; bottom: 176px;  -webkit-transform-style: preserve-3d; display:none; visibility: hidden;">
-        <img class='Interfaces' id="logButton" src="png/log.png" width="60" height="60" alt=""/></div>
+    <div class='Interfaces UIButton' id="logButtonDiv">
+        <img class='Interfaces' id="logButton" src="png/log.png" width="60" height="60" alt=""/>
+    </div>
+
     <!--   preferencesButton  -->
-    <div class='Interfaces' id="preferencesButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 0px; top: 195px;  -webkit-transform-style: preserve-3d; visibility: visible;">
-        <img class='Interfaces' id="preferencesButton" src="png/pref.png" width="60"
-             height="60" alt=""/></div>
+    <div class='Interfaces UIButton'  id="preferencesButtonDiv">
+        <img class='Interfaces'  id="preferencesButton" src="png/pref.png" width="60"
+             height="60" alt=""/>
+    </div>
+
     <!--  resetButton - this is for editing mode only  -->
-    <div class='Interfaces' id="resetButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 130px; top: 0px;  -webkit-transform-style: preserve-3d; visibility: hidden;">
-        <img class='Interfaces' id="resetButton" src="png/reset.png" width="60"
-             height="60" alt=""/></div>
+    <div class='Interfaces UIButton'  id="resetButtonDiv">
+        <img class='Interfaces'  id="resetButton" src="png/reset.png" width="60"
+             height="60" alt=""/>
+    </div>
+
     <!--  unconstButton - this is for editing mode only   -->
-    <div class='Interfaces' id="unconstButtonDiv"
-         style="position: fixed; width: 60px;height: 60px;right: 65px; top: 0px;  -webkit-transform-style: preserve-3d; visibility: hidden;">
-        <img class='Interfaces' id="unconstButton" src="png/unconst.png" width="60"
-             height="60" alt=""/></div>
-    <!-- ontouchmove='eventTest()'-->
+    <div class='Interfaces UIButton'  id="unconstButtonDiv">
+        <img class='Interfaces'  id="unconstButton" src="png/unconst.png" width="60"
+             height="60" alt=""/>
+    </div>
 
+    <div class='Interfaces UIButton' id="memoryWebButtonDiv">
+        <img class='Interfaces' id="memoryWebButton" src="png/memoryWeb.png"
+             width="60" height="60" alt="Memory Web"/>
+    </div>
+
+    <div class='Interfaces UIButton' id="bigPocketButtonDiv">
+        <img class='Interfaces' id="bigPocketButton" src="png/bigPocket.png"
+             width="60" height="320" alt="Big Pocket" touch-action="none"/>
+    </div>
+
+    <div class='Interfaces UIButton' id="bigTrashButtonDiv">
+        <img class='Interfaces' id="bigTrashButton" src="png/bigTrash.png"
+             width="60" height="320" alt="Big Trash" touch-action="none"/>
+    </div>
 </div>
-<canvas class="Canvas" id="canvas"></canvas>
 
-<div class='Interfaces' id="overlay" style="
-  -webkit-transform-style: preserve-3d;
-   display: none;
-   pointer-events: none;
-position: fixed;
-    width: 120px;
-    height: 120px;
-    left: 0px;
-    top: 0px;
+<div class='memoryBackground'></div>
 
-   /* this is a hack for adding the interface in front of the transformed web interface */
--webkit-transform: translateZ(2px);
-"><svg id = "overlayImg" height="120" width="120">
-    <circle id="overlayImgRing" cx="60" cy="60" r="30" stroke="#00ffff" stroke-width="4" fill="none" />
-</svg></div>
+<div class="memoryPointerContainer">
+</div>
+
+<div class="memoryDragContainer">
+</div>
+
+<div class="pocket">
+    <div class='memoryBar'>
+    </div>
+</div>
+
+<canvas class="Canvas" id="canvas" touch-action="none"></canvas>
+
+<div class='Interfaces' id="overlay"></div>
 
 
-<iframe src="setting/index.html" frameborder="0" style="position: absolute; left: 0px; top: 0px; bottom: 0px; right: 0px; height: 100%; width: 100%; -webkit-transform: translateZ(0px);" ></iframe>
-
+<!--<iframe src="setting/index.html" frameborder="0" style="position: absolute; left: 0px; top: 0px; bottom: 0px; right: 0px; height: 100%; width: 100%; -webkit-transform: translateZ(0px);" ></iframe>
+-->
 </body>
 </html>

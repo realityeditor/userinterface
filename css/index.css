@@ -73,6 +73,9 @@ body {
 
     /* -webkit-user-select: none;  Disable selection/Copy of UIWebView */
     -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    color: #ffffff;
 }
 
 .main {
@@ -85,7 +88,6 @@ body {
     border-width: 0px;
     /*-webkit-user-select: none;    Disable selection/Copy of UIWebView */
     -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-
 }
 
 .mainProgram {
@@ -193,7 +195,7 @@ body {
     padding: 20px;
     background-color: #969696;
 
-    -webkit-transform: translateZ(1px);
+    -webkit-transform: translateZ(3px);
 }
 
 
@@ -224,6 +226,444 @@ body {
 .interfaceSourceURL {
  /*   -webkit-user-select: text;*/
 /*}*/
+
+#content1 {
+    position: fixed;
+    left: 5%;
+    top: 7%;
+    right: 58%;
+    bottom: 10%;
+
+    background-color: #a0a0a0;
+}
+
+.PrefTitle {
+    position: relative;
+    float: left;
+    height: 50px;
+    width: 50%;
+    box-sizing: border-box;
+    background-color: #aaaaaa;
+}
+
+#content1Padding {
+    height: 10px;
+    width: 100%;
+    padding: 5px;
+    text-align: center;
+}
+
+#content11 {
+    padding-top: 5px;
+    padding-left: 13px;
+    text-align: left;
+}
+
+#content12 {
+    padding: 5px;
+    padding-left: 13px;
+    text-align: center;
+}
+
+#content13 {
+    padding-top: 5px;
+    padding-left: 13px;
+    text-align: left;
+}
+
+#content14 {
+    padding: 5px;
+    padding-left: 13px;
+    text-align: center;
+}
+
+#content15 {
+    padding-top: 5px;
+    padding-left: 13px;
+    vertical-align: middle;
+    text-align: left;
+}
+
+#content16 {
+    padding-top: 5px;
+    padding-left: 13px;
+    text-align: left;
+}
+
+#content20 {
+    width: 100%;
+    height: 55px;
+    padding-left: 13px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    margin-bottom: 3px;
+    padding-right: 13px;
+    text-align: left;
+}
+
+#newURLText {
+    font-size: large;
+    -webkit-user-select: text;
+}
+
+#content30 {
+    height: 55px;
+    padding-top: 5px;
+    padding-left: 13px;
+    text-align: left;
+}
+
+#content31 {
+    height: 55px;
+    right:0px;
+    padding: 5px;
+    padding-left: 0px;
+
+    text-align: center;
+}
+
+#content18 {
+    height: 320px;
+    width: 100%;
+    padding-top: 13px;
+    padding-left: 13px;
+    padding-right: 13px;
+    text-align: left;
+}
+
+#contentPadding {
+    height: 10px;
+    width: 100%;
+    padding: 5px;
+    text-align: center;
+}
+
+#content1title {
+    position: fixed;
+    left: 5%;
+    top: 2%;
+    right: 58%;
+    bottom: 89%;
+
+    font-size: 18pt;
+
+    text-align: center;
+}
+
+#content2 {
+    position: fixed;
+    left: 47%;
+    top: 7%;
+    right: 17%;
+    bottom: 10%;
+
+    background-color: #a0a0a0;
+}
+
+#content2title {
+    position: fixed;
+    left: 47%;
+    top: 2%;
+    right: 17%;
+    bottom: 89%;
+
+    font-size: 18pt;
+
+    text-align: center;
+}
+
+#UIButtons {
+    visibility: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    /* right: 18px;
+    top: 18px;*/
+
+    /* this is a hack for adding the interface in front of the transformed web interface */
+    -webkit-transform: translateZ(3px);
+    z-index: 10;
+}
+
+#UIButtons.bigPocket > .UIButton {
+    visibility: hidden;
+}
+
+#UIButtons.bigPocket > #bigPocketButtonDiv {
+    visibility: visible;
+}
+
+#UIButtons.bigTrash > .UIButton {
+    visibility: hidden;
+}
+
+#UIButtons.bigTrash > #bigTrashButtonDiv {
+    visibility: visible;
+}
+
+.UIButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    visibility: visible;
+}
+
+.clearSky .UIButton {
+    opacity: 0;
+}
+
+#guiButtonDiv {
+    height: 125px;
+    right: 0px;
+    top: 0px;
+}
+
+#freezeButtonDiv {
+    right: 0px;
+    top: 260px;
+
+}
+
+#guiButtonImage1 {
+    right: 0px;
+    top:0px;
+}
+
+#guiButtonImage2 {
+    right: 0px;
+    top: 62px;
+}
+
+#preferencesButtonDiv {
+    right: 0px;
+    top: 195px;
+}
+
+#reloadButtonDiv {
+    right: 0px;
+    top: 130px;
+    visibility: hidden;
+}
+
+#memoryWebButtonDiv {
+    right: 0px;
+    top: 130px;
+    visibility: hidden;
+}
+
+#logButtonDiv {
+    right: 0px;
+    bottom: 176px;
+    display: none;
+    visibility: hidden;
+}
+
+#pocketButtonDiv {
+    right: 0px;
+    top: 130px;
+}
+
+#resetButtonDiv {
+    right: 130px;
+    top: 0px;
+    visibility: hidden;
+}
+
+#unconstButtonDiv {
+    right: 65px;
+    top: 0px;
+    visibility: hidden;
+}
+
+#bigTrashButtonDiv {
+    top: 0px;
+    right: 0px;
+    width: 60px;
+    height: 320px;
+    visibility: hidden;
+}
+
+#bigPocketButtonDiv {
+    top: 0px;
+    right: 0px;
+    width: 60px;
+    height: 320px;
+    visibility: hidden;
+}
+
+.memoryBackground {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-size: cover;
+    z-index: 0;
+    -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+}
+
+.memoryBackgroundImage {
+    width: 100%;
+    height: 100%;
+}
+
+.memoryBar {
+    position: fixed;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    z-index: 5;
+    -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+}
+
+/* TODO: spec interaction between clear sky and pocket
+.clearSky .memoryBar {
+    visibility: hidden;
+}
+*/
+
+.memoryContainer, #overlay.overlayMemoryInstant {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    border: 2px solid #01FFFC;
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.memoryContainer {
+    margin: 2.5px;
+}
+
+.memoryContainer.memoryDragging {
+    z-index: 4;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+#overlay.overlayMemoryInstant, .memoryContainer.memoryPointer,
+.memoryWeb > .memoryContainer {
+    position: absolute;
+    margin-left: -30px;
+    margin-top: -30px;
+}
+
+.memoryDragContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 4;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: translate3d(0px,0px,2px);
+}
+
+.memoryPointerContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 2;
+}
+
+.memory {
+    display: block;
+    margin: 0;
+    padding: 0;
+    width: 100px;
+    height: 56px;
+    margin-left: calc(56px/2 - 100px/2);
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+#overlay {
+    visibility: hidden;
+    pointer-events: none;
+    position: fixed;
+
+    box-sizing: border-box;
+    width: 60px;
+    height: 60px;
+    left: 0px;
+    top: 0px;
+    margin-left: -30px;
+    margin-top: -30px;
+    padding: 0;
+
+    border: 4px solid #01fffc;
+    border-radius: 60px;
+    transition: width 0.3s linear, height 0.3s linear, border-radius 0.3s linear, border-width 0.3s linear;
+
+    /* this is a hack for adding the interface in front of the transformed web interface */
+    z-index: 3;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: translateZ(6px);
+}
+
+#overlay.overlayMemoryInstant {
+    transition: width 0.01s linear, height 0.01s linear, border-radius 0.01s linear, border-width 0.01s linear;
+}
+
+#overlay.overlayPositive,
+#overlay.overlayNegative,
+#overlay.overlayAction {
+    width: 120px;
+    height: 120px;
+    margin-left: -60px;
+    margin-top: -60px;
+    border-radius: 120px;
+}
+
+#overlay.overlayPositive {
+  border-color: #3AF431;
+}
+
+#overlay.overlayNegative {
+  border-color: #FF019F;
+}
+
+#overlay.overlayAction {
+  border-color: #F9F90A;
+}
+
+.objectEntry {
+    position: relative;
+    float: left;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    vertical-align: middle;
+    display: table-cell;
+    background-color: #a0a0a0;
+    -webkit-transform-style: preserve-3d;
+}
+
+.objectName {
+    width: 34%;
+}
+
+.objectIP {
+    width: 30%;
+}
+
+.objectVersion {
+    width: 14%;
+}
+
+.objectIO {
+    width: 11%;
+}
+
+.objectLinks {
+    width: 11%;
+}
 
 .Canvas {
     visibility: visible;
@@ -536,4 +976,35 @@ Logic Interface CSS
 .blockDivMovingSaveOrDeletable {
     /*border: 2px solid rgb(255,255,0);*/
     background: repeating-linear-gradient(-45deg, rgb(73, 73, 73), rgb(73, 73, 73) 16px, rgb(255,255,0) 16px, rgb(255,255,0) 32px);
+}
+
+.memoryWeb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 4;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    background-color: rgba(17, 55, 55, 0.7);
+}
+
+.pocket {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: translateZ(3px); /* Above web interfaces, below side buttons */
+    background-color: rgba(17, 55, 55, 0.7);
+    display: none;
+}
+
+.pocket.pocketShown {
+    display: block;
 }

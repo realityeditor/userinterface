@@ -70,12 +70,18 @@ function deleteLines(x21, y21, x22, y22) {
             var l = thisObject.links[subKeysome];
             var oA = thisObject;
             var oB = objects[l.objectB];
+
+            if (typeof(oA) === 'undefined' || typeof(oB) === 'undefined') {
+                continue;
+            }
+
             var bA = oA.nodes[l.nodeA];
             var bB = oB.nodes[l.nodeB]
 
-            if (bA === undefined || bB === undefined || oA === undefined || oB === undefined) {
+            if (typeof(bA) === 'undefined' || typeof(bB) === 'undefined') {
                 continue; //should not be undefined
             }
+
             if (checkLineCross(bA.screenX, bA.screenY, bB.screenX, bB.screenY, x21, y21, x22, y22, globalCanvas.canvas.width, globalCanvas.canvas.height)) {
                 delete thisObject.links[subKeysome];
                 cout("iam executing link deletion");
@@ -126,19 +132,50 @@ function drawAllLines(thisObject, context) {
             continue; //should not be undefined
         }
 
+        // Don't draw off-screen lines
+        if (!oB.objectVisible && !oA.objectVisible) {
+            continue;
+        }
+
         if (!oB.objectVisible) {
-            bB.screenX = bA.screenX;
-            bB.screenY = -10;
+            if (oB.memory) {
+                var memoryPointer = getMemoryPointerWithId(oB.objectId);
+                if (!memoryPointer) {
+                    memoryPointer = new MemoryPointer(l, false);
+                }
+                memoryPointer.draw();
+
+                bB.screenX = memoryPointer.x;
+                bB.screenY = memoryPointer.y;
+                bB.screenZ = bA.screenZ;
+            } else {
+                bB.screenX = bA.screenX;
+                bB.screenY = -10;
+                bB.screenZ = bA.screenZ;
+            }
             bB.screenZ = bA.screenZ;
+            bB.screenLinearZ = bA.screenLinearZ;
         }
 
         if (!oA.objectVisible) {
-            bA.screenX = bB.screenX;
-            bA.screenY = -10;
+            if (oA.memory) {
+                var memoryPointer = getMemoryPointerWithId(oA.objectId);
+                if (!memoryPointer) {
+                    memoryPointer = new MemoryPointer(l, true);
+                }
+                memoryPointer.draw();
+
+                bA.screenX = memoryPointer.x;
+                bA.screenY = memoryPointer.y;
+            } else {
+                bA.screenX = bB.screenX;
+                bA.screenY = -10;
+            }
             bA.screenZ = bB.screenZ;
+            bA.screenLinearZ = bB.screenLinearZ;
         }
 
-        // linearize a non linear zBuffer
+        // linearize a non linear zBuffer (see index.js)
         var bAScreenZ =   bA.screenLinearZ;
         var bBScreenZ = bB.screenLinearZ;
 

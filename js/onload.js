@@ -64,9 +64,10 @@ window.onload = function () {
     uiButtons = document.getElementById("GUI");
     guiButtonImage= document.getElementById("guiButtonImage");
     overlayDiv = document.getElementById('overlay');
-    globalSVGCach["overlayImgRing"] = document.getElementById('overlayImg').getElementById('overlayImgRing');
 
     GUI();
+    initMemoryBar();
+    pocketInit();
 
     console.log(globalStates.platform);
 
@@ -151,9 +152,6 @@ window.onload = function () {
     if (globalStates.platform) {
         window.location.href = "of://kickoff";
     }
-
-    document.handjs_forcePreventDefault = true;
-    globalCanvas.canvas.handjs_forcePreventDefault = true;
 
     globalCanvas.canvas.addEventListener("pointerdown", canvasPointerDown, false);
     ec++;

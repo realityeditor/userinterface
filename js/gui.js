@@ -66,6 +66,8 @@ var editingButtonImage = [];
 var pocketButtonImage = [];
 var loadNewUiImage = [];
 var blockTabImage = [];
+var memoryWebButtonImage = [];
+var pocketButtonImage = [];
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
@@ -109,14 +111,18 @@ function GUI() {
         'png/iconBlocks.png', 'png/iconEvents.png', 'png/iconSignals.png', 'png/iconMath.png', 'png/iconWeb.png'
     );
 
+    preload(memoryWebButtonImage,
+        'png/memoryWeb.png', 'png/memoryWebOver.png', 'png/memoryWebSelect.png'
+    );
+
     document.getElementById("guiButtonImage1").addEventListener("touchstart", function () {
-        if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[0].src;
+        document.getElementById('guiButtonImage').src = guiButtonImage[0].src;
         // kickoff();
     });
     ec++;
 
     document.getElementById("guiButtonImage1").addEventListener("touchend", function () {
-        if (!globalStates.UIOffMode)      document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
+        document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
 
         globalStates.guiState = "ui";
 
@@ -131,14 +137,14 @@ function GUI() {
     ec++;
 
     document.getElementById("guiButtonImage2").addEventListener("touchstart", function () {
-        if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[2].src;
+        document.getElementById('guiButtonImage').src = guiButtonImage[2].src;
     });
     ec++;
 
     document.getElementById("guiButtonImage2").addEventListener("touchend", function () {
-
-        if (!globalStates.UIOffMode)     document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
+        document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
         globalStates.guiState = "node";
+
         craftingBoardHide();
     });
     ec++;
@@ -175,25 +181,28 @@ function GUI() {
             timeForContentLoaded = 240000;
             window.location.href = "of://clearSkyOn";
 
+            document.body.classList.add('clearSky');
         } else {
             globalStates.UIOffMode = false;
             timeForContentLoaded = 240;
             window.location.href = "of://clearSkyOff";
 
+            document.body.classList.remove('clearSky');
         }
     });
     ec++;
 
     document.getElementById("resetButton").addEventListener("touchstart", function () {
-        if (!globalStates.UIOffMode)    document.getElementById('resetButton').src = resetButtonImage[1].src;
+        document.getElementById('resetButton').src = resetButtonImage[1].src;
 
     });
     ec++;
 
     document.getElementById("resetButton").addEventListener("touchend", function () {
 
-        if (!globalStates.UIOffMode)    document.getElementById('resetButton').src = resetButtonImage[0].src;
-        //  window.location.href = "of://loadNewUI"+globalStates.newURLText;
+        document.getElementById('resetButton').src = resetButtonImage[0].src;
+      //  window.location.href = "of://loadNewUI"+globalStates.newURLText;
+
 
         for (var key in objects) {
             if (!globalObjects.hasOwnProperty(key)) {
@@ -268,18 +277,18 @@ function GUI() {
     }
 
     document.getElementById("unconstButton").addEventListener("touchstart", function () {
-        if (!globalStates.UIOffMode) document.getElementById('unconstButton').src = unconstButtonImage[1].src;
+        document.getElementById('unconstButton').src = unconstButtonImage[1].src;
     });
     ec++;
 
     document.getElementById("unconstButton").addEventListener("touchend", function () {
         if (globalStates.unconstrainedPositioning === true) {
-            if (!globalStates.UIOffMode)    document.getElementById('unconstButton').src = unconstButtonImage[0].src;
+            document.getElementById('unconstButton').src = unconstButtonImage[0].src;
             globalStates.unconstrainedPositioning = false;
 
         }
         else {
-            if (!globalStates.UIOffMode)    document.getElementById('unconstButton').src = unconstButtonImage[2].src;
+            document.getElementById('unconstButton').src = unconstButtonImage[2].src;
             globalStates.unconstrainedPositioning = true;
 
         }
@@ -289,24 +298,23 @@ function GUI() {
 
     document.getElementById("loadNewUI").addEventListener("touchstart", function () {
         if (globalStates.extendedTracking === true) {
-            if (!globalStates.UIOffMode)    document.getElementById('loadNewUI').src = loadNewUiImage[3].src;
+            document.getElementById('loadNewUI').src = loadNewUiImage[3].src;
         }
         else {
-            if (!globalStates.UIOffMode)    document.getElementById('loadNewUI').src = loadNewUiImage[1].src;
+            document.getElementById('loadNewUI').src = loadNewUiImage[1].src;
         }
     });
     ec++;
 
     document.getElementById("loadNewUI").addEventListener("touchend", function () {
-
-        if (!globalStates.UIOffMode)    document.getElementById('loadNewUI').src = loadNewUiImage[0].src;
-        window.location.href = "of://loadNewUI" + globalStates.newURLText;
+        document.getElementById('loadNewUI').src = loadNewUiImage[0].src;
+            window.location.href = "of://loadNewUI"+globalStates.newURLText;
 
     });
     ec++;
 
     document.getElementById("preferencesButton").addEventListener("touchstart", function () {
-        if (!globalStates.UIOffMode)    document.getElementById('preferencesButton').src = preferencesButtonImage[1].src;
+        document.getElementById('preferencesButton').src = preferencesButtonImage[1].src;
     });
     ec++;
 
@@ -320,7 +328,10 @@ function GUI() {
 
         if (globalStates.preferencesButtonState === true) {
             preferencesHide();
-            overlayDiv.style.display = "none";
+
+            // todo why is it visibility and not display?
+
+            overlayDiv.style.visibility = "visible";
 
             if (globalStates.editingMode) {
                 document.getElementById('resetButton').style.visibility = "visible";
@@ -330,13 +341,8 @@ function GUI() {
             }
 
             if (globalStates.UIOffMode) {
-                document.getElementById('preferencesButton').src = preferencesButtonImage[3].src;
-                document.getElementById('feezeButton').src = freezeButtonImage[3].src;
-                document.getElementById('reloadButton').src = reloadButtonImage[2].src;
-                document.getElementById('guiButtonImage').src = guiButtonImage[4].src;
-                document.getElementById('resetButton').src = resetButtonImage[3].src;
-                document.getElementById('unconstButton').src = unconstButtonImage[3].src;
-                document.getElementById('pocketButton').src = pocketButtonImage[3].src;
+                // If clearSky is hiding the buttons, make sure the buttons are hidden as preferences exits
+                document.body.classList.add('clearSky');
             }
 
         }
@@ -351,16 +357,12 @@ function GUI() {
 
             preferencesVisible();
 
-            overlayDiv.style.display = "inline";
+            overlayDiv.style.visibility = "hidden";
 
             if (globalStates.UIOffMode) {
-                document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
-                document.getElementById('feezeButton').src = freezeButtonImage[0].src;
-                document.getElementById('reloadButton').src = reloadButtonImage[0].src;
-                document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
-                document.getElementById('resetButton').src = resetButtonImage[0].src;
-                document.getElementById('unconstButton').src = unconstButtonImage[0].src;
-                document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+                // If clearSky is hiding the buttons, make sure the buttons are
+                // hidden as preferences appears.
+                document.body.classList.add('clearSky');
             }
 
         }
@@ -372,54 +374,58 @@ function GUI() {
     * Freeze Button
      */
 
-    document.getElementById("feezeButton").addEventListener("touchstart", function () {
-        if (!globalStates.UIOffMode) document.getElementById('feezeButton').src = freezeButtonImage[1].src;
+    document.getElementById("freezeButton").addEventListener("touchstart", function () {
+        document.getElementById('freezeButton').src = freezeButtonImage[1].src;
     });
     ec++;
-    document.getElementById("feezeButton").addEventListener("touchend", function () {
-        if (globalStates.feezeButtonState === true) {
-            if (!globalStates.UIOffMode)    document.getElementById('feezeButton').src = freezeButtonImage[0].src;
-            globalStates.feezeButtonState = false;
+    document.getElementById("freezeButton").addEventListener("touchend", function () {
+        if (globalStates.freezeButtonState === true) {
+            document.getElementById('freezeButton').src = freezeButtonImage[0].src;
+            globalStates.freezeButtonState = false;
+            var memoryBackground = document.querySelector('.memoryBackground');
+            memoryBackground.innerHTML = '';
             window.location.href = "of://unfreeze";
         }
         else {
-            if (!globalStates.UIOffMode)    document.getElementById('feezeButton').src = freezeButtonImage[2].src;
-            globalStates.feezeButtonState = true;
+            document.getElementById('freezeButton').src = freezeButtonImage[2].src;
+            globalStates.freezeButtonState = true;
             window.location.href = "of://freeze";
         }
 
     });
+    ec++;
 
+    document.getElementById("reloadButton").addEventListener("touchstart", function () {
+        document.getElementById('reloadButton').src = reloadButtonImage[0].src;
+        window.location.href = "of://reload";
+    });
+    ec++;
+
+    document.getElementById("reloadButton").addEventListener("touchend", function () {
+        // location.reload(true);
+    });
+    ec++;
 
     /**
      * Pocket Button
      */
+
     var thisPocket =  document.getElementById("pocketButton");
- /*
 
-    document.getElementById("pocketButton").addEventListener("touchstart", function () {
-        if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1].src;
-    });
-    ec++;
-    document.getElementById("pocketButton").addEventListener("touchend", function () {
-        if (globalStates.pocketButtonState === true) {
-            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
-            globalStates.pocketButtonState = false;
-
-        }
-        else {
-            if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2].src;
-        }
-
-    });
-
-*/
     thisPocket.addEventListener("pointerdown", function () {console.log("pointerdown");
+        if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
+            return;
+        }
+
         globalStates.pocketButtonDown = true;
 
     }, false);
 
     thisPocket.addEventListener("pointerup", function () { console.log("pointerup");
+        if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
+            return;
+        }
+
        if(globalStates.pocketButtonDown){
            pocketButtonAction()
        }
@@ -428,6 +434,9 @@ function GUI() {
     }, false);
 
     thisPocket.addEventListener("pointerenter", function () { console.log("pointerenter");
+        if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
+            return;
+        }
 
         var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
         if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1+indexChange].src;
@@ -449,6 +458,9 @@ function GUI() {
 
 
     thisPocket.addEventListener("pointerleave", function (evt) { console.log("pointerleave");
+        if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
+            return;
+        }
 
         var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
         if (globalStates.pocketButtonState === true) {
@@ -459,8 +471,6 @@ function GUI() {
         }
 
         // this is where the virtual point creates object
-
-
 
         // todo for testing only
         if (globalStates.pocketButtonDown === true && globalStates.guiState ==="node") {
@@ -526,9 +536,7 @@ function GUI() {
         // globalStates.pocketButtonDown = false;
        // globalStates.pocketButtonUp = false;
     }, false);
-
-
-
+    ec++;
 
     function pocketButtonAction() {
 
@@ -558,10 +566,6 @@ function GUI() {
 
     }
 
-
-
-
-    ec++;
     document.getElementById("reloadButton").addEventListener("touchstart", function () {
         if (!globalStates.UIOffMode)    document.getElementById('reloadButton').src = reloadButtonImage[0].src;
         window.location.href = "of://reload";
@@ -573,6 +577,30 @@ function GUI() {
         window.open("index.html?v=" + Math.floor((Math.random() * 100) + 1));
     });
     ec++;
+
+    var memoryWebButton = document.getElementById('memoryWebButton');
+    memoryWebButton.addEventListener('touchstart', function() {
+        if (!globalStates.UIOffMode) {
+            memoryWebButton.src = memoryWebButtonImage[1].src;
+        }
+    });
+
+    ec++;
+    memoryWebButton.addEventListener('touchend', function() {
+        if (document.querySelector('.memoryWeb')) {
+            if (!globalStates.UIOffMode) {
+                memoryWebButton.src = memoryWebButtonImage[0].src
+            }
+            removeMemoryWeb();
+        } else {
+            if (!globalStates.UIOffMode) {
+                memoryWebButton.src = memoryWebButtonImage[2].src
+            }
+            createMemoryWeb();
+        }
+    });
+    ec++;
+
     cout("GUI");
 }
 
@@ -581,10 +609,10 @@ function GUI() {
  **/
 
 function preferencesHide() {
-    if (!globalStates.UIOffMode)    document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
+    document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
     globalStates.preferencesButtonState = false;
     document.getElementById("preferences").style.visibility = "hidden"; //= "hidden";
-    document.getElementById("preferences").style.dispaly = "none"; //= "hidden";
+    document.getElementById("preferences").style.display = "none"; //= "hidden";
     cout("preferencesHide");
 }
 
@@ -593,7 +621,7 @@ function preferencesHide() {
  **/
 
 function preferencesVisible() {
-    if (!globalStates.UIOffMode)    document.getElementById('preferencesButton').src = preferencesButtonImage[2].src;
+    document.getElementById('preferencesButton').src = preferencesButtonImage[2].src;
     globalStates.preferencesButtonState = true;
     document.getElementById("preferences").style.visibility = "visible"; //
     document.getElementById("preferences").style.display = "inline"; //= "hidden";
@@ -1193,7 +1221,3 @@ function preload(array) {
 
     cout("preload");
 }
-
-
-
-
