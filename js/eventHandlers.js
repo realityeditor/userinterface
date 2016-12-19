@@ -109,73 +109,10 @@ function trueTouchUp() {
                 craftingBoardVisible(this.objectId, this.nodeId);
             }
 
-            var thisTempObject = objects[globalProgram.objectA];
-            var thisTempObjectLinks = thisTempObject.links;
-
             globalProgram.objectB = this.objectId;
             globalProgram.nodeB = this.nodeId;
-          //  if(this.type === "logic")
-            //    globalProgram.logicB = globalProgram.logicSelector;
 
-            var thisOtherTempObject = objects[globalProgram.objectB];
-
-            var okForNewLink = checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, globalProgram.logicA, globalProgram.objectB, globalProgram.nodeB, globalProgram.logicB);
-
-            //  window.location.href = "of://event_" + objects[globalProgram.objectA].visible;
-
-            if (okForNewLink) {
-                var thisKeyId = uuidTimeShort();
-
-                var namesA, namesB;
-
-                    if(globalProgram.logicA !== false){
-
-                        var color;
-
-                        if(globalProgram.logicA === 0) color = "BLUE";
-                        if(globalProgram.logicA === 1) color = "GREEN";
-                        if(globalProgram.logicA === 2) color = "YELLOW";
-                        if(globalProgram.logicA === 3) color = "RED";
-
-                        namesA = [thisTempObject.name, thisTempObject.nodes[globalProgram.nodeA].name +":"+color];
-                    } else {
-                        namesA =  [thisTempObject.name, thisTempObject.nodes[globalProgram.nodeA].name];
-                    }
-
-                    if(globalProgram.logicB !== false){
-
-                        var color;
-
-                        if(globalProgram.logicB === 0) color = "BLUE";
-                        if(globalProgram.logicB === 1) color = "GREEN";
-                        if(globalProgram.logicB === 2) color = "YELLOW";
-                        if(globalProgram.logicB === 3) color = "RED";
-
-                        namesB = [thisOtherTempObject.name, thisOtherTempObject.nodes[globalProgram.nodeB].name +":"+color];
-                    } else {
-                        namesB =  [thisOtherTempObject.name, thisOtherTempObject.nodes[globalProgram.nodeB].name];
-                    }
-
-
-
-
-                thisTempObjectLinks[thisKeyId] = {
-                    objectA: globalProgram.objectA,
-                    objectB: globalProgram.objectB,
-                    nodeA: globalProgram.nodeA,
-                    nodeB: globalProgram.nodeB,
-                    logicA: globalProgram.logicA,
-                    logicB: globalProgram.logicB,
-                    namesA: namesA,
-                    namesB: namesB
-                };
-
-                // push new connection to objectA
-                //todo this is a work around to not crash the server. only temporarly for testing
-              //  if(globalProgram.logicA === false && globalProgram.logicB === false) {
-                    uploadNewLink(thisTempObject.ip, globalProgram.objectA, thisKeyId, thisTempObjectLinks[thisKeyId]);
-              //  }
-            }
+            sendLinkToServer(globalProgram, objects);
 
             // set everything back to false
             globalProgram.objectA = false;
@@ -733,6 +670,72 @@ function deleteData(url) {
  * @param thisKey
  * @param content
  **/
+
+
+function sendLinkToServer(linkObject, objects){
+
+    var thisTempObject = objects[linkObject.objectA];
+    var thisTempObjectLinks = thisTempObject.links;
+    var thisOtherTempObject = objects[linkObject.objectB];
+
+    var okForNewLink = checkForNetworkLoop(linkObject.objectA, linkObject.nodeA, linkObject.logicA, linkObject.objectB, linkObject.nodeB, linkObject.logicB);
+
+    //  window.location.href = "of://event_" + objects[globalProgram.objectA].visible;
+
+    if (okForNewLink) {
+        var thisKeyId = uuidTimeShort();
+
+        var namesA, namesB;
+
+        if(linkObject.logicA !== false){
+
+            var color;
+
+            if(linkObject.logicA === 0) color = "BLUE";
+            if(linkObject.logicA === 1) color = "GREEN";
+            if(linkObject.logicA === 2) color = "YELLOW";
+            if(linkObject.logicA === 3) color = "RED";
+
+            namesA = [thisTempObject.name, thisTempObject.nodes[linkObject.nodeA].name +":"+color];
+        } else {
+            namesA =  [thisTempObject.name, thisTempObject.nodes[linkObject.nodeA].name];
+        }
+
+        if(linkObject.logicB !== false){
+
+            var color;
+
+            if(linkObject.logicB === 0) color = "BLUE";
+            if(linkObject.logicB === 1) color = "GREEN";
+            if(linkObject.logicB === 2) color = "YELLOW";
+            if(linkObject.logicB === 3) color = "RED";
+
+            namesB = [thisOtherTempObject.name, thisOtherTempObject.nodes[linkObject.nodeB].name +":"+color];
+        } else {
+            namesB =  [thisOtherTempObject.name, thisOtherTempObject.nodes[linkObject.nodeB].name];
+        }
+
+
+
+
+        thisTempObjectLinks[thisKeyId] = {
+            objectA: linkObject.objectA,
+            objectB: linkObject.objectB,
+            nodeA: linkObject.nodeA,
+            nodeB: linkObject.nodeB,
+            logicA: linkObject.logicA,
+            logicB: linkObject.logicB,
+            namesA: namesA,
+            namesB: namesB
+        };
+
+        // push new connection to objectA
+        //todo this is a work around to not crash the server. only temporarly for testing
+        //  if(globalProgram.logicA === false && globalProgram.logicB === false) {
+        uploadNewLink(thisTempObject.ip, linkObject.objectA, thisKeyId, thisTempObjectLinks[thisKeyId]);
+        //  }
+    }
+}
 
 function uploadNewLink(ip, thisObjectKey, thisKey, content) {
 // generate action for all links to be reloaded after upload

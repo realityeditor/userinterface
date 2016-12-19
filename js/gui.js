@@ -608,11 +608,14 @@ function GUI() {
  * @desc
  **/
 
+
+
 function preferencesHide() {
     document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
     globalStates.preferencesButtonState = false;
     document.getElementById("preferences").style.visibility = "hidden"; //= "hidden";
     document.getElementById("preferences").style.display = "none"; //= "hidden";
+    clearInterval(globalStates.thisAndthat.interval);
     cout("preferencesHide");
 }
 
@@ -625,7 +628,11 @@ function preferencesVisible() {
     globalStates.preferencesButtonState = true;
     document.getElementById("preferences").style.visibility = "visible"; //
     document.getElementById("preferences").style.display = "inline"; //= "hidden";
+   globalStates.thisAndthat.interval = setInterval(function() {
+            addElementInPreferences();
+    }, 200);
     cout("preferencesVisible");
+
 }
 
 

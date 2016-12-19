@@ -273,13 +273,18 @@ function action(action) {
         thisAction = JSON.parse(action);
     }
 
-    if (thisAction.reloadLink) {
-        getData('http://' + thisAction.reloadLink.ip + ':' + httpPort + '/object/' + thisAction.reloadLink.id, thisAction.reloadLink.id, function (req, thisKey) {
+
+    // reload links for a specific object.
+
+    if (typeof action.reloadLink !== "undefined") {
+
+        if(action.reloadLink.object in objects)
+        getData('http://' + objects[action.reloadLink.object].ip + ':' + httpPort + '/object/' + action.reloadLink.object, action.reloadLink.object, function (req, thisKey) {
 
             if (objects[thisKey].integerVersion < 170) {
                 objects[thisKey].links = req.links;
                 for (var linkKey in objects[thisKey].links) {
-                    thisObject = objects[thisKey].links[linkKey];
+                  var  thisObject = objects[thisKey].links[linkKey];
 
                     rename(thisObject, "ObjectA", "objectA");
                     rename(thisObject, "locationInA", "nodeA");
@@ -303,39 +308,48 @@ function action(action) {
 
     }
 
-    if (thisAction.reloadObject) {
-        getData('http://' + thisAction.reloadObject.ip + ':' + httpPort + '/object/' + thisAction.reloadObject.id, thisAction.reloadObject.id, function (req, thisKey) {
-            objects[thisKey].x = req.x;
-            objects[thisKey].y = req.y;
-            objects[thisKey].scale = req.scale;
+    if (typeof action.reloadObject !== "undefined") {
 
-            if (objects[thisKey].integerVersion < 170) {
-                rename(objects[thisKey], "objectValues", "nodes");
+        if(action.reloadObject.object in objects)
+            getData('http://' + objects[action.reloadObject.object].ip + ':' + httpPort + '/object/' + action.reloadObject.object, action.reloadObject.object, function (req, thisKey) {
+                objects[thisKey].x = req.x;
+                objects[thisKey].y = req.y;
+                objects[thisKey].scale = req.scale;
+                objects[thisKey].developer = req.developer;
 
-                for (var nodeKey in objects[thisKey].nodes) {
-                    thisObject = objects[thisKey].nodes[nodeKey];
-                    rename(thisObject, "plugin", "type");
-                    rename(thisObject, "appearance", "type");
-                    thisObject.data = {
-                        value: thisObject.value,
-                        mode: thisObject.mode,
-                        unit: "",
-                        unitMin: 0,
-                        unitMax: 1
-                    };
-                    delete thisObject.value;
-                    delete thisObject.mode;
+                var getNodes;
+
+                if (objects[thisKey].integerVersion < 170) {
+                    if(typeof req.objectValues !== "undefined")
+                        getNodes = req.objectValues;
                 }
-            }
-            else {
-                objects[thisKey].nodes = req.nodes;
-            }
+                else {
+                    objects[thisKey].matrix = req.matrix;
 
-            // cout(objects[thisKey]);
-            cout("got links");
-        });
+                    if(typeof req.objectValues !== "undefined")
+                        getNodes = req.nodes;
+                }
+
+
+                if(typeof getNodes !== "undefined")
+                    for (var nodeKey in getNodes) {
+                        var  thisObject = objects[thisKey].nodes[nodeKey];
+
+                        thisObject.x = getNodes[nodeKey].x;
+                        thisObject.y = getNodes[nodeKey].y;
+                        thisObject.scale = getNodes[nodeKey].scale;
+                        thisObject.matrix = getNodes[nodeKey].matrix;
+                    }
+
+                cout("got object and nodes");
+            });
     }
 
+    if (typeof action.advertiseConnection !== "undefined") {
+        realityEditor.advertisement.logic(action.advertiseConnection);
+    }
+
+  
     if (thisAction.loadMemory) {
         var id = thisAction.loadMemory.id;
         var url = 'http://' + thisAction.loadMemory.ip + ':' + httpPort + '/object/' + id;
@@ -346,6 +360,11 @@ function action(action) {
             addObjectMemory(objects[thisKey]);
         });
     }
+
+    for(var key in action) {
+        cout("found action: " + JSON.stringify(key));
+    }
+
 }
 
 /**********************************************************************************************************************
@@ -1269,6 +1288,7 @@ function addElementInPreferences() {
 
     var bgSwitch = false;
     var bgcolor = "";
+
     for (var keyPref in objects) {
 
         if (bgSwitch) {

@@ -66,6 +66,7 @@
     <script src="thirdPartyCode/d3.min.js"></script>
     <script src="js/constructors.js"></script>
     <script src="js/globalVariables.js"></script>
+    <script src="js/advertisedConnections.js"></script>
     <script src="js/utilities.js"></script>
     <script src="js/index.js"></script>
     <script src="js/gui.js"></script>
@@ -88,6 +89,20 @@
 <!-- This is the console terminal -->
 
 <div class='Interfaces' id="craftingBoard"></div>
+
+
+<div class='Interfaces' id="advertisedConnections" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; display: none;  -webkit-transform: translateZ(1px);">
+    <div class='Interfaces' id="advertisedConnections2" style="position: absolute; left: 0px; top: 0px; right: 60px; bottom: 0px;">
+        <canvas id="testCanvas"  width="568px" height="320px"></canvas>
+        <div class='Interfaces' id="clickMich"
+             ontouchstart="realityEditor.advertisement.touchStart()"
+             ontouchend="realityEditor.advertisement.touchEnd()"
+             style="position: absolute; left: 257px; top: -54px; height: 198px; width: 87px; -webkit-transform: rotate(-90.0deg);
+        text-align: center;
+        vertical-align: middle;
+        line-height: 198px; font-size: 80px; font-family: Calibri, Helvetica Neue, Helvetica, sans-serif">X</div>
+        </div>
+    </div>
 
 <div class='Interfaces' id="preferences">
 
