@@ -351,7 +351,7 @@ function action(action) {
 
   
     if (thisAction.loadMemory) {
-        var id = thisAction.loadMemory.id;
+        var id = thisAction.loadMemory.object;
         var url = 'http://' + thisAction.loadMemory.ip + ':' + httpPort + '/object/' + id;
 
         getData(url, id, function (req, thisKey) {
