@@ -109,7 +109,7 @@ realityEditor.gui.instantConnect = {
                     A.namesB[0] = B.names[0];
                     A.namesB[1] = B.names[1];
 
-                    deleteLinkFromObject(objects[A.objectA].ip, A.objectA, thisSubKey);
+                    realityEditor.network.deleteLinkFromObject(objects[A.objectA].ip, A.objectA, thisSubKey);
                     delete thisTempObjectLinks[thisSubKey];
                     this.draw(A, "disconnected");
                     this.reset();
@@ -118,7 +118,7 @@ realityEditor.gui.instantConnect = {
 
             }
 
-            if (!checkForNetworkLoop(A.objectA, A.nodeA, A.logicA, B.object, B.node, B.logic)) {
+            if (!realityEditor.network.checkForNetworkLoop(A.objectA, A.nodeA, A.logicA, B.object, B.node, B.logic)) {
                 this.draw(A, "not working");
                 this.reset();
                 return;
@@ -129,7 +129,7 @@ realityEditor.gui.instantConnect = {
             A.logicB = B.logic;
             A.namesB[0] = B.names[0];
             A.namesB[1] = B.names[1];
-            sendLinkToServer(A, objects);
+            realityEditor.network.postLinkToServer(A, objects);
             this.draw(A, "connected");
             this.reset();
 
