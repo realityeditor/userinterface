@@ -1,4 +1,8 @@
-// global namespace
+
+/**********************************************************************************************************************
+ ******************************************** global namespace *******************************************************
+ **********************************************************************************************************************/
+
 var realityEditor = realityEditor || {
 		constructors: {
 			Object: {},
@@ -319,6 +323,7 @@ var createNameSpace = createNameSpace || function (namespace) {
 			for (var e = 0; e < i; e++) {
 				object2 = object2[splitNameSpace[e]];
 				object[splitNameSpace[e]] = object[splitNameSpace[e]] || object2;
+				object.cout = this.cout;
 			}
 		}
 		return object;

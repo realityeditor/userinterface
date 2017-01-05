@@ -568,3 +568,32 @@ realityEditor.network.checkForNetworkLoop = function(globalObjectA, globalLocati
 
     return signalIsOk;
 };
+
+
+realityEditor.network.sendResetContent = function(object, node, type) {
+// generate action for all links to be reloaded after upload
+
+    var tempThisObject = {};
+    if (type === "node") {
+        tempThisObject = objects[object].nodes[node];
+    } else if(type === "logic"){
+        // todo might result in error??
+        tempThisObject = objects[object].nodes[node];
+    }
+    else if (type === "ui"){
+        tempThisObject = objects[object];
+    }
+    var content = {};
+    content.x = tempThisObject.x;
+    content.y = tempThisObject.y;
+    content.scale = tempThisObject.scale;
+
+    if (typeof tempThisObject.matrix === "object") {
+        content.matrix = tempThisObject.matrix;
+    }
+
+    if (typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
+        this.postData('http://' + objects[object].ip + ':' + httpPort + '/object/' + object + "/size/" + node, content);
+    }
+
+}
