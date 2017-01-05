@@ -304,6 +304,10 @@ var realityEditor = realityEditor || {
 /**
  * @desc This function generates all required namespaces and initializes a namespace if not existing.
  * Additional it includes pointers to each subspace.
+ *
+ * Inspired by code examples from:
+ * https://www.kenneth-truyers.net/2013/04/27/javascript-namespaces-and-modules/
+ *
  * @param namespace string of the full namespace path
  * @return object that presents the actual used namespace
  **/
