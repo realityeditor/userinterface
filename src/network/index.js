@@ -82,7 +82,7 @@ realityEditor.network.addHeartbeatObject = function (beat) {
                         }
 
                     }
-                    this.realityEditor.device.utilities.cout(JSON.stringify(objects[thisKey]));
+                    this.cout(JSON.stringify(objects[thisKey]));
 
                     this.realityEditor.gui.memory.addObjectMemory(objects[thisKey]);
 
@@ -132,7 +132,7 @@ realityEditor.network.onAction = function (action) {
 
                 // cout(objects[thisKey]);
 
-                this.realityEditor.device.utilities.cout("got links");
+                this.cout("got links");
             });
 
     }
@@ -170,7 +170,7 @@ realityEditor.network.onAction = function (action) {
                         thisObject.matrix = getNodes[nodeKey].matrix;
                     }
 
-                this.realityEditor.device.utilities.cout("got object and nodes");
+                this.cout("got object and nodes");
             });
     }
 
@@ -184,14 +184,14 @@ realityEditor.network.onAction = function (action) {
         var url = 'http://' + thisAction.loadMemory.ip + ':' + httpPort + '/object/' + id;
 
         this.getData(url, id, function (req, thisKey) {
-            this.realityEditor.device.utilities.cout('received memory', req.memory);
+            this.cout('received memory', req.memory);
             objects[thisKey].memory = req.memory;
             this.realityEditor.gui.memory.addObjectMemory(objects[thisKey]);
         });
     }
 
     for(var key in action) {
-        this.realityEditor.device.utilities.cout("found action: " + JSON.stringify(key));
+        this.cout("found action: " + JSON.stringify(key));
     }
 };
 
@@ -359,31 +359,31 @@ realityEditor.network.deleteData = function(url) {
     var request = new XMLHttpRequest();
     request.open('DELETE', url, true);
     request.onreadystatechange = function () {
-        if (request.readyState == 4) cout("It deleted!");
+        if (request.readyState == 4) this.cout("It deleted!");
     };
     request.setRequestHeader("Content-type", "application/json");
     //request.setRequestHeader("Content-length", params.length);
     // request.setRequestHeader("Connection", "close");
     request.send();
-    this.realityEditor.device.utilities.cout("deleteData");
+    this.cout("deleteData");
 };
 
 realityEditor.network.deleteLinkFromObject = function(ip, thisObjectKey, thisKey) {
     // generate action for all links to be reloaded after upload
-    this.realityEditor.device.utilities.cout("I am deleting a link: " + ip);
+    this.cout("I am deleting a link: " + ip);
     this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/" + thisKey);
 };
 
 realityEditor.network.deleteBlockFromObject = function(ip, thisObjectKey, thisLogicKey, thisBlockKey) {
     // generate action for all links to be reloaded after upload
-    this.realityEditor.device.utilities.cout("I am deleting a block: " + ip);
+    this.cout("I am deleting a block: " + ip);
     // /logic/*/*/block/*/
     this.deleteData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/block/" + thisBlockKey);
 };
 
 realityEditor.network.deleteBlockLinkFromObject = function(ip, thisObjectKey, thisLogicKey, thisBlockLinkKey) {
     // generate action for all links to be reloaded after upload
-    this.realityEditor.device.utilities.cout("I am deleting a block link: " + ip);
+    this.cout("I am deleting a block link: " + ip);
     // /logic/*/*/link/*/
     this.deleteData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/link/" + thisBlockLinkKey);
 };
@@ -401,7 +401,7 @@ realityEditor.network.getData = function(url, thisKey, callback) {
                         callback(JSON.parse(req.responseText), thisKey)
                 } else {
                     // Handle error case
-                    this.realityEditor.device.utilities.cout("could not load content");
+                    this.cout("could not load content");
                 }
             }
         };
@@ -409,7 +409,7 @@ realityEditor.network.getData = function(url, thisKey, callback) {
 
     }
     catch (e) {
-        this.realityEditor.device.utilities.cout("could not connect to" + url);
+        this.cout("could not connect to" + url);
     }
 };
 
@@ -419,13 +419,13 @@ realityEditor.network.postData = function(url, body) {
     request.open('POST', url, true);
     var _this = this;
     request.onreadystatechange = function () {
-        if (request.readyState == 4) _this.realityEditor.device.utilities.cout("It worked!");
+        if (request.readyState == 4) _this.cout("It worked!");
     };
     request.setRequestHeader("Content-type", "application/json");
     //request.setRequestHeader("Content-length", params.length);
     // request.setRequestHeader("Connection", "close");
     request.send(params);
-    this.realityEditor.device.utilities.cout("postData");
+    this.cout("postData");
 };
 
 realityEditor.network.postLinkToServer = function(linkObject, objects){
@@ -491,19 +491,19 @@ realityEditor.network.postLinkToServer = function(linkObject, objects){
 
 realityEditor.network.postNewLink = function(ip, thisObjectKey, thisKey, content) {
     // generate action for all links to be reloaded after upload
-    this.realityEditor.device.utilities.cout("sending Link");
+    this.cout("sending Link");
     this.postData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/" + thisKey, content);
 };
 
 realityEditor.network.postNewBlockLink = function(ip, thisObjectKey, thisLogicKey, thisBlockLinkKey, blockLink) {
-    this.realityEditor.device.utilities.cout("sending Block Link");
+    this.cout("sending Block Link");
     var simpleBlockLink = this.realityEditor.gui.crafting.utilities.convertBlockLinkToServerFormat(blockLink);
     // /logic/*/*/link/*/
     this.postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/link/" + thisBlockLinkKey, simpleBlockLink);
 };
 
 realityEditor.network.postNewLogicNode = function(ip, thisObjectKey, thisLogicKey, logic) {
-    this.realityEditor.device.utilities.cout("sending Logic Node");
+    this.cout("sending Logic Node");
     // /logic/*/*/node/
     var simpleLogic = this.realityEditor.gui.crafting.utilities.convertLogicToServerFormat(logic);
     this.postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/node/", simpleLogic);
@@ -511,7 +511,7 @@ realityEditor.network.postNewLogicNode = function(ip, thisObjectKey, thisLogicKe
 
 realityEditor.network.postNewBlockPosition = function(ip, thisObjectKey, thisLogicKey, thisBlockKey, content) {
     // generate action for all links to be reloaded after upload
-    this.realityEditor.device.utilities.cout("I am moving a block: " + ip);
+    this.cout("I am moving a block: " + ip);
     // /logic/*/*/block/*/
     if (typeof content.x === "number" && typeof content.y === "number") {
         this.postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey +"/blockPosition/" + thisBlockKey, content);
@@ -519,13 +519,12 @@ realityEditor.network.postNewBlockPosition = function(ip, thisObjectKey, thisLog
 };
 
 realityEditor.network.postNewBlock = function(ip, thisObjectKey, thisLogicKey, thisBlockKey, block) {
-    this.realityEditor.device.utilities.cout("sending Block");
+    this.cout("sending Block");
     // /logic/*/*/block/*/
     this.postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/block/" + thisBlockKey, block);
 };
 
 realityEditor.network.checkForNetworkLoop = function(globalObjectA, globalLocationInA, globalLogicA, globalObjectB, globalLocationInB,globalLogicB) {
-
     var signalIsOk = true;
     var thisTempObject = objects[globalObjectA];
     var thisTempObjectLinks = thisTempObject.links;
@@ -545,7 +544,6 @@ realityEditor.network.checkForNetworkLoop = function(globalObjectA, globalLocati
                 thisTempObjectLinks[thisSubKey].nodeB === globalLocationInB) {
                 signalIsOk = false;
             }
-
         }
     }
     // check that there is no endless loops through it self or any other connections
@@ -554,7 +552,7 @@ realityEditor.network.checkForNetworkLoop = function(globalObjectA, globalLocati
 
         function searchL(nodeB, objectB, nodeA, objectA) {
             for (var key in objects[objectB].links) {
-                this.realityEditor.device.utilities.cout(objectB);
+                this.cout(objectB);
                 var Bn = objects[objectB].links[key];
                 if (nodeB === Bn.nodeA) {
                     if (nodeA === Bn.nodeB && objectA === Bn.objectB) {
