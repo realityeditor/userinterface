@@ -59,8 +59,8 @@ var realityEditor = realityEditor || {
 			LogicNode: {},
 			LogicGUIState: {},
 			BlockLink: {},
-			BlockNode: {},
-			EdgeBlockNode: {},
+			Block: {},
+			EdgeBlock: {},
 			Data: {}
 		},
 		objects: {},
@@ -210,26 +210,20 @@ var realityEditor = realityEditor || {
 				initLogicInOutBlocks: {},
 				utilities: {
 					toBlockJSON: {},
-					toLogicJSON: {},
 					convertBlockLinkToServerFormat: {},
 					convertLogicToServerFormat: {},
-					readTextFile: {},
-					parseJSONToLogic: {},
-					blockColorMap: {}
 				},
 				blockMenu: {
 					initializeBlockMenu: {},
 					resetBlockMenu: {},
-					menuLoadBlocksNew: {},
 					menuLoadBlocks: {},
-					defaultBlockData: {},
-					menuTabSelected: {},
+					onMenuTabSelected: {},
 					redisplayTabSelection: {},
 					redisplayBlockSelection: {},
-					blockMenuPointerDown: {},
-					blockMenuPointerUp: {},
-					blockMenuPointerLeave: {},
-					blockMenuPointerMove: {}
+					onBlockMenuPointerDown: {},
+					onBlockMenuPointerUp: {},
+					onBlockMenuPointerLeave: {},
+					onBlockMenuPointerMove: {}
 				},
 				grid: {
 					Grid: function (width, height) {
