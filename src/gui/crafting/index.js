@@ -47,9 +47,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-createNameSpace("realityEditor.crafting");
+createNameSpace("realityEditor.gui.crafting");
 
-realityEditor.crafting.updateGrid = function(grid) {
+realityEditor.gui.crafting.updateGrid = function(grid) {
     console.log("update grid!");
 
     // *** this does all the backend work ***
@@ -86,17 +86,17 @@ realityEditor.crafting.updateGrid = function(grid) {
     }
 };
 
-realityEditor.crafting.removeBlockDom = function(block) {
+realityEditor.gui.crafting.removeBlockDom = function(block) {
     var blockDomElement = this.eventHelper.getDomElementForBlock(block);
     blockDomElement.parentNode.removeChild(blockDomElement);
     delete globalStates.currentLogic.guiState.blockDomElements[block.globalId];
 };
 
-realityEditor.crafting.shouldRemoveBlockDom = function(blockDomElement) {
+realityEditor.gui.crafting.shouldRemoveBlockDom = function(blockDomElement) {
     return (this.getBlockForDom(blockDomElement) === null);
 };
 
-realityEditor.crafting.getBlockForDom = function(blockDomElement) {
+realityEditor.gui.crafting.getBlockForDom = function(blockDomElement) {
     for (var blockKey in globalStates.currentLogic.blocks) {
         var block = globalStates.currentLogic.blocks[blockKey];
         if (globalStates.currentLogic.guiState.blockDomElements[block.globalId] === blockDomElement) {
@@ -106,7 +106,7 @@ realityEditor.crafting.getBlockForDom = function(blockDomElement) {
     return null;
 };
 
-realityEditor.crafting.addDomElementForBlock = function(block, grid, isTempBlock) {
+realityEditor.gui.crafting.addDomElementForBlock = function(block, grid, isTempBlock) {
     var blockDomElement = document.createElement('div');
     blockDomElement.setAttribute('class','blockDivPlaced');
 
@@ -159,7 +159,7 @@ realityEditor.crafting.addDomElementForBlock = function(block, grid, isTempBlock
     guiState.blockDomElements[block.globalId] = blockDomElement;
 };
 
-realityEditor.crafting.getBlockIcon = function(logic, blockName) {
+realityEditor.gui.crafting.getBlockIcon = function(logic, blockName) {
     var keys = this.eventHelper.getServerObjectLogicKeys(logic);
 
     if (blockIconCache[keys.logicKey] === undefined) {
@@ -180,7 +180,7 @@ realityEditor.crafting.getBlockIcon = function(logic, blockName) {
 
 // updates datacrafting visuals each frame
 // renders all the links for a datacrafting grid, draws cut line if present, draws temp block if present
-realityEditor.crafting.redrawDatacrafting = function() {
+realityEditor.gui.crafting.redrawDataCrafting = function() {
     if (!globalStates.currentLogic) return;
     var grid = globalStates.currentLogic.grid;
 
@@ -247,7 +247,7 @@ realityEditor.crafting.redrawDatacrafting = function() {
     }
 };
 
-realityEditor.crafting.drawDataCraftingLine = function(context, linkObject, lineStartWeight, startColor, endColor, timeCorrector ) {
+realityEditor.gui.crafting.drawDataCraftingLine = function(context, linkObject, lineStartWeight, startColor, endColor, timeCorrector ) {
     var mathPI = 2*Math.PI;
     var spacer = 2.3;
 
@@ -295,7 +295,7 @@ realityEditor.crafting.drawDataCraftingLine = function(context, linkObject, line
  * @desc
  **/
 
-realityEditor.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
+realityEditor.gui.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
     // update side menu buttons
     document.getElementById('guiButtonImage').src = guiButtonImage[5].src;
     document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
@@ -307,7 +307,7 @@ realityEditor.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
     this.cout("craftingBoardVisible for object: " + objectKey + " and node: "+nodeKey);
 
     if (DEBUG_DATACRAFTING) { // TODO: BEN DEBUG - turn off debugging!
-        var logic = new this.realityEditor.constructors.LogicNode();
+        var logic = new LogicNode();
         this.initializeDataCraftingGrid(logic);
     } else {
         var nodeLogic = objects[objectKey].nodes[nodeKey];
@@ -319,7 +319,7 @@ realityEditor.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
  * @desc
  **/
 
-realityEditor.crafting.craftingBoardHide = function() {
+realityEditor.gui.crafting.craftingBoardHide = function() {
     // remove the block menu if it's showing
     this.blockMenu.resetBlockMenu();
     // reset side menu buttons
@@ -336,7 +336,7 @@ realityEditor.crafting.craftingBoardHide = function() {
  * @desc
  **/
 
-realityEditor.crafting.blockMenuVisible = function() {
+realityEditor.gui.crafting.blockMenuVisible = function() {
     //temporarily hide all other datacrafting divs. redisplay them when menu hides
     document.getElementById("datacraftingCanvas").style.display = "none";
     document.getElementById("blockPlaceholders").style.display = "none";
@@ -361,7 +361,7 @@ realityEditor.crafting.blockMenuVisible = function() {
  * @desc
  **/
 
-realityEditor.crafting.blockMenuHide = function() {
+realityEditor.gui.crafting.blockMenuHide = function() {
 
     //temporarily hide all other datacrafting divs. redisplay them when menu hides
     document.getElementById("datacraftingCanvas").style.display = "";
@@ -380,25 +380,27 @@ realityEditor.crafting.blockMenuHide = function() {
 };
 
 
-realityEditor.crafting.addDatacraftingEventListeners = function() {
+realityEditor.gui.crafting.addDatacraftingEventListeners = function() {
     if (globalStates.currentLogic) {
         var datacraftingEventDiv = document.getElementById('datacraftingEventDiv');
-        datacraftingEventDiv.addEventListener("pointerdown", this.eventHandlers.pointerDown);
-        datacraftingEventDiv.addEventListener("pointermove", this.eventHandlers.pointerMove);
-        datacraftingEventDiv.addEventListener("pointerup", this.eventHandlers.pointerUp);
+        if (!datacraftingEventDiv) return;
+        datacraftingEventDiv.addEventListener("pointerdown", this.eventHandlers.onPointerDown.bind(this.eventHandlers));
+        datacraftingEventDiv.addEventListener("pointermove", this.eventHandlers.onPointerMove.bind(this.eventHandlers));
+        datacraftingEventDiv.addEventListener("pointerup", this.eventHandlers.onPointerUp.bind(this.eventHandlers));
     }
 };
 
-realityEditor.crafting.removeDatacraftingEventListeners = function() {
+realityEditor.gui.crafting.removeDatacraftingEventListeners = function() {
     if (globalStates.currentLogic) {
         var datacraftingEventDiv = document.getElementById('datacraftingEventDiv');
-        datacraftingEventDiv.removeEventListener("pointerdown", this.eventHandlers.pointerDown);
-        datacraftingEventDiv.removeEventListener("pointermove", this.eventHandlers.pointerMove);
-        datacraftingEventDiv.removeEventListener("pointerup", this.eventHandlers.pointerUp);
+        if (!datacraftingEventDiv) return;
+        datacraftingEventDiv.removeEventListener("pointerdown", this.eventHandlers.onPointerDown);
+        datacraftingEventDiv.removeEventListener("pointermove", this.eventHandlers.onPointerMove);
+        datacraftingEventDiv.removeEventListener("pointerup", this.eventHandlers.onPointerUp);
     }
 };
 
-realityEditor.crafting.resetCraftingBoard = function() {
+realityEditor.gui.crafting.resetCraftingBoard = function() {
     this.removeDatacraftingEventListeners();
     this.resetTempLogicState(globalStates.currentLogic);
     var container = document.getElementById('craftingBoard');
@@ -408,21 +410,21 @@ realityEditor.crafting.resetCraftingBoard = function() {
     globalStates.currentLogic = null;
 };
 
-realityEditor.crafting.resetTempLogicState = function(logic) {
+realityEditor.gui.crafting.resetTempLogicState = function(logic) {
     if (logic) {
         delete logic.guiState;
-        logic.guiState = new this.realityEditor.constructors.LogicGUIState();
+        logic.guiState = new LogicGUIState();
     }
 };
 
 // should only be called once to initialize a blank datacrafting interface and data model
-realityEditor.crafting.initializeDatacraftingGrid = function(logic) {
+realityEditor.gui.crafting.initializeDataCraftingGrid = function(logic) {
     globalStates.currentLogic = logic;
 
     var container = document.getElementById('craftingBoard');
 
     // initializes the data model for the datacrafting board
-    logic.grid = new this.Grid(container.clientWidth - menuBarWidth, container.clientHeight);
+    logic.grid = new this.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight);
 
     var datacraftingCanvas = document.createElement('canvas');
     datacraftingCanvas.setAttribute('id', 'datacraftingCanvas');
@@ -513,7 +515,7 @@ realityEditor.crafting.initializeDatacraftingGrid = function(logic) {
     this.addDatacraftingEventListeners();
 };
 
-realityEditor.crafting.initLogicInOutBlocks = function() {
+realityEditor.gui.crafting.initLogicInOutBlocks = function() {
     for (var y = -1; y <= 4; y+= 5) {
         var namePrefix = y === -1 ? "in" : "out";
         for (var x = 0; x <= 3; x++) {

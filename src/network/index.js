@@ -84,7 +84,7 @@ realityEditor.network.addHeartbeatObject = function (beat) {
                         if(thisObject.type === "logic") {
                             thisObject.guiState = new LogicGUIState();
                             var container = document.getElementById('craftingBoard');
-                            thisObject.grid = new Grid(container.clientWidth - menuBarWidth, container.clientHeight);
+                            thisObject.grid = new this.realityEditor.gui.crafting.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight);
                             this.realityEditor.gui.crafting.utilities.convertLinksFromServer(thisObject);
                         }
                     }
@@ -645,4 +645,47 @@ realityEditor.network.sendResetContent = function(object, node, type) {
         this.postData('http://' + objects[object].ip + ':' + httpPort + '/object/' + object + "/size/" + node, content);
     }
 
-}
+};
+
+/**
+ * @desc
+ * @param objectKey
+ * @param nodeKey
+ * @return
+ **/
+
+
+realityEditor.network.onLoad = function(objectKey, nodeKey) {
+
+    globalStates.notLoading = false;
+    // window.location.href = "of://event_test_"+nodeKey;
+
+    // cout("posting Msg");
+    var nodes;
+    var version = 170;
+    if (!objects[objectKey]) {
+        nodes = {};
+    } else {
+        nodes = objects[objectKey].nodes;
+        version = objects[objectKey].integerVersion;
+    }
+
+    var oldStyle = {
+        obj: objectKey,
+        pos: nodeKey,
+        objectValues: nodes
+    };
+
+    var newStyle = {
+        object: objectKey,
+        node: nodeKey,
+        nodes: nodes
+    };
+
+    if (version < 170) {
+        newStyle = oldStyle;
+    }
+    globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
+        JSON.stringify(newStyle), '*');
+    this.cout("on_load");
+};

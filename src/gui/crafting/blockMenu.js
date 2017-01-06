@@ -47,9 +47,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-createNameSpace("realityEditor.crafting.blockMenu");
+createNameSpace("realityEditor.gui.crafting.blockMenu");
 
-realityEditor.crafting.blockMenu.initializeBlockMenu = function(callback) {
+realityEditor.gui.crafting.blockMenu.initializeBlockMenu = function(callback) {
     var logic = globalStates.currentLogic;
 
     var craftingBoard = document.getElementById('craftingBoard');
@@ -133,7 +133,7 @@ realityEditor.crafting.blockMenu.initializeBlockMenu = function(callback) {
     });
 };
 
-realityEditor.crafting.blockMenu.resetBlockMenu = function() {
+realityEditor.gui.crafting.blockMenu.resetBlockMenu = function() {
     if (globalStates.currentLogic) {
         var guiState = globalStates.currentLogic.guiState;
         guiState.menuBlockDivs.forEach(function(blockDiv) {
@@ -151,7 +151,7 @@ realityEditor.crafting.blockMenu.resetBlockMenu = function() {
     }
 };
 
-realityEditor.crafting.blockMenu.menuLoadBlocks = function(callback) {
+realityEditor.gui.crafting.blockMenu.menuLoadBlocks = function(callback) {
     var keys = this.crafting.eventHelper.getServerObjectLogicKeys(globalStates.currentLogic);
     this.realityEditor.network.getData('http://' + keys.ip + ':' + httpPort + '/availableLogicBlocks', keys.objectKey, function (req, thisKey) {
         console.log("did get available blocks", req, thisKey);
@@ -159,7 +159,7 @@ realityEditor.crafting.blockMenu.menuLoadBlocks = function(callback) {
     });
 };
 
-realityEditor.crafting.blockMenu.onMenuTabSelected = function(e) {
+realityEditor.gui.crafting.blockMenu.onMenuTabSelected = function(e) {
     e.preventDefault();
     var guiState = globalStates.currentLogic.guiState;
     guiState.menuSelectedTab = e.target.tabIndex;
@@ -169,7 +169,7 @@ realityEditor.crafting.blockMenu.onMenuTabSelected = function(e) {
     this.redisplayBlockSelection();
 }
 
-realityEditor.crafting.blockMenu.redisplayTabSelection = function() {
+realityEditor.gui.crafting.blockMenu.redisplayTabSelection = function() {
     var guiState = globalStates.currentLogic.guiState;
     guiState.menuTabDivs.forEach(function(tab) {
         if (guiState.menuSelectedTab === tab.tabIndex) {
@@ -180,7 +180,7 @@ realityEditor.crafting.blockMenu.redisplayTabSelection = function() {
     });
 };
 
-realityEditor.crafting.blockMenu.redisplayBlockSelection = function() {
+realityEditor.gui.crafting.blockMenu.redisplayBlockSelection = function() {
     var guiState = globalStates.currentLogic.guiState;
     var blocksObject = guiState.menuBlockData[guiState.menuSelectedTab];
     var blocksInThisSection = [];
@@ -217,7 +217,7 @@ realityEditor.crafting.blockMenu.redisplayBlockSelection = function() {
     }
 };
 
-realityEditor.crafting.blockMenu.onBlockMenuPointerDown = function(e) {
+realityEditor.gui.crafting.blockMenu.onBlockMenuPointerDown = function(e) {
     e.preventDefault();
     var guiState = globalStates.currentLogic.guiState;
     guiState.menuBlockToAdd = null;
@@ -227,7 +227,7 @@ realityEditor.crafting.blockMenu.onBlockMenuPointerDown = function(e) {
     guiState.menuBlockToAdd = e.currentTarget.parentNode;
 }
 
-realityEditor.crafting.blockMenu.onBlockMenuPointerUp = function(e) {
+realityEditor.gui.crafting.blockMenu.onBlockMenuPointerUp = function(e) {
     e.preventDefault();
     var guiState = globalStates.currentLogic.guiState;
     guiState.menuIsPointerDown = false;
@@ -238,7 +238,7 @@ realityEditor.crafting.blockMenu.onBlockMenuPointerUp = function(e) {
     guiState.menuBlockToAdd = null;
 };
 
-realityEditor.crafting.blockMenu.onBlockMenuPointerLeave = function(e) {
+realityEditor.gui.crafting.blockMenu.onBlockMenuPointerLeave = function(e) {
     e.preventDefault();
     var guiState = globalStates.currentLogic.guiState;
     if (guiState.menuIsPointerDown) {
@@ -250,7 +250,7 @@ realityEditor.crafting.blockMenu.onBlockMenuPointerLeave = function(e) {
     guiState.menuBlockToAdd = null;
 };
 
-realityEditor.crafting.blockMenu.onBlockMenuPointerMove = function(e) {
+realityEditor.gui.crafting.blockMenu.onBlockMenuPointerMove = function(e) {
     e.preventDefault();
     var guiState = globalStates.currentLogic.guiState;
     if (guiState.menuBlockToAdd) {

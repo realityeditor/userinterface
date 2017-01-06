@@ -47,14 +47,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-createNameSpace("realityEditor.crafting.grid");
+createNameSpace("realityEditor.gui.crafting.grid");
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   Data Structures - Constructors
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // the grid is the overall data structure for managing block locations and calculating routes between them
-realityEditor.crafting.grid.Grid = function(containerWidth, containerHeight) {
+realityEditor.gui.crafting.grid.Grid = function(containerWidth, containerHeight) {
 
     this.size = 7; // number of rows and columns
     this.blockColWidth = 2 * (containerWidth / 11);
@@ -67,8 +67,8 @@ realityEditor.crafting.grid.Grid = function(containerWidth, containerHeight) {
     // initialize list of cells using the size of the grid
     for (var row = 0; row < this.size; row++) {
         for (var col = 0; col < this.size; col++) {
-            var cellLocation = new CellLocation(col, row);
-            var cell = new Cell(cellLocation);
+            var cellLocation = new realityEditor.gui.crafting.grid.CellLocation(col, row);
+            var cell = new realityEditor.gui.crafting.grid.Cell(cellLocation);
             this.cells.push(cell);
         }
     }
@@ -76,12 +76,12 @@ realityEditor.crafting.grid.Grid = function(containerWidth, containerHeight) {
 
 // the cell has a location in the grid, possibly an associated Block object
 // and a list of which routes pass through the cell
-realityEditor.crafting.grid.Cell = function(location) {
+realityEditor.gui.crafting.grid.Cell = function(location) {
     this.location = location; // CellLocation
     this.routeSegments = []; // [RouteSegment]
 };
 
-realityEditor.crafting.grid.CellLocation = function(col,row) {
+realityEditor.gui.crafting.grid.CellLocation = function(col,row) {
     this.col = col;
     this.row = row;
     this.offsetX = 0;
@@ -89,7 +89,7 @@ realityEditor.crafting.grid.CellLocation = function(col,row) {
 };
 
 // the route contains the corner points and the list of all cells it passes through
-realityEditor.crafting.grid.Route = function(initialCellLocations) {
+realityEditor.gui.crafting.grid.Route = function(initialCellLocations) {
     this.cellLocations = []; // [CellLocation]
     this.allCells = []; // [Cell]
 
@@ -103,7 +103,7 @@ realityEditor.crafting.grid.Route = function(initialCellLocations) {
 };
 
 // contains useful data for keeping track of how a route passes through a cell
-realityEditor.crafting.grid.RouteSegment = function(route, containsHorizontal, containsVertical) {
+realityEditor.gui.crafting.grid.RouteSegment = function(route, containsHorizontal, containsVertical) {
     this.route = route;
     this.containsHorizontal = containsHorizontal;
     this.containsVertical = containsVertical;
@@ -118,16 +118,16 @@ realityEditor.crafting.grid.RouteSegment = function(route, containsHorizontal, c
 
 // -- CELL METHODS -- //
 
-realityEditor.crafting.grid.Cell.prototype.canHaveBlock = function() {
+realityEditor.gui.crafting.grid.Cell.prototype.canHaveBlock = function() {
     return (this.location.col % 2 === 0) && (this.location.row % 2 === 0);
 };
 
-realityEditor.crafting.grid.Cell.prototype.isMarginCell = function() {
+realityEditor.gui.crafting.grid.Cell.prototype.isMarginCell = function() {
     return this.location.row % 2 === 0 && this.location.col % 2 === 1;
 };
 
 // utility - gets the hue for cells in a given column
-realityEditor.crafting.grid.Cell.prototype.getColorHSL = function() {
+realityEditor.gui.crafting.grid.Cell.prototype.getColorHSL = function() {
     var blockColumn = Math.floor(this.location.col / 2);
     var colorMap = { blue: {h: 180, s:100, l:60}, green: {h: 122, s:100, l:60}, yellow: {h: 59, s:100, l:60}, red: {h:333, s:100, l:60} };
     var colorName = ['blue','green','yellow','red'][blockColumn];
@@ -135,21 +135,21 @@ realityEditor.crafting.grid.Cell.prototype.getColorHSL = function() {
 };
 
 // utility - counts the number of horizontal routes in a cell
-realityEditor.crafting.grid.Cell.prototype.countHorizontalRoutes = function() {
+realityEditor.gui.crafting.grid.Cell.prototype.countHorizontalRoutes = function() {
     return this.routeSegments.filter(function(value) { return value.containsHorizontal; }).length;
 };
 
 // utility - counts the number of vertical routes in a cell
 // optionally excludes start or endpoints so that routes starting in a
 // block cell don't count as overlapping routes ending in a block cell
-realityEditor.crafting.grid.Cell.prototype.countVerticalRoutes = function(excludeStartPoints, excludeEndPoints) {
+realityEditor.gui.crafting.grid.Cell.prototype.countVerticalRoutes = function(excludeStartPoints, excludeEndPoints) {
     return this.routeSegments.filter(function(value) {
         return value.containsVertical && !((value.isStart && excludeStartPoints) || (value.isEnd && excludeEndPoints));
     }).length;
 };
 
 // utility - checks whether the cell has a vertical route tracker for the given route
-realityEditor.crafting.grid.Cell.prototype.containsVerticalSegmentOfRoute = function(route) {
+realityEditor.gui.crafting.grid.Cell.prototype.containsVerticalSegmentOfRoute = function(route) {
     var containsVerticalSegment = false;
     this.routeSegments.forEach( function(routeSegment) {
         if (routeSegment.route === route && routeSegment.containsVertical) {
@@ -160,7 +160,7 @@ realityEditor.crafting.grid.Cell.prototype.containsVerticalSegmentOfRoute = func
 };
 
 // utility - checks whether the cell has a horizontal route tracker for the given route
-realityEditor.crafting.grid.Cell.prototype.containsHorizontalSegmentOfRoute = function(route) {
+realityEditor.gui.crafting.grid.Cell.prototype.containsHorizontalSegmentOfRoute = function(route) {
     var containsHorizontalSegment = false;
     this.routeSegments.forEach( function(routeSegment) {
         if (routeSegment.route === route && routeSegment.containsHorizontal) {
@@ -170,32 +170,32 @@ realityEditor.crafting.grid.Cell.prototype.containsHorizontalSegmentOfRoute = fu
     return containsHorizontalSegment;
 };
 
-realityEditor.crafting.grid.Cell.prototype.blockAtThisLocation = function() {
+realityEditor.gui.crafting.grid.Cell.prototype.blockAtThisLocation = function() {
     if (this.isMarginCell()) {
-        var blockPosBefore = convertGridPosToBlockPos(this.location.col-1, this.location.row);
-        var blockPosAfter = convertGridPosToBlockPos(this.location.col+1, this.location.row);
-        var blockBefore = getBlockOverlappingPosition(blockPosBefore.x, blockPosBefore.y);
-        var blockAfter = getBlockOverlappingPosition(blockPosAfter.x, blockPosAfter.y);
-        if (blockBefore && blockAfter && areBlocksEqual(blockBefore, blockAfter)) {
+        var blockPosBefore = this.convertGridPosToBlockPos(this.location.col-1, this.location.row);
+        var blockPosAfter = this.convertGridPosToBlockPos(this.location.col+1, this.location.row);
+        var blockBefore = this.getBlockOverlappingPosition(blockPosBefore.x, blockPosBefore.y);
+        var blockAfter = this.getBlockOverlappingPosition(blockPosAfter.x, blockPosAfter.y);
+        if (blockBefore && blockAfter && this.crafting.eventHelper.areBlocksEqual(blockBefore, blockAfter)) {
             return blockBefore;
         }
     } else if (this.canHaveBlock()) {
-        var blockPos = convertGridPosToBlockPos(this.location.col, this.location.row);
-        return getBlockOverlappingPosition(blockPos.x, blockPos.y);
+        var blockPos = this.convertGridPosToBlockPos(this.location.col, this.location.row);
+        return this.getBlockOverlappingPosition(blockPos.x, blockPos.y);
     }
 };
 
-realityEditor.crafting.grid.Cell.prototype.itemAtThisLocation = function() {
+realityEditor.gui.crafting.grid.Cell.prototype.itemAtThisLocation = function() {
     var block = this.blockAtThisLocation();
-    var blockGridPos = convertBlockPosToGridPos(block.x, block.y);
+    var blockGridPos = this.convertBlockPosToGridPos(block.x, block.y);
     var itemCol = this.location.col - blockGridPos.col;
-    return convertGridPosToBlockPos(itemCol, blockGridPos.row).x;
+    return this.convertGridPosToBlockPos(itemCol, blockGridPos.row).x;
 };
 
 // -- ROUTE METHODS -- //
 
 // adds a new corner location to a route
-realityEditor.crafting.grid.Route.prototype.addLocation = function(col, row) {
+realityEditor.gui.crafting.grid.Route.prototype.addLocation = function(col, row) {
     var skip = false;
     this.cellLocations.forEach(function(cellLocation) {
         if (cellLocation.col === col && cellLocation.row === row) { // implicitly prevent duplicate points from being added
@@ -203,13 +203,13 @@ realityEditor.crafting.grid.Route.prototype.addLocation = function(col, row) {
         }
     });
     if (!skip) {
-        this.cellLocations.push(new CellLocation(col, row));
+        this.cellLocations.push(new realityEditor.gui.crafting.grid.CellLocation(col, row));
     }
 };
 
 // utility - outputs how far a route travels left/right and up/down, for
 // use in choosing the order of routes so that they usually don't cross
-realityEditor.crafting.grid.Route.prototype.getOrderPreferences = function() {
+realityEditor.gui.crafting.grid.Route.prototype.getOrderPreferences = function() {
     var lastCell = this.cellLocations[this.cellLocations.length-1];
     var firstCell = this.cellLocations[0];
     return {
@@ -218,7 +218,7 @@ realityEditor.crafting.grid.Route.prototype.getOrderPreferences = function() {
     };
 };
 
-realityEditor.crafting.grid.Route.prototype.getXYPositionAtPercentage = function(percent) {
+realityEditor.gui.crafting.grid.Route.prototype.getXYPositionAtPercentage = function(percent) {
     var pointData = this.pointData;
     if (percent >= 0 && percent <= 1) {
         var indexBefore = 0;
@@ -256,7 +256,7 @@ realityEditor.crafting.grid.Route.prototype.getXYPositionAtPercentage = function
 
 // utility - returns the x,y coordinates of corners for a link so that they can be rendered
 // (includes the offsets - these are the actual points to draw on the screen exactly as is)
-realityEditor.crafting.grid.Grid.prototype.getPointsForLink = function(blockLink) {
+realityEditor.gui.crafting.grid.Grid.prototype.getPointsForLink = function(blockLink) {
     var points = [];
     if (blockLink.route !== null) {
         var that = this;
@@ -274,7 +274,7 @@ realityEditor.crafting.grid.Grid.prototype.getPointsForLink = function(blockLink
 };
 
 // utility - calculates the total width and height of the grid using the sizes of the cells
-realityEditor.crafting.grid.Grid.prototype.getPixelDimensions = function() {
+realityEditor.gui.crafting.grid.Grid.prototype.getPixelDimensions = function() {
     var width = Math.ceil(this.size/2) * this.blockColWidth +  Math.floor(this.size/2) * this.marginColWidth;
     var height = Math.ceil(this.size/2) * this.blockRowHeight +  Math.floor(this.size/2) * this.marginRowHeight;
     return {
@@ -284,24 +284,24 @@ realityEditor.crafting.grid.Grid.prototype.getPixelDimensions = function() {
 };
 
 // utility - gets a cell at a given grid location
-realityEditor.crafting.grid.Grid.prototype.getCell = function(col, row) {
+realityEditor.gui.crafting.grid.Grid.prototype.getCell = function(col, row) {
     if (row >= 0 && row < this.size && col >= 0 && col < this.size) {
         return this.cells[row * this.size + col];
     }
 };
 
 // utility - gets width of cell, which differs for cols with blocks vs margins
-realityEditor.crafting.grid.Grid.prototype.getCellWidth = function(col) {
+realityEditor.gui.crafting.grid.Grid.prototype.getCellWidth = function(col) {
     return (col % 2 === 0) ? this.blockColWidth : this.marginColWidth;
 };
 
 // utility - gets height of cell, which differs for rows with blocks vs margins
-realityEditor.crafting.grid.Grid.prototype.getCellHeight = function(row) {
+realityEditor.gui.crafting.grid.Grid.prototype.getCellHeight = function(row) {
     return (row % 2 === 0) ? this.blockRowHeight : this.marginRowHeight;
 };
 
 // utility - gets x position of cell
-realityEditor.crafting.grid.Grid.prototype.getCellCenterX = function(cell) {
+realityEditor.gui.crafting.grid.Grid.prototype.getCellCenterX = function(cell) {
     var leftEdgeX = 0;
     if (cell.location.col % 2 === 0) { // this is a block cell
         leftEdgeX = (cell.location.col / 2) * (this.blockColWidth + this.marginColWidth);
@@ -314,7 +314,7 @@ realityEditor.crafting.grid.Grid.prototype.getCellCenterX = function(cell) {
 };
 
 // utility - gets y position of cell
-realityEditor.crafting.grid.Grid.prototype.getCellCenterY = function(cell) {
+realityEditor.gui.crafting.grid.Grid.prototype.getCellCenterY = function(cell) {
     var topEdgeY = 0;
     if (cell.location.row % 2 === 0) { // this is a block cell
         topEdgeY = (cell.location.row / 2) * (this.blockRowHeight + this.marginRowHeight);
@@ -327,17 +327,17 @@ realityEditor.crafting.grid.Grid.prototype.getCellCenterY = function(cell) {
 };
 
 // utility - gets x position for a column
-realityEditor.crafting.grid.Grid.prototype.getColumnCenterX = function(col) {
+realityEditor.gui.crafting.grid.Grid.prototype.getColumnCenterX = function(col) {
     return this.getCellCenterX(this.getCell(col,0));
 };
 
 // utility - gets y position for a row
-realityEditor.crafting.grid.Grid.prototype.getRowCenterY = function(row) {
+realityEditor.gui.crafting.grid.Grid.prototype.getRowCenterY = function(row) {
     return this.getCellCenterY(this.getCell(0,row));
 };
 
 // utility - true iff cells are in same row
-realityEditor.crafting.grid.Grid.prototype.areCellsHorizontal = function(cell1, cell2) {
+realityEditor.gui.crafting.grid.Grid.prototype.areCellsHorizontal = function(cell1, cell2) {
     if (cell1 && cell2) {
         return cell1.location.row === cell2.location.row;
     }
@@ -345,7 +345,7 @@ realityEditor.crafting.grid.Grid.prototype.areCellsHorizontal = function(cell1, 
 };
 
 // utility - true iff cells are in same column
-realityEditor.crafting.grid.Grid.prototype.areCellsVertical = function(cell1, cell2) {
+realityEditor.gui.crafting.grid.Grid.prototype.areCellsVertical = function(cell1, cell2) {
     if (cell1 && cell2) {
         return cell1.location.col === cell2.location.col;
     }
@@ -353,7 +353,7 @@ realityEditor.crafting.grid.Grid.prototype.areCellsVertical = function(cell1, ce
 };
 
 // utility - if cells are in a line horizontally or vertically, returns all the cells in between them
-realityEditor.crafting.grid.Grid.prototype.getCellsBetween = function(cell1, cell2) {
+realityEditor.gui.crafting.grid.Grid.prototype.getCellsBetween = function(cell1, cell2) {
     var cellsBetween = [];
     if (this.areCellsHorizontal(cell1, cell2)) {
         var minCol = Math.min(cell1.location.col, cell2.location.col);
@@ -373,7 +373,7 @@ realityEditor.crafting.grid.Grid.prototype.getCellsBetween = function(cell1, cel
 };
 
 // utility - true iff a cell between the start and end actually contains a block
-realityEditor.crafting.grid.Grid.prototype.areBlocksBetween = function(startCell, endCell) {
+realityEditor.gui.crafting.grid.Grid.prototype.areBlocksBetween = function(startCell, endCell) {
     var blocksBetween = this.getCellsBetween(startCell, endCell).filter( function(cell) {
         return cell.blockAtThisLocation() !== undefined;
     });
@@ -381,7 +381,7 @@ realityEditor.crafting.grid.Grid.prototype.areBlocksBetween = function(startCell
 };
 
 // utility - looks vertically below a location until it finds a block, or null if none in that column
-realityEditor.crafting.grid.Grid.prototype.getFirstBlockBelow = function(col, row) {
+realityEditor.gui.crafting.grid.Grid.prototype.getFirstBlockBelow = function(col, row) {
     for (var r = row+1; r < this.size; r++) {
         var cell = this.getCell(col,r);
         if (cell.blockAtThisLocation()) {
@@ -393,7 +393,7 @@ realityEditor.crafting.grid.Grid.prototype.getFirstBlockBelow = function(col, ro
 
 // utility - for a given cell in a route, looks at the previous and next cells in the route to
 // figure out if the cell contains a vertical path, horizontal path, or both (it's a corner)
-realityEditor.crafting.grid.Grid.prototype.getLineSegmentDirections = function(prevCell,currentCell,nextCell) {
+realityEditor.gui.crafting.grid.Grid.prototype.getLineSegmentDirections = function(prevCell,currentCell,nextCell) {
     var containsHorizontal = false;
     var containsVertical = false;
     if (this.areCellsHorizontal(currentCell, prevCell) ||
@@ -412,13 +412,13 @@ realityEditor.crafting.grid.Grid.prototype.getLineSegmentDirections = function(p
 };
 
 // resets the number of "horizontal" or "vertical" segments contained to 0 for all cells
-realityEditor.crafting.grid.Grid.prototype.resetCellRouteCounts = function() {
+realityEditor.gui.crafting.grid.Grid.prototype.resetCellRouteCounts = function() {
     this.cells.forEach(function(cell) {
         cell.routeSegments = [];
     });
 };
 
-realityEditor.crafting.grid.Grid.prototype.getCellsOver = function (firstCell,blockWidth,itemSelected,includeMarginCells) {
+realityEditor.gui.crafting.grid.Grid.prototype.getCellsOver = function (firstCell,blockWidth,itemSelected,includeMarginCells) {
     var cells = [];
     var increment = includeMarginCells ? 1 : 2;
     for (var col = firstCell.location.col; col < firstCell.location.col + 2 * blockWidth - 1; col += increment) {
@@ -427,7 +427,7 @@ realityEditor.crafting.grid.Grid.prototype.getCellsOver = function (firstCell,bl
     return cells;
 };
 
-realityEditor.crafting.grid.Grid.prototype.getCellFromPointerPosition = function(xCoord, yCoord) {
+realityEditor.gui.crafting.grid.Grid.prototype.getCellFromPointerPosition = function(xCoord, yCoord) {
     var col;
     var row;
 
@@ -458,34 +458,34 @@ realityEditor.crafting.grid.Grid.prototype.getCellFromPointerPosition = function
 // first, calculates the routes (which cells they go thru)
 // next, offsets each so that they don't visually overlap
 // lastly, prepares points so that they can be easily rendered
-realityEditor.crafting.grid.Grid.prototype.recalculateAllRoutes = function() {
+realityEditor.gui.crafting.grid.Grid.prototype.recalculateAllRoutes = function() {
     console.log("reculculate all routes!");
     var that = this;
 
     that.resetCellRouteCounts();
 
-    forEachLink( function(link) {
+    this.forEachLink( function(link) {
         that.calculateLinkRoute(link);
     });
     var overlaps = that.determineMaxOverlaps();
     that.calculateOffsets(overlaps); // todo: still some minor bugs in the offset function
 
-    forEachLink( function(link) {
+    this.forEachLink( function(link) {
         var points = that.getPointsForLink(link);
-        link.route.pointData = preprocessPointsForDrawing(points);
+        link.route.pointData = this.preprocessPointsForDrawing(points);
     });
 };
 
 // given a link, calculates all the corner points between the start block and end block,
 // and sets the route of the link to contain the corner points and all the cells between
-realityEditor.crafting.grid.Grid.prototype.calculateLinkRoute = function(link) {
+realityEditor.gui.crafting.grid.Grid.prototype.calculateLinkRoute = function(link) {
 
-    var nodeA = blockWithID(link.nodeA, globalStates.currentLogic);
-    var nodeB = blockWithID(link.nodeB, globalStates.currentLogic);
+    var nodeA = this.blockWithID(link.nodeA, globalStates.currentLogic);
+    var nodeB = this.blockWithID(link.nodeB, globalStates.currentLogic);
 
-    var startLocation = convertBlockPosToGridPos(nodeA.x + link.logicA, nodeA.y);
-    var endLocation = convertBlockPosToGridPos(nodeB.x + link.logicB, nodeB.y);
-    var route = new Route([startLocation]);
+    var startLocation = this.convertBlockPosToGridPos(nodeA.x + link.logicA, nodeA.y);
+    var endLocation = this.convertBlockPosToGridPos(nodeB.x + link.logicB, nodeB.y);
+    var route = new realityEditor.gui.crafting.grid.Route([startLocation]);
 
     // by default lines loop around the right of blocks, except for last column or if destination is to left of start
     var sideToApproachOn = 1; // to the right
@@ -503,7 +503,7 @@ realityEditor.crafting.grid.Grid.prototype.calculateLinkRoute = function(link) {
             var firstBlockBelow = this.getFirstBlockBelow(startLocation.col, startLocation.row);
             var rowToDrawDownTo = endLocation.row-1;
             if (firstBlockBelow) {
-                var firstBlockRowBelow = convertBlockPosToGridPos(firstBlockBelow.x, firstBlockBelow.y).row;
+                var firstBlockRowBelow = this.convertBlockPosToGridPos(firstBlockBelow.x, firstBlockBelow.y).row;
                 rowToDrawDownTo = Math.min(firstBlockRowBelow-1, rowToDrawDownTo);
             }
             route.addLocation(startLocation.col, rowToDrawDownTo);
@@ -563,7 +563,7 @@ realityEditor.crafting.grid.Grid.prototype.calculateLinkRoute = function(link) {
 
 // Given the corner points for a route, finds all the cells in between, and labels each with
 // "horizontal", "vertical", or both depending on which way the route goes thru that cell
-realityEditor.crafting.grid.Grid.prototype.calculateAllCellsContainingRoute = function(route) {
+realityEditor.gui.crafting.grid.Grid.prototype.calculateAllCellsContainingRoute = function(route) {
     var allCells = [];
     for (var i=0; i < route.cellLocations.length; i++) {
 
@@ -580,7 +580,7 @@ realityEditor.crafting.grid.Grid.prototype.calculateAllCellsContainingRoute = fu
         }
         var segmentDirections = this.getLineSegmentDirections(prevCell, currentCell, nextCell);
 
-        var routeSegment = new RouteSegment(route, segmentDirections.horizontal, segmentDirections.vertical); // corners have both vertical and horizontal. end point has only vertical //todo: except for top/bottom row?
+        var routeSegment = new realityEditor.gui.crafting.grid.RouteSegment(route, segmentDirections.horizontal, segmentDirections.vertical); // corners have both vertical and horizontal. end point has only vertical //todo: except for top/bottom row?
         if (prevCell === null) {
             routeSegment.isStart = true;
         }
@@ -594,7 +594,7 @@ realityEditor.crafting.grid.Grid.prototype.calculateAllCellsContainingRoute = fu
         var areNextHorizontal = this.areCellsHorizontal(currentCell, nextCell);
         var areNextVertical = !areNextHorizontal; // mutually exclusive
         cellsBetween.forEach( function(cell) {
-            var routeSegment = new RouteSegment(route, areNextHorizontal, areNextVertical);
+            var routeSegment = new realityEditor.gui.crafting.grid.RouteSegment(route, areNextHorizontal, areNextVertical);
             cell.routeSegments.push(routeSegment);
         });
         allCells.push.apply(allCells, cellsBetween);
@@ -604,7 +604,7 @@ realityEditor.crafting.grid.Grid.prototype.calculateAllCellsContainingRoute = fu
 
 // counts how many routes overlap eachother in each row and column, and sorts them, so that
 // they can be displaced around the center of the row/column and not overlap one another
-realityEditor.crafting.grid.Grid.prototype.determineMaxOverlaps = function() {
+realityEditor.gui.crafting.grid.Grid.prototype.determineMaxOverlaps = function() {
     var colRouteOverlaps = [];
     var horizontallySortedLinks;
     for (var c = 0; c < this.size; c++) {
@@ -614,22 +614,22 @@ realityEditor.crafting.grid.Grid.prototype.determineMaxOverlaps = function() {
 
         // decreases future overlaps of links in the grid by sorting them left/right
         // so that links going to the left don't need to cross over links going to the right
-        horizontallySortedLinks = allLinks().sort(function(link1, link2){
+        horizontallySortedLinks = this.allLinks().sort(function(link1, link2){
             var p1 = link1.route.getOrderPreferences();
             var p2 = link2.route.getOrderPreferences();
             var horizontalOrder = p1.horizontal - p2.horizontal;
             var verticalOrder = p1.vertical - p2.vertical;
 
-            var block1A = blockWithID(link1.nodeA, globalStates.currentLogic);
-            var block1B = blockWithID(link1.nodeB, globalStates.currentLogic);
-            var block2A = blockWithID(link2.nodeA, globalStates.currentLogic);
-            var block2B = blockWithID(link2.nodeB, globalStates.currentLogic);
+            var block1A = this.blockWithID(link1.nodeA, globalStates.currentLogic);
+            var block1B = this.blockWithID(link1.nodeB, globalStates.currentLogic);
+            var block2A = this.blockWithID(link2.nodeA, globalStates.currentLogic);
+            var block2B = this.blockWithID(link2.nodeB, globalStates.currentLogic);
 
-            var startCellLocation1 = convertBlockPosToGridPos(block1A.x, block1A.y);
-            var endCellLocation1 = convertBlockPosToGridPos(block1B.x, block1B.y);
+            var startCellLocation1 = this.convertBlockPosToGridPos(block1A.x, block1A.y);
+            var endCellLocation1 = this.convertBlockPosToGridPos(block1B.x, block1B.y);
 
-            var startCellLocation2 = convertBlockPosToGridPos(block2A.x, block2A.y);
-            var endCellLocation2 = convertBlockPosToGridPos(block2B.x, block2B.y);
+            var startCellLocation2 = this.convertBlockPosToGridPos(block2A.x, block2A.y);
+            var endCellLocation2 = this.convertBlockPosToGridPos(block2B.x, block2B.y);
 
             // special case if link stays in same column as the start block
             var dCol1 = endCellLocation1.col - startCellLocation1.col;
@@ -693,7 +693,7 @@ realityEditor.crafting.grid.Grid.prototype.determineMaxOverlaps = function() {
     // for each route in column
     for (var r = 0; r < this.size; r++) {
         var thisRowRouteOverlaps = [];
-        allLinks().sort(function(link1, link2){
+        this.allLinks().sort(function(link1, link2){
             // vertically sorts them so that links starting near horizontal center of block are below those
             // starting near edges, so they don't overlap. requires that we sort horizontally before vertically
             var centerIndex = Math.ceil((horizontallySortedLinks.length-1)/2);
@@ -727,7 +727,7 @@ realityEditor.crafting.grid.Grid.prototype.determineMaxOverlaps = function() {
 
 // After routes have been calculated and overlaps have been counted, determines the x,y offset for
 // each point so that routes don't overlap one another and are spaced evenly within the cells
-realityEditor.crafting.grid.Grid.prototype.calculateOffsets = function(overlaps) {
+realityEditor.gui.crafting.grid.Grid.prototype.calculateOffsets = function(overlaps) {
     var colRouteOverlaps = overlaps.colRouteOverlaps;
     var rowRouteOverlaps = overlaps.rowRouteOverlaps;
 
@@ -842,7 +842,7 @@ realityEditor.crafting.grid.Grid.prototype.calculateOffsets = function(overlaps)
 //      MISC FUNCTIONS FOR WORKING WITH CELLS, BLOCKS, GRID
 ////////////////////////////////////////////////////////////////////////////////
 
-realityEditor.crafting.grid.getBlock = function(x,y) {
+realityEditor.gui.crafting.grid.getBlock = function(x,y) {
     for (var blockKey in globalStates.currentLogic.blocks) {
         var block = globalStates.currentLogic.blocks[blockKey];
         if (block.x === x && block.y === y) {
@@ -852,61 +852,61 @@ realityEditor.crafting.grid.getBlock = function(x,y) {
     return null;
 };
 
-realityEditor.crafting.grid.getCellForBlock = function(grid, block, item) {
+realityEditor.gui.crafting.grid.getCellForBlock = function(grid, block, item) {
     var gridPos = this.convertBlockPosToGridPos(block.x + item, block.y);
     return grid.getCell(gridPos.col, gridPos.row);
 };
 
-realityEditor.crafting.grid.getBlockPixelWidth = function(block, grid) {
+realityEditor.gui.crafting.grid.getBlockPixelWidth = function(block, grid) {
     var numBlockCols = block.blockSize;
     var numMarginCols = block.blockSize - 1;
     return grid.blockColWidth * numBlockCols + grid.marginColWidth * numMarginCols;
 };
 
 // gets a block overlapping the cell at this x,y location
-realityEditor.crafting.grid.getBlockOverlappingPosition = function(x, y) {
+realityEditor.gui.crafting.grid.getBlockOverlappingPosition = function(x, y) {
     // check if block of size >= 1 is at (x, y)
-    var block = getBlock(x,y);
+    var block = this.getBlock(x,y);
     if (block && block.blockSize >= 1) {
         return block;
     }
     // else check if block of size >= 2 is at (x-1, y)
-    block = getBlock(x-1,y);
+    block = this.getBlock(x-1,y);
     if (block && block.blockSize >= 2) {
         return block;
     }
     // else check if block of size >= 3 is at (x-2, y)
-    block = getBlock(x-2,y);
+    block = this.getBlock(x-2,y);
     if (block && block.blockSize >= 3) {
         return block;
     }
 
     // else check if block of size == 4 is at (x-3, y)
-    block = getBlock(x-3,y);
+    block = this.getBlock(x-3,y);
     if (block && block.blockSize >= 4) {
         return block;
     }
     return null;
 };
 
-realityEditor.crafting.grid.isBlockOutsideGrid = function(block, grid) {
+realityEditor.gui.crafting.grid.isBlockOutsideGrid = function(block, grid) {
     return (block.x < 0 || block.y < 0 || block.y > 4 || (block.x + (block.blockSize-1)) > 4);
 };
 
-realityEditor.crafting.grid.convertGridPosToBlockPos = function(col, row) {
+realityEditor.gui.crafting.grid.convertGridPosToBlockPos = function(col, row) {
     return {
         x: Math.floor(col/2),
         y: Math.floor(row/2)
     };
 };
 
-realityEditor.crafting.grid.convertBlockPosToGridPos = function(x, y) {
+realityEditor.gui.crafting.grid.convertBlockPosToGridPos = function(x, y) {
     return new this.CellLocation(x * 2, y * 2);
 };
 
-realityEditor.crafting.grid.addBlockLink = function(nodeA, nodeB, logicA, logicB, addToLogic, isServerOnlyLink) {
+realityEditor.gui.crafting.grid.addBlockLink = function(nodeA, nodeB, logicA, logicB, addToLogic, isServerOnlyLink) {
     if (nodeA && nodeB) {
-        var blockLink = new this.realityEditor.constructors.BlockLink();
+        var blockLink = new BlockLink();
         blockLink.nodeA = nodeA;
         blockLink.nodeB = nodeB;
         blockLink.logicA = logicA;
@@ -927,7 +927,7 @@ realityEditor.crafting.grid.addBlockLink = function(nodeA, nodeB, logicA, logicB
     return null;
 };
 
-realityEditor.crafting.grid.uploadLinkIfNecessary = function(blockLink, linkKey) {
+realityEditor.gui.crafting.grid.uploadLinkIfNecessary = function(blockLink, linkKey) {
     var keys = this.crafting.eventHelper.getServerObjectLogicKeys(globalStates.currentLogic);
     if (this.crafting.eventHelper.shouldUploadBlockLink(blockLink)) {
         this.realityEditor.network.postNewBlockLink(keys.ip, keys.objectKey, keys.logicKey, linkKey, blockLink);
@@ -942,7 +942,7 @@ realityEditor.crafting.grid.uploadLinkIfNecessary = function(blockLink, linkKey)
     }
 };
 
-realityEditor.crafting.grid.getLinksSurroundingEdgeLink = function(edgeLink) {
+realityEditor.gui.crafting.grid.getLinksSurroundingEdgeLink = function(edgeLink) {
 
     var foundLinks = [];
     if (!edgeLink) return [];
@@ -956,7 +956,7 @@ realityEditor.crafting.grid.getLinksSurroundingEdgeLink = function(edgeLink) {
         for (var key in globalStates.currentLogic.links) {
             var link = globalStates.currentLogic.links[key];
             if (link.nodeB === edgeLink.nodeA) {
-                var newLink = new this.realityEditor.constructors.BlockLink();
+                var newLink = new BlockLink();
                 newLink.nodeA = link.nodeA;
                 newLink.logicA = link.logicA;
                 newLink.nodeB = edgeLink.nodeB;
@@ -975,7 +975,7 @@ realityEditor.crafting.grid.getLinksSurroundingEdgeLink = function(edgeLink) {
         for (var key in globalStates.currentLogic.links) {
             var link = globalStates.currentLogic.links[key];
             if (link.nodeA === edgeLink.nodeB) {
-                var newLink = new this.realityEditor.constructors.BlockLink();
+                var newLink = new BlockLink();
                 newLink.nodeA = edgeLink.nodeA;
                 newLink.logicA = edgeLink.logicA;
                 newLink.nodeB = link.nodeB;
@@ -988,12 +988,12 @@ realityEditor.crafting.grid.getLinksSurroundingEdgeLink = function(edgeLink) {
     return foundLinks;
 };
 
-realityEditor.crafting.grid.blockWithID = function(globalID, logic) {
+realityEditor.gui.crafting.grid.blockWithID = function(globalID, logic) {
     return logic.blocks[globalID];
 };
 
-realityEditor.crafting.grid.addBlock = function(x,y,blockJSON,globalId,isEdgeBlock) {
-    var block = new this.realityEditor.constructors.Block();
+realityEditor.gui.crafting.grid.addBlock = function(x,y,blockJSON,globalId,isEdgeBlock) {
+    var block = new Block();
 
     block.type = blockJSON.type;
     block.name = blockJSON.name;
@@ -1024,7 +1024,7 @@ realityEditor.crafting.grid.addBlock = function(x,y,blockJSON,globalId,isEdgeBlo
     return block;
 };
 
-realityEditor.crafting.grid.updateInOutLinks = function(addedBlockId) {
+realityEditor.gui.crafting.grid.updateInOutLinks = function(addedBlockId) {
     var addedBlock = globalStates.currentLogic.blocks[addedBlockId];
 
     var namePrefix = addedBlock.y === 0 ? "in" : "out";
@@ -1054,25 +1054,25 @@ realityEditor.crafting.grid.updateInOutLinks = function(addedBlockId) {
     }
 };
 
-realityEditor.crafting.grid.isEdgePlaceholderLink = function(link) {
+realityEditor.gui.crafting.grid.isEdgePlaceholderLink = function(link) {
     return (this.isEdgePlaceholderBlock(link.nodeA) || this.isEdgePlaceholderBlock(link.nodeB));
 };
 
-realityEditor.crafting.grid.isEdgePlaceholderBlock = function(blockID) {
+realityEditor.gui.crafting.grid.isEdgePlaceholderBlock = function(blockID) {
     var re = /^(edgePlaceholder(In|Out))\d$/;
     return re.test(blockID);
 };
 
-realityEditor.crafting.grid.isInOutLink = function(link) {
+realityEditor.gui.crafting.grid.isInOutLink = function(link) {
     return (this.isInOutBlock(link.nodeA) || this.isInOutBlock(link.nodeB));
 };
 
-realityEditor.crafting.grid.isInOutBlock = function(blockID) {
+realityEditor.gui.crafting.grid.isInOutBlock = function(blockID) {
     var re = /^(in|out)\d$/;
     return re.test(blockID);
 };
 
-realityEditor.crafting.grid.forEachLink = function(action) {
+realityEditor.gui.crafting.grid.forEachLink = function(action) {
     for (var linkKey in globalStates.currentLogic.links) {
         if (this.isInOutLink(globalStates.currentLogic.links[linkKey])) continue; // ignore in/out links for processing
         action(globalStates.currentLogic.links[linkKey]);
@@ -1082,7 +1082,7 @@ realityEditor.crafting.grid.forEachLink = function(action) {
     }
 };
 
-realityEditor.crafting.grid.allLinks = function() {
+realityEditor.gui.crafting.grid.allLinks = function() {
     var linksArray = [];
     this.forEachLink(function(link) {
         linksArray.push(link);
@@ -1090,13 +1090,13 @@ realityEditor.crafting.grid.allLinks = function() {
     return linksArray;
 };
 
-realityEditor.crafting.grid.setTempLink = function(newTempLink) {
+realityEditor.gui.crafting.grid.setTempLink = function(newTempLink) {
     if (!this.doesLinkAlreadyExist(newTempLink)) {
         globalStates.currentLogic.guiState.tempLink = newTempLink;
     }
 };
 
-realityEditor.crafting.grid.removeBlockLink = function(linkKey) {
+realityEditor.gui.crafting.grid.removeBlockLink = function(linkKey) {
     if (this.crafting.eventHelper.shouldUploadBlockLink(globalStates.currentLogic.links[linkKey])) {
         var keys = this.crafting.eventHelper.getServerObjectLogicKeys(globalStates.currentLogic);
         this.realityEditor.network.deleteBlockLinkFromObject(keys.ip, keys.objectKey, keys.logicKey, linkKey);
@@ -1106,7 +1106,7 @@ realityEditor.crafting.grid.removeBlockLink = function(linkKey) {
     delete globalStates.currentLogic.links[linkKey];
 };
 
-realityEditor.crafting.grid.removeBlock = function(logic, blockID) {
+realityEditor.gui.crafting.grid.removeBlock = function(logic, blockID) {
     this.removeLinksForBlock(logic, blockID);
     var domElement = logic.guiState.blockDomElements[blockID];
     if (domElement) {
@@ -1120,7 +1120,7 @@ realityEditor.crafting.grid.removeBlock = function(logic, blockID) {
     delete logic.blocks[blockID];
 }
 
-realityEditor.crafting.grid.removeLinksForBlock = function(logic, blockID) {
+realityEditor.gui.crafting.grid.removeLinksForBlock = function(logic, blockID) {
     for (var linkKey in logic.links) {
         var link = logic.links[linkKey];
         if (link.nodeA === blockID || link.nodeB === blockID) {
@@ -1135,7 +1135,7 @@ realityEditor.crafting.grid.removeLinksForBlock = function(logic, blockID) {
     }
 };
 
-realityEditor.crafting.grid.deleteSurroundingBlockLinksFromServer = function(linkKey) {
+realityEditor.gui.crafting.grid.deleteSurroundingBlockLinksFromServer = function(linkKey) {
     var keys = this.crafting.eventHelper.getServerObjectLogicKeys(globalStates.currentLogic);
     var edgeLink = globalStates.currentLogic.links[linkKey]
     var surroundingLinks = this.getLinksSurroundingEdgeLink(edgeLink);
@@ -1146,11 +1146,11 @@ realityEditor.crafting.grid.deleteSurroundingBlockLinksFromServer = function(lin
     }
 };
 
-realityEditor.crafting.grid.edgeBlockLinkKey = function(link) {
+realityEditor.gui.crafting.grid.edgeBlockLinkKey = function(link) {
     return "blockLink-" + link.nodeA + "-" + link.logicA + "-" + link.nodeB + "-" + link.logicB;
 };
 
-realityEditor.crafting.grid.doesLinkAlreadyExist = function(blockLink) {
+realityEditor.gui.crafting.grid.doesLinkAlreadyExist = function(blockLink) {
     if (!blockLink) return false;
     for (var linkKey in globalStates.currentLogic.links) {
         var thatBlockLink = globalStates.currentLogic.links[linkKey];
@@ -1161,7 +1161,7 @@ realityEditor.crafting.grid.doesLinkAlreadyExist = function(blockLink) {
     return false;
 };
 
-realityEditor.crafting.grid.areBlockLinksEqual = function(blockLink1, blockLink2) {
+realityEditor.gui.crafting.grid.areBlockLinksEqual = function(blockLink1, blockLink2) {
     if (blockLink1.nodeA === blockLink2.nodeA && blockLink1.logicA === blockLink2.logicA) {
         if (blockLink1.nodeB === blockLink2.nodeB && blockLink1.logicB === blockLink2.logicB) {
             return true;
@@ -1173,7 +1173,7 @@ realityEditor.crafting.grid.areBlockLinksEqual = function(blockLink1, blockLink2
 // points is an array like [{screenX: x1, screenY: y1}, ...]
 // calculates useful pointData for drawing lines with varying color/weight/etc,
 // by determining how far along the line each corner is located (as a percentage)
-realityEditor.crafting.grid.preprocessPointsForDrawing = function(points) { //... only ever used here.. could just inline it
+realityEditor.gui.crafting.grid.preprocessPointsForDrawing = function(points) { //... only ever used here.. could just inline it
     // adds up the total length the route points travel
     var lengths = []; // size = lines.length-1
     for (var i = 1; i < points.length; i++) {

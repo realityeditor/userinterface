@@ -61,8 +61,8 @@ realityEditor.device.onload = function () {
 	overlayDiv = document.getElementById('overlay');
 
 	realityEditor.gui.buttons.draw();
-	initMemoryBar();
-	pocketInit();
+	realityEditor.gui.memory.initMemoryBar();
+	realityEditor.gui.pocket.pocketInit();
 
 	console.log(globalStates.platform);
 
@@ -135,7 +135,7 @@ realityEditor.device.onload = function () {
 		editingInterface.innerHTML = '<input id="newURLText"' +
 
 			"style='text-align: left; font-family: Helvetica Neue, Helvetica, Arial; font-size: large;   -webkit-user-select: text;'" +
-			'type="text" name="newURL"  size="27" placeholder="http://..."' + "oninput='newURLTextLoad()'><br>";
+			'type="text" name="newURL"  size="27" placeholder="http://..."' + "oninput='realityEditor.device.utilities.newURLTextLoad()'><br>";
 	}
 
 	globalCanvas.canvas = document.getElementById('canvas');
@@ -148,17 +148,17 @@ realityEditor.device.onload = function () {
 		window.location.href = "of://kickoff";
 	}
 
-	globalCanvas.canvas.addEventListener("pointerdown", realityEditor.device.onCanvasPointerDown, false);
+	globalCanvas.canvas.addEventListener("pointerdown", realityEditor.device.onCanvasPointerDown.bind(realityEditor.device), false);
 	ec++;
 
-	document.addEventListener("pointermove", realityEditor.device.getPossition, false);
+	document.addEventListener("pointermove", realityEditor.device.getPossition.bind(realityEditor.device), false);
 	ec++;
-	document.addEventListener("pointerdown", realityEditor.device.onDocumentPointerDown, false);
+	document.addEventListener("pointerdown", realityEditor.device.onDocumentPointerDown.bind(realityEditor.device), false);
 	//document.addEventListener("pointerdown", getPossition, false);
 	ec++;
-	document.addEventListener("pointerup", realityEditor.device.onDocumentPointerUp, false);
+	document.addEventListener("pointerup", realityEditor.device.onDocumentPointerUp.bind(realityEditor.device), false);
 	ec++;
-	window.addEventListener("message", realityEditor.network.onInternalPostMessage, false);
+	window.addEventListener("message", realityEditor.network.onInternalPostMessage.bind(realityEditor.network), false);
 	ec++;
 	overlayDiv.addEventListener('touchstart', function (e) {
 		e.preventDefault();

@@ -110,6 +110,8 @@ var realityEditor = realityEditor || {
 			postNewBlockPosition: {},
 			postNewBlock: {},
 			checkForNetworkLoop: {},
+            sendResetContent: {},
+            onElementLoad: {},
 			utilities: {
 				rename: {}
 			}
@@ -212,7 +214,8 @@ var realityEditor = realityEditor || {
 					toBlockJSON: {},
 					convertBlockLinkToServerFormat: {},
 					convertLogicToServerFormat: {},
-				},
+                    convertLinksFromServer: {}
+                },
 				blockMenu: {
 					initializeBlockMenu: {},
 					resetBlockMenu: {},
@@ -305,9 +308,9 @@ var realityEditor = realityEditor || {
 					hideBlockSettings: {}
 				},
 				eventHandlers: {
-					pointerDown: {},
-					pointerMove: {},
-					pointerUp: {}
+					onPointerDown: {},
+					onPointerMove: {},
+					onPointerUp: {}
 				}
 			},
 			memory: {

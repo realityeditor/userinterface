@@ -47,9 +47,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-createNameSpace("realityEditor.crafting.utilities");
+createNameSpace("realityEditor.gui.crafting.utilities");
 
-realityEditor.crafting.utilities.toBlockJSON = function(type, name, blockSize, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput) {
+realityEditor.gui.crafting.utilities.toBlockJSON = function(type, name, blockSize, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput) {
     return {
         type: type,
         name: name,
@@ -63,7 +63,7 @@ realityEditor.crafting.utilities.toBlockJSON = function(type, name, blockSize, p
     };
 };
 
-realityEditor.crafting.utilities.convertBlockLinkToServerFormat = function(blockLink) {
+realityEditor.gui.crafting.utilities.convertBlockLinkToServerFormat = function(blockLink) {
     var serverLink = {};
 
     var keysToSkip = ["route"]; //, "nodeA", "nodeB"
@@ -79,7 +79,7 @@ realityEditor.crafting.utilities.convertBlockLinkToServerFormat = function(block
 };
 
 // strips away unnecessary data from logic node that can be easily regenerated
-realityEditor.crafting.utilities.convertLogicToServerFormat = function(logic) {
+realityEditor.gui.crafting.utilities.convertLogicToServerFormat = function(logic) {
 
     var logicServer = {};
 
@@ -105,4 +105,36 @@ realityEditor.crafting.utilities.convertLogicToServerFormat = function(logic) {
     }
 
     return logicServer;
+};
+
+// todo hasOwnProperty
+// convert links from in/out -> block not in edge row into 2 links, one from in/out->edge and another from edge->block
+// this puts the data in a format that is convenient for the UI while keeping the server data efficient
+realityEditor.gui.crafting.utilities.convertLinksFromServer = function(logic) {
+
+    globalStates.currentLogic = logic;
+
+    for (var linkKey in logic.links) {
+        var link = logic.links[linkKey];
+
+        if (this.crafting.grid.isInOutBlock(link.nodeA) && logic.blocks[link.nodeB].y !== 0) {
+            // create separate links from in->edge and edge->block
+            var x = link.nodeA.slice(-1);
+            this.crafting.grid.addBlockLink(link.nodeA, this.crafting.eventHelper.edgePlaceholderName(true, x), link.logicA, link.logicB, true);
+            this.crafting.grid.addBlockLink(this.crafting.eventHelper.edgePlaceholderName(true, x), link.nodeB, link.logicA, link.logicB, true);
+
+            delete logic.links[linkKey];
+
+        } else if (this.crafting.grid.isInOutBlock(link.nodeB) && logic.blocks[link.nodeA].y !== 3) {
+
+            // create separate links from block->edge and edge->out
+            var x = link.nodeB.slice(-1);
+            this.crafting.grid.addBlockLink(link.nodeA, this.crafting.eventHelper.edgePlaceholderName(false, x), link.logicA, link.logicB, true);
+            this.crafting.grid.addBlockLink(this.crafting.eventHelper.edgePlaceholderName(false, x), link.nodeB, link.logicA, link.logicB, true);
+
+            delete logic.links[linkKey];
+        }
+    }
+
+    globalStates.currentLogic = null;
 };
