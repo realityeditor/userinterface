@@ -307,6 +307,100 @@ function drawLine(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEn
 /**********************************************************************************************************************
  **********************************************************************************************************************/
 
+ function drawDatacraftingLine(context, linkObject, lineStartWeight, startColor, endColor, timeCorrector ) {
+    var mathPI = 2*Math.PI;
+    var spacer = 2.3;
+
+    var pointData = linkObject.route.pointData;
+
+    var blueToRed = (startColor.h === 180) && (endColor.h === 333);
+    var redToBlue = (startColor.h === 333) && (endColor.h === 180);
+
+    var percentIncrement = (lineStartWeight * spacer)/pointData.totalLength;
+
+    if (linkObject.ballAnimationCount >= percentIncrement) {
+        linkObject.ballAnimationCount = 0;
+    }
+
+    var hue = startColor;
+    var transitionColorRight = (endColor.h - startColor.h > 180 || blueToRed);
+    var transitionColorLeft = (endColor.h - startColor.h < -180 || redToBlue);
+    var color;
+
+    for (var i = 0; i < 1.0; i += percentIncrement) {
+        var percentage = i + linkObject.ballAnimationCount;
+        var position = linkObject.route.getXYPositionAtPercentage(percentage);
+        if (position !== null) {
+            if (transitionColorRight) {
+                // looks better to go down rather than up
+                hue = ((1.0 - percentage) * startColor.h + percentage * (endColor.h - 360)) % 360;
+            } else if (transitionColorLeft) {
+                // looks better to go up rather than down
+                hue = ((1.0 - percentage) * startColor.h + percentage * (endColor.h + 360)) % 360;
+            } else {
+                hue = (1.0 - percentage) * startColor.h + percentage * endColor.h;
+            }
+            context.beginPath();
+            context.fillStyle = 'hsl(' + hue + ', 100%, 60%)';
+            context.arc(position.screenX, position.screenY, lineStartWeight, 0, mathPI);
+            context.fill();
+        }
+    }
+
+    var numFramesForAnimationLoop = 30;
+    linkObject.ballAnimationCount += percentIncrement/numFramesForAnimationLoop;
+}
+
+/**********************************************************************************************************************
+ **********************************************************************************************************************/
+
+ function drawDatacraftingLine(context, linkObject, lineStartWeight, startColor, endColor, timeCorrector ) {
+    var mathPI = 2*Math.PI;
+    var spacer = 2.3;
+
+    var pointData = linkObject.route.pointData;
+
+    var blueToRed = (startColor.h === 180) && (endColor.h === 333);
+    var redToBlue = (startColor.h === 333) && (endColor.h === 180);
+
+    var percentIncrement = (lineStartWeight * spacer)/pointData.totalLength;
+
+    if (linkObject.ballAnimationCount >= percentIncrement) {
+        linkObject.ballAnimationCount = 0;
+    }
+
+    var hue = startColor;
+    var transitionColorRight = (endColor.h - startColor.h > 180 || blueToRed);
+    var transitionColorLeft = (endColor.h - startColor.h < -180 || redToBlue);
+    var color;
+
+    for (var i = 0; i < 1.0; i += percentIncrement) {
+        var percentage = i + linkObject.ballAnimationCount;
+        var position = linkObject.route.getXYPositionAtPercentage(percentage);
+        if (position !== null) {
+            if (transitionColorRight) {
+                // looks better to go down rather than up
+                hue = ((1.0 - percentage) * startColor.h + percentage * (endColor.h - 360)) % 360;
+            } else if (transitionColorLeft) {
+                // looks better to go up rather than down
+                hue = ((1.0 - percentage) * startColor.h + percentage * (endColor.h + 360)) % 360;
+            } else {
+                hue = (1.0 - percentage) * startColor.h + percentage * endColor.h;
+            }
+            context.beginPath();
+            context.fillStyle = 'hsl(' + hue + ', 100%, 60%)';
+            context.arc(position.screenX, position.screenY, lineStartWeight, 0, mathPI);
+            context.fill();
+        }
+    }
+
+    var numFramesForAnimationLoop = 30;
+    linkObject.ballAnimationCount += percentIncrement/numFramesForAnimationLoop;
+}
+
+/**********************************************************************************************************************
+ **********************************************************************************************************************/
+
 /**
  * @desc
  * @param context

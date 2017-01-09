@@ -635,11 +635,582 @@ function preferencesVisible() {
 
 }
 
+
+/**
+ * @desc
+ **/
+
+function craftingBoardVisible(objectKey, nodeKey) {
+    // update side menu buttons
+    document.getElementById('guiButtonImage').src = guiButtonImage[5].src;
+    document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
+    globalStates.pocketButtonState = true;
+    document.getElementById('pocketButton').src = pocketButtonImage[4].src;
+    globalStates.guiState = "logic";
+    document.getElementById("craftingBoard").style.visibility = "visible";
+    document.getElementById("craftingBoard").style.display = "inline";
+    cout("craftingBoardVisible for object: " + objectKey + " and node: "+nodeKey);
+
+    if (DEBUG_DATACRAFTING) { // TODO: BEN DEBUG - turn off debugging!
+        var logic = new Logic();
+        initializeDatacraftingGrid(logic); 
+    } else {
+        var nodeLogic = objects[objectKey].nodes[nodeKey];
+        initializeDatacraftingGrid(nodeLogic);
+    }
+}
+
+/**
+ * @desc
+ **/
+
+function craftingBoardHide() {
+    // remove the block menu if it's showing
+    resetBlockMenu();
+    // reset side menu buttons
+    document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
+    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+    // hide the crafting board div
+    document.getElementById("craftingBoard").style.visibility = "hidden";
+    document.getElementById("craftingBoard").style.display = "none";
+    // reset the contents of the crafting board div so that another node's logic can be fresh loaded into it
+    resetCraftingBoard();
+}
+
+/**
+ * @desc
+ **/
+
+function blockMenuVisible() {
+    //temporarily hide all other datacrafting divs. redisplay them when menu hides
+    document.getElementById("datacraftingCanvas").style.display = "none";
+    document.getElementById("blockPlaceholders").style.display = "none";
+    document.getElementById("blocks").style.display = "none";
+    document.getElementById("datacraftingEventDiv").style.display = "none";
+
+    // create the menu if it doesn't already exist, otherwise just show it
+    var existingMenu = document.getElementById('menuContainer');
+    if (existingMenu) {
+        existingMenu.style.display = 'inline';
+        redisplayTabSelection();
+        redisplayBlockSelection();
+    } else {
+        initializeBlockMenu(function() {
+          redisplayTabSelection(); // wait for callback to ensure menu fully loaded
+          redisplayBlockSelection();
+        });
+    }
+}
+
+/**
+ * @desc
+ **/
+
+function blockMenuHide() {
+
+    //temporarily hide all other datacrafting divs. redisplay them when menu hides
+    document.getElementById("datacraftingCanvas").style.display = "";
+    document.getElementById("blockPlaceholders").style.display = "";
+    document.getElementById("blocks").style.display = "";
+    document.getElementById("datacraftingEventDiv").style.display = "";
+
+
+    var existingMenu = document.getElementById('menuContainer');
+    if (existingMenu) {
+        existingMenu.style.display = 'none';
+        if (!globalStates.pocketButtonState) {
+          globalStates.pocketButtonState = true;
+          document.getElementById('pocketButton').src = pocketButtonImage[4].src;
+        }
+    }
+
+
+}
+
 /**********************************************************************************************************************
  ******************************************* datacrafting GUI  *******************************************************
  **********************************************************************************************************************/
 
+function addDatacraftingEventListeners() {
+    if (globalStates.currentLogic) {
+        var datacraftingEventDiv = document.getElementById('datacraftingEventDiv');
+        datacraftingEventDiv.addEventListener("pointerdown", pointerDown);
+        datacraftingEventDiv.addEventListener("pointermove", pointerMove);
+        datacraftingEventDiv.addEventListener("pointerup", pointerUp);
+    }
+}
 
+function removeDatacraftingEventListeners() {
+    if (globalStates.currentLogic) {
+        var datacraftingEventDiv = document.getElementById('datacraftingEventDiv');
+        datacraftingEventDiv.removeEventListener("pointerdown", pointerDown);
+        datacraftingEventDiv.removeEventListener("pointermove", pointerMove);
+        datacraftingEventDiv.removeEventListener("pointerup", pointerUp);
+    }
+}
+
+function resetCraftingBoard() {
+    removeDatacraftingEventListeners();
+    resetTempLogicState(globalStates.currentLogic);
+    var container = document.getElementById('craftingBoard');
+    while (container.hasChildNodes()) {
+        container.removeChild(container.lastChild);
+    }
+    globalStates.currentLogic = null;
+}
+
+function resetTempLogicState(logic) {
+    if (logic) {
+        delete logic.guiState;
+        logic.guiState = new LogicGUIState();
+    }
+}
+
+// should only be called once to initialize a blank datacrafting interface and data model
+function initializeDatacraftingGrid(logic) {
+    globalStates.currentLogic = logic;
+
+    var container = document.getElementById('craftingBoard');
+
+    // initializes the data model for the datacrafting board
+    logic.grid = new Grid(container.clientWidth - menuBarWidth, container.clientHeight);
+
+    var datacraftingCanvas = document.createElement('canvas');
+    datacraftingCanvas.setAttribute('id', 'datacraftingCanvas');
+    container.appendChild(datacraftingCanvas);
+
+    var dimensions = logic.grid.getPixelDimensions();
+    datacraftingCanvas.width = dimensions.width;
+    datacraftingCanvas.style.width = dimensions.width;
+    datacraftingCanvas.height = dimensions.height;
+    datacraftingCanvas.style.height = dimensions.height;
+
+    // holds the colored background blocks
+    var blockPlaceholdersContainer = document.createElement('div');
+    blockPlaceholdersContainer.setAttribute('id', 'blockPlaceholders');
+    container.appendChild(blockPlaceholdersContainer);
+
+    /*
+    for (var rowNum = 0; rowNum < logic.grid.size; rowNum+=2) {
+        var rowDiv = document.createElement('div');
+        rowDiv.setAttribute("class", "row");
+        blockPlaceholdersContainer.appendChild(rowDiv);
+
+        for (var colNum = 0; colNum < logic.grid.size; colNum++) {
+            if (colNum % 2 === 0) {
+                var blockPlaceholder = document.createElement('div');
+                var className = (colNum === logic.grid.size - 1) ? "blockPlaceholderLastCol" : "blockPlaceholder";
+                blockPlaceholder.setAttribute("class", className);
+                //var colorMapKey = (rowNum === 0 || rowNum === 6) ? "bright" : "faded";
+                //blockPlaceholder.style.backgroundColor = blockColorMap[colorMapKey][colNum/2];
+                blockPlaceholder.style.border = "2px solid " + blockColorMap[colNum/2]; //rgb(45, 255, 254);"
+                if (rowNum === 0 || rowNum === 6) {
+                    var labelContainer = document.createElement("div");
+                    labelContainer.setAttribute("class", "blockPlaceholderLabel");
+                    var label = document.createElement("div");
+                    label.style.color = blockColorMap[colNum/2];
+                    label.innerHTML = (rowNum === 0) ? "IN" : "OUT";
+                    labelContainer.appendChild(label);
+                    blockPlaceholder.appendChild(labelContainer);
+                }
+                rowDiv.appendChild(blockPlaceholder);
+            }
+        }
+    }
+    */
+
+    for (var rowNum = 0; rowNum < logic.grid.size; rowNum++) {
+
+        if (rowNum % 2 === 0) {
+
+            var rowDiv = document.createElement('div');
+            rowDiv.setAttribute("class", "blockPlaceholderRow");
+            rowDiv.style.height = logic.grid.blockRowHeight;
+            blockPlaceholdersContainer.appendChild(rowDiv);
+
+            for (var colNum = 0; colNum < logic.grid.size; colNum++) {
+                if (colNum % 2 === 0) {
+                    var blockPlaceholder = document.createElement('div');
+                    var className = (colNum === logic.grid.size - 1) ? "blockPlaceholderLastCol" : "blockPlaceholder";
+                    blockPlaceholder.setAttribute("class", className);
+                    //var colorMapKey = (rowNum === 0 || rowNum === 6) ? "bright" : "faded";
+                    //blockPlaceholder.style.backgroundColor = blockColorMap[colorMapKey][colNum/2];
+                    blockPlaceholder.style.border = "2px solid " + blockColorMap[colNum / 2]; //rgb(45, 255, 254);"
+                    if (rowNum === 0 || rowNum === 6) {
+                        var labelContainer = document.createElement("div");
+                        labelContainer.setAttribute("class", "blockPlaceholderLabel");
+                        var label = document.createElement("div");
+                        label.style.color = blockColorMap[colNum / 2];
+                        label.innerHTML = (rowNum === 0) ? "IN" : "OUT";
+                        labelContainer.appendChild(label);
+                        blockPlaceholder.appendChild(labelContainer);
+                    }
+                    rowDiv.appendChild(blockPlaceholder);
+                }
+            }
+
+        } else {
+
+            var rowDiv = document.createElement('div');
+            rowDiv.setAttribute("class", "blockPlaceholderRow");
+            rowDiv.style.height = logic.grid.marginRowHeight;
+            blockPlaceholdersContainer.appendChild(rowDiv);
+
+            for (var colNum = 0; colNum < logic.grid.size; colNum++) {
+                if (colNum % 2 === 0) {
+                    var columnHighlight = document.createElement('div');
+                    var className = (colNum === logic.grid.size - 1) ? "columnHighlightLastCol" : "columnHighlight";
+                    columnHighlight.setAttribute("class", className);
+                    //var colorMapKey = (rowNum === 0 || rowNum === 6) ? "bright" : "faded";
+                    //blockPlaceholder.style.backgroundColor = blockColorMap[colorMapKey][colNum/2];
+                    columnHighlight.style.background = columnHighlightColorMap[colNum/2];
+                    rowDiv.appendChild(columnHighlight);
+                }
+            }
+
+        }
+    }
+
+    initLogicInOutBlocks();
+
+    var portCells = logic.grid.cells.filter(function(cell) {
+        return cell.canHaveBlock() && (cell.location.row === 0 || cell.location.row === logic.grid.size-1);
+    });
+    replacePortBlocksIfNecessary(portCells);
+
+    // add a container where the real blocks will eventually be added
+    var blocksContainer = document.createElement('div');
+    blocksContainer.setAttribute('id', 'blocks');
+    container.appendChild(blocksContainer);
+
+    // an invisible div on top captures all the touch events and handles them properly
+    var datacraftingEventDiv = document.createElement('div');
+    datacraftingEventDiv.setAttribute('id', 'datacraftingEventDiv');
+    datacraftingEventDiv.setAttribute("touch-action", "none");
+    container.appendChild(datacraftingEventDiv);
+
+    updateGrid(logic.grid);
+    addDatacraftingEventListeners();
+}
+
+function initLogicInOutBlocks() {
+    for (var y = -1; y <= 4; y+= 5) {
+        var namePrefix = y === -1 ? "in" : "out";
+        for (var x = 0; x <= 3; x++) {
+            var type = namePrefix;
+            var name = namePrefix + x;
+            var activeInputs = (y === -1) ? [false, false, false, false] : [true, false, false, false];
+            var activeOutputs = (y === -1) ? [true, false, false, false] : [false, false, false, false];
+            var blockJSON = toBlockJSON(type, name, 1, {}, {}, activeInputs, activeOutputs, ["","","",""], ["","","",""]);
+            var globalId = name;
+            var block = addBlock(x, y, blockJSON, globalId, true);
+        }
+    }
+}
+
+function toBlockJSON(type, name, blockSize, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput) {
+    return {
+        type: type,
+        name: name,
+        blockSize: blockSize,
+        privateData: privateData,
+        publicData: publicData,
+        activeInputs: activeInputs,
+        activeOutputs: activeOutputs,
+        nameInput: nameInput,
+        nameOutput: nameOutput
+    };
+}
+
+function convertBlockLinkToServerFormat(blockLink) {
+    var serverLink = {};
+
+    var keysToSkip = ["route"]; //, "nodeA", "nodeB"
+    for (var key in blockLink) {
+        if (!blockLink.hasOwnProperty(key)) continue;
+        if (keysToSkip.indexOf(key) > -1) continue;
+        serverLink[key] = blockLink[key];
+    }
+
+    serverLink["route"] = null;
+
+    return serverLink;
+}
+
+// strips away unnecessary data from logic node that can be easily regenerated
+function convertLogicToServerFormat(logic) {
+
+    var logicServer = {};
+
+    var keysToSkip = ["guiState", "grid", "blocks"];
+    for (var key in logic) {
+        if (!logic.hasOwnProperty(key)) continue;
+        if (keysToSkip.indexOf(key) > -1) continue;
+        logicServer[key] = logic[key];
+    }
+
+    // VERY IMPORTANT: otherwise the node will think it's already loaded
+    // and won't load from the server next time you open the app
+    logicServer["loaded"] = false;
+    logicServer["visible"] = false;
+
+    // don't upload in/out blocks, those are always the same and live in the editor?
+    logicServer["blocks"] = {};
+    for (var key in logic.blocks) {
+        if (!logic.blocks.hasOwnProperty(key)) continue;
+        if (!isInOutBlock(key)) {
+            logicServer.blockData[key] = logic.blocks[key];
+        }
+    }
+
+    return logicServer;
+}
+
+function initializeBlockMenu(callback) {
+    var logic = globalStates.currentLogic;
+
+    var craftingBoard = document.getElementById('craftingBoard');
+
+    var container = document.createElement('div');
+    container.setAttribute('id', 'menuContainer');
+    craftingBoard.appendChild(container);
+
+    var menuBlockContainer = document.createElement('div');
+    menuBlockContainer.setAttribute('id', 'menuBlockContainer');
+    container.appendChild(menuBlockContainer);
+
+    var menuSideContainer = document.createElement('div');
+    menuSideContainer.setAttribute('id', 'menuSideContainer');
+    container.appendChild(menuSideContainer);
+
+    var menuCols = 4;
+    var menuRows = 6;
+    var menuNumTabs = 5;
+    logic.guiState.menuSelectedTab = 0;
+    logic.guiState.menuTabDivs = [];
+    logic.guiState.menuIsPointerDown = false;
+    logic.guiState.menuSelectedBlock = null;
+    logic.guiState.menuBlockDivs = [];
+
+    // create menu tabs for block categories
+    for (var i = 0; i < menuNumTabs; i++) {
+        var menuTab = document.createElement('div');
+        menuTab.setAttribute('class', 'menuTab');
+        menuTab.setAttribute('tabIndex', i);
+        menuTab.setAttribute('touch-action', 'none');
+        menuTab.addEventListener('pointerdown', menuTabSelected);
+
+        var menuTabIcon = document.createElement('img');
+        menuTabIcon.setAttribute('class', 'menuTabIcon');
+        menuTabIcon.setAttribute('src', blockTabImage[i].src);
+        menuTabIcon.setAttribute('touch-action', 'none');
+        // menuTabIcon.addEventListener('pointerdown', menuTabIconSelected);
+
+        menuTab.appendChild(menuTabIcon);
+
+        logic.guiState.menuTabDivs.push(menuTab);
+        menuSideContainer.appendChild(menuTab);
+    }
+
+    menuLoadBlocks( function(blockData) {
+
+        // load each block from the downloaded json and add it to the appropriate category
+        for (var key in blockData) {
+            if (!blockData.hasOwnProperty(key)) continue;
+            var block = blockData[key];
+
+            var categoryIndex = 0;
+            if (block.category) {
+              categoryIndex = block.category - 1;
+            }
+            var categoryMenu = logic.guiState.menuBlockData[categoryIndex];
+            categoryMenu[key] = block;
+        }
+
+        console.log("menuBlockData = ");
+        console.log(logic.guiState.menuBlockData);
+
+        for (var r = 0; r < menuRows; r++) {
+            var row = document.createElement('div');
+            menuBlockContainer.appendChild(row);
+            for (var c = 0; c < menuCols; c++) {
+                var block = document.createElement('div');
+                block.setAttribute('class', 'menuBlock');
+                var blockContents = document.createElement('div');
+                blockContents.setAttribute('class', 'menuBlockContents');
+                blockContents.setAttribute("touch-action", "none");
+                blockContents.addEventListener('pointerdown', blockMenuPointerDown);
+                blockContents.addEventListener('pointerup', blockMenuPointerUp);
+                blockContents.addEventListener('pointerleave', blockMenuPointerLeave);
+                blockContents.addEventListener('pointermove', blockMenuPointerMove);
+                block.appendChild(blockContents);
+                logic.guiState.menuBlockDivs.push(block);
+                row.appendChild(block);
+            }
+        }
+        callback();
+    });
+}
+
+function resetBlockMenu() {
+    if (globalStates.currentLogic) {
+        var guiState = globalStates.currentLogic.guiState;
+        guiState.menuBlockDivs.forEach(function(blockDiv) {
+            blockDiv.firstChild.removeEventListener('pointerdown', blockMenuPointerDown);
+            blockDiv.firstChild.removeEventListener('pointerup', blockMenuPointerUp);
+            blockDiv.firstChild.removeEventListener('pointerleave', blockMenuPointerLeave);
+            blockDiv.firstChild.removeEventListener('pointermove', blockMenuPointerMove);
+        });
+    }
+    var container = document.getElementById('menuContainer');
+    if (container) {
+        while (container.hasChildNodes()) {
+            container.removeChild(container.lastChild);
+        }
+    }
+}
+
+function menuLoadBlocks(callback) {
+    console.log("should get available blocks");
+    var keys = getServerObjectLogicKeys(globalStates.currentLogic);
+    getData('http://' + keys.ip + ':' + httpPort + '/availableLogicBlocks', keys.objectKey, function (req, thisKey) {
+        console.log("did get available blocks");
+        console.log(req);
+        console.log(thisKey);
+        callback(req);
+    });
+}
+
+function menuTabSelected(e) {
+    e.preventDefault();
+
+    var guiState = globalStates.currentLogic.guiState;
+    guiState.menuSelectedTab = e.target.tabIndex;
+    if (guiState.menuSelectedTab < 0) guiState.menuSelectedTab = e.target.parentNode.tabIndex;
+    if (guiState.menuSelectedTab < 0) guiState.menuSelectedTab = 0;
+    redisplayTabSelection();
+    redisplayBlockSelection();
+}
+
+function redisplayTabSelection() {
+
+    var guiState = globalStates.currentLogic.guiState;
+    guiState.menuTabDivs.forEach(function(tab) {
+        if (guiState.menuSelectedTab === tab.tabIndex) {
+            tab.setAttribute('class', 'menuTabSelected');
+        } else {
+            tab.setAttribute('class', 'menuTab');
+        }
+    });
+}
+
+function getBlockIcon(logic, blockName) {
+    var keys = getServerObjectLogicKeys(logic);
+
+    if (blockIconCache[keys.logicKey] === undefined) {
+        blockIconCache[keys.logicKey] = {};
+    }
+
+    // download icon to cache if not already there
+    if (blockIconCache[keys.logicKey][blockName] === undefined) {
+        var iconUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + blockName + "/icon.png";
+        var icon = new Image();
+        icon.src = iconUrl;
+        blockIconCache[keys.logicKey][blockName] = icon;
+    }
+
+    // otherwise just directly return from cache
+    return blockIconCache[keys.logicKey][blockName];
+}
+
+function redisplayBlockSelection() {
+    var guiState = globalStates.currentLogic.guiState;
+
+    var blocksObject = guiState.menuBlockData[guiState.menuSelectedTab];
+    var blocksInThisSection = [];
+    for (var key in blocksObject) {
+        blocksInThisSection.push(blocksObject[key]);
+    }
+
+    // reassign as many divs as needed to the current set of blocks
+    for (var i = 0; i < blocksInThisSection.length; i++) {
+        var blockDiv = guiState.menuBlockDivs[i];
+        var thisBlockData = blocksInThisSection[i];
+        blockDiv.blockData = thisBlockData;
+        blockDiv.firstChild.innerHTML = ""; // reset block contents before adding anything
+
+        // load icon and title
+        var iconImage = document.createElement("img");
+        iconImage.setAttribute('class', 'blockIcon');
+        iconImage.src = getBlockIcon(globalStates.currentLogic, thisBlockData.type).src;
+        blockDiv.firstChild.appendChild(iconImage);
+
+        var blockTitle = document.createElement('div');
+        blockTitle.setAttribute('class', 'blockTitle');
+        blockTitle.innerHTML = thisBlockData.name;
+        blockDiv.firstChild.appendChild(blockTitle);
+
+        blockDiv.style.display = 'inline-block';
+    }
+
+    // clear the remaining block divs
+    for (var i = blocksInThisSection.length; i < guiState.menuBlockDivs.length; i++) {
+        var blockDiv = guiState.menuBlockDivs[i];
+        blockDiv.blockData = '';
+        blockDiv.style.display = 'none';
+    }
+}
+
+function blockMenuPointerDown(e) {
+  e.preventDefault();
+
+  var guiState = globalStates.currentLogic.guiState;
+  guiState.menuBlockToAdd = null;
+  guiState.menuIsPointerDown = true;
+  guiState.menuSelectedBlock = e.currentTarget;
+  guiState.menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock blockDivMovingAble');
+  guiState.menuBlockToAdd = e.currentTarget.parentNode;
+}
+
+function blockMenuPointerUp(e) {
+    e.preventDefault();
+  
+    var guiState = globalStates.currentLogic.guiState;
+    guiState.menuIsPointerDown = false;
+    if (guiState.menuSelectedBlock) {
+        guiState.menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');
+    }
+    guiState.menuSelectedBlock = null;
+    guiState.menuBlockToAdd = null;
+}
+
+function blockMenuPointerLeave(e) {
+    e.preventDefault();
+
+    var guiState = globalStates.currentLogic.guiState;
+    if (guiState.menuIsPointerDown) {
+        if (guiState.menuSelectedBlock) {
+            guiState.menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');        
+        }
+    }
+    guiState.menuSelectedBlock = null;
+    guiState.menuBlockToAdd = null;
+}
+
+function blockMenuPointerMove(e) {
+    e.preventDefault();
+
+    var guiState = globalStates.currentLogic.guiState;
+    if (guiState.menuBlockToAdd) {
+        var blockJSON = guiState.menuBlockToAdd.blockData;
+        var blockRect = guiState.menuBlockToAdd.getBoundingClientRect();
+        var pointerX = blockRect.left + blockRect.width/2;
+        var pointerY = blockRect.top + blockRect.height/2;
+        addBlockFromMenu(blockJSON, pointerX, pointerY);
+        guiState.menuBlockToAdd = null;
+        blockMenuHide();
+    }
+}
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
