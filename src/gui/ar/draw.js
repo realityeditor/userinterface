@@ -606,7 +606,7 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
         addIframe.style.visibility = "hidden";
         addIframe.src = thisUrl;
         addIframe.className = "main";
-        addIframe.setAttribute("onload", 'on_load("' + objectKey + '","' + nodeKey + '")');
+        addIframe.setAttribute("onload", 'realityEditor.network.onElementLoad("' + objectKey + '","' + nodeKey + '")');
         addIframe.setAttribute("sandbox", "allow-forms allow-pointer-lock allow-same-origin allow-scripts");
 
         var addOverlay = document.createElement('div');
@@ -703,25 +703,25 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
         var theObject = addOverlay;
         globalDOMCach[nodeKey].style["touch-action"] = "none";
 
-        globalDOMCach[nodeKey].addEventListener("pointerdown", realityEditor.device.onTouchDown, false);
+        globalDOMCach[nodeKey].addEventListener("pointerdown", realityEditor.device.onTouchDown.bind(realityEditor.device), false);
         ec++;
-        globalDOMCach[nodeKey].addEventListener("pointerup", realityEditor.device.onTrueTouchUp, false);
+        globalDOMCach[nodeKey].addEventListener("pointerup", realityEditor.device.onTrueTouchUp.bind(realityEditor.device), false);
         ec++;
-        theObject.addEventListener("pointerenter", realityEditor.device.onTouchEnter, false);
+        theObject.addEventListener("pointerenter", realityEditor.device.onTouchEnter.bind(realityEditor.device), false);
         ec++;
 
-        theObject.addEventListener("pointerleave", realityEditor.device.onTouchLeave, false);
+        theObject.addEventListener("pointerleave", realityEditor.device.onTouchLeave.bind(realityEditor.device), false);
         ec++;
 
 
         if (globalStates.editingMode) {
             // todo this needs to be changed backword
             // if (objects[objectKey].developer) {
-            theObject.addEventListener("touchstart", realityEditor.device.onMultiTouchStart, false);
+            theObject.addEventListener("touchstart", realityEditor.device.onMultiTouchStart.bind(realityEditor.device), false);
             ec++;
-            theObject.addEventListener("touchmove", realityEditor.device.onMultiTouchMove, false);
+            theObject.addEventListener("touchmove", realityEditor.device.onMultiTouchMove.bind(realityEditor.device), false);
             ec++;
-            theObject.addEventListener("touchend", realityEditor.device.onMultiTouchEnd, false);
+            theObject.addEventListener("touchend", realityEditor.device.onMultiTouchEnd.bind(realityEditor.device), false);
             ec++;
             theObject.className = "mainProgram";
             //  }

@@ -65,7 +65,7 @@ var timeCorrection = {delta: 0, now: 0, then: 0};
  **********************************************************************************************************************/
 
 var globalStates = {
-	debug: false,
+	debug: true,
 	overlay: 0,
 	device: "",
 	// drawWithLines
