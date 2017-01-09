@@ -55,6 +55,7 @@ realityEditor.network.addHeartbeatObject = function (beat) {
      window.location.href = "of://gotbeat_" + beat.id;
      }
      */
+    var _this = this;
     if (beat.id) {
         if (!objects[beat.id]) {
             this.getData('http://' + beat.ip + ':' + httpPort + '/object/' + beat.id, beat.id, function (req, thisKey) {
@@ -84,8 +85,8 @@ realityEditor.network.addHeartbeatObject = function (beat) {
                         if(thisObject.type === "logic") {
                             thisObject.guiState = new LogicGUIState();
                             var container = document.getElementById('craftingBoard');
-                            thisObject.grid = new this.realityEditor.gui.crafting.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight);
-                            this.realityEditor.gui.crafting.utilities.convertLinksFromServer(thisObject);
+                            thisObject.grid = new _this.realityEditor.gui.crafting.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight);
+                            _this.realityEditor.gui.crafting.utilities.convertLinksFromServer(thisObject);
                         }
                     }
 
@@ -95,29 +96,29 @@ realityEditor.network.addHeartbeatObject = function (beat) {
 
                     if (thisObject.integerVersion < 170) {
 
-                        this.utilities.rename(thisObject, "folder", "name");
-                        this.utilities.rename(thisObject, "objectValues", "nodes");
-                        this.utilities.rename(thisObject, "objectLinks", "links");
+                        _this.utilities.rename(thisObject, "folder", "name");
+                        _this.utilities.rename(thisObject, "objectValues", "nodes");
+                        _this.utilities.rename(thisObject, "objectLinks", "links");
                         delete thisObject["matrix3dMemory"];
 
                         for (var linkKey in objects[thisKey].links) {
                             thisObject = objects[thisKey].links[linkKey];
 
-                            this.utilities.rename(thisObject, "ObjectA", "objectA");
-                            this.utilities.rename(thisObject, "locationInA", "nodeA");
-                            this.utilities.rename(thisObject, "ObjectNameA", "nameA");
+                            _this.utilities.rename(thisObject, "ObjectA", "objectA");
+                            _this.utilities.rename(thisObject, "locationInA", "nodeA");
+                            _this.utilities.rename(thisObject, "ObjectNameA", "nameA");
 
-                            this.utilities.rename(thisObject, "ObjectB", "objectB");
-                            this.utilities.rename(thisObject, "locationInB", "nodeB");
-                            this.utilities.rename(thisObject, "ObjectNameB", "nameB");
-                            this.utilities.rename(thisObject, "endlessLoop", "loop");
-                            this.utilities.rename(thisObject, "countLinkExistance", "health");
+                            _this.utilities.rename(thisObject, "ObjectB", "objectB");
+                            _this.utilities.rename(thisObject, "locationInB", "nodeB");
+                            _this.utilities.rename(thisObject, "ObjectNameB", "nameB");
+                            _this.utilities.rename(thisObject, "endlessLoop", "loop");
+                            _this.utilities.rename(thisObject, "countLinkExistance", "health");
                         }
 
                         for (var nodeKey in objects[thisKey].nodes) {
                             thisObject = objects[thisKey].nodes[nodeKey];
-                            this.utilities.rename(thisObject, "plugin", "type");
-                            this.utilities.rename(thisObject, "appearance", "type");
+                            _this.utilities.rename(thisObject, "plugin", "type");
+                            _this.utilities.rename(thisObject, "appearance", "type");
                             thisObject.data = {
                                 value: thisObject.value,
                                 mode: thisObject.mode,
@@ -131,11 +132,11 @@ realityEditor.network.addHeartbeatObject = function (beat) {
                         }
 
                     }
-                    this.cout(JSON.stringify(objects[thisKey]));
+                    _this.cout(JSON.stringify(objects[thisKey]));
 
-                    this.realityEditor.gui.memory.addObjectMemory(objects[thisKey]);
+                    _this.realityEditor.gui.memory.addObjectMemory(objects[thisKey]);
 
-                    this.realityEditor.gui.preferences.addElementInPreferences();
+                    _this.realityEditor.gui.preferences.addElementInPreferences();
                 }
             });
         }
@@ -143,6 +144,7 @@ realityEditor.network.addHeartbeatObject = function (beat) {
 };
 
 realityEditor.network.onAction = function (action) {
+    var _this = this;
     var thisAction;
     if(typeof action === "object")
     {
@@ -154,25 +156,25 @@ realityEditor.network.onAction = function (action) {
 
     // reload links for a specific object.
 
-    if (typeof action.reloadLink !== "undefined") {
+    if (typeof thisAction.reloadLink !== "undefined") {
 
-        if(action.reloadLink.object in objects)
-            this.getData('http://' + objects[action.reloadLink.object].ip + ':' + httpPort + '/object/' + action.reloadLink.object, action.reloadLink.object, function (req, thisKey) {
+        if(thisAction.reloadLink.object in objects) {
+            this.getData('http://' + objects[thisAction.reloadLink.object].ip + ':' + httpPort + '/object/' + thisAction.reloadLink.object, thisAction.reloadLink.object, function (req, thisKey) {
 
                 if (objects[thisKey].integerVersion < 170) {
                     objects[thisKey].links = req.links;
                     for (var linkKey in objects[thisKey].links) {
-                        var  thisObject = objects[thisKey].links[linkKey];
+                        var thisObject = objects[thisKey].links[linkKey];
 
-                        this.utilities.rename(thisObject, "ObjectA", "objectA");
-                        this.utilities.rename(thisObject, "locationInA", "nodeA");
-                        this.utilities.rename(thisObject, "ObjectNameA", "nameA");
+                        _this.utilities.rename(thisObject, "ObjectA", "objectA");
+                        _this.utilities.rename(thisObject, "locationInA", "nodeA");
+                        _this.utilities.rename(thisObject, "ObjectNameA", "nameA");
 
-                        this.utilities.rename(thisObject, "ObjectB", "objectB");
-                        this.utilities.rename(thisObject, "locationInB", "nodeB");
-                        this.utilities.rename(thisObject, "ObjectNameB", "nameB");
-                        this.utilities.rename(thisObject, "endlessLoop", "loop");
-                        this.utilities.rename(thisObject, "countLinkExistance", "health");
+                        _this.utilities.rename(thisObject, "ObjectB", "objectB");
+                        _this.utilities.rename(thisObject, "locationInB", "nodeB");
+                        _this.utilities.rename(thisObject, "ObjectNameB", "nameB");
+                        _this.utilities.rename(thisObject, "endlessLoop", "loop");
+                        _this.utilities.rename(thisObject, "countLinkExistance", "health");
                     }
                 }
                 else {
@@ -181,15 +183,15 @@ realityEditor.network.onAction = function (action) {
 
                 // cout(objects[thisKey]);
 
-                this.cout("got links");
+                _this.cout("got links");
             });
-
+        }
     }
 
-    if (typeof action.reloadObject !== "undefined") {
+    if (typeof thisAction.reloadObject !== "undefined") {
 
-        if(action.reloadObject.object in objects)
-            this.getData('http://' + objects[action.reloadObject.object].ip + ':' + httpPort + '/object/' + action.reloadObject.object, action.reloadObject.object, function (req, thisKey) {
+        if(thisAction.reloadObject.object in objects)
+            this.getData('http://' + objects[thisAction.reloadObject.object].ip + ':' + httpPort + '/object/' + thisAction.reloadObject.object, thisAction.reloadObject.object, function (req, thisKey) {
                 objects[thisKey].x = req.x;
                 objects[thisKey].y = req.y;
                 objects[thisKey].scale = req.scale;
@@ -219,12 +221,12 @@ realityEditor.network.onAction = function (action) {
                         thisObject.matrix = getNodes[nodeKey].matrix;
                     }
 
-                this.cout("got object and nodes");
+                _this.cout("got object and nodes");
             });
     }
 
-    if (typeof action.advertiseConnection !== "undefined") {
-        this.realityEditor.advertisement.logic(action.advertiseConnection);
+    if (typeof thisAction.advertiseConnection !== "undefined") {
+        this.realityEditor.advertisement.logic(thisAction.advertiseConnection);
     }
 
 
@@ -233,13 +235,13 @@ realityEditor.network.onAction = function (action) {
         var url = 'http://' + thisAction.loadMemory.ip + ':' + httpPort + '/object/' + id;
 
         this.getData(url, id, function (req, thisKey) {
-            this.cout('received memory', req.memory);
+            _this.cout('received memory', req.memory);
             objects[thisKey].memory = req.memory;
-            this.realityEditor.gui.memory.addObjectMemory(objects[thisKey]);
+            _this.realityEditor.gui.memory.addObjectMemory(objects[thisKey]);
         });
     }
 
-    for(var key in action) {
+    for(var key in thisAction) {
         this.cout("found action: " + JSON.stringify(key));
     }
 };
@@ -407,8 +409,9 @@ realityEditor.network.onInternalPostMessage = function(e) {
 realityEditor.network.deleteData = function(url) {
     var request = new XMLHttpRequest();
     request.open('DELETE', url, true);
+    var _this = this;
     request.onreadystatechange = function () {
-        if (request.readyState == 4) this.cout("It deleted!");
+        if (request.readyState == 4) _this.cout("It deleted!");
     };
     request.setRequestHeader("Content-type", "application/json");
     //request.setRequestHeader("Content-length", params.length);
@@ -438,6 +441,7 @@ realityEditor.network.deleteBlockLinkFromObject = function(ip, thisObjectKey, th
 };
 
 realityEditor.network.getData = function(url, thisKey, callback) {
+    var _this = this;
     var req = new XMLHttpRequest();
     try {
         req.open('GET', url, true);
@@ -450,7 +454,7 @@ realityEditor.network.getData = function(url, thisKey, callback) {
                         callback(JSON.parse(req.responseText), thisKey)
                 } else {
                     // Handle error case
-                    this.cout("could not load content");
+                    _this.cout("could not load content");
                 }
             }
         };
@@ -655,7 +659,7 @@ realityEditor.network.sendResetContent = function(object, node, type) {
  **/
 
 
-realityEditor.network.onLoad = function(objectKey, nodeKey) {
+realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
 
     globalStates.notLoading = false;
     // window.location.href = "of://event_test_"+nodeKey;

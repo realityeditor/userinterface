@@ -51,6 +51,7 @@ createNameSpace("realityEditor.gui.crafting.blockMenu");
 
 realityEditor.gui.crafting.blockMenu.initializeBlockMenu = function(callback) {
     var logic = globalStates.currentLogic;
+    var _this = this;
 
     var craftingBoard = document.getElementById('craftingBoard');
 
@@ -81,7 +82,7 @@ realityEditor.gui.crafting.blockMenu.initializeBlockMenu = function(callback) {
         menuTab.setAttribute('class', 'menuTab');
         menuTab.setAttribute('tabIndex', i);
         menuTab.setAttribute('touch-action', 'none');
-        menuTab.addEventListener('pointerdown', this.onMenuTabSelected);
+        menuTab.addEventListener('pointerdown', this.onMenuTabSelected.bind(realityEditor.gui.crafting.blockMenu));
 
         var menuTabIcon = document.createElement('img');
         menuTabIcon.setAttribute('class', 'menuTabIcon');
@@ -120,10 +121,10 @@ realityEditor.gui.crafting.blockMenu.initializeBlockMenu = function(callback) {
                 var blockContents = document.createElement('div');
                 blockContents.setAttribute('class', 'menuBlockContents');
                 blockContents.setAttribute("touch-action", "none");
-                blockContents.addEventListener('pointerdown', this.onBlockMenuPointerDown);
-                blockContents.addEventListener('pointerup', this.onBlockMenuPointerUp);
-                blockContents.addEventListener('pointerleave', this.onBlockMenuPointerLeave);
-                blockContents.addEventListener('pointermove', this.onBlockMenuPointerMove);
+                blockContents.addEventListener('pointerdown', _this.onBlockMenuPointerDown.bind(realityEditor.gui.crafting.blockMenu));
+                blockContents.addEventListener('pointerup', _this.onBlockMenuPointerUp.bind(realityEditor.gui.crafting.blockMenu));
+                blockContents.addEventListener('pointerleave', _this.onBlockMenuPointerLeave.bind(realityEditor.gui.crafting.blockMenu));
+                blockContents.addEventListener('pointermove', _this.onBlockMenuPointerMove.bind(realityEditor.gui.crafting.blockMenu));
                 block.appendChild(blockContents);
                 logic.guiState.menuBlockDivs.push(block);
                 row.appendChild(block);
@@ -134,13 +135,14 @@ realityEditor.gui.crafting.blockMenu.initializeBlockMenu = function(callback) {
 };
 
 realityEditor.gui.crafting.blockMenu.resetBlockMenu = function() {
+    var _this = this;
     if (globalStates.currentLogic) {
         var guiState = globalStates.currentLogic.guiState;
         guiState.menuBlockDivs.forEach(function(blockDiv) {
-            blockDiv.firstChild.removeEventListener('pointerdown', this.onBlockMenuPointerDown);
-            blockDiv.firstChild.removeEventListener('pointerup', this.onBlockMenuPointerUp);
-            blockDiv.firstChild.removeEventListener('pointerleave', this.onBlockMenuPointerLeave);
-            blockDiv.firstChild.removeEventListener('pointermove', this.onBlockMenuPointerMove);
+            blockDiv.firstChild.removeEventListener('pointerdown', _this.onBlockMenuPointerDown);
+            blockDiv.firstChild.removeEventListener('pointerup', _this.onBlockMenuPointerUp);
+            blockDiv.firstChild.removeEventListener('pointerleave', _this.onBlockMenuPointerLeave);
+            blockDiv.firstChild.removeEventListener('pointermove', _this.onBlockMenuPointerMove);
         });
     }
     var container = document.getElementById('menuContainer');
@@ -167,7 +169,7 @@ realityEditor.gui.crafting.blockMenu.onMenuTabSelected = function(e) {
     if (guiState.menuSelectedTab < 0) guiState.menuSelectedTab = 0;
     this.redisplayTabSelection();
     this.redisplayBlockSelection();
-}
+};
 
 realityEditor.gui.crafting.blockMenu.redisplayTabSelection = function() {
     var guiState = globalStates.currentLogic.guiState;
@@ -198,7 +200,7 @@ realityEditor.gui.crafting.blockMenu.redisplayBlockSelection = function() {
         // load icon and title
         var iconImage = document.createElement("img");
         iconImage.setAttribute('class', 'blockIcon');
-        iconImage.src = getBlockIcon(globalStates.currentLogic, thisBlockData.type).src;
+        iconImage.src = this.crafting.getBlockIcon(globalStates.currentLogic, thisBlockData.type).src;
         blockDiv.firstChild.appendChild(iconImage);
 
         var blockTitle = document.createElement('div');
@@ -254,6 +256,9 @@ realityEditor.gui.crafting.blockMenu.onBlockMenuPointerMove = function(e) {
     e.preventDefault();
     var guiState = globalStates.currentLogic.guiState;
     if (guiState.menuBlockToAdd) {
+        if (guiState.menuSelectedBlock) {
+            guiState.menuSelectedBlock.parentNode.setAttribute('class', 'menuBlock');
+        }
         var blockJSON = guiState.menuBlockToAdd.blockData;
         var blockRect = guiState.menuBlockToAdd.getBoundingClientRect();
         var pointerX = blockRect.left + blockRect.width/2;

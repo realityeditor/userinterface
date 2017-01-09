@@ -183,15 +183,16 @@ realityEditor.gui.crafting.getBlockIcon = function(logic, blockName) {
 realityEditor.gui.crafting.redrawDataCrafting = function() {
     if (!globalStates.currentLogic) return;
     var grid = globalStates.currentLogic.grid;
+    var _this = this;
 
     var canvas = document.getElementById("datacraftingCanvas");
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     this.grid.forEachLink( function(link) {
-        var startCell =  this.grid.getCellForBlock(grid, this.grid.blockWithID(link.nodeA, globalStates.currentLogic), link.logicA);
-        var endCell =  this.grid.getCellForBlock(grid, this.grid.blockWithID(link.nodeB, globalStates.currentLogic), link.logicB);
-        this.drawDataCraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
+        var startCell =  _this.grid.getCellForBlock(grid, _this.grid.blockWithID(link.nodeA, globalStates.currentLogic), link.logicA);
+        var endCell =  _this.grid.getCellForBlock(grid, _this.grid.blockWithID(link.nodeB, globalStates.currentLogic), link.logicB);
+        _this.drawDataCraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
     });
 
     var cutLine = globalStates.currentLogic.guiState.cutLine;
@@ -210,8 +211,8 @@ realityEditor.gui.crafting.redrawDataCrafting = function() {
         if (!domElement) return;
 
         globalStates.currentLogic.guiState.tempIncomingLinks.forEach( function(linkData) {
-            var startCell = this.grid.getCellForBlock(grid, this.grid.blockWithID(linkData.nodeA, globalStates.currentLogic), linkData.logicA);
-            if (!startCell && this.grid.isInOutBlock(linkData.nodeA)) {
+            var startCell = _this.grid.getCellForBlock(grid, _this.grid.blockWithID(linkData.nodeA, globalStates.currentLogic), linkData.logicA);
+            if (!startCell && _this.grid.isInOutBlock(linkData.nodeA)) {
                 var col = linkData.nodeA.slice(-1) * 2;
                 startCell = grid.getCell(col, 0);
             }
@@ -224,7 +225,7 @@ realityEditor.gui.crafting.redrawDataCrafting = function() {
             var startColor = startCell.getColorHSL();
             var lineColor = 'hsl('+startColor.h+','+startColor.s+'%,'+startColor.l+'%)';
 
-            this.realityEditor.gui.ar.lines.drawSimpleLine(ctx, startX, startY, endX, endY, lineColor, 2);
+            _this.realityEditor.gui.ar.lines.drawSimpleLine(ctx, startX, startY, endX, endY, lineColor, 2);
         });
 
         globalStates.currentLogic.guiState.tempOutgoingLinks.forEach( function(linkData) {
@@ -232,8 +233,8 @@ realityEditor.gui.crafting.redrawDataCrafting = function() {
             var startX = parseInt(domElement.style.left) + xOffset;
             var startY = parseInt(domElement.style.top) + domElement.clientHeight/2;
 
-            var endCell = this.grid.getCellForBlock(grid, this.grid.blockWithID(linkData.nodeB, globalStates.currentLogic), linkData.logicB);
-            if (!endCell && this.grid.isInOutBlock(linkData.nodeB)) {
+            var endCell = _this.grid.getCellForBlock(grid, _this.grid.blockWithID(linkData.nodeB, globalStates.currentLogic), linkData.logicB);
+            if (!endCell && _this.grid.isInOutBlock(linkData.nodeB)) {
                 var col = linkData.nodeB.slice(-1) * 2;
                 endCell = grid.getCell(col, 6);
             }
@@ -242,7 +243,7 @@ realityEditor.gui.crafting.redrawDataCrafting = function() {
             var endColor = endCell.getColorHSL();
             var lineColor = 'hsl('+endColor.h+','+endColor.s+'%,'+endColor.l+'%)';
 
-            this.realityEditor.gui.ar.lines.drawSimpleLine(ctx, startX, startY, endX, endY, lineColor, 2);
+            _this.realityEditor.gui.ar.lines.drawSimpleLine(ctx, startX, startY, endX, endY, lineColor, 2);
         });
     }
 };
@@ -337,6 +338,7 @@ realityEditor.gui.crafting.craftingBoardHide = function() {
  **/
 
 realityEditor.gui.crafting.blockMenuVisible = function() {
+    var _this = this;
     //temporarily hide all other datacrafting divs. redisplay them when menu hides
     document.getElementById("datacraftingCanvas").style.display = "none";
     document.getElementById("blockPlaceholders").style.display = "none";
@@ -351,8 +353,8 @@ realityEditor.gui.crafting.blockMenuVisible = function() {
         this.blockMenu.redisplayBlockSelection();
     } else {
         this.blockMenu.initializeBlockMenu(function() {
-            this.blockMenu.redisplayTabSelection(); // wait for callback to ensure menu fully loaded
-            this.blockMenu.redisplayBlockSelection();
+            _this.blockMenu.redisplayTabSelection(); // wait for callback to ensure menu fully loaded
+            _this.blockMenu.redisplayBlockSelection();
         });
     }
 };
@@ -387,6 +389,9 @@ realityEditor.gui.crafting.addDatacraftingEventListeners = function() {
         datacraftingEventDiv.addEventListener("pointerdown", this.eventHandlers.onPointerDown.bind(this.eventHandlers));
         datacraftingEventDiv.addEventListener("pointermove", this.eventHandlers.onPointerMove.bind(this.eventHandlers));
         datacraftingEventDiv.addEventListener("pointerup", this.eventHandlers.onPointerUp.bind(this.eventHandlers));
+        datacraftingEventDiv.addEventListener("pointerout", this.eventHandlers.onPointerLeave.bind(this.eventHandlers));
+        //datacraftingEventDiv.addEventListener("pointercancel", this.eventHandlers.onPointerUp.bind(this.eventHandlers));
+        
     }
 };
 
@@ -397,6 +402,9 @@ realityEditor.gui.crafting.removeDatacraftingEventListeners = function() {
         datacraftingEventDiv.removeEventListener("pointerdown", this.eventHandlers.onPointerDown);
         datacraftingEventDiv.removeEventListener("pointermove", this.eventHandlers.onPointerMove);
         datacraftingEventDiv.removeEventListener("pointerup", this.eventHandlers.onPointerUp);
+        datacraftingEventDiv.removeEventListener("pointerout", this.eventHandlers.onPointerLeave);
+        //datacraftingEventDiv.removeEventListener("pointerleave", this.eventHandlers.onPointerLeave);
+        //datacraftingEventDiv.removeEventListener("pointercancel", this.eventHandlers.onPointerUp);
     }
 };
 

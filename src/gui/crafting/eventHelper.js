@@ -291,8 +291,8 @@ realityEditor.gui.crafting.eventHelper.removePortBlocksIfNecessary = function(ce
     cells.forEach( function(cell, i) {
         if (cell) {
             var existingBlock = cell.blockAtThisLocation();
-            if (existingBlock && isPortBlock(existingBlock)) {
-                if (this.isInputBlock(existingBlock)) {
+            if (existingBlock && _this.isPortBlock(existingBlock)) {
+                if (_this.isInputBlock(existingBlock)) {
                     var outgoingLinks = _this.getOutgoingLinks(existingBlock);
                     outgoingLinks.forEach(function(link) {
                         portLinkData.push({
@@ -302,7 +302,7 @@ realityEditor.gui.crafting.eventHelper.removePortBlocksIfNecessary = function(ce
                             logicB: link.logicB
                         });
                     });
-                } else if (this.isOutputBlock(existingBlock)) {
+                } else if (_this.isOutputBlock(existingBlock)) {
                     var incomingLinks = _this.getIncomingLinks(existingBlock);
                     incomingLinks.forEach(function(link) {
                         portLinkData.push({
@@ -313,7 +313,7 @@ realityEditor.gui.crafting.eventHelper.removePortBlocksIfNecessary = function(ce
                         });
                     });
                 }
-                this.crafting.grid.removeBlock(globalStates.currentLogic, existingBlock.globalId);
+                _this.crafting.grid.removeBlock(globalStates.currentLogic, existingBlock.globalId);
             }
         }
     });
@@ -558,11 +558,11 @@ realityEditor.gui.crafting.eventHelper.isPortBlock = function(block) {
 };
 
 realityEditor.gui.crafting.eventHelper.isInputBlock = function(block) {
-    return isPortBlock(block) && block.y === 0;
+    return this.isPortBlock(block) && block.y === 0;
 };
 
 realityEditor.gui.crafting.eventHelper.isOutputBlock = function(block) {
-    return isPortBlock(block) && !this.isInputBlock(block);
+    return this.isPortBlock(block) && !this.isInputBlock(block);
 };
 
 realityEditor.gui.crafting.eventHelper.addBlockFromMenu = function(blockJSON, pointerX, pointerY) {
@@ -575,12 +575,11 @@ realityEditor.gui.crafting.eventHelper.addBlockFromMenu = function(blockJSON, po
         item: 0,
         cell: null
     };
-    touchState = TS_MOVE;
-
+    
     this.crafting.eventHandlers.onPointerMove({
         pageX: pointerX,
         pageY: pointerY
-    });
+    }, true);
 };
 
 realityEditor.gui.crafting.eventHelper.openBlockSettings = function(block) {
