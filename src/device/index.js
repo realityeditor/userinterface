@@ -36,9 +36,9 @@
  * Created by Valentin on 10/22/14.
  *
  * Copyright (c) 2015 Valentin Heun
- * Modified by Benjamin Reynholds 2016
- * Modified by James Hobin 2016
- * Modified by Valentin Heun 2016
+ * Modified by Valentin Heun 2014, 2015, 2016, 2017
+ * Modified by Benjamin Reynholds 2016, 2017
+ * Modified by James Hobin 2016, 2017
  *
  * All ascii characters above must be included in any redistribution.
  *
