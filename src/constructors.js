@@ -320,7 +320,6 @@ function Block() {
 	// indicates how much calls per second is happening on this block
 	this.stress = 0;
 
-	// BEN TODO: are both of these used?
 	this.isTempBlock = false;
 	this.isPortBlock = false;
 }

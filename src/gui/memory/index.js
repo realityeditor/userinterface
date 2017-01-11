@@ -161,9 +161,9 @@ createNameSpace("realityEditor.gui.memory");
         var isBar = barContainers.indexOf(this) >= 0;
 
         if (isBar) {
-            pocketOnMemoryDeletionStart();
+            realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
         } else {
-            pocketOnMemoryCreationStart();
+            realityEditor.gui.pocket.pocketOnMemoryCreationStart();
         }
     };
 
@@ -189,9 +189,9 @@ createNameSpace("realityEditor.gui.memory");
         var isBar = barContainers.indexOf(this) >= 0;
 
         if (isBar) {
-            pocketOnMemoryDeletionStop();
+            realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
         } else {
-            pocketOnMemoryCreationStop();
+            realityEditor.gui.pocket.pocketOnMemoryCreationStop();
         }
 
         var imageRect = this.image.getBoundingClientRect();
@@ -229,7 +229,7 @@ createNameSpace("realityEditor.gui.memory");
                 }
             } else {
                 // Didn't move into bar, pocket should close
-                pocketHide();
+                realityEditor.gui.pocket.pocketHide();
             }
         }
     };
@@ -266,7 +266,7 @@ createNameSpace("realityEditor.gui.memory");
                 window.location.href = 'of://memorize';
                 event.stopPropagation();
             }
-            pocketOnMemoryCreationStop();
+            realityEditor.gui.pocket.pocketOnMemoryCreationStop();
         } else if (this.dragging) {
             return;
         } else {
@@ -302,7 +302,7 @@ createNameSpace("realityEditor.gui.memory");
             removeMemoryWeb();
         }
 
-        pocketHide();
+        realityEditor.gui.pocket.pocketHide();
 
         var memoryBackground = document.querySelector('.memoryBackground');
         memoryBackground.innerHTML = '';
@@ -394,7 +394,7 @@ createNameSpace("realityEditor.gui.memory");
     function onOverlayTransitionEnd(event) {
         if (overlayDiv.classList.contains('overlayMemory')) {
             window.location.href = 'of://createMemory';
-            pocketOnMemoryCreationStart();
+            realityEditor.gui.pocket.pocketOnMemoryCreationStart();
         }
     }
 

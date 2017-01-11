@@ -65,7 +65,7 @@ var timeCorrection = {delta: 0, now: 0, then: 0};
  **********************************************************************************************************************/
 
 var globalStates = {
-	debug: true,
+	debug: false,
 	overlay: 0,
 	device: "",
 	// drawWithLines
@@ -135,8 +135,6 @@ var globalStates = {
 		timeout: undefined
 	}
 };
-
-var g = globalStates; // BEN TODO: REMOVE DEBUG ALIAS
 
 var globalCanvas = {};
 

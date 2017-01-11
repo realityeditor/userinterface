@@ -436,7 +436,7 @@ realityEditor.device.onDocumentPointerDown = function(evt) {
 	}
 
 	if (this.realityEditor.gui.memory.memoryCanCreate() && window.innerWidth - evt.clientX > 65) {
-		pocketOnMemoryCreationStart();
+        this.realityEditor.gui.pocket.pocketOnMemoryCreationStart();
 	}
 
 	/*

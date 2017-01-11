@@ -272,15 +272,13 @@ realityEditor.gui.ar.utilities.sortPointsClockwise = function(points) {
 	var centerPoint = this.getCenterOfPoints(points);
 	var centerX = centerPoint[0];
 	var centerY = centerPoint[1];
-	return points.sort(this.comparePoints);
-};
-
-realityEditor.gui.ar.utilities.comparePoints = function (a, b) {
-	var atanA = Math.atan2(a[1] - centerY, a[0] - centerX);
-	var atanB = Math.atan2(b[1] - centerY, b[0] - centerX);
-	if (atanA < atanB) return -1;
-	else if (atanB > atanA) return 1;
-	return 0;
+	return points.sort(function (a, b) {
+        var atanA = Math.atan2(a[1] - centerY, a[0] - centerX);
+        var atanB = Math.atan2(b[1] - centerY, b[0] - centerX);
+        if (atanA < atanB) return -1;
+        else if (atanB > atanA) return 1;
+        return 0;
+    });
 };
 
 /**
@@ -364,19 +362,19 @@ realityEditor.gui.ar.utilities.addCornerPairToOppositeCornerPairs = function(cor
 	var corner1 = cornerPair[0];
 	var corner2 = cornerPair[1];
 	var safeToAdd = true;
+    var _this = this;
 	if (oppositeCornerPairs.length > 0) {
 		oppositeCornerPairs.forEach(function (pairList) {
 			var existingCorner1 = pairList[0];
 			var existingCorner2 = pairList[1];
-			if (this.areCornerPairsSymmetric(existingCorner1, existingCorner2, corner1, corner2)) {
+			if (_this.areCornerPairsSymmetric(existingCorner1, existingCorner2, corner1, corner2)) {
 				// console.log("symmetric", existingCorner1, existingCorner2, corner1, corner2);
 				safeToAdd = false;
 				return;
 			}
-			if (this.areCornerPairsIdentical(existingCorner1, existingCorner2, corner1, corner2)) {
+			if (_this.areCornerPairsIdentical(existingCorner1, existingCorner2, corner1, corner2)) {
 				// console.log("identical", existingCorner1, existingCorner2, corner1, corner2);
 				safeToAdd = false;
-				return;
 			}
 		});
 	}
@@ -393,10 +391,10 @@ realityEditor.gui.ar.utilities.addCornerPairToOppositeCornerPairs = function(cor
  **/
 
 realityEditor.gui.ar.utilities.estimateIntersection = function(theObject, mCanvas, thisObject) {
-	var thisCanvas = globalDOMCach["canvas" + theObject];
+    var _this = this;
+
+    var thisCanvas = globalDOMCach["canvas" + theObject];
 	if(!mCanvas){
-
-
 		if(!thisObject.hasCTXContent) {
 			thisObject.hasCTXContent = true;
 			var ctx = thisCanvas.getContext("2d");
@@ -416,18 +414,7 @@ realityEditor.gui.ar.utilities.estimateIntersection = function(theObject, mCanva
 	}
 
 	if (globalStates.pointerPosition[0] === -1) return null;
-
-	// var newMatrix = copyMatrix(multiplyMatrix(globalMatrix.begin, invertMatrix(globalMatrix.temp)));
-
-	// var mCanvas = mat1x16From4x4(matrix);
-	// var mCanvas = getTransformMatrixForDiv(theDiv);
-
-	// console.log("mCanvas: ", mCanvas);
-	// console.log("newMatrix: ", newMatrix);
-
-	// console.log("estimate");
-	////////////////////////////////////////
-
+    
 	var corners = this.getCornersClockwise(thisCanvas);
 	var out = [0, 0, 0, 0];
 	corners.forEach(function (corner, index) {
@@ -436,26 +423,24 @@ realityEditor.gui.ar.utilities.estimateIntersection = function(theObject, mCanva
 		var input = [x, y, 0, 1]; // assumes z-position of corner is always 0
 		// console.log(out, input, mCanvas);
 
-		out = this.multiplyMatrix4(input, mCanvas);
+		out = _this.multiplyMatrix4(input, mCanvas);
 		// var z = getTransformedZ(matrix,x,y)
 		corner[2] = out[2]; // sets z position of corner to its eventual transformed value
 	});
-
-	// console.log("corners", corners);
-
+    
 	var oppositeCornerPairs = [];
 	corners.forEach(function (corner1) {
 		corners.forEach(function (corner2) {
 			// only check adjacent pairs of corners
 			// ignore same corner
-			if (this.areCornersEqual(corner1, corner2)) {
+			if (_this.areCornersEqual(corner1, corner2)) {
 				return;
 			}
 
 			// x or y should be the same
-			if (this.areCornersAdjacent(corner1, corner2)) {
-				if (this.areCornersOppositeZ(corner1, corner2)) {
-					this.addCornerPairToOppositeCornerPairs([corner1, corner2], oppositeCornerPairs);
+			if (_this.areCornersAdjacent(corner1, corner2)) {
+				if (_this.areCornersOppositeZ(corner1, corner2)) {
+					_this.addCornerPairToOppositeCornerPairs([corner1, corner2], oppositeCornerPairs);
 				}
 			}
 		});
@@ -489,10 +474,6 @@ realityEditor.gui.ar.utilities.estimateIntersection = function(theObject, mCanva
 		}
 	});
 
-	// console.log("interceptPoints", interceptPoints);
-
-	////////////////////////////////////////
-
 	// get corners, add in correct order so they get drawn clockwise
 
 	corners.forEach(function (corner) {
@@ -500,11 +481,8 @@ realityEditor.gui.ar.utilities.estimateIntersection = function(theObject, mCanva
 			interceptPoints.push(corner);
 		}
 	});
-
-	// console.log("interceptPoints+corners", interceptPoints);
-
+    
 	var sortedPoints = this.sortPointsClockwise(interceptPoints);
-	// console.log("sortedPoints", sortedPoints);
 
 	// draws blue and purple diagonal lines to mask the image
 	var ctx = thisCanvas.getContext("2d");
@@ -577,4 +555,3 @@ realityEditor.gui.ar.utilities.insidePoly = function(point, vs) {
 
 	return inside;
 };
-
