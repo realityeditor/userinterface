@@ -93,7 +93,7 @@ realityEditor.gui.pocket.setPocketPossition = function(evt){
 
 				//  console.log(thisItem.screenZ);
 				// console.log(screenCoordinatesToMatrixXY(thisItem, [evt.clientX, evt.clientY]));
-				var matrixTouch = screenCoordinatesToMatrixXY(thisItem, [evt.clientX, evt.clientY]);
+				var matrixTouch = this.realityEditor.gui.ar.utilities.screenCoordinatesToMatrixXY(thisItem, [evt.clientX, evt.clientY]);
 				// console.log(thisItem);
 				thisItem.x = matrixTouch[0];
 				thisItem.y = matrixTouch[1];

@@ -457,7 +457,7 @@ createNameSpace("realityEditor.gui.memory");
         if (globalStates.freezeButtonState) {
             return false;
         }
-        if (pocketShown()) {
+        if (realityEditor.gui.pocket.pocketShown()) {
             return false;
         }
         return true;
@@ -471,7 +471,7 @@ createNameSpace("realityEditor.gui.memory");
     exports.getMemoryWithId = getMemoryWithId;
     exports.memoryCanCreate = memoryCanCreate;
 
-}(window));
+}(realityEditor.gui.memory));
 
 (function(exports) {
     var pointers = {};
@@ -586,7 +586,7 @@ createNameSpace("realityEditor.gui.memory");
 
     exports.MemoryPointer = MemoryPointer;
     exports.getMemoryPointerWithId = getMemoryPointerWithId;
-}(window));
+}(realityEditor.gui.memory));
 
 (function(exports) {
     var memoryElements = [];
@@ -698,4 +698,4 @@ createNameSpace("realityEditor.gui.memory");
     exports.createMemoryWeb = createMemoryWeb;
     exports.removeMemoryWeb = removeMemoryWeb;
 
-}(window));
+}(realityEditor.gui.memory));

@@ -425,7 +425,7 @@ realityEditor.gui.buttons.draw = function() {
 			pocketItem.pocket.objectVisible = false;
 
 
-		this.gui.ar.hideTransformed("pocket", pocketItemId, pocketItem.pocket.nodes[pocketItemId], "logic");
+		this.gui.ar.draw.hideTransformed("pocket", pocketItemId, pocketItem.pocket.nodes[pocketItemId], "logic");
 			delete pocketItem.pocket.nodes[pocketItemId];
 		}
 
