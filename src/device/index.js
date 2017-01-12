@@ -279,7 +279,7 @@ realityEditor.device.onCanvasPointerDown = function(evt) {
  * @param evt
  **/
 
-realityEditor.device.getPossition = function (evt) {
+realityEditor.device.onDocumentPointerMove = function (evt) {
 	evt.preventDefault();
 
 	globalStates.pointerPosition = [evt.clientX, evt.clientY];
@@ -287,44 +287,7 @@ realityEditor.device.getPossition = function (evt) {
 	// Translate up 6px to be above pocket layer
 	overlayDiv.style.transform = 'translate3d(' + evt.clientX + 'px,' + evt.clientY + 'px,6px)';
 
-	this.setPocketPossition(evt);
-
-}
-
-
-realityEditor.device.setPocketPossition = function (evt){
-
-
-	if(pocketItem.pocket.nodes[pocketItemId]){
-
-		var thisItem = pocketItem.pocket.nodes[pocketItemId];
-
-		if(globalLogic.farFrontElement==="") {
-			thisItem.x = evt.clientX - (globalStates.height / 2);
-			thisItem.y = evt.clientY - (globalStates.width / 2);
-
-		}
-		else {
-			if(thisItem.screenZ !==2 && thisItem.screenZ) {
-
-				//  console.log(thisItem.screenZ);
-				// console.log(screenCoordinatesToMatrixXY(thisItem, [evt.clientX, evt.clientY]));
-				var matrixTouch = this.realityEditor.gui.ar.utilities.screenCoordinatesToMatrixXY(thisItem, [evt.clientX, evt.clientY]);
-				// console.log(thisItem);
-				thisItem.x = matrixTouch[0];
-				thisItem.y = matrixTouch[1];
-
-			}
-		}
-
-
-		//  pocketItem.pocket.x = evt.clientX;
-		// pocketItem.pocket.y = evt.clientY;
-
-
-
-	}
-
+    this.realityEditor.gui.pocket.setPocketPosition(evt);
 };
 
 

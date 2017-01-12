@@ -77,7 +77,7 @@ realityEditor.gui.pocket.pocketButtonAction = function() {
 
 };
 
-realityEditor.gui.pocket.setPocketPossition = function(evt){
+realityEditor.gui.pocket.setPocketPosition = function(evt){
     
 	if(pocketItem.pocket.nodes[pocketItemId]){
 

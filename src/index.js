@@ -66,14 +66,14 @@ var realityEditor = realityEditor || {
 		objects: {},
 		states: {},
 		device: {
-			addEventHandlers: {},
-			onLoad: {},
+            addEventHandlers: {},
 			onTouchDown: {},
 			onFalseTouchUp: {},
 			onTrueTouchUp: {},
 			onTouchEnter: {},
 			onTouchLeave: {},
 			onCanvasPointerDown: {},
+            onDocumentPointerMove: {},
 			onDocumentPointerUp: {},
 			onDocumentPointerDown: {},
 			onMultiTouchStart: {},
@@ -84,14 +84,13 @@ var realityEditor = realityEditor || {
 			setDeviceName: {},
 			setStates: {},
 			removeEventHandlers: {},
-			utilities: {
-				cout: {},
+            onload: {},
+            utilities: {
 				newURLTextLoad: {},
-				map: {},
 				uuidTime: {},
 				uuidTimeShort: {},
 				randomIntInc: {}
-			},
+			}
 		},
 		network: {
 			addHeartbeatObject: {},
@@ -101,9 +100,9 @@ var realityEditor = realityEditor || {
 			deleteLinkFromObject: {},
 			deleteBlockFromObject: {},
 			deleteBlockLinkFromObject: {},
-			postLinkToServer: {},
 			getData: {},
 			postData: {},
+            postLinkToServer: {},
 			postNewLink: {},
 			postNewBlockLink: {},
 			postNewLogicNode: {},
@@ -119,29 +118,15 @@ var realityEditor = realityEditor || {
 		gui: {
 			canvasCache: {},
 			domCache: {},
+            setup: {},
 			utilities: {
-				getPosition: {},
-
-				timeSynchronizer: {},
 				checkLineCross: {},
 				lineEq: {},
 				slopeCalc: {},
 				calculateX: {},
 				calculateY: {},
-				checkBetween: {},
-
-				getCenterOfPoints: {},
-				sortPointsClockwise: {},
-				getCornersClockwise: {},
-				areCornersEqual: {},
-				areCornerPairsIdentical: {},
-				areCornerPairsSymmetric: {},
-				areCornersAdjacent: {},
-				areCornersOppositeZ: {},
-				addCornerPairToOppositeCornerPairs: {},
-				estimateIntersection: {}
+				checkBetween: {}
 			},
-			setup: {},
 			ar: {
 				matrixStates: {},
 				setProjectionMatrix: {},
@@ -171,28 +156,41 @@ var realityEditor = realityEditor || {
 					drawSimpleLine: {}
 				},
 				utilities: {
-					multiplyMatrix: {},
+                    timeSynchronizer: {},
+                    map: {},
+                    multiplyMatrix: {},
 					multiplyMatrix4: {},
 					copyMatrix: {},
 					invertMatrix: {},
 					toAxisAngle: {},
 					screenCoordinatesToMatrixXY: {},
-					insidePoly: {}
+					insidePoly: {},
+                    estimateIntersection: {}
 				}
 			},
 			buttons: {
 				imageCache: {},
-				preload: {}
+				preload: {},
+                
 			},
 			pocket: {
 				pocketItem: {"pocket": new Objects()},
 				pocketItemId: "",
-				setPocketPosition: {}
+                pocketButtonAction: {},
+				setPocketPosition: {},
+                pocketInit: {},
+                pocketShown: {},
+                pocketShow: {},
+                pocketHide: {},
+                pocketOnMemoryCreationStart: {},
+                pocketOnMemoryCreationStop: {},
+                pocketOnMemoryDeletionStart: {},
+                pocketOnMemoryDeletionStop: {}
 			},
 			preferences: {
-				addElementInPreferences: {},
 				preferencesHide: {},
-				preferencesVisible: {}
+				preferencesVisible: {},
+                addElementInPreferences: {}
 			},
 			crafting: {
 				logicStates: {},

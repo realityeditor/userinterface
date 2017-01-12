@@ -84,4 +84,4 @@ realityEditor.gui.ar.positioning.onScaleEvent = function(touch) {
 
 	}
 	this.cout("scaleEvent");
-}
+};

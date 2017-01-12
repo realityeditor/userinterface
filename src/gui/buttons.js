@@ -487,7 +487,7 @@ realityEditor.gui.buttons.draw = function() {
 			//addElement("pocket", pocketItemId, "nodes/" + thisItem.type + "/index.html",  pocketItem.pocket, "logic",globalStates);
 
 		}
-		this.gui.pocket.setPocketPossition(evt);
+		this.gui.pocket.setPocketPosition(evt);
 
 		//TODO: this is a debug method to create random blocks by dragging out from the pocket button while in crafting mode. should be removed eventually.
 		/*

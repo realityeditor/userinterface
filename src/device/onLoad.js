@@ -70,8 +70,6 @@ realityEditor.device.onload = function () {
 		globalStates.platform = false;
 	}
 
-
-
 	if (globalStates.platform === 'iPhone') {
 		document.getElementById("logButtonDiv").style.visibility = "hidden";
 		// document.getElementById("reloadButtonDiv").style.visibility = "hidden";
@@ -151,7 +149,7 @@ realityEditor.device.onload = function () {
 	globalCanvas.canvas.addEventListener("pointerdown", realityEditor.device.onCanvasPointerDown.bind(realityEditor.device), false);
 	ec++;
 
-	document.addEventListener("pointermove", realityEditor.device.getPossition.bind(realityEditor.device), false);
+	document.addEventListener("pointermove", realityEditor.device.onDocumentPointerMove.bind(realityEditor.device), false);
 	ec++;
 	document.addEventListener("pointerdown", realityEditor.device.onDocumentPointerDown.bind(realityEditor.device), false);
 	//document.addEventListener("pointerdown", getPossition, false);
