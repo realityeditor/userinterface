@@ -126,7 +126,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
                 }
 
                 // otherwise if enough time has passed, change to TS_HOLD
-            } else if (!this.crafting.eventHelper.isPortBlock(contents.block)) {
+            } else if (!contents.block.isPortBlock) {
                 if (Date.now() - startTapTime > HOLD_TIME_THRESHOLD) {
                     this.cout("enough time has passed -> HOLD (" + (Date.now() - startTapTime) + ")");
                     touchState = TS_HOLD;
@@ -201,7 +201,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             this.crafting.eventHelper.styleBlockForHolding(tappedContents, false);
             clearTimeout(activeHoldTimer);
 
-            if (!this.crafting.eventHelper.isPortBlock(contents.block)) {
+            if (!contents.block.isPortBlock) {
                 if (Date.now() - startTapTime < (HOLD_TIME_THRESHOLD/2)) {
                     this.crafting.eventHelper.openBlockSettings(tappedContents.block);
                 }

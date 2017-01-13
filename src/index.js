@@ -217,14 +217,8 @@ var realityEditor = realityEditor || {
 				blockMenu: {
 					initializeBlockMenu: {},
 					resetBlockMenu: {},
-					menuLoadBlocks: {},
-					onMenuTabSelected: {},
 					redisplayTabSelection: {},
-					redisplayBlockSelection: {},
-					onBlockMenuPointerDown: {},
-					onBlockMenuPointerUp: {},
-					onBlockMenuPointerLeave: {},
-					onBlockMenuPointerMove: {}
+					redisplayBlockSelection: {}
 				},
 				grid: {
 					Grid: function (width, height) {
@@ -237,9 +231,8 @@ var realityEditor = realityEditor || {
 					},
 					RouteSegment: function (route, horz, vert) {
 					},
-					getBlock: {},
 					getCellForBlock: {},
-					getBlockOverlappingPosition: {},
+                    getBlockPixelWidth: {},
 					isBlockOutsideGrid: {},
 					convertGridPosToBlockPos: {},
 					convertBlockPosToGridPos: {},
@@ -247,17 +240,14 @@ var realityEditor = realityEditor || {
 					blockWithID: {},
 					addBlock: {},
 					updateInOutLinks: {},
-					isInOutLink: {},
+                    isEdgePlaceholderLink: {},
+                    isEdgePlaceholderBlock: {},
 					isInOutBlock: {},
 					forEachLink: {},
-					allLinks: {},
 					setTempLink: {},
 					removeBlockLink: {},
 					removeBlock: {},
 					removeLinksForBlock: {},
-					doesLinkAlreadyExist: {},
-					areBlockLinksEqual: {},
-					preprocessPointsForDrawing: {}
 				},
 				eventHelper: {
 					getCellOverPointer: {},

@@ -173,7 +173,7 @@ realityEditor.gui.crafting.eventHelper.styleBlockForPlacement = function(content
 
 // todo why is isInOutBlock in grid by isPortBlock in here?
 realityEditor.gui.crafting.eventHelper.shouldUploadBlock = function(block) {
-    return !this.crafting.grid.isInOutBlock(block.globalId) && !this.isPortBlock(block);
+    return !this.crafting.grid.isInOutBlock(block.globalId) && !block.isPortBlock;
 };
 
 realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink = function(blockLink) {
@@ -291,7 +291,7 @@ realityEditor.gui.crafting.eventHelper.removePortBlocksIfNecessary = function(ce
     cells.forEach( function(cell, i) {
         if (cell) {
             var existingBlock = cell.blockAtThisLocation();
-            if (existingBlock && _this.isPortBlock(existingBlock)) {
+            if (existingBlock && existingBlock.isPortBlock) {
                 if (_this.isInputBlock(existingBlock)) {
                     var outgoingLinks = _this.getOutgoingLinks(existingBlock);
                     outgoingLinks.forEach(function(link) {
@@ -545,7 +545,7 @@ realityEditor.gui.crafting.eventHelper.cutIntersectingLinks = function() {
 };
 
 realityEditor.gui.crafting.eventHelper.getDomElementForBlock = function(block) {
-    if (this.isPortBlock(block)) return;
+    if (block.isPortBlock) return;
     return globalStates.currentLogic.guiState.blockDomElements[block.globalId];
 };
 
@@ -553,16 +553,12 @@ realityEditor.gui.crafting.eventHelper.generateBlockGlobalId = function() {
     return "block" + this.realityEditor.device.utilities.uuidTime();
 };
 
-realityEditor.gui.crafting.eventHelper.isPortBlock = function(block) {
-    return block.isPortBlock;
-};
-
 realityEditor.gui.crafting.eventHelper.isInputBlock = function(block) {
-    return this.isPortBlock(block) && block.y === 0;
+    return block.isPortBlock && block.y === 0;
 };
 
 realityEditor.gui.crafting.eventHelper.isOutputBlock = function(block) {
-    return this.isPortBlock(block) && !this.isInputBlock(block);
+    return block.isPortBlock && !this.isInputBlock(block);
 };
 
 realityEditor.gui.crafting.eventHelper.addBlockFromMenu = function(blockJSON, pointerX, pointerY) {
