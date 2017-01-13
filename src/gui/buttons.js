@@ -49,6 +49,18 @@
 
 createNameSpace("realityEditor.gui.buttons");
 
+var freezeButtonImage = [];
+var guiButtonImage = [];
+var preferencesButtonImage = [];
+var reloadButtonImage = [];
+var resetButtonImage = [];
+var unconstButtonImage = [];
+var editingButtonImage = [];
+var pocketButtonImage = [];
+var loadNewUiImage = [];
+var blockTabImage = [];
+var memoryWebButtonImage = [];
+var pocketButtonImage = [];
 
 /**
  * @desc
@@ -111,7 +123,7 @@ realityEditor.gui.buttons.draw = function() {
 	document.getElementById("guiButtonImage1").addEventListener("touchstart", function () {
 		document.getElementById('guiButtonImage').src = guiButtonImage[0].src;
 		// kickoff();
-	});
+    }.bind(this));
 	ec++;
 
 	document.getElementById("guiButtonImage1").addEventListener("touchend", function () {
@@ -126,12 +138,12 @@ realityEditor.gui.buttons.draw = function() {
 				this.gui.crafting.craftingBoardHide();
 			}
 		}
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("guiButtonImage2").addEventListener("touchstart", function () {
 		document.getElementById('guiButtonImage').src = guiButtonImage[2].src;
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("guiButtonImage2").addEventListener("touchend", function () {
@@ -139,7 +151,7 @@ realityEditor.gui.buttons.draw = function() {
 		globalStates.guiState = "node";
 
 		this.gui.crafting.craftingBoardHide();
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("extendedTrackingSwitch").addEventListener("change", function () {
@@ -150,7 +162,7 @@ realityEditor.gui.buttons.draw = function() {
 			globalStates.extendedTracking = false;
 			window.location.href = "of://extendedTrackingOff";
 		}
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("editingModeSwitch").addEventListener("change", function () {
@@ -165,7 +177,7 @@ realityEditor.gui.buttons.draw = function() {
 			globalStates.editingMode = false;
 			window.location.href = "of://developerOff";
 		}
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("turnOffUISwitch").addEventListener("change", function () {
@@ -182,13 +194,13 @@ realityEditor.gui.buttons.draw = function() {
 
 			document.body.classList.remove('clearSky');
 		}
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("resetButton").addEventListener("touchstart", function () {
 		document.getElementById('resetButton').src = resetButtonImage[1].src;
 
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("resetButton").addEventListener("touchend", function () {
@@ -232,7 +244,7 @@ realityEditor.gui.buttons.draw = function() {
 
 		}
 
-	});
+	}.bind(this));
 	ec++;
 
 	/**
@@ -243,7 +255,7 @@ realityEditor.gui.buttons.draw = function() {
 
 	document.getElementById("unconstButton").addEventListener("touchstart", function () {
 		document.getElementById('unconstButton').src = unconstButtonImage[1].src;
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("unconstButton").addEventListener("touchend", function () {
@@ -258,7 +270,7 @@ realityEditor.gui.buttons.draw = function() {
 
 		}
 
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("loadNewUI").addEventListener("touchstart", function () {
@@ -268,19 +280,19 @@ realityEditor.gui.buttons.draw = function() {
 		else {
 			document.getElementById('loadNewUI').src = loadNewUiImage[1].src;
 		}
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("loadNewUI").addEventListener("touchend", function () {
 		document.getElementById('loadNewUI').src = loadNewUiImage[0].src;
 		window.location.href = "of://loadNewUI"+globalStates.newURLText;
 
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("preferencesButton").addEventListener("touchstart", function () {
 		document.getElementById('preferencesButton').src = preferencesButtonImage[1].src;
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("preferencesButton").addEventListener("touchend", function () {
@@ -332,7 +344,7 @@ realityEditor.gui.buttons.draw = function() {
 
 		}
 
-	});
+	}.bind(this));
 	ec++;
 
 	/**
@@ -341,7 +353,7 @@ realityEditor.gui.buttons.draw = function() {
 
 	document.getElementById("freezeButton").addEventListener("touchstart", function () {
 		document.getElementById('freezeButton').src = freezeButtonImage[1].src;
-	});
+	}.bind(this));
 	ec++;
 	document.getElementById("freezeButton").addEventListener("touchend", function () {
 		if (globalStates.freezeButtonState === true) {
@@ -357,18 +369,18 @@ realityEditor.gui.buttons.draw = function() {
 			window.location.href = "of://freeze";
 		}
 
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("reloadButton").addEventListener("touchstart", function () {
 		document.getElementById('reloadButton').src = reloadButtonImage[0].src;
 		window.location.href = "of://reload";
-	});
+	}.bind(this));
 	ec++;
 
 	document.getElementById("reloadButton").addEventListener("touchend", function () {
 		// location.reload(true);
-	});
+	}.bind(this));
 	ec++;
 
 	/**
@@ -384,7 +396,7 @@ realityEditor.gui.buttons.draw = function() {
 
 		globalStates.pocketButtonDown = true;
 
-	}, false);
+	}.bind(this), false);
 
 	thisPocket.addEventListener("pointerup", function () { console.log("pointerup");
 		if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
@@ -396,7 +408,7 @@ realityEditor.gui.buttons.draw = function() {
 		}
 		globalStates.pocketButtonDown = false;
 		globalStates.pocketButtonUp = true;
-	}, false);
+	}.bind(this), false);
 
 	thisPocket.addEventListener("pointerenter", function () { console.log("pointerenter");
 		if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
@@ -413,15 +425,14 @@ realityEditor.gui.buttons.draw = function() {
 			pocketItem.pocket.objectVisible = false;
 
 
-		this.gui.ar.hideTransformed("pocket", pocketItemId, pocketItem.pocket.nodes[pocketItemId], "logic");
+		this.gui.ar.draw.hideTransformed("pocket", pocketItemId, pocketItem.pocket.nodes[pocketItemId], "logic");
 			delete pocketItem.pocket.nodes[pocketItemId];
 		}
 
 
 
-	}, false);
-
-
+	}.bind(this), false);
+    
 	thisPocket.addEventListener("pointerleave", function (evt) { console.log("pointerleave");
 		if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
 			return;
@@ -476,7 +487,7 @@ realityEditor.gui.buttons.draw = function() {
 			//addElement("pocket", pocketItemId, "nodes/" + thisItem.type + "/index.html",  pocketItem.pocket, "logic",globalStates);
 
 		}
-		this.gui.pocket.setPocketPossition(evt);
+		this.gui.pocket.setPocketPosition(evt);
 
 		//TODO: this is a debug method to create random blocks by dragging out from the pocket button while in crafting mode. should be removed eventually.
 		/*
@@ -500,19 +511,19 @@ realityEditor.gui.buttons.draw = function() {
 
 		// globalStates.pocketButtonDown = false;
 		// globalStates.pocketButtonUp = false;
-	}, false);
+	}.bind(this), false);
 	ec++;
 
 	document.getElementById("reloadButton").addEventListener("touchstart", function () {
 		if (!globalStates.UIOffMode)    document.getElementById('reloadButton').src = reloadButtonImage[0].src;
 		window.location.href = "of://reload";
-	});
+	}.bind(this));
 	ec++;
 	document.getElementById("reloadButton").addEventListener("touchend", function () {
 		// location.reload(true);
 
 		window.open("index.html?v=" + Math.floor((Math.random() * 100) + 1));
-	});
+	}.bind(this));
 	ec++;
 
 	var memoryWebButton = document.getElementById('memoryWebButton');
@@ -520,7 +531,7 @@ realityEditor.gui.buttons.draw = function() {
 		if (!globalStates.UIOffMode) {
 			memoryWebButton.src = memoryWebButtonImage[1].src;
 		}
-	});
+	}.bind(this));
 
 	ec++;
 	memoryWebButton.addEventListener('touchend', function() {
@@ -535,7 +546,7 @@ realityEditor.gui.buttons.draw = function() {
 			}
 			createMemoryWeb();
 		}
-	});
+	}.bind(this));
 	ec++;
 
 	this.cout("GUI");

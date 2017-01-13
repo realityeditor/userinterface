@@ -50,6 +50,56 @@
 
 createNameSpace("realityEditor.gui.ar.lines");
 
+/**********************************************************************************************************************
+ **********************************************************************************************************************/
+
+/**
+ * @desc
+ * @param x21 position x 1
+ * @param y21 position y 1
+ * @param x22 position x 2
+ * @param y22 position y 2
+ **/
+
+realityEditor.gui.ar.lines.deleteLines = function(x21, y21, x22, y22) {
+    // window.location.href = "of://gotsome";
+    for (var keysome in objects) {
+        if (!objects.hasOwnProperty(keysome)) {
+            continue;
+        }
+
+        var thisObject = objects[keysome];
+        for (var subKeysome in thisObject.links) {
+            if (!thisObject.links.hasOwnProperty(subKeysome)) {
+                continue;
+            }
+            var l = thisObject.links[subKeysome];
+            var oA = thisObject;
+            var oB = objects[l.objectB];
+
+            if (typeof(oA) === 'undefined' || typeof(oB) === 'undefined') {
+                continue;
+            }
+
+            var bA = oA.nodes[l.nodeA];
+            var bB = oB.nodes[l.nodeB]
+
+            if (typeof(bA) === 'undefined' || typeof(bB) === 'undefined') {
+                continue; //should not be undefined
+            }
+
+            if (this.realityEditor.gui.utilities.checkLineCross(bA.screenX, bA.screenY, bB.screenX, bB.screenY, x21, y21, x22, y22, globalCanvas.canvas.width, globalCanvas.canvas.height)) {
+                delete thisObject.links[subKeysome];
+                this.cout("iam executing link deletion");
+                //todo this is a work around to not crash the server. only temporarly for testing
+                // if(l.logicA === false && l.logicB === false)
+                realityEditor.network.deleteLinkFromObject(thisObject.ip, keysome, subKeysome);
+            }
+        }
+    }
+
+};
+
 /**
  * @desc
  * @param thisObject is a reference to an Hybrid Object
@@ -146,8 +196,8 @@ realityEditor.gui.ar.lines.drawAllLines = function (thisObject, context) {
 		} else {
 			logicB = l.logicB;
 		}
-
-		drawLine(context, [bA.screenX, bA.screenY], [bB.screenX, bB.screenY], bAScreenZ, bBScreenZ, l, timeCorrection,logicA,logicB);
+        
+		this.drawLine(context, [bA.screenX, bA.screenY], [bB.screenX, bB.screenY], bAScreenZ, bBScreenZ, l, timeCorrection,logicA,logicB);
 	}
 	// context.fill();
 	globalCanvas.hasContent = true;
@@ -187,11 +237,11 @@ realityEditor.gui.ar.lines.drawInteractionLines = function () {
 			logicA = globalProgram.logicA;
 		}
 
-		drawLine(globalCanvas.context, [tempStart.screenX, tempStart.screenY], [globalStates.pointerPosition[0], globalStates.pointerPosition[1]], tempStart.screenZ, tempStart.screenZ, globalStates, timeCorrection, logicA, globalProgram.logicSelector);
+		this.drawLine(globalCanvas.context, [tempStart.screenX, tempStart.screenY], [globalStates.pointerPosition[0], globalStates.pointerPosition[1]], tempStart.screenZ, tempStart.screenZ, globalStates, timeCorrection, logicA, globalProgram.logicSelector);
 	}
 
 	if (globalStates.drawDotLine) {
-		drawDotLine(globalCanvas.context, [globalStates.drawDotLineX, globalStates.drawDotLineY], [globalStates.pointerPosition[0], globalStates.pointerPosition[1]], 1, 1);
+		this.drawDotLine(globalCanvas.context, [globalStates.drawDotLineX, globalStates.drawDotLineY], [globalStates.pointerPosition[0], globalStates.pointerPosition[1]], 1, 1);
 	}
 
 	globalCanvas.hasContent = true;
@@ -202,52 +252,58 @@ realityEditor.gui.ar.lines.drawInteractionLines = function () {
 
 /**
  * @desc
- * @param x21 position x 1
- * @param y21 position y 1
- * @param x22 position x 2
- * @param y22 position y 2
+ * @param context is html5 canvas object
+ * @param lineStartPoint is an array of two numbers indicating the start for a line
+ * @param lineEndPoint is an array of two numbers indicating the end for a line
+ * @param lineStartWeight is a number indicating the weight of a line at start
+ * @param lineEndWeight is a number indicating the weight of a line at end
+ * @param linkObject that contains ballAnimationCount
+ * @param timeCorrector is a number that is regulating the animation speed according to the frameRate
+ * @param startColor beinning color
+ * @param endColor end color
+ * @return
  **/
 
-realityEditor.gui.ar.lines.deleteLines = function(x21, y21, x22, y22) {
-	// window.location.href = "of://gotsome";
-	for (var keysome in objects) {
-		if (!objects.hasOwnProperty(keysome)) {
-			continue;
-		}
+realityEditor.gui.ar.lines.drawLine = function(context, lineStartPoint, lineEndPoint, lineStartWeight, lineEndWeight, linkObject, timeCorrector, startColor, endColor, speed) {
+    if(!speed) speed = 1;
+    var angle = Math.atan2((lineStartPoint[1] - lineEndPoint[1]), (lineStartPoint[0] - lineEndPoint[0]));
+    var possitionDelta = 0;
+    var length1 = lineEndPoint[0] - lineStartPoint[0];
+    var length2 = lineEndPoint[1] - lineStartPoint[1];
+    var lineVectorLength = Math.sqrt(length1 * length1 + length2 * length2);
+    var keepColor = lineVectorLength / 6;
+    var spacer = 2.3;
+    var ratio = 0;
+    var mathPI = 2*Math.PI;
+    var newColor = [255,255,255];
+    var colors = [[0,255,255], // Blue
+        [0,255,0],   // Green
+        [255,255,0], // Yellow
+        [255,0,124],
+        [255,255,255]];// Red
 
-		var thisObject = objects[keysome];
-		for (var subKeysome in thisObject.links) {
-			if (!thisObject.links.hasOwnProperty(subKeysome)) {
-				continue;
-			}
-			var l = thisObject.links[subKeysome];
-			var oA = thisObject;
-			var oB = objects[l.objectB];
+    if (linkObject.ballAnimationCount >= lineStartWeight * spacer)  linkObject.ballAnimationCount = 0;
 
-			if (typeof(oA) === 'undefined' || typeof(oB) === 'undefined') {
-				continue;
-			}
+    while (possitionDelta + linkObject.ballAnimationCount < lineVectorLength) {
+        var ballPossition = possitionDelta + linkObject.ballAnimationCount;
 
-			var bA = oA.nodes[l.nodeA];
-			var bB = oB.nodes[l.nodeB]
+        ratio = this.ar.utilities.map(ballPossition, 0, lineVectorLength, 0, 1);
+        for (var i = 0; i < 3; i++) {
+            newColor[i] = (Math.floor(parseInt(colors[startColor][i], 10) + (colors[endColor][i] - colors[startColor][i]) * ratio));
+        }
 
-			if (typeof(bA) === 'undefined' || typeof(bB) === 'undefined') {
-				continue; //should not be undefined
-			}
+        var ballSize = this.ar.utilities.map(ballPossition, 0, lineVectorLength, lineStartWeight, lineEndWeight);
 
-			if (this.realityEditor.gui.utilities.checkLineCross(bA.screenX, bA.screenY, bB.screenX, bB.screenY, x21, y21, x22, y22, globalCanvas.canvas.width, globalCanvas.canvas.height)) {
-				delete thisObject.links[subKeysome];
-				this.cout("iam executing link deletion");
-				//todo this is a work around to not crash the server. only temporarly for testing
-				// if(l.logicA === false && l.logicB === false)
-				realityEditor.network.deleteLinkFromObject(thisObject.ip, keysome, subKeysome);
-			}
-		}
-	}
-
-};
-
-
+        var x__ = lineStartPoint[0] - Math.cos(angle) * ballPossition;
+        var y__ = lineStartPoint[1] - Math.sin(angle) * ballPossition;
+        possitionDelta += ballSize * spacer;
+        context.beginPath();
+        context.fillStyle = "rgb("+newColor+")";
+        context.arc(x__, y__, ballSize, 0, mathPI);
+        context.fill();
+    }
+    linkObject.ballAnimationCount += (lineStartWeight * timeCorrector.delta)+speed;
+}
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
@@ -270,7 +326,7 @@ realityEditor.gui.ar.lines.drawDotLine = function(context, lineStartPoint, lineE
 	context.strokeStyle = "#ff019f";//"#00fdff";
 	context.stroke();
 	context.closePath();
-}
+};
 
 /**
  * @desc
@@ -289,7 +345,7 @@ realityEditor.gui.ar.lines.drawGreen = function(context, lineStartPoint, lineEnd
 	context.stroke();
 	context.closePath();
 
-}
+};
 
 /**
  * @desc
@@ -307,7 +363,7 @@ realityEditor.gui.ar.lines.drawRed = function(context, lineStartPoint, lineEndPo
 	context.setLineDash([7]);
 	context.stroke();
 	context.closePath();
-}
+};
 
 /**
  * @desc
@@ -325,7 +381,7 @@ realityEditor.gui.ar.lines.drawBlue = function(context, lineStartPoint, lineEndP
 	context.setLineDash([7]);
 	context.stroke();
 	context.closePath();
-}
+};
 
 /**
  * @desc
@@ -343,7 +399,7 @@ realityEditor.gui.ar.lines.drawYellow = function(context, lineStartPoint, lineEn
 	context.setLineDash([7]);
 	context.stroke();
 	context.closePath();
-}
+};
 
 realityEditor.gui.ar.lines.drawSimpleLine = function(context, startX, startY, endX, endY, color, width) {
 	context.strokeStyle = color;
@@ -352,4 +408,4 @@ realityEditor.gui.ar.lines.drawSimpleLine = function(context, startX, startY, en
 	context.moveTo(startX, startY);
 	context.lineTo(endX, endY);
 	context.stroke();
-}
+};

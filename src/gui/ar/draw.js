@@ -63,194 +63,192 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
 
 //    console.log(JSON.stringify(visibleObjects));
     this.ar.utilities.timeSynchronizer(timeCorrection);
-        //disp = uiButtons.style.display;
-        //uiButtons.style.display = 'none';
+    //disp = uiButtons.style.display;
+    //uiButtons.style.display = 'none';
 
-        if (globalStates.guiState === "logic") {
-            // todo maybe animation frame
-            this.gui.crafting.redrawDataCrafting();
+    if (globalStates.guiState === "logic") {
+        // todo maybe animation frame
+        this.gui.crafting.redrawDataCrafting();
+    }
+
+    globalObjects = visibleObjects;
+
+    var thisGlobalCanvas = globalCanvas;
+    if (thisGlobalCanvas.hasContent === true) {
+        thisGlobalCanvas.context.clearRect(0, 0, globalCanvas.canvas.width, globalCanvas.canvas.height);
+        thisGlobalCanvas.hasContent = false;
+    }
+
+    var destinationString;
+
+    var thisGlobalStates = globalStates;
+
+    var thisGlobalLogic = globalLogic;
+    var thisGlobalDOMCach = globalDOMCach;
+    var thisGlobalMatrix = globalMatrix;
+
+    for (var objectKey in objects) {
+        if (!objects.hasOwnProperty(objectKey)) {
+            continue;
         }
 
-        globalObjects = visibleObjects;
+        var generalObject = objects[objectKey];
 
-        var thisGlobalCanvas = globalCanvas;
-        if (thisGlobalCanvas.hasContent === true) {
-            thisGlobalCanvas.context.clearRect(0, 0, globalCanvas.canvas.width, globalCanvas.canvas.height);
-            thisGlobalCanvas.hasContent = false;
-        }
+        //if(  globalStates.pointerPosition[0]>0)
+        //console.log(generalObject);
+        // I changed this to has property.
+        if (globalObjects.hasOwnProperty(objectKey)) {
 
-        var destinationString;
-
-        var thisGlobalStates = globalStates;
-
-        var thisGlobalLogic = globalLogic;
-        var thisGlobalDOMCach = globalDOMCach;
-        var thisGlobalMatrix = globalMatrix;
-
-        for (var objectKey in objects) {
-            if (!objects.hasOwnProperty(objectKey)) {
-                continue;
-            }
-
-            var generalObject = objects[objectKey];
-
-            //if(  globalStates.pointerPosition[0]>0)
-            //console.log(generalObject);
-            // I changed this to has property.
-            if (globalObjects.hasOwnProperty(objectKey)) {
-
-                generalObject.visibleCounter = timeForContentLoaded;
-                generalObject.objectVisible = true;
-
-                // tempMatrix = multiplyMatrix(rotateX, multiplyMatrix(globalObjects[objectKey], globalStates.projectionMatrix));
-
-                var tempMatrix = [];
-                var r = globalMatrix.r;
-               this.ar.utilities.multiplyMatrix(globalObjects[objectKey], globalStates.projectionMatrix, r);
-                this.ar.utilities.multiplyMatrix(rotateX, r, tempMatrix);
-
-                //  var tempMatrix2 = multiplyMatrix(globalObjects[objectKey], globalStates.projectionMatrix);
-
-                //   document.getElementById("controls").innerHTML = (toAxisAngle(tempMatrix2)[0]).toFixed(1)+" "+(toAxisAngle(tempMatrix2)[1]).toFixed(1);
-
-                if (globalStates.guiState ==="ui" || Object.keys(generalObject.nodes).length === 0) {
-                    this.drawTransformed(objectKey, objectKey, generalObject, tempMatrix, "ui", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
-                    this.addElement(objectKey, objectKey, "http://" + generalObject.ip + ":" + httpPort + "/obj/" + generalObject.name + "/", generalObject, "ui", thisGlobalStates);
-                }
-                else {
-                    this.hideTransformed(objectKey, objectKey, generalObject, "ui");
-                }
-
-                // do this for staying compatible with older versions but use new routing after some time.
-                // dataPointInterfaces are clearly their own thing and should not be part of obj
-                // once added, they will be associated with the object via the editor postMessages anyway.
-                if (generalObject.integerVersion >= 170) {
-                    destinationString = "/nodes/";
-                } else {
-                    if (generalObject.integerVersion > 40) {
-                        destinationString = "/dataPointInterfaces/";
-                    } else {
-                        destinationString = "/obj/dataPointInterfaces/";
-                    }
-                }
-
-                var generalNode;
-                for (nodeKey in generalObject.nodes) {
-                    // if (!generalObject.nodes.hasOwnProperty(nodeKey)) { continue; }
-
-                    generalNode = generalObject.nodes[nodeKey];
-
-                    if (globalStates.guiState ==="node") {
-                        this.drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, generalNode.type, thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
-
-
-                        this.addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, thisGlobalStates);
-
-                    } else {
-                        this.hideTransformed(objectKey, nodeKey, generalNode, generalNode.type);
-                    }
-                }
-            }
-
-            else {
-                generalObject.objectVisible = false;
-
-                this.hideTransformed(objectKey, objectKey, generalObject, "ui");
-
-                for (var nodeKey in generalObject.nodes) {
-                    // if (!generalObject.nodes.hasOwnProperty(nodeKey)) {  continue;  }
-                    this.hideTransformed(objectKey, nodeKey, generalObject.nodes[nodeKey], generalObject.nodes[nodeKey].type);
-                }
-
-                this.killObjects(objectKey, generalObject);
-            }
-
-        }
-
-        // draw all lines
-        if (globalStates.guiState ==="node" && !globalStates.editingMode) {
-            for (var objectKey in objects) {
-                this.ar.lines.drawAllLines(objects[objectKey], thisGlobalCanvas.context);
-            }
-            this.ar.lines.drawInteractionLines();
-            //  cout("drawlines");
-        }
-
-        // todo this is a test for the pocket
-
-        // todo finishing up this
-
-        if(pocketItem.pocket.nodes[pocketItemId]) {
-            var generalObject = pocketItem["pocket"];
-            // if(  globalStates.pointerPosition[0]>0)
-            //console.log(generalObject);
             generalObject.visibleCounter = timeForContentLoaded;
             generalObject.objectVisible = true;
 
-            var generalNode;
-            objectKey = "pocket";
+            // tempMatrix = multiplyMatrix(rotateX, multiplyMatrix(globalObjects[objectKey], globalStates.projectionMatrix));
 
-            var thisMatrix = [];
+            var tempMatrix = [];
+            var r = globalMatrix.r;
+           this.ar.utilities.multiplyMatrix(globalObjects[objectKey], globalStates.projectionMatrix, r);
+            this.ar.utilities.multiplyMatrix(rotateX, r, tempMatrix);
 
-            globalLogic.farFrontElement = "";
-            globalLogic.frontDepth = 10000000000;
+            //  var tempMatrix2 = multiplyMatrix(globalObjects[objectKey], globalStates.projectionMatrix);
 
-            for (var thisOtherKey in globalObjects) {
-                if (globalObjects[thisOtherKey][14] < globalLogic.frontDepth) {
-                    globalLogic.frontDepth = globalObjects[thisOtherKey][14];
-                    globalLogic.farFrontElement = thisOtherKey;
+            //   document.getElementById("controls").innerHTML = (toAxisAngle(tempMatrix2)[0]).toFixed(1)+" "+(toAxisAngle(tempMatrix2)[1]).toFixed(1);
+
+            if (globalStates.guiState ==="ui" || Object.keys(generalObject.nodes).length === 0) {
+                this.drawTransformed(objectKey, objectKey, generalObject, tempMatrix, "ui", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
+                this.addElement(objectKey, objectKey, "http://" + generalObject.ip + ":" + httpPort + "/obj/" + generalObject.name + "/", generalObject, "ui", thisGlobalStates);
+            }
+            else {
+                this.hideTransformed(objectKey, objectKey, generalObject, "ui");
+            }
+
+            // do this for staying compatible with older versions but use new routing after some time.
+            // dataPointInterfaces are clearly their own thing and should not be part of obj
+            // once added, they will be associated with the object via the editor postMessages anyway.
+            if (generalObject.integerVersion >= 170) {
+                destinationString = "/nodes/";
+            } else {
+                if (generalObject.integerVersion > 40) {
+                    destinationString = "/dataPointInterfaces/";
+                } else {
+                    destinationString = "/obj/dataPointInterfaces/";
                 }
             }
 
-            if (globalLogic.farFrontElement in globalObjects) {
-                // console.log(globalLogic.farFrontElement);
+            var generalNode;
+            for (nodeKey in generalObject.nodes) {
+                // if (!generalObject.nodes.hasOwnProperty(nodeKey)) { continue; }
 
-                var r = globalMatrix.r;
-                this.ar.utilities.multiplyMatrix(globalObjects[globalLogic.farFrontElement], globalStates.projectionMatrix, r);
-                this.ar.utilities.multiplyMatrix(rotateX, r, thisMatrix);
-
-            } else {
-
-                thisMatrix = [
-                    1, 0, 0, 0,
-                    0, 1, 0, 0,
-                    0, 0, 1, 0,
-                    0, 0, 0, 1
-                ]
-            }
-
-            for (var nodeKey in generalObject.nodes) {
-                //console.log(document.getElementById("iframe"+ nodeKey));
                 generalNode = generalObject.nodes[nodeKey];
 
-                if (globalStates.guiState === "node" && generalNode.type === "logic") {
-                    this.drawTransformed(objectKey, nodeKey, generalNode,
-                        thisMatrix, generalNode.type, globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix);
+                if (globalStates.guiState ==="node") {
+                    this.drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, generalNode.type, thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
 
-                    this.addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, globalStates);
 
-                    /* } else {
-                     hideTransformed("pocket", nodeKey, generalNode, "logic");
-                     }*/
+                    this.addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, thisGlobalStates);
+
+                } else {
+                    this.hideTransformed(objectKey, nodeKey, generalNode, generalNode.type);
                 }
             }
         }
-        /// todo Test
 
-        if(globalStates.acceleration.motion!= 0){
-            globalStates.acceleration = {
-                x : 0,
-                y : 0,
-                z : 0,
-                alpha: 0,
-                beta: 0,
-                gamma: 0,
-                motion:0
+        else {
+            generalObject.objectVisible = false;
+
+            this.hideTransformed(objectKey, objectKey, generalObject, "ui");
+
+            for (var nodeKey in generalObject.nodes) {
+                // if (!generalObject.nodes.hasOwnProperty(nodeKey)) {  continue;  }
+                this.hideTransformed(objectKey, nodeKey, generalObject.nodes[nodeKey], generalObject.nodes[nodeKey].type);
+            }
+
+            this.killObjects(objectKey, generalObject);
+        }
+
+    }
+
+    // draw all lines
+    if (globalStates.guiState ==="node" && !globalStates.editingMode) {
+        for (var objectKey in objects) {
+            this.ar.lines.drawAllLines(objects[objectKey], thisGlobalCanvas.context);
+        }
+        this.ar.lines.drawInteractionLines();
+        //  cout("drawlines");
+    }
+
+    // todo this is a test for the pocket
+
+    // todo finishing up this
+
+    if(pocketItem.pocket.nodes[pocketItemId]) {
+        var generalObject = pocketItem["pocket"];
+        // if(  globalStates.pointerPosition[0]>0)
+        //console.log(generalObject);
+        generalObject.visibleCounter = timeForContentLoaded;
+        generalObject.objectVisible = true;
+
+        var generalNode;
+        objectKey = "pocket";
+
+        var thisMatrix = [];
+
+        globalLogic.farFrontElement = "";
+        globalLogic.frontDepth = 10000000000;
+
+        for (var thisOtherKey in globalObjects) {
+            if (globalObjects[thisOtherKey][14] < globalLogic.frontDepth) {
+                globalLogic.frontDepth = globalObjects[thisOtherKey][14];
+                globalLogic.farFrontElement = thisOtherKey;
             }
         }
 
-    };
+        if (globalLogic.farFrontElement in globalObjects) {
+            // console.log(globalLogic.farFrontElement);
 
+            var r = globalMatrix.r;
+            this.ar.utilities.multiplyMatrix(globalObjects[globalLogic.farFrontElement], globalStates.projectionMatrix, r);
+            this.ar.utilities.multiplyMatrix(rotateX, r, thisMatrix);
+
+        } else {
+
+            thisMatrix = [
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+            ]
+        }
+
+        for (var nodeKey in generalObject.nodes) {
+            //console.log(document.getElementById("iframe"+ nodeKey));
+            generalNode = generalObject.nodes[nodeKey];
+
+            if (globalStates.guiState === "node" && generalNode.type === "logic") {
+                this.drawTransformed(objectKey, nodeKey, generalNode,
+                    thisMatrix, generalNode.type, globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix);
+
+                this.addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, globalStates);
+
+                /* } else {
+                 hideTransformed("pocket", nodeKey, generalNode, "logic");
+                 }*/
+            }
+        }
+    }
+    /// todo Test
+
+    if(globalStates.acceleration.motion!= 0){
+        globalStates.acceleration = {
+            x : 0,
+            y : 0,
+            z : 0,
+            alpha: 0,
+            beta: 0,
+            gamma: 0,
+            motion:0
+        }
+    }
+};
 
 /**
  * @desc
@@ -542,7 +540,40 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
         }
     }
 
-}
+};
+
+realityEditor.gui.ar.draw.webkitTransformMatrix3d = function (thisDom, thisTransform) {
+    thisDom.style.webkitTransform = 'matrix3d(' +
+        thisTransform.toString() + ')';
+};
+
+/**
+ * @desc
+ * @param objectKey
+ * @param nodeKey
+ * @param thisObject
+ * @return
+ **/
+
+realityEditor.gui.ar.draw.hideTransformed = function (objectKey, nodeKey, thisObject, type) {
+    if (thisObject.visible === true) {
+        globalDOMCach["thisObject" + nodeKey].style.display = 'none';
+        globalDOMCach["iframe" + nodeKey].style.visibility = 'hidden';
+        globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
+            JSON.stringify(
+                {
+                    visibility: "hidden"
+                }), '*');
+
+        thisObject.visible = false;
+        thisObject.visibleEditing = false;
+
+        globalDOMCach[nodeKey].style.visibility = 'hidden';
+        globalDOMCach["canvas" + nodeKey].style.display = 'none';
+
+        this.cout("hideTransformed");
+    }
+};
 
 /**
  * @desc
@@ -606,7 +637,7 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
         addIframe.style.visibility = "hidden";
         addIframe.src = thisUrl;
         addIframe.className = "main";
-        addIframe.setAttribute("onload", 'on_load("' + objectKey + '","' + nodeKey + '")');
+        addIframe.setAttribute("onload", 'realityEditor.network.onElementLoad("' + objectKey + '","' + nodeKey + '")');
         addIframe.setAttribute("sandbox", "allow-forms allow-pointer-lock allow-same-origin allow-scripts");
 
         var addOverlay = document.createElement('div');
@@ -703,25 +734,25 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
         var theObject = addOverlay;
         globalDOMCach[nodeKey].style["touch-action"] = "none";
 
-        globalDOMCach[nodeKey].addEventListener("pointerdown", realityEditor.device.onTouchDown, false);
+        globalDOMCach[nodeKey].addEventListener("pointerdown", realityEditor.device.onTouchDown.bind(realityEditor.device), false);
         ec++;
-        globalDOMCach[nodeKey].addEventListener("pointerup", realityEditor.device.onTrueTouchUp, false);
+        globalDOMCach[nodeKey].addEventListener("pointerup", realityEditor.device.onTrueTouchUp.bind(realityEditor.device), false);
         ec++;
-        theObject.addEventListener("pointerenter", realityEditor.device.onTouchEnter, false);
+        theObject.addEventListener("pointerenter", realityEditor.device.onTouchEnter.bind(realityEditor.device), false);
         ec++;
 
-        theObject.addEventListener("pointerleave", realityEditor.device.onTouchLeave, false);
+        theObject.addEventListener("pointerleave", realityEditor.device.onTouchLeave.bind(realityEditor.device), false);
         ec++;
 
 
         if (globalStates.editingMode) {
             // todo this needs to be changed backword
             // if (objects[objectKey].developer) {
-            theObject.addEventListener("touchstart", realityEditor.device.onMultiTouchStart, false);
+            theObject.addEventListener("touchstart", realityEditor.device.onMultiTouchStart.bind(realityEditor.device), false);
             ec++;
-            theObject.addEventListener("touchmove", realityEditor.device.onMultiTouchMove, false);
+            theObject.addEventListener("touchmove", realityEditor.device.onMultiTouchMove.bind(realityEditor.device), false);
             ec++;
-            theObject.addEventListener("touchend", realityEditor.device.onMultiTouchEnd, false);
+            theObject.addEventListener("touchend", realityEditor.device.onMultiTouchEnd.bind(realityEditor.device), false);
             ec++;
             theObject.className = "mainProgram";
             //  }
@@ -741,34 +772,6 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
             //theObject.style.display = "none";
         }
         this.cout("addElementInPreferences");
-    }
-};
-
-/**
- * @desc
- * @param objectKey
- * @param nodeKey
- * @param thisObject
- * @return
- **/
-
-realityEditor.gui.ar.draw.hideTransformed = function (objectKey, nodeKey, thisObject, type) {
-    if (thisObject.visible === true) {
-        globalDOMCach["thisObject" + nodeKey].style.display = 'none';
-        globalDOMCach["iframe" + nodeKey].style.visibility = 'hidden';
-        globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
-            JSON.stringify(
-                {
-                    visibility: "hidden"
-                }), '*');
-
-        thisObject.visible = false;
-        thisObject.visibleEditing = false;
-
-        globalDOMCach[nodeKey].style.visibility = 'hidden';
-        globalDOMCach["canvas" + nodeKey].style.display = 'none';
-
-        this.cout("hideTransformed");
     }
 };
 
@@ -810,9 +813,4 @@ realityEditor.gui.ar.draw.killObjects = function (objectKey, thisObject) {
         }
         this.cout("killObjects");
     }
-};
-
-realityEditor.gui.ar.draw.webkitTransformMatrix3d = function (thisDom, thisTransform) {
-    thisDom.style.webkitTransform = 'matrix3d(' +
-        thisTransform.toString() + ')';
 };

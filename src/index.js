@@ -59,21 +59,21 @@ var realityEditor = realityEditor || {
 			LogicNode: {},
 			LogicGUIState: {},
 			BlockLink: {},
-			BlockNode: {},
-			EdgeBlockNode: {},
+			Block: {},
+			EdgeBlock: {},
 			Data: {}
 		},
 		objects: {},
 		states: {},
 		device: {
-			addEventHandlers: {},
-			onLoad: {},
+            addEventHandlers: {},
 			onTouchDown: {},
 			onFalseTouchUp: {},
 			onTrueTouchUp: {},
 			onTouchEnter: {},
 			onTouchLeave: {},
 			onCanvasPointerDown: {},
+            onDocumentPointerMove: {},
 			onDocumentPointerUp: {},
 			onDocumentPointerDown: {},
 			onMultiTouchStart: {},
@@ -84,14 +84,13 @@ var realityEditor = realityEditor || {
 			setDeviceName: {},
 			setStates: {},
 			removeEventHandlers: {},
-			utilities: {
-				cout: {},
+            onload: {},
+            utilities: {
 				newURLTextLoad: {},
-				map: {},
 				uuidTime: {},
 				uuidTimeShort: {},
 				randomIntInc: {}
-			},
+			}
 		},
 		network: {
 			addHeartbeatObject: {},
@@ -101,15 +100,17 @@ var realityEditor = realityEditor || {
 			deleteLinkFromObject: {},
 			deleteBlockFromObject: {},
 			deleteBlockLinkFromObject: {},
-			postLinkToServer: {},
 			getData: {},
 			postData: {},
+            postLinkToServer: {},
 			postNewLink: {},
 			postNewBlockLink: {},
 			postNewLogicNode: {},
 			postNewBlockPosition: {},
 			postNewBlock: {},
 			checkForNetworkLoop: {},
+            sendResetContent: {},
+            onElementLoad: {},
 			utilities: {
 				rename: {}
 			}
@@ -117,29 +118,15 @@ var realityEditor = realityEditor || {
 		gui: {
 			canvasCache: {},
 			domCache: {},
+            setup: {},
 			utilities: {
-				getPosition: {},
-
-				timeSynchronizer: {},
 				checkLineCross: {},
 				lineEq: {},
 				slopeCalc: {},
 				calculateX: {},
 				calculateY: {},
-				checkBetween: {},
-
-				getCenterOfPoints: {},
-				sortPointsClockwise: {},
-				getCornersClockwise: {},
-				areCornersEqual: {},
-				areCornerPairsIdentical: {},
-				areCornerPairsSymmetric: {},
-				areCornersAdjacent: {},
-				areCornersOppositeZ: {},
-				addCornerPairToOppositeCornerPairs: {},
-				estimateIntersection: {}
+				checkBetween: {}
 			},
-			setup: {},
 			ar: {
 				matrixStates: {},
 				setProjectionMatrix: {},
@@ -169,28 +156,41 @@ var realityEditor = realityEditor || {
 					drawSimpleLine: {}
 				},
 				utilities: {
-					multiplyMatrix: {},
+                    timeSynchronizer: {},
+                    map: {},
+                    multiplyMatrix: {},
 					multiplyMatrix4: {},
 					copyMatrix: {},
 					invertMatrix: {},
 					toAxisAngle: {},
 					screenCoordinatesToMatrixXY: {},
-					insidePoly: {}
+					insidePoly: {},
+                    estimateIntersection: {}
 				}
 			},
 			buttons: {
 				imageCache: {},
-				preload: {}
+				preload: {},
+                
 			},
 			pocket: {
 				pocketItem: {"pocket": new Objects()},
 				pocketItemId: "",
-				setPocketPosition: {}
+                pocketButtonAction: {},
+				setPocketPosition: {},
+                pocketInit: {},
+                pocketShown: {},
+                pocketShow: {},
+                pocketHide: {},
+                pocketOnMemoryCreationStart: {},
+                pocketOnMemoryCreationStop: {},
+                pocketOnMemoryDeletionStart: {},
+                pocketOnMemoryDeletionStop: {}
 			},
 			preferences: {
-				addElementInPreferences: {},
 				preferencesHide: {},
-				preferencesVisible: {}
+				preferencesVisible: {},
+                addElementInPreferences: {}
 			},
 			crafting: {
 				logicStates: {},
@@ -210,26 +210,15 @@ var realityEditor = realityEditor || {
 				initLogicInOutBlocks: {},
 				utilities: {
 					toBlockJSON: {},
-					toLogicJSON: {},
 					convertBlockLinkToServerFormat: {},
 					convertLogicToServerFormat: {},
-					readTextFile: {},
-					parseJSONToLogic: {},
-					blockColorMap: {}
-				},
+                    convertLinksFromServer: {}
+                },
 				blockMenu: {
 					initializeBlockMenu: {},
 					resetBlockMenu: {},
-					menuLoadBlocksNew: {},
-					menuLoadBlocks: {},
-					defaultBlockData: {},
-					menuTabSelected: {},
 					redisplayTabSelection: {},
-					redisplayBlockSelection: {},
-					blockMenuPointerDown: {},
-					blockMenuPointerUp: {},
-					blockMenuPointerLeave: {},
-					blockMenuPointerMove: {}
+					redisplayBlockSelection: {}
 				},
 				grid: {
 					Grid: function (width, height) {
@@ -242,9 +231,8 @@ var realityEditor = realityEditor || {
 					},
 					RouteSegment: function (route, horz, vert) {
 					},
-					getBlock: {},
 					getCellForBlock: {},
-					getBlockOverlappingPosition: {},
+                    getBlockPixelWidth: {},
 					isBlockOutsideGrid: {},
 					convertGridPosToBlockPos: {},
 					convertBlockPosToGridPos: {},
@@ -252,17 +240,14 @@ var realityEditor = realityEditor || {
 					blockWithID: {},
 					addBlock: {},
 					updateInOutLinks: {},
-					isInOutLink: {},
+                    isEdgePlaceholderLink: {},
+                    isEdgePlaceholderBlock: {},
 					isInOutBlock: {},
 					forEachLink: {},
-					allLinks: {},
 					setTempLink: {},
 					removeBlockLink: {},
 					removeBlock: {},
 					removeLinksForBlock: {},
-					doesLinkAlreadyExist: {},
-					areBlockLinksEqual: {},
-					preprocessPointsForDrawing: {}
 				},
 				eventHelper: {
 					getCellOverPointer: {},
@@ -311,9 +296,9 @@ var realityEditor = realityEditor || {
 					hideBlockSettings: {}
 				},
 				eventHandlers: {
-					pointerDown: {},
-					pointerMove: {},
-					pointerUp: {}
+					onPointerDown: {},
+					onPointerMove: {},
+					onPointerUp: {}
 				}
 			},
 			memory: {

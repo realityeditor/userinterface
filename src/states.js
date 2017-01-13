@@ -136,8 +136,6 @@ var globalStates = {
 	}
 };
 
-var g = globalStates; // BEN TODO: REMOVE DEBUG ALIAS
-
 var globalCanvas = {};
 
 var globalLogic ={

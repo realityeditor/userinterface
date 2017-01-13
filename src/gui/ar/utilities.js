@@ -231,350 +231,324 @@ realityEditor.gui.ar.utilities.screenCoordinatesToMatrixXY = function(thisObject
 
 };
 
+realityEditor.gui.ar.utilities.insidePoly = function(point, vs) {
+    // ray-casting algorithm based on
+    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+    // Copyright (c) 2016 James Halliday
+    // The MIT License (MIT)
+
+    var x = point[0], y = point[1];
+
+    if(x <=0 || y <= 0) return false;
+
+    var inside = false;
+    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        var xi = vs[i][0], yi = vs[i][1];
+        var xj = vs[j][0], yj = vs[j][1];
+
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+
+    return inside;
+};
 
 /**********************************************************************************************************************
  **********************************************************************************************************************/
 
-//@author Ben Reynolds
-// given a 4x4 matrix and a
-// return true - if p is between thw two segment points,  false otherwise
+// @author Ben Reynolds
+// private helper functions for realityEditor.gui.ar.utilities.estimateIntersection
+(function(exports) {
+    
+    /**
+     * @desc Given a 4x4 transformation matrix and an x, y coordinate pair,
+     calculates the z-position of the ring point
+     * @return {Number|Array} the ring z-coordinate
+     * @author Ben Reynolds
+     **/
+    function getCenterOfPoints(points) {
+        if (points.length < 1) {
+            return [0, 0];
+        }
+        var sumX = 0;
+        var sumY = 0;
+        points.forEach(function (point) {
+            sumX += point[0];
+            sumY += point[1];
+        });
+        var avgX = sumX / points.length;
+        var avgY = sumY / points.length;
+        return [avgX, avgY];
+    }
+    
+    /**
+     * @desc
+     * @param {Number|Array} points
+     * @return {Number|Array}
+     **/
+    
+    function sortPointsClockwise(points) {
+        var centerPoint = getCenterOfPoints(points);
+        var centerX = centerPoint[0];
+        var centerY = centerPoint[1];
+        return points.sort(function (a, b) {
+            var atanA = Math.atan2(a[1] - centerY, a[0] - centerX);
+            var atanB = Math.atan2(b[1] - centerY, b[0] - centerX);
+            if (atanA < atanB) return -1;
+            else if (atanB > atanA) return 1;
+            return 0;
+        });
+    }
+    
+    /**
+     * @desc
+     * @param {Object} thisCanvas
+     **/
+    
+    function getCornersClockwise(thisCanvas) {
+        return [[0, 0, 0],
+            [thisCanvas.width, 0, 0],
+            [thisCanvas.width, thisCanvas.height, 0],
+            [0, thisCanvas.height, 0]];
+    }
+    
+    /**
+     * @desc
+     * @param
+     * @param
+     * @return
+     **/
+    
+    function areCornersEqual(corner1, corner2) {
+        return (corner1[0] === corner2[0] && corner1[1] === corner2[1]);
+    }
+    
+    /**
+     * @desc
+     * @param
+     * @param
+     * @return
+     **/
+    
+    function areCornerPairsIdentical(c1a, c1b, c2a, c2b) {
+        return (areCornersEqual(c1a, c2a) && areCornersEqual(c1b, c2b));
+    }
+    
+    /**
+     * @desc
+     * @param
+     * @param
+     * @return
+     **/
+    
+    function areCornerPairsSymmetric(c1a, c1b, c2a, c2b) {
+        return (areCornersEqual(c1a, c2b) && areCornersEqual(c1b, c2a));
+    }
+    
+    /**
+     * @desc
+     * @param
+     * @param
+     * @return
+     **/
+    
+    function areCornersAdjacent(corner1, corner2) {
+        return (corner1[0] === corner2[0] || corner1[1] === corner2[1]);
+    }
+    
+    /**
+     * @desc
+     * @param
+     * @param
+     * @return
+     **/
+    
+    function areCornersOppositeZ(corner1, corner2) {
+        var z1 = corner1[2];
+        var z2 = corner2[2];
+        var oppositeSign = ((z1 * z2) < 0);
+        return oppositeSign;
+    }
+    
+    /**
+     * @desc
+     * @param
+     * @param
+     * @return
+     **/
+    // makes sure we don't add symmetric pairs to list
+    function addCornerPairToOppositeCornerPairs(cornerPair, oppositeCornerPairs) {
+        var corner1 = cornerPair[0];
+        var corner2 = cornerPair[1];
+        var safeToAdd = true;
+        if (oppositeCornerPairs.length > 0) {
+            oppositeCornerPairs.forEach(function (pairList) {
+                var existingCorner1 = pairList[0];
+                var existingCorner2 = pairList[1];
+                if (areCornerPairsSymmetric(existingCorner1, existingCorner2, corner1, corner2)) {
+                    // console.log("symmetric", existingCorner1, existingCorner2, corner1, corner2);
+                    safeToAdd = false;
+                    return;
+                }
+                if (areCornerPairsIdentical(existingCorner1, existingCorner2, corner1, corner2)) {
+                    // console.log("identical", existingCorner1, existingCorner2, corner1, corner2);
+                    safeToAdd = false;
+                }
+            });
+        }
+        if (safeToAdd) {
+            oppositeCornerPairs.push([corner1, corner2]);
+        }
+    }
+    
+    /**
+     * @desc
+     * @param
+     * @param
+     * @return
+     **/
+    
+    function estimateIntersection(theObject, mCanvas, thisObject) {
+        var thisCanvas = globalDOMCach["canvas" + theObject];
+        if(!mCanvas){
+            if(!thisObject.hasCTXContent) {
+                thisObject.hasCTXContent = true;
+                var ctx = thisCanvas.getContext("2d");
+                var diagonalLineWidth = 22;
+                ctx.lineWidth = diagonalLineWidth;
+                ctx.strokeStyle = '#01FFFC';
+                for (var i = -thisCanvas.height; i < thisCanvas.width; i += 2.5 * diagonalLineWidth) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, -diagonalLineWidth / 2);
+                    ctx.lineTo(i + thisCanvas.height + diagonalLineWidth / 2, thisCanvas.height + diagonalLineWidth / 2);
+                    ctx.stroke();
+                }
+            }
+            return null;
+        } else {
+            thisObject.hasCTXContent = false;
+        }
+    
+        if (globalStates.pointerPosition[0] === -1) return null;
+        
+        var corners = getCornersClockwise(thisCanvas);
+        var out = [0, 0, 0, 0];
+        corners.forEach(function (corner, index) {
+            var x = corner[0] - thisCanvas.width / 2;
+            var y = corner[1] - thisCanvas.height / 2;
+            var input = [x, y, 0, 1]; // assumes z-position of corner is always 0
+            // console.log(out, input, mCanvas);
+    
+            out = realityEditor.gui.ar.utilities.multiplyMatrix4(input, mCanvas);
+            // var z = getTransformedZ(matrix,x,y)
+            corner[2] = out[2]; // sets z position of corner to its eventual transformed value
+        });
+        
+        var oppositeCornerPairs = [];
+        corners.forEach(function (corner1) {
+            corners.forEach(function (corner2) {
+                // only check adjacent pairs of corners
+                // ignore same corner
+                if (areCornersEqual(corner1, corner2)) {
+                    return;
+                }
+    
+                // x or y should be the same
+                if (areCornersAdjacent(corner1, corner2)) {
+                    if (areCornersOppositeZ(corner1, corner2)) {
+                        addCornerPairToOppositeCornerPairs([corner1, corner2], oppositeCornerPairs);
+                    }
+                }
+            });
+        });
+    
+        // console.log("oppositeCornerPairs", oppositeCornerPairs);
+    
+        // for each opposite corner pair, binary search for the x,y location that will correspond with 0 z-pos
+        // .... or can it be calculated directly....? it's just a linear equation!!!
+        var interceptPoints = [];
+        oppositeCornerPairs.forEach(function (cornerPair) {
+            var c1 = cornerPair[0];
+            var c2 = cornerPair[1];
+            var x1 = c1[0];
+            var y1 = c1[1];
+            var z1 = c1[2];
+            var x2 = c2[0];
+            var y2 = c2[1];
+            var z2 = c2[2];
+    
+            if (Math.abs(x2 - x1) > Math.abs(y2 - y1)) {
+                // console.log("dx");
+                var slope = ((z2 - z1) / (x2 - x1));
+                var x_intercept = x1 - (z1 / slope);
+                interceptPoints.push([x_intercept, y1]);
+            } else {
+                // console.log("dy");
+                var slope = ((z2 - z1) / (y2 - y1));
+                var y_intercept = y1 - (z1 / slope);
+                interceptPoints.push([x1, y_intercept]);
+            }
+        });
+    
+        // get corners, add in correct order so they get drawn clockwise
+    
+        corners.forEach(function (corner) {
+            if (corner[2] < 0) {
+                interceptPoints.push(corner);
+            }
+        });
+        
+        var sortedPoints = sortPointsClockwise(interceptPoints);
+    
+        // draws blue and purple diagonal lines to mask the image
+        var ctx = thisCanvas.getContext("2d");
+        ctx.clearRect(0, 0, thisCanvas.width, thisCanvas.height);
+    
+        var diagonalLineWidth = 22;
+        ctx.lineWidth = diagonalLineWidth;
+        ctx.strokeStyle = '#01FFFC';
+        for (var i = -thisCanvas.height; i < thisCanvas.width; i += 2.5 * diagonalLineWidth) {
+            ctx.beginPath();
+            ctx.moveTo(i, -diagonalLineWidth / 2);
+            ctx.lineTo(i + thisCanvas.height + diagonalLineWidth / 2, thisCanvas.height + diagonalLineWidth / 2);
+            ctx.stroke();
+        }
+    
+        // Save the state, so we can undo the clipping
+        ctx.save();
+    
+        // Create a circle
+        ctx.beginPath();
+    
+        if (sortedPoints.length > 2) {
+            ctx.beginPath();
+            ctx.moveTo(sortedPoints[0][0], sortedPoints[0][1]);
+            sortedPoints.forEach(function (point) {
+                ctx.lineTo(point[0], point[1]);
+            });
+            ctx.closePath();
+            // ctx.fill();
+        }
+        // Clip to the current path
+        ctx.clip();
+    
+        // draw whatever needs to get masked here!
+    
+        var diagonalLineWidth = 22;
+        ctx.lineWidth = diagonalLineWidth;
+        ctx.strokeStyle = '#FF01FC';
+        for (var i = -thisCanvas.height; i < thisCanvas.width; i += 2.5 * diagonalLineWidth) {
+            ctx.beginPath();
+            ctx.moveTo(i, -diagonalLineWidth / 2);
+            ctx.lineTo(i + thisCanvas.height + diagonalLineWidth / 2, thisCanvas.height + diagonalLineWidth / 2);
+            ctx.stroke();
+        }
+    
+        // Undo the clipping
+        ctx.restore();
+    }
+    
+    exports.estimateIntersection = estimateIntersection;
 
-/**
- * @desc Given a 4x4 transformation matrix and an x, y coordinate pair,
- calculates the z-position of the ring point
- * @return {Number|Array} the ring z-coordinate
- * @author Ben Reynolds
- **/
-
-
-realityEditor.gui.ar.utilities.getCenterOfPoints = function(points) {
-	if (points.length < 1) {
-		return [0, 0];
-	}
-	var sumX = 0;
-	var sumY = 0;
-	points.forEach(function (point) {
-		sumX += point[0];
-		sumY += point[1];
-	});
-	var avgX = sumX / points.length;
-	var avgY = sumY / points.length;
-	return [avgX, avgY];
-};
-
-/**
- * @desc
- * @param {Number|Array} points
- * @return {Number|Array}
- **/
-
-realityEditor.gui.ar.utilities.sortPointsClockwise = function(points) {
-	var centerPoint = this.getCenterOfPoints(points);
-	var centerX = centerPoint[0];
-	var centerY = centerPoint[1];
-	return points.sort(this.comparePoints);
-};
-
-realityEditor.gui.ar.utilities.comparePoints = function (a, b) {
-	var atanA = Math.atan2(a[1] - centerY, a[0] - centerX);
-	var atanB = Math.atan2(b[1] - centerY, b[0] - centerX);
-	if (atanA < atanB) return -1;
-	else if (atanB > atanA) return 1;
-	return 0;
-};
-
-/**
- * @desc
- * @param {Object} thisCanvas
- **/
-
-realityEditor.gui.ar.utilities.getCornersClockwise = function(thisCanvas) {
-	return [[0, 0, 0],
-		[thisCanvas.width, 0, 0],
-		[thisCanvas.width, thisCanvas.height, 0],
-		[0, thisCanvas.height, 0]];
-};
-
-/**
- * @desc
- * @param
- * @param
- * @return
- **/
-
-realityEditor.gui.ar.utilities.areCornersEqual = function(corner1, corner2) {
-	return (corner1[0] === corner2[0] && corner1[1] === corner2[1]);
-};
-
-/**
- * @desc
- * @param
- * @param
- * @return
- **/
-
-realityEditor.gui.ar.utilities.areCornerPairsIdentical = function(c1a, c1b, c2a, c2b) {
-	return (this.areCornersEqual(c1a, c2a) && this.areCornersEqual(c1b, c2b));
-};
-
-/**
- * @desc
- * @param
- * @param
- * @return
- **/
-
-realityEditor.gui.ar.utilities.areCornerPairsSymmetric = function(c1a, c1b, c2a, c2b) {
-	return (this.areCornersEqual(c1a, c2b) && this.areCornersEqual(c1b, c2a));
-};
-
-/**
- * @desc
- * @param
- * @param
- * @return
- **/
-
-realityEditor.gui.ar.utilities.areCornersAdjacent = function(corner1, corner2) {
-	return (corner1[0] === corner2[0] || corner1[1] === corner2[1]);
-};
-
-/**
- * @desc
- * @param
- * @param
- * @return
- **/
-
-realityEditor.gui.ar.utilities.areCornersOppositeZ = function(corner1, corner2) {
-	var z1 = corner1[2];
-	var z2 = corner2[2];
-	var oppositeSign = ((z1 * z2) < 0);
-	return oppositeSign;
-};
-
-/**
- * @desc
- * @param
- * @param
- * @return
- **/
-// makes sure we don't add symmetric pairs to list
-realityEditor.gui.ar.utilities.addCornerPairToOppositeCornerPairs = function(cornerPair, oppositeCornerPairs) {
-	var corner1 = cornerPair[0];
-	var corner2 = cornerPair[1];
-	var safeToAdd = true;
-	if (oppositeCornerPairs.length > 0) {
-		oppositeCornerPairs.forEach(function (pairList) {
-			var existingCorner1 = pairList[0];
-			var existingCorner2 = pairList[1];
-			if (this.areCornerPairsSymmetric(existingCorner1, existingCorner2, corner1, corner2)) {
-				// console.log("symmetric", existingCorner1, existingCorner2, corner1, corner2);
-				safeToAdd = false;
-				return;
-			}
-			if (this.areCornerPairsIdentical(existingCorner1, existingCorner2, corner1, corner2)) {
-				// console.log("identical", existingCorner1, existingCorner2, corner1, corner2);
-				safeToAdd = false;
-				return;
-			}
-		});
-	}
-	if (safeToAdd) {
-		oppositeCornerPairs.push([corner1, corner2]);
-	}
-};
-
-/**
- * @desc
- * @param
- * @param
- * @return
- **/
-
-realityEditor.gui.ar.utilities.estimateIntersection = function(theObject, mCanvas, thisObject) {
-	var thisCanvas = globalDOMCach["canvas" + theObject];
-	if(!mCanvas){
-
-
-		if(!thisObject.hasCTXContent) {
-			thisObject.hasCTXContent = true;
-			var ctx = thisCanvas.getContext("2d");
-			var diagonalLineWidth = 22;
-			ctx.lineWidth = diagonalLineWidth;
-			ctx.strokeStyle = '#01FFFC';
-			for (var i = -thisCanvas.height; i < thisCanvas.width; i += 2.5 * diagonalLineWidth) {
-				ctx.beginPath();
-				ctx.moveTo(i, -diagonalLineWidth / 2);
-				ctx.lineTo(i + thisCanvas.height + diagonalLineWidth / 2, thisCanvas.height + diagonalLineWidth / 2);
-				ctx.stroke();
-			}
-		}
-		return null;
-	} else {
-		thisObject.hasCTXContent = false;
-	}
-
-	if (globalStates.pointerPosition[0] === -1) return null;
-
-	// var newMatrix = copyMatrix(multiplyMatrix(globalMatrix.begin, invertMatrix(globalMatrix.temp)));
-
-	// var mCanvas = mat1x16From4x4(matrix);
-	// var mCanvas = getTransformMatrixForDiv(theDiv);
-
-	// console.log("mCanvas: ", mCanvas);
-	// console.log("newMatrix: ", newMatrix);
-
-	// console.log("estimate");
-	////////////////////////////////////////
-
-	var corners = this.getCornersClockwise(thisCanvas);
-	var out = [0, 0, 0, 0];
-	corners.forEach(function (corner, index) {
-		var x = corner[0] - thisCanvas.width / 2;
-		var y = corner[1] - thisCanvas.height / 2;
-		var input = [x, y, 0, 1]; // assumes z-position of corner is always 0
-		// console.log(out, input, mCanvas);
-
-		out = this.multiplyMatrix4(input, mCanvas);
-		// var z = getTransformedZ(matrix,x,y)
-		corner[2] = out[2]; // sets z position of corner to its eventual transformed value
-	});
-
-	// console.log("corners", corners);
-
-	var oppositeCornerPairs = [];
-	corners.forEach(function (corner1) {
-		corners.forEach(function (corner2) {
-			// only check adjacent pairs of corners
-			// ignore same corner
-			if (this.areCornersEqual(corner1, corner2)) {
-				return;
-			}
-
-			// x or y should be the same
-			if (this.areCornersAdjacent(corner1, corner2)) {
-				if (this.areCornersOppositeZ(corner1, corner2)) {
-					this.addCornerPairToOppositeCornerPairs([corner1, corner2], oppositeCornerPairs);
-				}
-			}
-		});
-	});
-
-	// console.log("oppositeCornerPairs", oppositeCornerPairs);
-
-	// for each opposite corner pair, binary search for the x,y location that will correspond with 0 z-pos
-	// .... or can it be calculated directly....? it's just a linear equation!!!
-	var interceptPoints = [];
-	oppositeCornerPairs.forEach(function (cornerPair) {
-		var c1 = cornerPair[0];
-		var c2 = cornerPair[1];
-		var x1 = c1[0];
-		var y1 = c1[1];
-		var z1 = c1[2];
-		var x2 = c2[0];
-		var y2 = c2[1];
-		var z2 = c2[2];
-
-		if (Math.abs(x2 - x1) > Math.abs(y2 - y1)) {
-			// console.log("dx");
-			var slope = ((z2 - z1) / (x2 - x1));
-			var x_intercept = x1 - (z1 / slope);
-			interceptPoints.push([x_intercept, y1]);
-		} else {
-			// console.log("dy");
-			var slope = ((z2 - z1) / (y2 - y1));
-			var y_intercept = y1 - (z1 / slope);
-			interceptPoints.push([x1, y_intercept]);
-		}
-	});
-
-	// console.log("interceptPoints", interceptPoints);
-
-	////////////////////////////////////////
-
-	// get corners, add in correct order so they get drawn clockwise
-
-	corners.forEach(function (corner) {
-		if (corner[2] < 0) {
-			interceptPoints.push(corner);
-		}
-	});
-
-	// console.log("interceptPoints+corners", interceptPoints);
-
-	var sortedPoints = this.sortPointsClockwise(interceptPoints);
-	// console.log("sortedPoints", sortedPoints);
-
-	// draws blue and purple diagonal lines to mask the image
-	var ctx = thisCanvas.getContext("2d");
-	ctx.clearRect(0, 0, thisCanvas.width, thisCanvas.height);
-
-	var diagonalLineWidth = 22;
-	ctx.lineWidth = diagonalLineWidth;
-	ctx.strokeStyle = '#01FFFC';
-	for (var i = -thisCanvas.height; i < thisCanvas.width; i += 2.5 * diagonalLineWidth) {
-		ctx.beginPath();
-		ctx.moveTo(i, -diagonalLineWidth / 2);
-		ctx.lineTo(i + thisCanvas.height + diagonalLineWidth / 2, thisCanvas.height + diagonalLineWidth / 2);
-		ctx.stroke();
-	}
-
-	// Save the state, so we can undo the clipping
-	ctx.save();
-
-	// Create a circle
-	ctx.beginPath();
-
-	if (sortedPoints.length > 2) {
-		ctx.beginPath();
-		ctx.moveTo(sortedPoints[0][0], sortedPoints[0][1]);
-		sortedPoints.forEach(function (point) {
-			ctx.lineTo(point[0], point[1]);
-		});
-		ctx.closePath();
-		// ctx.fill();
-	}
-	// Clip to the current path
-	ctx.clip();
-
-	// draw whatever needs to get masked here!
-
-	var diagonalLineWidth = 22;
-	ctx.lineWidth = diagonalLineWidth;
-	ctx.strokeStyle = '#FF01FC';
-	for (var i = -thisCanvas.height; i < thisCanvas.width; i += 2.5 * diagonalLineWidth) {
-		ctx.beginPath();
-		ctx.moveTo(i, -diagonalLineWidth / 2);
-		ctx.lineTo(i + thisCanvas.height + diagonalLineWidth / 2, thisCanvas.height + diagonalLineWidth / 2);
-		ctx.stroke();
-	}
-
-	// Undo the clipping
-	ctx.restore();
-};
-
-
-realityEditor.gui.ar.utilities.insidePoly = function(point, vs) {
-	// ray-casting algorithm based on
-	// http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-	// Copyright (c) 2016 James Halliday
-	// The MIT License (MIT)
-
-	var x = point[0], y = point[1];
-
-	if(x <=0 || y <= 0) return false;
-
-	var inside = false;
-	for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-		var xi = vs[i][0], yi = vs[i][1];
-		var xj = vs[j][0], yj = vs[j][1];
-
-		var intersect = ((yi > y) != (yj > y))
-			&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-		if (intersect) inside = !inside;
-	}
-
-	return inside;
-};
-
+}(realityEditor.gui.ar.utilities));

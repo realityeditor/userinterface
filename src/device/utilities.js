@@ -63,7 +63,10 @@ function cout() {
 	}
 };
 
-
+realityEditor.device.utilities.newURLTextLoad = function () {
+    globalStates.newURLText = encodeURIComponent(document.getElementById('newURLText').value);
+    this.cout("newURLTextLoad");
+};
 
 /**
  * @desc
@@ -77,7 +80,7 @@ realityEditor.device.utilities.uuidTime = function () {
 	var abcUuidTime = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	var stampUuidTime = parseInt(Math.floor((Math.random() * 199) + 1) + "" + dateUuidTime.getTime()).toString(36);
 	while (stampUuidTime.length < 12) stampUuidTime = abcUuidTime.charAt(Math.floor(Math.random() * abcUuidTime.length)) + stampUuidTime;
-	return stampUuidTime
+	return stampUuidTime;
 };
 
 /**
@@ -92,7 +95,7 @@ realityEditor.device.utilities.uuidTimeShort = function () {
 	var abcUuidTime = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	var stampUuidTime = parseInt("" + dateUuidTime.getMilliseconds() + dateUuidTime.getMinutes() + dateUuidTime.getHours() + dateUuidTime.getDay()).toString(36);
 	while (stampUuidTime.length < 8) stampUuidTime = abcUuidTime.charAt(Math.floor(Math.random() * abcUuidTime.length)) + stampUuidTime;
-	return stampUuidTime
+	return stampUuidTime;
 };
 
 /**
