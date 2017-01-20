@@ -90,6 +90,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
                 _this.crafting.eventHelper.styleBlockForHolding(thisTappedContents, true);
             }, HOLD_TIME_THRESHOLD);
 
+            this.crafting.eventHelper.updateCraftingVisibility(cell, thisTappedContents);
+
         } else {
             touchState = TS_CUT;
             cutLineStart = {
@@ -144,6 +146,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             this.crafting.eventHelper.convertToTempBlock(tappedContents);
             this.crafting.eventHelper.moveBlockDomToPosition(tappedContents, e.pageX, e.pageY);
 
+            this.crafting.eventHelper.updateCraftingVisibility(cell, tappedContents);
+
         } else if (touchState === TS_CONNECT) {
 
             // if you are over an eligible block, create a temp link and re-route grid
@@ -157,6 +161,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             } else {
                 this.crafting.eventHelper.drawLinkLine(tappedContents, e.pageX, e.pageY);
             }
+
+            this.crafting.eventHelper.updateCraftingVisibility(cell, tappedContents);
 
         } else if (touchState === TS_MOVE) {
             // snap if to grid position if necessary, otherwise just move block to pointer position
@@ -174,6 +180,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             } else {
                 this.crafting.eventHelper.styleBlockForPlacement(tappedContents, false);
             }
+
+            this.crafting.eventHelper.updateCraftingVisibility(cell, tappedContents);
 
         } else if (touchState === TS_CUT) {
             // draw the cut line from cutLineStart to current position
@@ -194,6 +202,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
         var cell = this.crafting.eventHelper.getCellOverPointer(e.pageX, e.pageY);
         var contents = this.crafting.eventHelper.getCellContents(cell);
         var tappedContents = globalStates.currentLogic.guiState.tappedContents;
+
+        this.crafting.eventHelper.toggleDatacraftingExceptPort(tappedContents, true);
 
         if (touchState === TS_TAP_BLOCK) {
             // for now -> do nothing

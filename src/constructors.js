@@ -225,6 +225,8 @@ function LogicGUIState() {
 	this.tempLink = null;
 	// keeps track of which block/item are currently being interacted with
 	this.tappedContents = null;
+    // keeps track of whether the background has been hidden to show nodes
+    this.isCraftingBackgroundShown = true;
 	// when moving a block, traces outlines of incoming links and re-adds them
 	this.tempIncomingLinks = [];
 	// when moving a block, traces outlines of outgoing links and re-adds them

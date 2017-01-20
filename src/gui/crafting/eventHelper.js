@@ -171,6 +171,129 @@ realityEditor.gui.crafting.eventHelper.styleBlockForPlacement = function(content
     }
 };
 
+realityEditor.gui.crafting.eventHelper.updateCraftingVisibility = function(currentCell, tappedContents) {
+
+    if (!this.areCellsEqual(currentCell, tappedContents.cell)) {
+        if (tappedContents.block.isPortBlock) {
+            //console.log("moved away from port, show bkg");
+            this.toggleDatacraftingExceptPort(tappedContents, true);
+        }
+    } else {
+        if (tappedContents.block.isPortBlock) {
+            //console.log("moved back to port, hide bkg");
+            this.toggleDatacraftingExceptPort(tappedContents, false);
+        }
+    }
+};
+
+realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(contents, shouldShow) {
+    if (shouldShow !== globalStates.currentLogic.guiState.isCraftingBackgroundShown) {
+        console.log("show datacrafting background? " + shouldShow);
+
+
+        var craftingBoard = document.getElementById("craftingBoard");
+        var datacraftingCanvas = document.getElementById("datacraftingCanvas");
+        var blockPlaceholders = document.getElementById("blockPlaceholders");
+        var blocks = document.getElementById("blocks");
+
+        var forceRedraw = function(element){
+            if (!element) { return; }
+            var n = document.createTextNode(' ');
+            var disp = element.style.display;  // don't worry about previous display style
+            element.appendChild(n);
+            element.style.display = 'none';
+            setTimeout(function(){
+                element.style.display = disp;
+                n.parentNode.removeChild(n);
+            },20); // you can play with this timeout to make it as short as possible
+        };
+
+        if (shouldShow) {
+
+            //craftingBoard.style.webkitBackdropFilter = "blur(30px)";
+
+
+            craftingBoard.className = "craftingBoardBlur";
+            // force the dom to re-render
+            //craftingBoard.style.visibility = "hidden";
+            //craftingBoard.style.visibility = "visible";
+            //forceRedraw(craftingBoard);
+
+            datacraftingCanvas.style.display = "inline";
+
+            //var tappedRowIndex = Math.floor(contents.cell.location.row / 2);
+            //var tappedColIndex = Math.floor(contents.cell.location.col / 2);
+
+            blockPlaceholders.childNodes.forEach( function(blockPlaceholderRow, rowIndex) {
+                //blockPlaceholderRow.style.opacity = "1.0";
+
+                if (!(rowIndex === 0 || rowIndex === 6)) {
+                    blockPlaceholderRow.setAttribute("class", "blockPlaceholderRow visibleFadeIn");
+                }
+
+
+                //blockPlaceholderRow.childNodes.forEach( function(blockPlaceholder, colIndex) {
+                //    blockPlaceholder.style.opacity = "1.0";
+                //});
+            });
+
+            blocks.childNodes.forEach( function(blockDom) {
+                //blockDom.style.opacity = "1.0";
+                blockDom.setAttribute("class", "blockDivPlaced visibleFadeIn");
+
+            });
+
+            //globalStates.guiState = "logic";
+
+        } else {
+
+            //craftingBoard.style.webkitBackdropFilter = "none";
+
+            craftingBoard.className = "craftingBoardClear";
+            // force the dom to re-render
+            //craftingBoard.style.visibility = "hidden";
+            //craftingBoard.style.visibility = "visible";
+            //forceRedraw(craftingBoard);
+
+            datacraftingCanvas.style.display = "none";
+
+            var tappedRowIndex = Math.floor(contents.cell.location.row / 2);
+            var tappedColIndex = Math.floor(contents.cell.location.col / 2);
+
+            blockPlaceholders.childNodes.forEach( function(blockPlaceholderRow, rowIndex) {
+                if (!(rowIndex === 0 || rowIndex === 6)) {
+                    //blockPlaceholderRow.style.opacity = "0.0";
+                    blockPlaceholderRow.setAttribute("class", "blockPlaceholderRow invisibleFadeOut");
+                }
+
+                //blockPlaceholderRow.childNodes.forEach( function(blockPlaceholder, colIndex) {
+                //    if (!(rowIndex === tappedRowIndex && colIndex === tappedColIndex)) {
+                //        blockPlaceholder.style.opacity = "0.5";
+                //    }
+                //});
+            });
+
+            blocks.childNodes.forEach( function(blockDom) {
+                var block = realityEditor.gui.crafting.getBlockForDom(blockDom);
+
+                if (!(block.y === 0 || block.y === 3)) {
+                    //blockDom.style.opacity = "0.0";
+                    blockDom.setAttribute("class", "blockDivPlaced invisibleFadeOut");
+                }
+
+                //if (!(block.x === tappedColIndex && block.y === tappedRowIndex)) {
+                //    blockDom.style.opacity = "0.5";
+                //}
+            });
+
+            //globalStates.guiState = "node";
+
+        }
+
+        globalStates.currentLogic.guiState.isCraftingBackgroundShown = shouldShow;
+    }
+};
+
 // todo why is isInOutBlock in grid by isPortBlock in here?
 realityEditor.gui.crafting.eventHelper.shouldUploadBlock = function(block) {
     return !this.crafting.grid.isInOutBlock(block.globalId) && !block.isPortBlock;

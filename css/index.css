@@ -210,13 +210,59 @@ body {
     margin: 0;
     padding: 0;
     background-color: rgba(20,20,20,0.5);
-    -webkit-backdrop-filter: blur(30px);
+
+    /*-webkit-backdrop-filter: blur(30px);*/
+
     /*background-color: #969696;*/
     -webkit-user-select: none;
     user-select: none;
 
     -webkit-transform: translateZ(1px);
 }
+
+@keyframes blurVisible {
+    0% {
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+    }
+    100% {
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+    }
+}
+
+@keyframes blurInvisible {
+    0% {
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+    }
+    100% {
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+    }
+}
+
+.craftingBoardBlur {
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+
+    animation-name: blurVisible;
+    animation-duration: 100ms;
+    -webkit-animation-fill-mode: forwards; /* Chrome, Safari, Opera */
+    -webkit-animation-timing-function: ease-out;
+}
+
+.craftingBoardClear {
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+
+    animation-name: blurInvisible;
+    animation-duration: 400ms;
+    -webkit-animation-fill-mode: forwards;
+    -webkit-animation-timing-function: ease-out;
+}
+
+
 
 .Interfaces {
     -webkit-transform-style: preserve-3d;
@@ -739,6 +785,43 @@ Logic Interface CSS
     width: 100%;
 }
 
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity:1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.visibleFadeIn {
+    opacity: 1;
+
+    animation-name: fadeIn;
+    animation-duration: 100ms;
+    -webkit-animation-fill-mode: forwards; /* Chrome, Safari, Opera */
+    -webkit-animation-timing-function: ease-out;
+}
+
+.invisibleFadeOut {
+    opacity:0;
+
+    animation-name: fadeOut;
+    animation-duration: 400ms;
+    -webkit-animation-fill-mode: forwards;
+    -webkit-animation-timing-function: ease-out;
+}
+
 .blockPlaceholder {
     width: 92px;
     height:100%;
@@ -807,7 +890,7 @@ Logic Interface CSS
   -webkit-box-pack:center;
   -webkit-box-align:center;
   background-color: rgb(73,73,73);
- border: 2px solid #ffffff;
+  border: 2px solid white;
   font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
 }
 
@@ -872,7 +955,6 @@ Logic Interface CSS
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   border: solid 2px white;
-
   margin: 3.5px;
 }
 
