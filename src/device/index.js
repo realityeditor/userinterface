@@ -335,6 +335,12 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 
 				objects[globalLogic.farFrontElement].nodes[pocketItemId] = thisItem;
 
+				var _thisNode = document.getElementById("iframe" + pocketItemId);
+				if(_thisNode) {
+					if(_thisNode._loaded)
+						realityEditor.network.onElementLoad(globalLogic.farFrontElement, pocketItemId);
+				}
+
 				globalDOMCach[pocketItemId].objectId = globalLogic.farFrontElement;
 
 				this.realityEditor.network.postNewLogicNode(objects[globalLogic.farFrontElement].ip, globalLogic.farFrontElement, pocketItemId, thisItem);

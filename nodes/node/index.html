@@ -24,7 +24,7 @@
     </svg>
 </div>
 <div id="textNote" style="visibility: visible; position: absolute; overflow: hidden;top:190px;left:0px; width:220px; height:30px; text-align: center; font-size:1.6em; font-weight: bold; font-family: Helvetica, Arial, sans-serif;
-color: white"></div>
+color: #ffffff"></div>
 
 <script>
     var objects = {};
@@ -53,8 +53,16 @@ color: white"></div>
         })
                     // this needs to contain the final interface source
                     , "*");
-            if(msg.nodes[msg.node])
-           thisText.innerHTML =msg.nodes[msg.node].name;
+            if(msg.nodes[msg.node]) {
+
+                if (msg.nodes[msg.node].text) {
+                 //   console.log("from node: "+msg.nodes[msg.node].text);
+                    document.getElementById("textNote").innerHTML = msg.nodes[msg.node].text;
+                } else {
+                  //  console.log("from node: "+msg.nodes[msg.node].name);
+                    document.getElementById("textNote").innerHTML = msg.nodes[msg.node].name;
+                }
+            }
             objects.node = msg.node;
             objects.object = msg.object;
 
