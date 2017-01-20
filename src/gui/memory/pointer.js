@@ -72,7 +72,7 @@ createNameSpace("realityEditor.gui.memory");
 
         document.querySelector('.memoryPointerContainer').appendChild(this.element);
 
-        this.memory = new MemoryContainer(this.element); // TODO
+        this.memory = new realityEditor.gui.memory.MemoryContainer(this.element); // TODO
 
         this.memory.set(this.getObject());
         this.x = 0;
