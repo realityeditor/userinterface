@@ -178,7 +178,7 @@ function Logic() {
 	// Reality Editor: This is used to possition the UI element within its y axis in 3D Space. Relative to Marker origin.
 	this.y = 0;
 	// Reality Editor: This is used to scale the UI element in 3D Space. Default scale is 1.
-	this.scale = 0.5;
+	this.scale = 1;
 	// Unconstrained positioning in 3D space
 	this.matrix = [];
 

@@ -190,7 +190,7 @@ realityEditor.network.onAction = function (action) {
 
     if (typeof thisAction.reloadObject !== "undefined") {
 
-        if(thisAction.reloadObject.object in objects)
+        if(thisAction.reloadObject.object in objects) {
             this.getData('http://' + objects[thisAction.reloadObject.object].ip + ':' + httpPort + '/object/' + thisAction.reloadObject.object, thisAction.reloadObject.object, function (req, thisKey) {
                 objects[thisKey].x = req.x;
                 objects[thisKey].y = req.y;
@@ -200,29 +200,46 @@ realityEditor.network.onAction = function (action) {
                 var getNodes;
 
                 if (objects[thisKey].integerVersion < 170) {
-                    if(typeof req.objectValues !== "undefined")
+                    if (typeof req.objectValues !== "undefined")
                         getNodes = req.objectValues;
                 }
                 else {
                     objects[thisKey].matrix = req.matrix;
 
-                    if(typeof req.objectValues !== "undefined")
+                    if (typeof req.nodes !== "undefined")
                         getNodes = req.nodes;
                 }
 
-
-                if(typeof getNodes !== "undefined")
+                if (typeof getNodes !== "undefined") {
+                  //  console.log("I am checking out the nodes");
                     for (var nodeKey in getNodes) {
-                        var  thisObject = objects[thisKey].nodes[nodeKey];
+                        var thisObject = objects[thisKey].nodes[nodeKey];
 
                         thisObject.x = getNodes[nodeKey].x;
                         thisObject.y = getNodes[nodeKey].y;
                         thisObject.scale = getNodes[nodeKey].scale;
                         thisObject.matrix = getNodes[nodeKey].matrix;
+                        thisObject.name = getNodes[nodeKey].name;
+                        if(getNodes[nodeKey].text)
+                        thisObject.text = getNodes[nodeKey].text;
                     }
+                }
 
                 _this.cout("got object and nodes");
+
+
+              //  console.log("got everything");
+                for (var nodeKey in objects[thisKey].nodes){
+                   // console.log(nodeKey);
+                  //  console.log(globalDOMCach["iframe" + nodeKey]._loaded);
+                    if(globalDOMCach["iframe" + nodeKey]) {
+                        if(globalDOMCach["iframe" + nodeKey]._loaded)
+                        realityEditor.network.onElementLoad(thisKey, nodeKey);
+                    }
+                }
+
             });
+        }
     }
 
     if (typeof thisAction.advertiseConnection !== "undefined") {
@@ -689,6 +706,7 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
     if (version < 170) {
         newStyle = oldStyle;
     }
+    globalDOMCach["iframe" + nodeKey]._loaded = true;
     globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
         JSON.stringify(newStyle), '*');
     this.cout("on_load");
