@@ -129,11 +129,8 @@ realityEditor.device.onload = function () {
 		editingInterface = document.getElementById("content15");
 		editingInterface.style.paddingTop = "13px";
 
-		editingInterface = document.getElementById("content20");
-		editingInterface.innerHTML = '<input id="newURLText"' +
-
-			"style='text-align: left; font-family: Helvetica Neue, Helvetica, Arial; font-size: large;   -webkit-user-select: text;'" +
-			'type="text" name="newURL"  size="27" placeholder="http://..."' + "oninput='realityEditor.device.utilities.newURLTextLoad()'><br>";
+		editingInterface = document.getElementById("newURLText");
+		editingInterface.size = 27;
 	}
 
 	globalCanvas.canvas = document.getElementById('canvas');
