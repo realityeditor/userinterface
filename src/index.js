@@ -50,7 +50,7 @@
 /**********************************************************************************************************************
  ******************************************** global namespace *******************************************************
  **********************************************************************************************************************/
-
+/*
 var realityEditor = realityEditor || {
 		constructors: {
 			Object: {},
@@ -337,6 +337,7 @@ var realityEditor = realityEditor || {
 			}
 		}
 	};
+	*/
 
 /**
  * @desc This function generates all required namespaces and initializes a namespace if not existing.

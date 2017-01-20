@@ -119,7 +119,7 @@ realityEditor.gui.crafting.addDomElementForBlock = function(block, grid, isTempB
     if (block.name) {
 
         // show image full width and height of block if able to find
-        var blockIcon = this.getBlockIcon(globalStates.currentLogic, block.type);
+        var blockIcon = this.getBlockIcon(globalStates.currentLogic, block.type, true);
         if (blockIcon) {
             var iconImage = document.createElement("img");
             iconImage.setAttribute('class', 'blockIcon');
@@ -159,7 +159,8 @@ realityEditor.gui.crafting.addDomElementForBlock = function(block, grid, isTempB
     guiState.blockDomElements[block.globalId] = blockDomElement;
 };
 
-realityEditor.gui.crafting.getBlockIcon = function(logic, blockName) {
+realityEditor.gui.crafting.getBlockIcon = function(logic, blockName, label) {
+    if(!label) label = false;
     var keys = this.eventHelper.getServerObjectLogicKeys(logic);
 
     if (blockIconCache[keys.logicKey] === undefined) {
@@ -168,14 +169,24 @@ realityEditor.gui.crafting.getBlockIcon = function(logic, blockName) {
 
     // download icon to cache if not already there
     if (blockIconCache[keys.logicKey][blockName] === undefined) {
-        var iconUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + blockName + "/icon.png";
+        var iconUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + blockName + "/icon.svg";
         var icon = new Image();
         icon.src = iconUrl;
         blockIconCache[keys.logicKey][blockName] = icon;
+
+
+        var labelUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + blockName + "/label.svg";
+        var label = new Image();
+        label.src = labelUrl;
+        blockIconCache[keys.logicKey][blockName+"label"] = label;
     }
 
     // otherwise just directly return from cache
+    if(!label)
     return blockIconCache[keys.logicKey][blockName];
+    else
+        return blockIconCache[keys.logicKey][blockName+"label"];
+
 }
 
 // updates datacrafting visuals each frame
