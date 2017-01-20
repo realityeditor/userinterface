@@ -430,6 +430,7 @@ realityEditor.gui.crafting.initializeDataCraftingGrid = function(logic) {
     globalStates.currentLogic = logic;
 
     var container = document.getElementById('craftingBoard');
+    container.className = "craftingBoardBlur";
 
     // initializes the data model for the datacrafting board
     logic.grid = new this.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight);

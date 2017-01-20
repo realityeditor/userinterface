@@ -67,7 +67,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
     var HOLD_TIME_THRESHOLD = 300;
 
     var activeHoldTimer = null;
-
+    
     function onPointerDown(e) {
 
         // we can assume we are in TS_NONE
@@ -89,6 +89,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             activeHoldTimer = setTimeout( function() {
                 _this.crafting.eventHelper.styleBlockForHolding(thisTappedContents, true);
             }, HOLD_TIME_THRESHOLD);
+
+            this.crafting.eventHelper.updateCraftingVisibility(cell, thisTappedContents);
 
         } else {
             touchState = TS_CUT;
@@ -134,7 +136,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
                     this.crafting.eventHelper.styleBlockForHolding(globalStates.currentLogic.guiState.tappedContents, true);
                 }
             }
-
+            
         } else if (touchState === TS_HOLD) {
 
             // if you moved to a different cell, go to TS_MOVE
@@ -143,6 +145,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             touchState = TS_MOVE;
             this.crafting.eventHelper.convertToTempBlock(tappedContents);
             this.crafting.eventHelper.moveBlockDomToPosition(tappedContents, e.pageX, e.pageY);
+
+            this.crafting.eventHelper.updateCraftingVisibility(cell, tappedContents);
 
         } else if (touchState === TS_CONNECT) {
 
@@ -157,6 +161,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             } else {
                 this.crafting.eventHelper.drawLinkLine(tappedContents, e.pageX, e.pageY);
             }
+
+            this.crafting.eventHelper.updateCraftingVisibility(cell, tappedContents);
 
         } else if (touchState === TS_MOVE) {
             // snap if to grid position if necessary, otherwise just move block to pointer position
@@ -174,6 +180,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             } else {
                 this.crafting.eventHelper.styleBlockForPlacement(tappedContents, false);
             }
+
+            this.crafting.eventHelper.updateCraftingVisibility(cell, tappedContents);
 
         } else if (touchState === TS_CUT) {
             // draw the cut line from cutLineStart to current position
@@ -194,6 +202,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
         var cell = this.crafting.eventHelper.getCellOverPointer(e.pageX, e.pageY);
         var contents = this.crafting.eventHelper.getCellContents(cell);
         var tappedContents = globalStates.currentLogic.guiState.tappedContents;
+
+        this.crafting.eventHelper.toggleDatacraftingExceptPort(tappedContents, true);
 
         if (touchState === TS_TAP_BLOCK) {
             // for now -> do nothing
