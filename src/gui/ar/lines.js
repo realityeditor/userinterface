@@ -143,9 +143,9 @@ realityEditor.gui.ar.lines.drawAllLines = function (thisObject, context) {
 
 		if (!oB.objectVisible) {
 			if (oB.memory) {
-				var memoryPointer = getMemoryPointerWithId(oB.objectId);
+				var memoryPointer = realityEditor.gui.memory.getMemoryPointerWithId(oB.objectId);
 				if (!memoryPointer) {
-					memoryPointer = new MemoryPointer(l, false);
+					memoryPointer = new realityEditor.gui.memory.MemoryPointer(l, false);
 				}
 				memoryPointer.draw();
 
@@ -163,9 +163,9 @@ realityEditor.gui.ar.lines.drawAllLines = function (thisObject, context) {
 
 		if (!oA.objectVisible) {
 			if (oA.memory) {
-				var memoryPointer = getMemoryPointerWithId(oA.objectId);
+				var memoryPointer = realityEditor.gui.memory.getMemoryPointerWithId(oA.objectId);
 				if (!memoryPointer) {
-					memoryPointer = new MemoryPointer(l, true);
+					memoryPointer = new realityEditor.gui.memory.MemoryPointer(l, true);
 				}
 				memoryPointer.draw();
 
