@@ -33,13 +33,6 @@
  *      ╩╚═└─┘┴ ┴┴─┘┴ ┴  ┴   ╚═╝─┴┘┴ ┴ └─┘┴└─  ╩  ┴└─└─┘└┘└─┘└─┘ ┴
  *
  *
- * Created by Valentin on 10/22/14.
- *
- * Copyright (c) 2015 Valentin Heun
- * Modified by Valentin Heun 2014, 2015, 2016, 2017
- * Modified by Benjamin Reynholds 2016, 2017
- * Modified by James Hobin 2016, 2017
- *
  * All ascii characters above must be included in any redistribution.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -47,40 +40,85 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+createNameSpace("realityEditor.gui.frame");
 
-createNameSpace("realityEditor.gui.ar.positioning");
+(function(realityEditor) {
 
 /**
- * @desc
- * @param touch
- **/
-
-realityEditor.gui.ar.positioning.onScaleEvent = function(touch) {
-	var thisRadius = Math.sqrt(Math.pow((globalStates.editingModeObjectX - touch.pageX), 2) + Math.pow((globalStates.editingModeObjectY - touch.pageY), 2));
-	var thisScale = (thisRadius - globalStates.editingScaledistance) / 300 + globalStates.editingScaledistanceOld;
-
-	// cout(thisScale);
-
-	var tempThisObject = realityEditor.device.getEditingModeObject();
-
-	if (thisScale < 0.2) {
-        thisScale = 0.2;
+ * Sanitize a potentially bloated frame object, keeping only the
+ * keys present in the frame constructor
+ * @param {Object} frame
+ * @return {Frame}
+ */
+function sanitizeFrame(frame) {
+    var sanitizedFrame = new Frame(frame.src);
+    for (var key in sanitizedFrame) {
+        sanitizedFrame[key] = frame[key];
     }
+    return sanitizedFrame;
+}
 
-	if (typeof thisScale === "number" && thisScale > 0) {
-		tempThisObject.scale = thisScale;
-	}
-	globalCanvas.context.clearRect(0, 0, globalCanvas.canvas.width, globalCanvas.canvas.height);
-	//drawRed(globalCanvas.context, [globalStates.editingModeObjectX,globalStates.editingModeObjectY],[touch.pageX,touch.pageY],globalStates.editingScaledistance);
-	this.ar.lines.drawBlue(globalCanvas.context, [globalStates.editingModeObjectX, globalStates.editingModeObjectY], [touch.pageX, touch.pageY], globalStates.editingScaledistance);
+/**
+ * Upload frame to object on server
+ *
+ * @param {String} objectId
+ * @param {ObjectFrame} frame
+ */
+function create(objectId, frame) {
+    var object = objects[objectId];
+    var url = 'http://' + object.ip + ':' + httpPort + '/object/' + objectId + '/frames/';
+    frame = sanitizeFrame(frame);
+    postData(url, frame, function(err, response) {
+        if (err) {
+            console.error('frameCreate', err);
+            return;
+        }
+        if (!response.frameId) {
+            return;
+        }
+        object.frames[response.frameId] = frame;
+    });
+}
+/**
+ * Update a frame on the server
+ *
+ * @param {String} objectId
+ * @param {String} frameId
+ */
 
-	if (thisRadius < globalStates.editingScaledistance) {
+function update(objectId, frameId) {
+    var object = objects[objectId];
+    var frame = sanitizeFrame(object.frames[frameId]);
 
-		this.ar.lines.drawRed(globalCanvas.context, [globalStates.editingModeObjectX, globalStates.editingModeObjectY], [touch.pageX, touch.pageY], thisRadius);
+    var url = 'http://' + object.ip + ':' + httpPort + '/object/' + objectId + '/frames/' + frameId;
+    postData(url, frame, function(err) {
+        if (err) {
+            console.error('frameUpdate', err);
+            return;
+        }
+    });
+}
 
-	} else {
-		this.ar.lines.drawGreen(globalCanvas.context, [globalStates.editingModeObjectX, globalStates.editingModeObjectY], [touch.pageX, touch.pageY], thisRadius);
+function Frame(src) {
+    this.src = src;
+    this.x = 0;
+    this.y = 0;
+    this.width = 500;
+    this.height = 500;
+    this.scale = 1;
+    this.developer = true;
+    this.matrix = [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    ];
+}
 
-	}
-	this.cout("scaleEvent");
+realityEditor.gui.frame = {
+    create: create,
+    update: update,
+    Frame: Frame
 };
+
+})(realityEditor);

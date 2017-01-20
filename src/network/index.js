@@ -421,6 +421,13 @@ realityEditor.network.onInternalPostMessage = function(e) {
         }
 
     }
+
+    if (typeof msgContent.createNode !== "undefined") {
+        var node = new Node();
+        node.name = msgContent.createNode.name;
+        node.frame = msgContent.node;
+        tempThisObject.nodes[node.frame + '.' + msgContent.createNode.name + '.' + realityEditor.device.utilities.uuidTime()] = node;
+    }
 };
 
 realityEditor.network.deleteData = function(url) {
@@ -483,19 +490,41 @@ realityEditor.network.getData = function(url, thisKey, callback) {
     }
 };
 
-realityEditor.network.postData = function(url, body) {
+/**
+ * POST data as json to url, calling callback with the
+ * JSON-encoded response data when finished
+ * @param {String} url
+ * @param {Object} body
+ * @param {Function<Error, Object>} callback
+ */
+realityEditor.network.postData = function(url, body, callback) {
     var request = new XMLHttpRequest();
     var params = JSON.stringify(body);
     request.open('POST', url, true);
-    var _this = this;
     request.onreadystatechange = function () {
-        if (request.readyState == 4) _this.cout("It worked!");
+        if (request.readyState !== 4) {
+            return;
+        }
+        if (!callback) {
+            return;
+        }
+
+        if (request.status === 200) {
+            try {
+                callback(null, JSON.parse(request.responseText));
+            } catch(e) {
+                callback({status: request.status, error: e, failure: true}, null);
+            }
+            return;
+        }
+
+        callback({status: request.status, failure: true}, null);
     };
+
     request.setRequestHeader("Content-type", "application/json");
     //request.setRequestHeader("Content-length", params.length);
     // request.setRequestHeader("Connection", "close");
     request.send(params);
-    this.cout("postData");
 };
 
 realityEditor.network.postLinkToServer = function(linkObject, objects){

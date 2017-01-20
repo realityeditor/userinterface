@@ -150,6 +150,16 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
                     this.hideTransformed(objectKey, nodeKey, generalNode, generalNode.type);
                 }
             }
+
+            for (var nodeKey in generalObject.frames) {
+                generalNode = generalObject.frames[nodeKey];
+                if (globalStates.guiState === "ui") {
+                    this.drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, "ui", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
+                    this.addElement(objectKey, nodeKey, generalNode.src, generalNode, "ui", thisGlobalStates);
+                } else {
+                    this.hideTransformed(objectKey, nodeKey, generalNode, "ui");
+                }
+            }
         }
 
         else {
@@ -160,6 +170,10 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
             for (var nodeKey in generalObject.nodes) {
                 // if (!generalObject.nodes.hasOwnProperty(nodeKey)) {  continue;  }
                 this.hideTransformed(objectKey, nodeKey, generalObject.nodes[nodeKey], generalObject.nodes[nodeKey].type);
+            }
+
+            for (var nodeKey in generalObject.frames) {
+                this.hideTransformed(objectKey, nodeKey, generalObject.frames[nodeKey], "ui");
             }
 
             this.killObjects(objectKey, generalObject);
@@ -592,6 +606,14 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
 
         console.log("did load object " + objectKey + ", node " + nodeKey);
 
+        if (typeof thisObject.frameSizeX === 'undefined') {
+            thisObject.frameSizeX = thisObject.width;
+        }
+
+        if (typeof thisObject.frameSizeY === 'undefined') {
+            thisObject.frameSizeY = thisObject.height;
+        }
+
         thisObject.animationScale =0;
         thisObject.loaded = true;
         thisObject.visibleEditing = false;
@@ -630,8 +652,8 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
         var addIframe = document.createElement('iframe');
         addIframe.id = "iframe" + nodeKey;
         addIframe.frameBorder = 0;
-        addIframe.style.width = "0px";
-        addIframe.style.height = "0px";
+        addIframe.style.width = (thisObject.width || 0) + "px";
+        addIframe.style.height = (thisObject.height || 0) + "px";
         addIframe.style.left = ((globalStates.height - thisObject.frameSizeY) / 2) + "px";
         addIframe.style.top = ((globalStates.width - thisObject.frameSizeX) / 2) + "px";
         addIframe.style.visibility = "hidden";
