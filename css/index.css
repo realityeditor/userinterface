@@ -220,14 +220,49 @@ body {
     -webkit-transform: translateZ(1px);
 }
 
+@keyframes blurVisible {
+    0% {
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+    }
+    100% {
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+    }
+}
+
+@keyframes blurInvisible {
+    0% {
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+    }
+    100% {
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+    }
+}
+
 .craftingBoardBlur {
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
+    
+    animation-name: blurVisible;
+    animation-duration: 100ms;
+    -webkit-animation-fill-mode: forwards; /* Chrome, Safari, Opera */
+    -webkit-animation-timing-function: ease-out;
 }
 
 .craftingBoardClear {
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
 
+    animation-name: blurInvisible;
+    animation-duration: 400ms;
+    -webkit-animation-fill-mode: forwards;
+    -webkit-animation-timing-function: ease-out;
 }
+
+
 
 .Interfaces {
     -webkit-transform-style: preserve-3d;
@@ -748,6 +783,43 @@ Logic Interface CSS
 
 .blockPlaceholderRow {
     width: 100%;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity:1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.visibleFadeIn {
+    opacity: 1;
+
+    animation-name: fadeIn;
+    animation-duration: 100ms;
+    -webkit-animation-fill-mode: forwards; /* Chrome, Safari, Opera */
+    -webkit-animation-timing-function: ease-out;
+}
+
+.invisibleFadeOut {
+    opacity:0;
+
+    animation-name: fadeOut;
+    animation-duration: 400ms;
+    -webkit-animation-fill-mode: forwards;
+    -webkit-animation-timing-function: ease-out;
 }
 
 .blockPlaceholder {

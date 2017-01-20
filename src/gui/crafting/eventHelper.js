@@ -217,7 +217,7 @@ realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(c
             // force the dom to re-render
             //craftingBoard.style.visibility = "hidden";
             //craftingBoard.style.visibility = "visible";
-            forceRedraw(craftingBoard);
+            //forceRedraw(craftingBoard);
             
             datacraftingCanvas.style.display = "inline";
             
@@ -225,13 +225,22 @@ realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(c
             //var tappedColIndex = Math.floor(contents.cell.location.col / 2);
 
             blockPlaceholders.childNodes.forEach( function(blockPlaceholderRow, rowIndex) {
-                blockPlaceholderRow.childNodes.forEach( function(blockPlaceholder, colIndex) {
-                    blockPlaceholder.style.opacity = "1.0";
-                });
+                //blockPlaceholderRow.style.opacity = "1.0";
+
+                if (!(rowIndex === 0 || rowIndex === 6)) {
+                    blockPlaceholderRow.setAttribute("class", "blockPlaceholderRow visibleFadeIn");
+                }
+
+
+                //blockPlaceholderRow.childNodes.forEach( function(blockPlaceholder, colIndex) {
+                //    blockPlaceholder.style.opacity = "1.0";
+                //});
             });
 
             blocks.childNodes.forEach( function(blockDom) {
-                blockDom.style.opacity = "1.0";
+                //blockDom.style.opacity = "1.0";
+                blockDom.setAttribute("class", "blockDivPlaced visibleFadeIn");
+
             });
 
             //globalStates.guiState = "logic";
@@ -244,7 +253,7 @@ realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(c
             // force the dom to re-render
             //craftingBoard.style.visibility = "hidden";
             //craftingBoard.style.visibility = "visible";
-            forceRedraw(craftingBoard);
+            //forceRedraw(craftingBoard);
 
             datacraftingCanvas.style.display = "none";
 
@@ -252,18 +261,29 @@ realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(c
             var tappedColIndex = Math.floor(contents.cell.location.col / 2);
 
             blockPlaceholders.childNodes.forEach( function(blockPlaceholderRow, rowIndex) {
-                blockPlaceholderRow.childNodes.forEach( function(blockPlaceholder, colIndex) {
-                    if (!(rowIndex === tappedRowIndex && colIndex === tappedColIndex)) {
-                        blockPlaceholder.style.opacity = "0.5";
-                    }
-                });
+                if (!(rowIndex === 0 || rowIndex === 6)) {
+                    //blockPlaceholderRow.style.opacity = "0.0";
+                    blockPlaceholderRow.setAttribute("class", "blockPlaceholderRow invisibleFadeOut");
+                }
+                
+                //blockPlaceholderRow.childNodes.forEach( function(blockPlaceholder, colIndex) {
+                //    if (!(rowIndex === tappedRowIndex && colIndex === tappedColIndex)) {
+                //        blockPlaceholder.style.opacity = "0.5";
+                //    }
+                //});
             });
             
             blocks.childNodes.forEach( function(blockDom) {
                 var block = realityEditor.gui.crafting.getBlockForDom(blockDom);
-                if (!(block.x === tappedColIndex && block.y === tappedRowIndex)) {
-                    blockDom.style.opacity = "0.5";
+
+                if (!(block.y === 0 || block.y === 3)) {
+                    //blockDom.style.opacity = "0.0";
+                    blockDom.setAttribute("class", "blockDivPlaced invisibleFadeOut");
                 }
+                
+                //if (!(block.x === tappedColIndex && block.y === tappedRowIndex)) {
+                //    blockDom.style.opacity = "0.5";
+                //}
             });
 
             //globalStates.guiState = "node";
