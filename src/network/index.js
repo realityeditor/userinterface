@@ -272,6 +272,14 @@ realityEditor.network.onInternalPostMessage = function(e) {
         msgContent = JSON.parse(e);
     }
 
+    if (msgContent.resendOnElementLoad) {
+        var elt = document.getElementById('iframe' + msgContent.nodeKey);
+        if (elt) {
+            var data = elt.dataset;
+            realityEditor.network.onElementLoad(data.objectKey, data.nodeKey);
+        }
+    }
+
     var tempThisObject = {};
     var thisVersionNumber;
 
@@ -295,6 +303,8 @@ realityEditor.network.onInternalPostMessage = function(e) {
             tempThisObject = objects[msgContent.object];
         } else if (msgContent.node in objects[msgContent.object].nodes) {
             tempThisObject = objects[msgContent.object].nodes[msgContent.node];
+        } else if (msgContent.node in objects[msgContent.object].frames) {
+            tempThisObject = objects[msgContent.object].frames[msgContent.node];
         } else return;
 
     } else if (msgContent.object in pocketItem) {
@@ -426,7 +436,9 @@ realityEditor.network.onInternalPostMessage = function(e) {
         var node = new Node();
         node.name = msgContent.createNode.name;
         node.frame = msgContent.node;
-        tempThisObject.nodes[node.frame + '.' + msgContent.createNode.name + '.' + realityEditor.device.utilities.uuidTime()] = node;
+        node.x = (tempThisObject.x || 0) + (Math.random() - 0.5) * 160;
+        node.y = (tempThisObject.y || 0) + (Math.random() - 0.5) * 160;
+        objects[msgContent.object].nodes[node.frame + '.' + msgContent.createNode.name + '.' + realityEditor.device.utilities.uuidTime()] = node;
     }
 };
 
@@ -728,6 +740,7 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
 
     var newStyle = {
         object: objectKey,
+        objectData: objects[objectKey],
         node: nodeKey,
         nodes: nodes
     };

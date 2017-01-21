@@ -155,7 +155,14 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
                 generalNode = generalObject.frames[nodeKey];
                 if (globalStates.guiState === "ui") {
                     this.drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, "ui", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
-                    this.addElement(objectKey, nodeKey, generalNode.src, generalNode, "ui", thisGlobalStates);
+                    var keyedSrc = generalNode.src;
+                    if (keyedSrc.indexOf('?') >= 0) {
+                        keyedSrc += '&';
+                    } else {
+                        keyedSrc += '?';
+                    }
+                    keyedSrc += 'nodeKey=' + nodeKey;
+                    this.addElement(objectKey, nodeKey, keyedSrc, generalNode, "ui", thisGlobalStates);
                 } else {
                     this.hideTransformed(objectKey, nodeKey, generalNode, "ui");
                 }
@@ -658,6 +665,8 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
         addIframe.style.top = ((globalStates.width - thisObject.frameSizeX) / 2) + "px";
         addIframe.style.visibility = "hidden";
         addIframe.src = thisUrl;
+        addIframe.dataset.nodeKey = nodeKey;
+        addIframe.dataset.objectKey = objectKey;
         addIframe.className = "main";
         addIframe.setAttribute("onload", 'realityEditor.network.onElementLoad("' + objectKey + '","' + nodeKey + '")');
         addIframe.setAttribute("sandbox", "allow-forms allow-pointer-lock allow-same-origin allow-scripts");
