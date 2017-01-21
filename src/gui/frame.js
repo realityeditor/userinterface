@@ -68,7 +68,7 @@ function create(objectId, frame) {
     var object = objects[objectId];
     var url = 'http://' + object.ip + ':' + httpPort + '/object/' + objectId + '/frames/';
     frame = sanitizeFrame(frame);
-    postData(url, frame, function(err, response) {
+    realityEditor.network.postData(url, frame, function(err, response) {
         if (err) {
             console.error('frameCreate', err);
             return;
@@ -91,7 +91,7 @@ function update(objectId, frameId) {
     var frame = sanitizeFrame(object.frames[frameId]);
 
     var url = 'http://' + object.ip + ':' + httpPort + '/object/' + objectId + '/frames/' + frameId;
-    postData(url, frame, function(err) {
+    realityEditor.network.postData(url, frame, function(err) {
         if (err) {
             console.error('frameUpdate', err);
             return;
