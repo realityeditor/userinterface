@@ -105,10 +105,28 @@ realityEditor.device.addEventHandlers = function() {
                     //}
                 }
             }
+
+            for (var frameKey in generalObject2.frames) {
+                var elt = document.getElementById(frameKey);
+                if (!elt) {
+                    continue;
+                }
+                elt.style.visibility = "visible";
+
+                var canvas = document.getElementById("canvas" + frameKey);
+                canvas.style.display = "inline";
+
+                elt.addEventListener("touchstart", realityEditor.device.onMultiTouchStart);
+                ec++;
+                elt.addEventListener("touchmove", realityEditor.device.onMultiTouchMove);
+                ec++;
+                elt.addEventListener("touchend", realityEditor.device.onMultiTouchEnd);
+                ec++;
+            }
         }
     }
 
-    this.cout("addEventHandlers");
+    cout("addEventHandlers");
 };
 
 /**
@@ -136,9 +154,24 @@ realityEditor.device.onTouchDown = function(evt) {
 	} else {
 		globalStates.editingModeObject = target.objectId;
 		globalStates.editingModeLocation = target.nodeId;
+		globalStates.editingModeKind = target.type;
 		globalStates.editingModeHaveObject = true;
 	}
-	this.cout("touchDown");
+	cout("touchDown");
+};
+
+realityEditor.device.getEditingModeObject = function() {
+    var objectId = globalStates.editingModeObject;
+    var nodeId = globalStates.editingModeLocation;
+    if (objectId !== nodeId) {
+        if (globalStates.editingModeKind === 'ui') {
+            return objects[objectId].frames[nodeId];
+        } else {
+            return objects[objectId].nodes[nodeId];
+        }
+    } else {
+        return objects[objectId];
+    }
 };
 
 /**********************************************************************************************************************
@@ -156,7 +189,7 @@ realityEditor.device.onFalseTouchUp= function() {
 		globalProgram.logicSelector = 4;
 	}
 	globalCanvas.hasContent = true;
-	this.cout("falseTouchUp");
+	cout("falseTouchUp");
 };
 
 /**********************************************************************************************************************
@@ -172,13 +205,13 @@ realityEditor.device.onTrueTouchUp = function(evt){
 		if (globalProgram.objectA) {
 
 			if(target.nodeId === globalProgram.nodeA && target.type === "logic"){
-				this.realityEditor.gui.crafting.craftingBoardVisible(target.objectId, target.nodeId);
+				realityEditor.gui.crafting.craftingBoardVisible(target.objectId, target.nodeId);
 			}
 
 			globalProgram.objectB = target.objectId;
 			globalProgram.nodeB = target.nodeId;
 
-			this.realityEditor.network.postLinkToServer(globalProgram, objects);
+			realityEditor.network.postLinkToServer(globalProgram, objects);
 
 			// set everything back to false
 			globalProgram.objectA = false;
@@ -192,7 +225,7 @@ realityEditor.device.onTrueTouchUp = function(evt){
 	}
 	globalCanvas.hasContent = true;
 
-	this.cout("trueTouchUp");
+	cout("trueTouchUp");
 };
 
 
@@ -208,7 +241,7 @@ realityEditor.device.onTouchEnter = function(evt) {
 		overlayDiv.classList.add('overlayAction');
 	} else {
 
-		if (this.realityEditor.network.checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, globalProgram.logicA, target.objectId, target.nodeId, 0)) {
+		if (realityEditor.network.checkForNetworkLoop(globalProgram.objectA, globalProgram.nodeA, globalProgram.logicA, target.objectId, target.nodeId, 0)) {
 			contentForFeedback = 2; // overlayImg.src = overlayImage[2].src;
 			overlayDiv.classList.add('overlayPositive');
 		}
@@ -238,7 +271,7 @@ realityEditor.device.onTouchLeave = function(evt) {
 	overlayDiv.classList.remove('overlayNegative');
 	overlayDiv.classList.remove('overlayAction');
 
-	this.cout("leave");
+	cout("leave");
 
 	globalDOMCach["iframe" + target.nodeId].contentWindow.postMessage(
 		JSON.stringify(
@@ -268,7 +301,7 @@ realityEditor.device.onCanvasPointerDown = function(evt) {
 		}
 	}
 
-	this.cout("canvasPointerDown");
+	cout("canvasPointerDown");
 };
 
 /**********************************************************************************************************************
@@ -287,7 +320,7 @@ realityEditor.device.onDocumentPointerMove = function (evt) {
 	// Translate up 6px to be above pocket layer
 	overlayDiv.style.transform = 'translate3d(' + evt.clientX + 'px,' + evt.clientY + 'px,6px)';
 
-    this.realityEditor.gui.pocket.setPocketPosition(evt);
+    realityEditor.gui.pocket.setPocketPosition(evt);
 };
 
 
@@ -343,10 +376,10 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 
 				globalDOMCach[pocketItemId].objectId = globalLogic.farFrontElement;
 
-				this.realityEditor.network.postNewLogicNode(objects[globalLogic.farFrontElement].ip, globalLogic.farFrontElement, pocketItemId, thisItem);
+				realityEditor.network.postNewLogicNode(objects[globalLogic.farFrontElement].ip, globalLogic.farFrontElement, pocketItemId, thisItem);
 
 			}
-			this.realityEditor.gui.ar.draw.hideTransformed("pocket", pocketItemId, pocketItem.pocket.nodes[pocketItemId], "logic");
+			realityEditor.gui.ar.draw.hideTransformed("pocket", pocketItemId, pocketItem.pocket.nodes[pocketItemId], "logic");
 			delete pocketItem.pocket.nodes[pocketItemId];
 		}
 	}
@@ -355,9 +388,9 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 	globalStates.overlay = 0;
 
 	if (globalStates.guiState ==="node") {
-		this.onFalseTouchUp();
+		realityEditor.device.onFalseTouchUp();
 		if (!globalProgram.objectA && globalStates.drawDotLine) {
-			this.realityEditor.gui.ar.lines.deleteLines(globalStates.drawDotLineX, globalStates.drawDotLineY, evt.clientX, evt.clientY);
+			realityEditor.gui.ar.lines.deleteLines(globalStates.drawDotLineX, globalStates.drawDotLineY, evt.clientX, evt.clientY);
 		}
 		globalStates.drawDotLine = false;
 	}
@@ -369,13 +402,13 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 
 	overlayDiv.classList.remove('overlayMemory');
 	overlayDiv.classList.remove('overlayMemoryInstant');
-    this.realityEditor.gui.pocket.pocketOnMemoryCreationStop();
+    realityEditor.gui.pocket.pocketOnMemoryCreationStop();
 	if (overlayDiv.style.backgroundImage !== 'none') {
 		overlayDiv.style.backgroundImage = 'none';
 		window.location.href = 'of://clearMemory';
 	}
 
-	this.cout("documentPointerUp");
+	cout("documentPointerUp");
 
 
 // this is relevant for the pocket button to be interact with
@@ -404,8 +437,8 @@ realityEditor.device.onDocumentPointerDown = function(evt) {
 		}
 	}
 
-	if (this.realityEditor.gui.memory.memoryCanCreate() && window.innerWidth - evt.clientX > 65) {
-        this.realityEditor.gui.pocket.pocketOnMemoryCreationStart();
+	if (realityEditor.gui.memory.memoryCanCreate() && window.innerWidth - evt.clientX > 65) {
+		realityEditor.gui.pocket.pocketOnMemoryCreationStart();
 	}
 
 	/*
@@ -458,7 +491,7 @@ realityEditor.device.onDocumentPointerDown = function(evt) {
 
 
 	 */
-	this.cout("documentPointerDown");
+	cout("documentPointerDown");
 };
 
 /**
@@ -480,7 +513,7 @@ realityEditor.device.onMultiTouchStart = function(evt) {
 	}
 	globalMatrix.matrixtouchOn = target.nodeId;
 	globalMatrix.copyStillFromMatrixSwitch = true;
-	this.cout("MultiTouchStart");
+	cout("MultiTouchStart");
 };
 
 /**
@@ -502,16 +535,9 @@ realityEditor.device.onMultiTouchMove = function(evt) {
 		globalStates.editingModeObjectX = touch.pageX;
 		globalStates.editingModeObjectY = touch.pageY;
 
-		var tempThisObject = {};
-		if (globalStates.editingModeObject !== globalStates.editingModeLocation) {
+		var tempThisObject = realityEditor.device.getEditingModeObject();
 
-			tempThisObject = objects[globalStates.editingModeObject].nodes[globalStates.editingModeLocation];
-			// console.log(objects[globalStates.editingModeObject]);
-		} else {
-			tempThisObject = objects[globalStates.editingModeObject];
-		}
-
-		var matrixTouch = this.realityEditor.gui.ar.utilities.screenCoordinatesToMatrixXY(tempThisObject, [touch.pageX, touch.pageY]);
+		var matrixTouch = realityEditor.gui.ar.utilities.screenCoordinatesToMatrixXY(tempThisObject, [touch.pageX, touch.pageY]);
 
 		if (matrixTouch) {
 			tempThisObject.x = matrixTouch[0];
@@ -520,10 +546,10 @@ realityEditor.device.onMultiTouchMove = function(evt) {
 	}
 
 	if (globalStates.editingModeHaveObject && globalStates.editingMode && evt.targetTouches.length === 2) {
-		this.realityEditor.gui.ar.positioning.onScaleEvent(evt.touches[1]);
+		realityEditor.gui.ar.positioning.onScaleEvent(evt.touches[1]);
 	}
 
-	this.cout("MultiTouchMove");
+	cout("MultiTouchMove");
 };
 
 /**
@@ -537,17 +563,10 @@ realityEditor.device.onMultiTouchEnd = function(evt) {
 // generate action for all links to be reloaded after upload
 	if (globalStates.editingModeHaveObject) {
 
-		this.cout("start");
+		cout("start");
 		// this is where it should be send to the object..
 
-		var tempThisObject = {};
-		if (globalStates.editingModeObject != globalStates.editingModeLocation) {
-
-			tempThisObject = objects[globalStates.editingModeObject].nodes[globalStates.editingModeLocation];
-
-		} else {
-			tempThisObject = objects[globalStates.editingModeObject];
-		}
+		var tempThisObject = realityEditor.device.getEditingModeObject();
 
 		var content = {};
 		content.x = tempThisObject.x;
@@ -555,15 +574,17 @@ realityEditor.device.onMultiTouchEnd = function(evt) {
 		content.scale = tempThisObject.scale;
 
 		if (globalStates.unconstrainedPositioning === true) {
-			this.realityEditor.gui.ar.utilities.multiplyMatrix(tempThisObject.begin, this.realityEditor.gui.ar.utilities.invertMatrix(tempThisObject.temp),tempThisObject.matrix);
+			realityEditor.gui.ar.utilities.multiplyMatrix(tempThisObject.begin, realityEditor.gui.ar.utilities.invertMatrix(tempThisObject.temp),tempThisObject.matrix);
 			content.matrix = tempThisObject.matrix;
 
 		}
 
 		// todo for now we just send nodes but no logic locations. ---- Became obsolete because the logic nodes are now normal nodes
 		//  if(globalStates.editingModeKind=== "node") {
-		if (typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
-			this.realityEditor.network.postData('http://' + objects[globalStates.editingModeObject].ip + ':' + httpPort + '/object/' + globalStates.editingModeObject + "/size/" + globalStates.editingModeLocation, content);
+        if (globalStates.editingModeKind === 'ui' && globalStates.editingModeObject !== globalStates.editingModeLocation) {
+            realityEditor.gui.frame.update(globalStates.editingModeObject, globalStates.editingModeLocation);
+        } else if (typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
+			realityEditor.network.postData('http://' + objects[globalStates.editingModeObject].ip + ':' + httpPort + '/object/' + globalStates.editingModeObject + "/size/" + globalStates.editingModeLocation, content);
 		}
 		// }
 
@@ -571,7 +592,7 @@ realityEditor.device.onMultiTouchEnd = function(evt) {
 		globalCanvas.hasContent = true;
 		globalMatrix.matrixtouchOn = "";
 	}
-	this.cout("MultiTouchEnd");
+	cout("MultiTouchEnd");
 };
 
 /**
@@ -595,15 +616,10 @@ realityEditor.device.onMultiTouchCanvasStart = function(evt) {
 		globalStates.editingScaleY = touch.pageY;
 		globalStates.editingScaledistance = Math.sqrt(Math.pow((globalStates.editingModeObjectX - globalStates.editingScaleX), 2) + Math.pow((globalStates.editingModeObjectY - globalStates.editingScaleY), 2));
 
-		var tempThisObject = {};
-		if (globalStates.editingModeObject != globalStates.editingModeLocation) {
-			tempThisObject = objects[globalStates.editingModeObject].nodes[globalStates.editingModeLocation];
-		} else {
-			tempThisObject = objects[globalStates.editingModeObject];
-		}
+		var tempThisObject = realityEditor.device.getEditingModeObject();
 		globalStates.editingScaledistanceOld = tempThisObject.scale;
 	}
-	this.cout("MultiTouchCanvasStart");
+	cout("MultiTouchCanvasStart");
 };
 
 /**
@@ -619,10 +635,10 @@ realityEditor.device.onMultiTouchCanvasMove = function(evt) {
 
 		//globalStates.editingModeObjectY
 		//globalStates.editingScaleX
-		this.realityEditor.gui.ar.positioning.onScaleEvent(touch)
+		realityEditor.gui.ar.positioning.onScaleEvent(touch);
 
 	}
-	this.cout("MultiTouchCanvasMove");
+	cout("MultiTouchCanvasMove");
 };
 
 
@@ -658,7 +674,7 @@ realityEditor.device.setStates = function(developerState, extendedTrackingState,
     }
 
     if (developerState) {
-        this.addEventHandlers();
+        realityEditor.device.addEventHandlers();
         globalStates.editingMode = true;
         document.getElementById("editingModeSwitch").checked = true;
     }
@@ -738,8 +754,26 @@ realityEditor.device.removeEventHandlers = function() {
 					//  }
 				}
 			}
+
+            for (var frameKey in generalObject2.frames) {
+                var elt = document.getElementById(frameKey);
+                if (!elt) {
+                    continue;
+                }
+                elt.style.visibility = "hidden";
+
+                var canvas = document.getElementById("canvas" + frameKey);
+                canvas.style.display = "none";
+
+                elt.removeEventListener("touchstart", realityEditor.device.onMultiTouchStart);
+                ec--;
+                elt.removeEventListener("touchmove", realityEditor.device.onMultiTouchMove);
+                ec--;
+                elt.removeEventListener("touchend", realityEditor.device.onMultiTouchEnd);
+                ec--;
+            }
 		}
 	}
 
-	this.cout("removeEventHandlers");
+	cout("removeEventHandlers");
 };

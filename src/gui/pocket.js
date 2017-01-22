@@ -110,19 +110,41 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
  * The Pocket button. Turns into a larger version or a delete button when
  * the user is creating memories or when the user is dragging saved
  * memories/programming blocks, respectively.
- *
- * Functions expected to be invoked globally are prefixed with "pocket"
  */
 (function(exports) {
 
     var buttonImages = [];
     var bigPocketImages = [];
     var bigTrashImages = [];
-    var element;
+    var pocket;
+    var palette;
     var uiButtons;
     var button;
     var bigPocketButton;
     var bigTrashButton;
+
+    var realityElements = [
+        'reality-closed-loop-circle',
+        'reality-closed-loop-slider-2d',
+        'reality-closed-loop-slider',
+        'reality-control-button',
+        'reality-control-circle',
+        'reality-control-circle-2d',
+        'reality-control-slider',
+        'reality-control-slider-2d',
+        'reality-control-slider-kinetic',
+        'reality-control-slider-kinetic-2d',
+        'reality-control-switch',
+        'reality-control-switch-multi',
+        'reality-sensor-digital',
+        'reality-sensor-graph',
+        'reality-sensor-linear',
+        'reality-sensor-orientation',
+        'reality-sensor-rotation'
+    ];
+
+    var paletteElementsResized = false;
+    var paletteElements = [];
 
     function pocketInit() {
         realityEditor.gui.buttons.preload(buttonImages,
@@ -135,11 +157,27 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             'png/bigTrash.png', 'png/bigTrashOver.png', 'png/bigTrashSelect.png', 'png/bigTrashEmpty.png'
         );
 
+        pocket = document.querySelector('.pocket');
+        palette = document.querySelector('.palette');
+
         uiButtons = document.getElementById('UIButtons');
 
         button = document.getElementById('pocketButton');
         bigPocketButton = document.getElementById('bigPocketButton');
         bigTrashButton = document.getElementById('bigTrashButton');
+
+        // On touching an element-template, upload to currently visible object
+        pocket.addEventListener('pointerdown', function(evt) {
+            if (!evt.target.classList.contains('element-template')) {
+                return;
+            }
+            var objectIds = Object.keys(globalObjects);
+            if (objectIds.length !== 1) {
+                return;
+            }
+            realityEditor.gui.frame.create(objectIds[0], new realityEditor.gui.frame.Frame(evt.target.dataset.src));
+            pocketHide();
+        });
 
         button.addEventListener('pointerenter', function() {
             if (globalStates.guiState !== "ui" && !globalProgram.objectA) {
@@ -196,7 +234,7 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
         });
         ec++;
 
-        element = document.querySelector('.pocket');
+        createPocketUIPalette();
     }
 
     function pocketButtonIsBig() {
@@ -213,31 +251,36 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
 
 
     function pocketShow() {
-        element.classList.add('pocketShown');
+        pocket.classList.add('pocketShown');
         updateButtons();
+        if (!paletteElementsResized) {
+            for (var i = 0; i < paletteElements.length; i++) {
+                resizePaletteElement(paletteElements[i]);
+            }
+            paletteElementsResized = true;
+        }
     }
 
     function pocketHide() {
-        element.classList.remove('pocketShown');
-        uiButtons.classList.remove('bigPocket');
-        uiButtons.classList.remove('bigTrash');
+        pocket.classList.remove('pocketShown');
+        uiButtons.classList.remove('bigPocket', 'bigTrash');
         updateButtons();
     }
 
     function updateButtons() {
         if (pocketShown()) {
-            button.src = buttonImages[2].src
+            button.src = buttonImages[2].src;
             bigPocketButton.src = bigPocketImages[2].src;
             bigTrashButton.src = bigTrashImages[2].src;
         } else {
-            button.src = buttonImages[0].src
+            button.src = buttonImages[0].src;
             bigPocketButton.src = bigPocketImages[0].src;
             bigTrashButton.src = bigTrashImages[0].src;
         }
     }
 
     function pocketShown() {
-        return element.classList.contains('pocketShown');
+        return pocket.classList.contains('pocketShown');
     }
 
     function pocketOnMemoryCreationStart() {
@@ -256,6 +299,33 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
 
     function pocketOnMemoryDeletionStop() {
         uiButtons.classList.remove('bigTrash');
+    }
+
+    function resizePaletteElement(element) {
+        var bounds = element.getBoundingClientRect();
+        var parentBounds = element.parentNode.getBoundingClientRect();
+
+        var scale = Math.min(parentBounds.width / bounds.width, parentBounds.height / bounds.height, 1);
+        element.style.transform = 'scale(' + scale + ')';
+        element.style.width = parentBounds.width + 'px';
+        element.style.height = parentBounds.height + 'px';
+    }
+
+    function createPocketUIPalette() {
+        for (var element of realityElements) {
+            var container = document.createElement('div');
+            container.classList.add('palette-container');
+            container.classList.add('element-template');
+            container.dataset.src = '/bower_components/' + element + '/index.html';
+
+            var elt = document.createElement('iframe');
+            elt.classList.add('palette-element');
+            elt.src = '/bower_components/' + element + '/index.html?demo=true';
+            paletteElements.push(elt);
+            container.appendChild(elt);
+
+            palette.appendChild(container);
+        }
     }
 
     exports.pocketInit = pocketInit;

@@ -508,9 +508,6 @@ body {
 }
 
 .memoryBar {
-    position: fixed;
-    width: 100%;
-    text-align: center;
     margin: 0;
     padding: 0;
     z-index: 5;
@@ -600,16 +597,11 @@ body {
 
     border: 4px solid #01fffc;
     border-radius: 60px;
-    transition: width 0.3s linear, height 0.3s linear, border-radius 0.3s linear, border-width 0.3s linear;
 
     /* this is a hack for adding the interface in front of the transformed web interface */
     z-index: 3;
     -webkit-transform-style: preserve-3d;
     -webkit-transform: translateZ(6px);
-}
-
-#overlay.overlayMemoryInstant {
-    transition: width 0.01s linear, height 0.01s linear, border-radius 0.01s linear, border-width 0.01s linear;
 }
 
 #overlay.overlayPositive,
@@ -1009,3 +1001,24 @@ Logic Interface CSS
 .pocket.pocketShown {
     display: block;
 }
+
+.palette {
+    width: calc(100% - 10vw);
+}
+
+.element-template {
+    width: 8vw;
+    height: 8vw;
+    border: 2px solid #00ff00;
+    display: inline-block;
+    margin: 0.5vw;
+    background: rgba(0, 255, 0, 0.3);
+    overflow: hidden;
+}
+
+
+.palette-element {
+    border: 0;
+    transform-origin: 0 0;
+}
+

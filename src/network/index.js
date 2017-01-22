@@ -272,6 +272,14 @@ realityEditor.network.onInternalPostMessage = function(e) {
         msgContent = JSON.parse(e);
     }
 
+    if (msgContent.resendOnElementLoad) {
+        var elt = document.getElementById('iframe' + msgContent.nodeKey);
+        if (elt) {
+            var data = elt.dataset;
+            realityEditor.network.onElementLoad(data.objectKey, data.nodeKey);
+        }
+    }
+
     var tempThisObject = {};
     var thisVersionNumber;
 
@@ -295,6 +303,8 @@ realityEditor.network.onInternalPostMessage = function(e) {
             tempThisObject = objects[msgContent.object];
         } else if (msgContent.node in objects[msgContent.object].nodes) {
             tempThisObject = objects[msgContent.object].nodes[msgContent.node];
+        } else if (msgContent.node in objects[msgContent.object].frames) {
+            tempThisObject = objects[msgContent.object].frames[msgContent.node];
         } else return;
 
     } else if (msgContent.object in pocketItem) {
@@ -421,6 +431,17 @@ realityEditor.network.onInternalPostMessage = function(e) {
         }
 
     }
+
+    if (typeof msgContent.createNode !== "undefined") {
+        var node = new Node();
+        node.name = msgContent.createNode.name;
+        node.frame = msgContent.node;
+        node.x = (tempThisObject.x || 0) + (Math.random() - 0.5) * 160;
+        node.y = (tempThisObject.y || 0) + (Math.random() - 0.5) * 160;
+        var nodeKey = node.frame + msgContent.createNode.name;
+        objects[msgContent.object].nodes[nodeKey] = node;
+        realityEditor.network.postNewNode(objects[msgContent.object].ip, msgContent.object, nodeKey, node);
+    }
 };
 
 realityEditor.network.deleteData = function(url) {
@@ -483,19 +504,41 @@ realityEditor.network.getData = function(url, thisKey, callback) {
     }
 };
 
-realityEditor.network.postData = function(url, body) {
+/**
+ * POST data as json to url, calling callback with the
+ * JSON-encoded response data when finished
+ * @param {String} url
+ * @param {Object} body
+ * @param {Function<Error, Object>} callback
+ */
+realityEditor.network.postData = function(url, body, callback) {
     var request = new XMLHttpRequest();
     var params = JSON.stringify(body);
     request.open('POST', url, true);
-    var _this = this;
     request.onreadystatechange = function () {
-        if (request.readyState == 4) _this.cout("It worked!");
+        if (request.readyState !== 4) {
+            return;
+        }
+        if (!callback) {
+            return;
+        }
+
+        if (request.status === 200) {
+            try {
+                callback(null, JSON.parse(request.responseText));
+            } catch(e) {
+                callback({status: request.status, error: e, failure: true}, null);
+            }
+            return;
+        }
+
+        callback({status: request.status, failure: true}, null);
     };
+
     request.setRequestHeader("Content-type", "application/json");
     //request.setRequestHeader("Content-length", params.length);
     // request.setRequestHeader("Connection", "close");
     request.send(params);
-    this.cout("postData");
 };
 
 realityEditor.network.postLinkToServer = function(linkObject, objects){
@@ -563,6 +606,15 @@ realityEditor.network.postNewLink = function(ip, thisObjectKey, thisKey, content
     // generate action for all links to be reloaded after upload
     this.cout("sending Link");
     this.postData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/" + thisKey, content);
+};
+
+realityEditor.network.postNewNode = function(ip, objectKey, nodeKey, node) {
+    this.postData('http://' + ip + ':' + httpPort + '/object/' + objectKey + '/node/' + nodeKey, node, function(err) {
+        if (err) {
+            console.log('postNewNode error:', err);
+        }
+    });
+
 };
 
 realityEditor.network.postNewBlockLink = function(ip, thisObjectKey, thisLogicKey, thisBlockLinkKey, blockLink) {
@@ -699,6 +751,7 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
 
     var newStyle = {
         object: objectKey,
+        objectData: objects[objectKey],
         node: nodeKey,
         nodes: nodes
     };
