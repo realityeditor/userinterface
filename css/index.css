@@ -569,7 +569,7 @@ body {
 }
 */
 
-.memoryContainer, #overlay.overlayMemoryInstant {
+.memoryContainer, #overlay.overlayMemoryInstant, .memory {
     display: inline-block;
     margin: 0;
     padding: 0;
@@ -582,13 +582,6 @@ body {
 
 .memoryContainer {
     margin: 2.5px;
-}
-
-.memoryContainer.memoryDragging {
-    z-index: 4;
-    position: fixed;
-    top: 0;
-    left: 0;
 }
 
 #overlay.overlayMemoryInstant, .memoryContainer.memoryPointer,
@@ -622,11 +615,19 @@ body {
     display: block;
     margin: 0;
     padding: 0;
-    width: 100px;
-    height: 56px;
-    margin-left: calc(56px/2 - 100px/2);
     -webkit-user-select: none;
     -webkit-touch-callout: none;
+
+    object-fit: none;
+    object-position: center;
+}
+
+.memoryContainer > .memory {
+    border: none;
+    border-radius: 0px;
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
 }
 
 #overlay {
