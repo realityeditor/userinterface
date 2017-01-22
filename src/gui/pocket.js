@@ -175,7 +175,7 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             if (objectIds.length !== 1) {
                 return;
             }
-            exports.frame.create(objectIds[0], new exports.frame.Frame(evt.target.dataset.src));
+            realityEditor.gui.frame.create(objectIds[0], new realityEditor.gui.frame.Frame(evt.target.dataset.src));
             pocketHide();
         });
 
