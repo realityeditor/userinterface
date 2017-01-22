@@ -986,10 +986,13 @@ Logic Interface CSS
   -webkit-user-select:none;
 }
 
+.blockBox {
+    display: inline-block;
+}
+
 .blockTitle {
   /*display: inline-block;*/
   text-align: center;
-  /* height: 10px; */
 }
 
 .blockMoveDiv {
