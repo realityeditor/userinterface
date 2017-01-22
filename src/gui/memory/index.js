@@ -455,6 +455,9 @@ function memoryCanCreate() {
     if (realityEditor.gui.pocket.pocketShown()) {
         return false;
     }
+    if (globalStates.preferencesButtonState) {
+        return false;
+    }
     return true;
 }
 
