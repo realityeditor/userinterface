@@ -438,7 +438,9 @@ realityEditor.network.onInternalPostMessage = function(e) {
         node.frame = msgContent.node;
         node.x = (tempThisObject.x || 0) + (Math.random() - 0.5) * 160;
         node.y = (tempThisObject.y || 0) + (Math.random() - 0.5) * 160;
-        objects[msgContent.object].nodes[node.frame + '.' + msgContent.createNode.name + '.' + realityEditor.device.utilities.uuidTime()] = node;
+        var nodeKey = node.frame + msgContent.createNode.name;
+        objects[msgContent.object].nodes[nodeKey] = node;
+        realityEditor.network.postNewNode(objects[msgContent.object].ip, msgContent.object, nodeKey, node);
     }
 };
 
@@ -604,6 +606,15 @@ realityEditor.network.postNewLink = function(ip, thisObjectKey, thisKey, content
     // generate action for all links to be reloaded after upload
     this.cout("sending Link");
     this.postData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/" + thisKey, content);
+};
+
+realityEditor.network.postNewNode = function(ip, objectKey, nodeKey, node) {
+    this.postData('http://' + ip + ':' + httpPort + '/object/' + objectKey + '/node/' + nodeKey, node, function(err) {
+        if (err) {
+            console.log('postNewNode error:', err);
+        }
+    });
+
 };
 
 realityEditor.network.postNewBlockLink = function(ip, thisObjectKey, thisLogicKey, thisBlockLinkKey, blockLink) {
