@@ -85,6 +85,8 @@ function MemoryPointer(link, isObjectA) {
     this.offsetY = Math.sin(theta) * 20;
 
     this.alive = true;
+    this.lastDraw = Date.now();
+    this.idleTimeout = 100;
 
     this.update = this.update.bind(this);
     this.update();
@@ -132,11 +134,17 @@ MemoryPointer.prototype.update = function() {
         this.remove();
         return;
     }
+    if (this.lastDraw + this.idleTimeout < Date.now()) {
+        this.remove();
+        return;
+    }
 
     requestAnimationFrame(this.update);
 };
 
 MemoryPointer.prototype.draw = function() {
+    this.lastDraw = Date.now();
+
     var connectedValue = this.getConnectedValue();
     var cvX = connectedValue.screenX || 0;
     var cvY = connectedValue.screenY || 0;
