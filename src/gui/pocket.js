@@ -179,8 +179,24 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             pocketHide();
         });
 
+        function isPocketWanted() {
+            if (pocketShown()) {
+                return true;
+            }
+            if (globalStates.guiState === "node" && globalProgram.objectA) {
+                return true;
+            }
+            if (globalStates.guiState !== "ui") {
+                return false;
+            }
+            if (globalStates.preferencesButtonState) {
+                return false;
+            }
+            return true;
+        }
+
         button.addEventListener('pointerenter', function() {
-            if (globalStates.guiState !== "ui" && !globalProgram.objectA) {
+            if (!isPocketWanted()) {
                 return;
             }
 
@@ -196,7 +212,7 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
         ec++;
 
         button.addEventListener('pointerleave', function() {
-            if (globalStates.guiState !== "ui" && !globalProgram.objectA) {
+            if (!isPocketWanted()) {
                 return;
             }
 
@@ -206,7 +222,7 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
         ec++;
 
         bigPocketButton.addEventListener('pointerenter', function() {
-            if (globalStates.guiState !== "ui") {
+            if (!isPocketWanted()) {
                 return;
             }
 
@@ -215,8 +231,7 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             }
 
             if (realityEditor.gui.memory.memoryCanCreate()) {
-                overlayDiv.classList.add('overlayMemoryInstant');
-                overlayDiv.classList.add('overlayMemory');
+                realityEditor.gui.memory.createMemory();
             }
 
             toggleShown();
@@ -225,7 +240,7 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
         ec++;
 
         bigPocketButton.addEventListener('pointerleave', function() {
-            if (globalStates.guiState !== "ui") {
+            if (!isPocketWanted()) {
                 return;
             }
 

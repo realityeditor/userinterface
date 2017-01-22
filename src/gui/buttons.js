@@ -127,6 +127,8 @@ realityEditor.gui.buttons.draw = function() {
 	ec++;
 
 	document.getElementById("guiButtonImage1").addEventListener("touchend", function () {
+		realityEditor.gui.pocket.pocketHide();
+
 		document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
 
 		globalStates.guiState = "ui";
@@ -147,6 +149,8 @@ realityEditor.gui.buttons.draw = function() {
 	ec++;
 
 	document.getElementById("guiButtonImage2").addEventListener("touchend", function () {
+		realityEditor.gui.pocket.pocketHide();
+
 		document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
 		globalStates.guiState = "node";
 
@@ -296,6 +300,7 @@ realityEditor.gui.buttons.draw = function() {
 	ec++;
 
 	document.getElementById("preferencesButton").addEventListener("touchend", function () {
+		realityEditor.gui.pocket.pocketHide();
 
 		if (globalStates.guiState === "logic") {
 		this.realityEditor.gui.crafting.eventHelper.hideBlockSettings();
@@ -356,6 +361,8 @@ realityEditor.gui.buttons.draw = function() {
 	}.bind(this));
 	ec++;
 	document.getElementById("freezeButton").addEventListener("touchend", function () {
+		realityEditor.gui.pocket.pocketHide();
+
 		if (globalStates.freezeButtonState === true) {
 			document.getElementById('freezeButton').src = freezeButtonImage[0].src;
 			globalStates.freezeButtonState = false;
