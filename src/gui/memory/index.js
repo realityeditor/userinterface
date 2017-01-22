@@ -149,7 +149,7 @@ MemoryContainer.prototype.startDragging = function() {
 
     var rect = this.image.getBoundingClientRect();
     this.image.classList.add('memoryDragging');
-    this.image.style.transform = 'translate(' + rect.left + 'px,' + rect.top + 'px)';
+    this.image.style.transform = 'translate3d(' + rect.left + 'px,' + rect.top + 'px, 3px)';
 
     this.image.parentNode.removeChild(this.image);
     document.querySelector('.memoryDragContainer').appendChild(this.image);
@@ -177,7 +177,7 @@ MemoryContainer.prototype.onTouchMove = function() {
     if (this.dragging) {
         var top = touch.top + this.dragDelta.top + 'px';
         var left = touch.left + this.dragDelta.left + 'px';
-        this.image.style.transform = 'translate(' + left + ',' + top + ')';
+        this.image.style.transform = 'translate3d(' + left + ',' + top + ', 3px)';
     }
 };
 
