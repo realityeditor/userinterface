@@ -249,7 +249,6 @@ MemoryContainer.prototype.onPointerUp = function() {
 
         overlayDiv.style.backgroundImage = 'none';
         overlayDiv.classList.remove('overlayMemory');
-        overlayDiv.classList.remove('overlayMemoryInstant');
         overlayDiv.style.visibility = 'hidden';
         activeThumbnail = '';
         var potentialObjects = Object.keys(globalObjects);
@@ -379,8 +378,6 @@ function initMemoryBar() {
         var container = new MemoryContainer(memoryContainer);
         barContainers.push(container);
     }
-
-    overlayDiv.addEventListener('transitionend', onOverlayTransitionEnd);
 }
 
 function removeMemoryBar() {
@@ -388,15 +385,12 @@ function removeMemoryBar() {
         container.remove();
     });
     barContainers = [];
-
-    overlayDiv.removeEventListener('transitionend', onOverlayTransitionEnd);
 }
 
-function onOverlayTransitionEnd() {
-    if (overlayDiv.classList.contains('overlayMemory')) {
-        window.location.href = 'of://createMemory';
-        realityEditor.gui.pocket.pocketOnMemoryCreationStart();
-    }
+function createMemory() {
+    overlayDiv.classList.add('overlayMemory');
+    window.location.href = 'of://createMemory';
+    realityEditor.gui.pocket.pocketOnMemoryCreationStart();
 }
 
 function receiveThumbnail(thumbnailUrl) {
@@ -471,5 +465,6 @@ exports.addObjectMemory = addObjectMemory;
 exports.MemoryContainer = MemoryContainer;
 exports.getMemoryWithId = getMemoryWithId;
 exports.memoryCanCreate = memoryCanCreate;
+exports.createMemory = createMemory;
 
 }(realityEditor.gui.memory));

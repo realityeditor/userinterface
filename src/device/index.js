@@ -401,9 +401,9 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 	overlayDiv.style.visibility = "hidden";
 
 	overlayDiv.classList.remove('overlayMemory');
-	overlayDiv.classList.remove('overlayMemoryInstant');
-    realityEditor.gui.pocket.pocketOnMemoryCreationStop();
-	if (overlayDiv.style.backgroundImage !== 'none') {
+
+	realityEditor.gui.pocket.pocketOnMemoryCreationStop();
+	if (overlayDiv.style.backgroundImage !== '' && overlayDiv.style.backgroundImage !== 'none') {
 		overlayDiv.style.backgroundImage = 'none';
 		window.location.href = 'of://clearMemory';
 	}

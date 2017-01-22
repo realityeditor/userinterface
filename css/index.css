@@ -520,7 +520,7 @@ body {
 }
 */
 
-.memoryContainer, #overlay.overlayMemoryInstant, .memory {
+.memoryContainer, #overlay.overlayMemory, .memory {
     display: inline-block;
     margin: 0;
     padding: 0;
@@ -535,7 +535,7 @@ body {
     margin: 2.5px;
 }
 
-#overlay.overlayMemoryInstant, .memoryContainer.memoryPointer,
+#overlay.overlayMemory, .memoryContainer.memoryPointer,
 .memoryWeb > .memoryContainer {
     position: absolute;
     margin-left: -30px;
