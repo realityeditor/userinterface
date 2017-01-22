@@ -365,12 +365,12 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 
 	// todo why is this just hidden and not display none??
 
-	overlayDiv.style.visibility = "hidden";
+	overlayDiv.style.display = "none";
 
 	overlayDiv.classList.remove('overlayMemory');
 	overlayDiv.classList.remove('overlayMemoryInstant');
     this.realityEditor.gui.pocket.pocketOnMemoryCreationStop();
-	if (overlayDiv.style.backgroundImage !== 'none') {
+	if (overlayDiv.style.backgroundImage !== 'none' && overlayDiv.style.backgroundImage !== '') {
 		overlayDiv.style.backgroundImage = 'none';
 		window.location.href = 'of://clearMemory';
 	}
@@ -394,7 +394,7 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 realityEditor.device.onDocumentPointerDown = function(evt) {
 	globalStates.pointerPosition = [evt.clientX, evt.clientY];
 
-	overlayDiv.style.visibility = "visible";
+	overlayDiv.style.display = "inline";
 	// Translate up 6px to be above pocket layer
 	overlayDiv.style.transform = 'translate3d(' + evt.clientX + 'px,' + evt.clientY + 'px,6px)';
 	if (globalStates.guiButtonState && !globalStates.freezeButtonState) {

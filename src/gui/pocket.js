@@ -197,6 +197,7 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
         ec++;
 
         element = document.querySelector('.pocket');
+		pocketHide();
     }
 
     function pocketButtonIsBig() {

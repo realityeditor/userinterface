@@ -631,7 +631,7 @@ body {
 }
 
 #overlay {
-    visibility: hidden;
+    display: none;
     pointer-events: none;
     position: fixed;
 

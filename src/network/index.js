@@ -132,6 +132,17 @@ realityEditor.network.addHeartbeatObject = function (beat) {
                         }
 
                     }
+
+                    objects[thisKey].uuid = thisKey;
+
+                    for (var nodeKey in objects[thisKey].nodes) {
+                         objects[thisKey].nodes[nodeKey].uuid = nodeKey;
+                    }
+
+                    for (var linkKey in objects[thisKey].links) {
+                        objects[thisKey].links[linkKey].uuid = linkKey;
+                    }
+
                     _this.cout(JSON.stringify(objects[thisKey]));
 
                     _this.realityEditor.gui.memory.addObjectMemory(objects[thisKey]);
@@ -181,6 +192,16 @@ realityEditor.network.onAction = function (action) {
                     objects[thisKey].links = req.links;
                 }
 
+				objects[thisKey].uuid = thisKey;
+
+				for (var nodeKey in objects[thisKey].nodes) {
+					objects[thisKey].nodes[nodeKey].uuid = nodeKey;
+				}
+
+				for (var linkKey in objects[thisKey].links) {
+					objects[thisKey].links[linkKey].uuid = linkKey;
+				}
+
                 // cout(objects[thisKey]);
 
                 _this.cout("got links");
@@ -215,14 +236,26 @@ realityEditor.network.onAction = function (action) {
                     for (var nodeKey in getNodes) {
                         var thisObject = objects[thisKey].nodes[nodeKey];
 
-                        thisObject.x = getNodes[nodeKey].x;
-                        thisObject.y = getNodes[nodeKey].y;
-                        thisObject.scale = getNodes[nodeKey].scale;
-                        thisObject.matrix = getNodes[nodeKey].matrix;
-                        thisObject.name = getNodes[nodeKey].name;
-                        if(getNodes[nodeKey].text)
-                        thisObject.text = getNodes[nodeKey].text;
+                        this.updateKey(thisObject, getNodes[nodeKey]);
                     }
+                }
+
+				objects[thisKey].uuid = thisKey;
+
+				for (var nodeKey in objects[thisKey].nodes) {
+					objects[thisKey].nodes[nodeKey].uuid = nodeKey;
+				}
+
+				for (var linkKey in objects[thisKey].links) {
+					objects[thisKey].links[linkKey].uuid = linkKey;
+				}
+
+				console.log("changed object");
+
+				if(globalStates.currentLogic) {
+                    if(globalStates.currentLogic.grid)
+                        console.log("update grid");
+                    realityEditor.gui.crafting.updateGrid(globalStates.currentLogic.grid);
                 }
 
                 _this.cout("got object and nodes");
@@ -260,6 +293,17 @@ realityEditor.network.onAction = function (action) {
 
     for(var key in thisAction) {
         this.cout("found action: " + JSON.stringify(key));
+    }
+};
+
+realityEditor.network.updateKey = function (origin, remote) {
+    for (var nodeKey in remote) {
+        if(typeof remote[nodeKey] !== "object"){
+            origin[nodeKey] = remote[nodeKey];
+        } else {
+            console.log(nodeKey);
+            this.updateKey(origin[nodeKey], remote[nodeKey])
+        }
     }
 };
 

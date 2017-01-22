@@ -306,11 +306,12 @@ realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink = function(blockLin
 
 // todo add: if (!_.hasOwnProperty(key)) continue;
 realityEditor.gui.crafting.eventHelper.getServerObjectLogicKeys = function(logic) {
+
     for (var key in objects) {
         var object = objects[key];
         for (var logicKey in object.nodes) {
             if(object.nodes[logicKey].type === "logic") {
-                if (object.nodes[logicKey] === logic) {
+                if (object.nodes[logicKey].uuid === logic.uuid) {
                     return {
                         ip: objects[key].ip,
                         objectKey: key,
