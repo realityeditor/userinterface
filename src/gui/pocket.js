@@ -198,11 +198,31 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
                 return;
             }
 
+            if (globalStates.guiState === 'node' && !globalProgram.objectA) {
+                return;
+            }
+
             toggleShown();
             // Show hover
             button.src = buttonImages[1].src;
         });
+        ec++;
 
+        button.addEventListener('pointerup', function() {
+            if (!isPocketWanted()) {
+                return;
+            }
+
+            if (pocketButtonIsBig()) {
+                return;
+            }
+
+            if (globalStates.guiState !== 'node') {
+                return;
+            }
+
+            toggleShown();
+        });
         ec++;
 
         button.addEventListener('pointerleave', function() {
