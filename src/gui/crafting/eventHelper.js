@@ -186,6 +186,7 @@ realityEditor.gui.crafting.eventHelper.updateCraftingVisibility = function(curre
     }
 };
 
+realityEditor.gui.crafting.eventHelper.visibilityCounter = null;
 realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(contents, shouldShow) {
     if (shouldShow !== globalStates.currentLogic.guiState.isCraftingBackgroundShown) {
         console.log("show datacrafting background? " + shouldShow);
@@ -212,8 +213,12 @@ realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(c
 
             //craftingBoard.style.webkitBackdropFilter = "blur(30px)";
 
+            if(this.visibilityCounter){
+                clearTimeout( this.visibilityCounter);
+                craftingBoard.className = "craftingBoardBlur";
+                this.visibilityCounter = null;
 
-            craftingBoard.className = "craftingBoardBlur";
+
             // force the dom to re-render
             //craftingBoard.style.visibility = "hidden";
             //craftingBoard.style.visibility = "visible";
@@ -242,14 +247,15 @@ realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(c
                 blockDom.setAttribute("class", "blockDivPlaced visibleFadeIn");
 
             });
+            }
 
             //globalStates.guiState = "logic";
 
         } else {
 
             //craftingBoard.style.webkitBackdropFilter = "none";
+           this.visibilityCounter = setTimeout(function(){ craftingBoard.className = "craftingBoardClear";
 
-            craftingBoard.className = "craftingBoardClear";
             // force the dom to re-render
             //craftingBoard.style.visibility = "hidden";
             //craftingBoard.style.visibility = "visible";
@@ -285,6 +291,7 @@ realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(c
                 //    blockDom.style.opacity = "0.5";
                 //}
             });
+           }, 300);
 
             //globalStates.guiState = "node";
 

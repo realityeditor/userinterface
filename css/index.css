@@ -217,7 +217,8 @@ body {
     -webkit-user-select: none;
     user-select: none;
 
-    -webkit-transform: translateZ(1px);
+    -webkit-transform: translateZ(2px);
+    z-index: 10;
 }
 
 @keyframes blurVisible {
@@ -243,6 +244,7 @@ body {
 }
 
 .craftingBoardBlur {
+
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
 
@@ -250,14 +252,15 @@ body {
     animation-duration: 100ms;
     -webkit-animation-fill-mode: forwards; /* Chrome, Safari, Opera */
     -webkit-animation-timing-function: ease-out;
+
 }
 
 .craftingBoardClear {
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
 
     animation-name: blurInvisible;
-    animation-duration: 400ms;
+    animation-duration: 100ms;
     -webkit-animation-fill-mode: forwards;
     -webkit-animation-timing-function: ease-out;
 }
@@ -807,10 +810,10 @@ Logic Interface CSS
 }
 
 .invisibleFadeOut {
-    opacity:0;
+    opacity:1;
 
     animation-name: fadeOut;
-    animation-duration: 400ms;
+    animation-duration: 100ms;
     -webkit-animation-fill-mode: forwards;
     -webkit-animation-timing-function: ease-out;
 }

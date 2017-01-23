@@ -316,6 +316,14 @@ realityEditor.gui.crafting.drawDataCraftingLine = function(context, linkObject, 
  **/
 
 realityEditor.gui.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
+
+
+        document.getElementById('freezeButton').src = freezeButtonImage[2].src;
+        globalStates.freezeButtonState = true;
+        window.location.href = "of://freeze";
+
+
+
     // update side menu buttons
     document.getElementById('guiButtonImage').src = guiButtonImage[5].src;
     document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
@@ -340,6 +348,16 @@ realityEditor.gui.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
  **/
 
 realityEditor.gui.crafting.craftingBoardHide = function() {
+
+    if(globalStates.currentLogic) {
+        document.getElementById('freezeButton').src = freezeButtonImage[0].src;
+        globalStates.freezeButtonState = false;
+        var memoryBackground = document.querySelector('.memoryBackground');
+        memoryBackground.innerHTML = '';
+        window.location.href = "of://unfreeze";
+    }
+
+
     // remove the block menu if it's showing
     this.blockMenu.resetBlockMenu();
     // reset side menu buttons
