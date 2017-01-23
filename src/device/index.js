@@ -578,6 +578,7 @@ realityEditor.device.onMultiTouchEnd = function(evt) {
 			content.matrix = tempThisObject.matrix;
 
 		}
+		content.lastEditor = globalStates.tempUuid;
 
 		// todo for now we just send nodes but no logic locations. ---- Became obsolete because the logic nodes are now normal nodes
 		//  if(globalStates.editingModeKind=== "node") {

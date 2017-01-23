@@ -55,6 +55,10 @@
 createNameSpace("realityEditor.device");
 
 realityEditor.device.onload = function () {
+
+
+	globalStates.tempUuid = realityEditor.device.utilities.uuidTimeShort();
+	console.log("-----------------------------:  "+globalStates.tempUuid);
 	console.log("starting up GUI");
 	uiButtons = document.getElementById("GUI");
 	guiButtonImage= document.getElementById("guiButtonImage");
@@ -70,7 +74,8 @@ realityEditor.device.onload = function () {
 		globalStates.platform = false;
 	}
 
-	if (globalStates.platform === 'iPhone') {
+	if (globalStates.platform === 'iPhone' || globalStates.platform === "iPod touch") {
+
 		document.getElementById("logButtonDiv").style.visibility = "hidden";
 		// document.getElementById("reloadButtonDiv").style.visibility = "hidden";
 		//   document.getElementById("preferencesButtonDiv").style.bottom = "36px";
