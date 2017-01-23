@@ -369,7 +369,7 @@ function url(href) {
 
 function initMemoryBar() {
     var memoryBar = document.querySelector('.memoryBar');
-    for (var i = 0; i < 6; i++) {
+    for (var i = 0; i < 5; i++) {
         var memoryContainer = document.createElement('div');
         memoryContainer.classList.add('memoryContainer');
         memoryContainer.setAttribute('touch-action', 'none');
