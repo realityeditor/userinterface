@@ -339,6 +339,10 @@ realityEditor.gui.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
         this.initializeDataCraftingGrid(logic);
     } else {
         var nodeLogic = objects[objectKey].nodes[nodeKey];
+        if (!nodeLogic.guiState) {
+            console.log("adding new LogicGUIState");
+            nodeLogic.guiState = new LogicGUIState();
+        }
         this.initializeDataCraftingGrid(nodeLogic);
     }
 };

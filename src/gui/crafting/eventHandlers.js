@@ -76,36 +76,36 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
         if (!cell) return; // tapped on menu
         var contents = this.crafting.eventHelper.getCellContents(cell);
 
+        this.crafting.eventHelper.updateCraftingBackgroundVisibility("down", cell, contents);
+
         if (contents && !this.crafting.eventHelper.isOutputBlock(contents.block)) {
+            
             touchState = TS_TAP_BLOCK;
 
             globalStates.currentLogic.guiState.tappedContents = contents;
 
             startTapTime = Date.now();
-
+            
+            var _this = this;
             var thisTappedContents = contents;
 
-            var _this = this;
-            activeHoldTimer = setTimeout( function() {
+            activeHoldTimer = setTimeout(function () {
                 _this.crafting.eventHelper.styleBlockForHolding(thisTappedContents, true);
                 realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
             }, HOLD_TIME_THRESHOLD);
-
-            this.crafting.eventHelper.updateCraftingVisibility(cell, thisTappedContents);
-
+            
         } else {
+
             touchState = TS_CUT;
             cutLineStart = {
                 x: e.pageX,
                 y: e.pageY
             };
+            
         }
-
-        this.cout("pointerDown ->" + touchState);
     }
 
     function onPointerMove(e, setStateMove) {
-
         if (setStateMove) {
             touchState = TS_MOVE;
         }
@@ -115,6 +115,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
         }
         var contents = this.crafting.eventHelper.getCellContents(cell);
         var tappedContents = globalStates.currentLogic.guiState.tappedContents;
+
+        this.crafting.eventHelper.updateCraftingBackgroundVisibility("move", cell, globalStates.currentLogic.guiState.tappedContents);
 
         if (touchState === TS_TAP_BLOCK) {
 
@@ -147,9 +149,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             touchState = TS_MOVE;
             this.crafting.eventHelper.convertToTempBlock(tappedContents);
             this.crafting.eventHelper.moveBlockDomToPosition(tappedContents, e.pageX, e.pageY);
-
-            this.crafting.eventHelper.updateCraftingVisibility(cell, tappedContents);
-
+            
         } else if (touchState === TS_CONNECT) {
 
             // if you are over an eligible block, create a temp link and re-route grid
@@ -163,9 +163,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             } else {
                 this.crafting.eventHelper.drawLinkLine(tappedContents, e.pageX, e.pageY);
             }
-
-            this.crafting.eventHelper.updateCraftingVisibility(cell, tappedContents);
-
+            
         } else if (touchState === TS_MOVE) {
 
             realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
@@ -185,9 +183,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             } else {
                 this.crafting.eventHelper.styleBlockForPlacement(tappedContents, false);
             }
-
-            this.crafting.eventHelper.updateCraftingVisibility(cell, tappedContents);
-
+            
         } else if (touchState === TS_CUT) {
             // draw the cut line from cutLineStart to current position
             var cutLineEnd = {
@@ -197,8 +193,6 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
 
             this.crafting.eventHelper.drawCutLine(cutLineStart, cutLineEnd);
         }
-
-        this.cout("pointerMove ->" + touchState);
     }
 
     function onDocumentUp(e) {
@@ -217,7 +211,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
         var contents = this.crafting.eventHelper.getCellContents(cell);
         var tappedContents = globalStates.currentLogic.guiState.tappedContents;
 
-        this.crafting.eventHelper.toggleDatacraftingExceptPort(tappedContents, true);
+        //this.crafting.eventHelper.toggleDatacraftingExceptPort(tappedContents, true); // always make sure the background shows again
+        this.crafting.eventHelper.updateCraftingBackgroundVisibility("up", cell, globalStates.currentLogic.guiState.tappedContents);
 
         if (touchState === TS_TAP_BLOCK) {
             // for now -> do nothing
@@ -268,10 +263,10 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
         globalStates.currentLogic.guiState.tappedContents = null;
         cutLineStart = null;
         touchState = TS_NONE;
-
         this.cout("pointerUp ->" + touchState + "(" + didPointerLeave + ")");
     }
     
+    // dragging onto sidebar menu triggers onPointerUp
     function onPointerLeave(e) {
         if (e.pageX > window.innerWidth - (menuBarWidth + 20)) {
            // onPointerUp.call(this, e, true);
