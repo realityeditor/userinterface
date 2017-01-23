@@ -223,15 +223,16 @@ realityEditor.network.updateNode= function (origin, remote, thisKey, nodeKey) {
             }
         }
     }
-console.log(remote.links);
 
 if(globalStates.currentLogic){
-    console.log("YES");
-    realityEditor.gui.crafting.craftingBoardHide();
-    realityEditor.gui.crafting.craftingBoardVisible(thisKey,nodeKey);
-    // console.log(globalStates.currentLogic.grid);
+    if(globalStates.currentLogic.uuid === nodeKey) {
+        console.log("YES");
+        realityEditor.gui.crafting.craftingBoardHide();
+        realityEditor.gui.crafting.craftingBoardVisible(thisKey, nodeKey);
+        // console.log(globalStates.currentLogic.grid);
 //   realityEditor.gui.crafting.craftingBoardVisible(thisKey, nodeKey);
-   // realityEditor.gui.crafting.updateGrid(globalStates.currentLogic.grid);
+        // realityEditor.gui.crafting.updateGrid(globalStates.currentLogic.grid);
+    }
 } else {
     console.log("NO");
 
