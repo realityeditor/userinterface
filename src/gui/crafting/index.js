@@ -119,7 +119,7 @@ realityEditor.gui.crafting.addDomElementForBlock = function(block, grid, isTempB
     if (block.name) {
 
         // show image full width and height of block if able to find
-        var blockIcon = this.getBlockIcon(globalStates.currentLogic, block.type);
+        var blockIcon = this.getBlockIcon(globalStates.currentLogic, block.type, true);
         if (blockIcon) {
             var iconImage = document.createElement("img");
             iconImage.setAttribute('class', 'blockIcon');
@@ -134,12 +134,21 @@ realityEditor.gui.crafting.addDomElementForBlock = function(block, grid, isTempB
             blockContents.appendChild(blockTitle);
         }
 
+       /* var blockTitle2 = document.createElement('div');
+        blockTitle2.setAttribute('class', 'blockTitle');
+        blockTitle2.innerHTML = "&nbsp;&nbsp;"+block.name+"&nbsp;&nbsp;";
+  //      blockTitle2.style.backgroundColor = "rgba(0,0,0,0.5)";
+        blockTitle2.style.width = blockContents.style.width;
+        blockContents.appendChild(blockTitle2);
+*/
+
         // add a transparent div on top to display stripes when moving the block
         var moveDiv = document.createElement("div");
         moveDiv.setAttribute('class', 'blockMoveDiv');
         blockContents.appendChild(moveDiv);
     }
     blockDomElement.style.display = 'inline-block';
+
 
     // if we're adding a temp block, it doesn't have associated cells it can use to calculate position. we need to remember to set position to pointer afterwards
     if (!isTempBlock) { //TODO: is there a way to set position for new blocks consistently?
@@ -159,7 +168,8 @@ realityEditor.gui.crafting.addDomElementForBlock = function(block, grid, isTempB
     guiState.blockDomElements[block.globalId] = blockDomElement;
 };
 
-realityEditor.gui.crafting.getBlockIcon = function(logic, blockName) {
+realityEditor.gui.crafting.getBlockIcon = function(logic, blockName, labelSwitch) {
+   // if(!label) label = false;
     var keys = this.eventHelper.getServerObjectLogicKeys(logic);
 
     if (blockIconCache[keys.logicKey] === undefined) {
@@ -168,15 +178,24 @@ realityEditor.gui.crafting.getBlockIcon = function(logic, blockName) {
 
     // download icon to cache if not already there
     if (blockIconCache[keys.logicKey][blockName] === undefined) {
-        var iconUrl = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + blockName + "/icon.png";
         var icon = new Image();
-        icon.src = iconUrl;
+        icon.src = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + blockName + "/icon.svg";
         blockIconCache[keys.logicKey][blockName] = icon;
+
+        var label = new Image();
+        label.src = 'http://' + keys.ip + ':' + httpPort + '/logicBlock/' + blockName + "/label.svg";
+        blockIconCache[keys.logicKey][blockName+"label"] = label;
     }
 
     // otherwise just directly return from cache
-    return blockIconCache[keys.logicKey][blockName];
-}
+    if(labelSwitch === false) {
+        return blockIconCache[keys.logicKey][blockName];
+    }
+    else {
+        return blockIconCache[keys.logicKey][blockName+"label"];
+    }
+
+};
 
 // updates datacrafting visuals each frame
 // renders all the links for a datacrafting grid, draws cut line if present, draws temp block if present
@@ -430,6 +449,7 @@ realityEditor.gui.crafting.initializeDataCraftingGrid = function(logic) {
     globalStates.currentLogic = logic;
 
     var container = document.getElementById('craftingBoard');
+    container.className = "craftingBoardBlur";
 
     // initializes the data model for the datacrafting board
     logic.grid = new this.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight);

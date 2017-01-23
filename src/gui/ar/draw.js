@@ -140,7 +140,7 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
 
                 generalNode = generalObject.nodes[nodeKey];
 
-                if (globalStates.guiState ==="node") {
+                if (globalStates.guiState ==="node" || globalStates.guiState === "logic") {
                     this.drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, generalNode.type, thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
 
 
@@ -189,7 +189,7 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
     }
 
     // draw all lines
-    if (globalStates.guiState ==="node" && !globalStates.editingMode) {
+    if ( (globalStates.guiState ==="node"|| globalStates.guiState === "logic") && !globalStates.editingMode) {
         for (var objectKey in objects) {
             this.ar.lines.drawAllLines(objects[objectKey], thisGlobalCanvas.context);
         }
@@ -244,7 +244,7 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
             //console.log(document.getElementById("iframe"+ nodeKey));
             generalNode = generalObject.nodes[nodeKey];
 
-            if (globalStates.guiState === "node" && generalNode.type === "logic") {
+            if ( (globalStates.guiState === "node" || globalStates.guiState === "logic") && generalNode.type === "logic") {
                 this.drawTransformed(objectKey, nodeKey, generalNode,
                     thisMatrix, generalNode.type, globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix);
 

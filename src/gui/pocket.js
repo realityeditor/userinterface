@@ -250,6 +250,7 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
         ec++;
 
         createPocketUIPalette();
+		pocketHide();
     }
 
     function pocketButtonIsBig() {
@@ -327,7 +328,8 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
     }
 
     function createPocketUIPalette() {
-        for (var element of realityElements) {
+        for (var i = 0; i<realityElements.length; i++){
+            var element = realityElements[i];
             var container = document.createElement('div');
             container.classList.add('palette-container');
             container.classList.add('element-template');

@@ -132,6 +132,17 @@ realityEditor.network.addHeartbeatObject = function (beat) {
                         }
 
                     }
+
+                    objects[thisKey].uuid = thisKey;
+
+                    for (var nodeKey in objects[thisKey].nodes) {
+                         objects[thisKey].nodes[nodeKey].uuid = nodeKey;
+                    }
+
+                    for (var linkKey in objects[thisKey].links) {
+                        objects[thisKey].links[linkKey].uuid = linkKey;
+                    }
+
                     _this.cout(JSON.stringify(objects[thisKey]));
 
                     _this.realityEditor.gui.memory.addObjectMemory(objects[thisKey]);
@@ -143,6 +154,114 @@ realityEditor.network.addHeartbeatObject = function (beat) {
     }
 };
 
+realityEditor.network.updateObject = function (origin, remote, thisKey) {
+
+    origin.x = remote.x;
+    origin.y = remote.y;
+    origin.scale = remote.scale;
+    origin.developer = remote.developer;
+
+    if(remote.matrix) {
+       origin.matrix = remote.matrix;
+    }
+
+    for (var nodeKey in remote.nodes) {
+        if(!origin.nodes[nodeKey]) {
+            origin.nodes[nodeKey] = remote.nodes[nodeKey];
+        } else {
+
+            origin.nodes[nodeKey].x =  remote.nodes[nodeKey].x;
+            origin.nodes[nodeKey].y =  remote.nodes[nodeKey].y;
+            origin.nodes[nodeKey].scale =  remote.nodes[nodeKey].scale;
+
+            origin.nodes[nodeKey].name =  remote.nodes[nodeKey].name;
+            if(remote.nodes[nodeKey].text)
+                origin.nodes[nodeKey].text =  remote.nodes[nodeKey].text;
+            if(remote.nodes[nodeKey].matrix)
+            origin.nodes[nodeKey].matrix =  remote.nodes[nodeKey].matrix;
+        }
+
+        if(globalDOMCach["iframe" + nodeKey]) {
+            if(globalDOMCach["iframe" + nodeKey]._loaded)
+                realityEditor.network.onElementLoad(thisKey, nodeKey);
+        }
+    }
+};
+
+
+realityEditor.network.updateNode= function (origin, remote, thisKey, nodeKey) {
+        if(!origin) {
+            origin = remote;
+        } else {
+
+            origin.x =  remote.x;
+            origin.y =  remote.y;
+            origin.scale =  remote.scale;
+
+            origin.name =  remote.name;
+            if(remote.text)
+                origin.text =  remote.text;
+            if(remote.matrix)
+                origin.matrix =  remote.matrix;
+        }
+
+    if (remote.blocks) {
+        if (!origin.blocks) origin.blocks = {};
+        for(var x in origin.blocks){
+            if (!origin.blocks[x]) origin.blocks[x] = {};
+            for (var y in remote.blocks[x]){
+                origin.blocks[x][y] = remote.blocks[x][y];
+            }
+        }
+    }
+    if (remote.links) {
+        if (!origin.links) origin.links = {};
+		for(var x in origin.links){
+            if (!origin.links[x]) origin.links[x] = {};
+            for (var y in remote.links[x]){
+                origin.links[x][y] = remote.links[x][y];
+            }
+        }
+    }
+console.log(remote.links);
+
+if(globalStates.currentLogic){
+    console.log("YES");
+    realityEditor.gui.crafting.craftingBoardHide();
+    realityEditor.gui.crafting.craftingBoardVisible(thisKey,nodeKey);
+    // console.log(globalStates.currentLogic.grid);
+//   realityEditor.gui.crafting.craftingBoardVisible(thisKey, nodeKey);
+   // realityEditor.gui.crafting.updateGrid(globalStates.currentLogic.grid);
+} else {
+    console.log("NO");
+
+
+    if(globalDOMCach["iframe" + nodeKey]) {
+        if(globalDOMCach["iframe" + nodeKey]._loaded)
+            realityEditor.network.onElementLoad(thisKey, nodeKey);
+    }
+}
+};
+
+
+
+
+/*
+    for (var nodeKey in remote) {
+        if(typeof remote[nodeKey] === "object"){
+            if(typeof origin[nodeKey] === "undefined" && typeof remote[nodeKey] !== "undefined"){
+                origin[nodeKey] ={};
+            } else continue;
+            origin[nodeKey].uuid = nodeKey;
+            this.updateKey(origin[nodeKey], remote[nodeKey])
+        } else {
+            if(typeof remote[nodeKey] !== "undefined") {
+                origin[nodeKey] = remote[nodeKey];
+            }
+        }
+    }*/
+
+
 realityEditor.network.onAction = function (action) {
     var _this = this;
     var thisAction;
@@ -153,6 +272,12 @@ realityEditor.network.onAction = function (action) {
         thisAction = JSON.parse(action);
     }
 
+    if(thisAction.lastEditor === globalStates.tempUuid) {
+		console.log(thisAction.lastEditor);
+		console.log(globalStates.tempUuid);
+		console.log("------------------------------------- its my self");
+		return;
+	}
 
     // reload links for a specific object.
 
@@ -181,6 +306,16 @@ realityEditor.network.onAction = function (action) {
                     objects[thisKey].links = req.links;
                 }
 
+				objects[thisKey].uuid = thisKey;
+
+				for (var nodeKey in objects[thisKey].nodes) {
+					objects[thisKey].nodes[nodeKey].uuid = nodeKey;
+				}
+
+				for (var linkKey in objects[thisKey].links) {
+					objects[thisKey].links[linkKey].uuid = linkKey;
+				}
+
                 // cout(objects[thisKey]);
 
                 _this.cout("got links");
@@ -189,58 +324,48 @@ realityEditor.network.onAction = function (action) {
     }
 
     if (typeof thisAction.reloadObject !== "undefined") {
-
+console.log("gotdata");
         if(thisAction.reloadObject.object in objects) {
             this.getData('http://' + objects[thisAction.reloadObject.object].ip + ':' + httpPort + '/object/' + thisAction.reloadObject.object, thisAction.reloadObject.object, function (req, thisKey) {
-                objects[thisKey].x = req.x;
-                objects[thisKey].y = req.y;
-                objects[thisKey].scale = req.scale;
-                objects[thisKey].developer = req.developer;
-
-                var getNodes;
 
                 if (objects[thisKey].integerVersion < 170) {
-                    if (typeof req.objectValues !== "undefined")
-                        getNodes = req.objectValues;
-                }
-                else {
-                    objects[thisKey].matrix = req.matrix;
-
-                    if (typeof req.nodes !== "undefined")
-                        getNodes = req.nodes;
+                    if(typeof req.objectValues !== "undefined")
+                        req.nodes = req.objectValues;
                 }
 
-                if (typeof getNodes !== "undefined") {
-                  //  console.log("I am checking out the nodes");
-                    for (var nodeKey in getNodes) {
-                        var thisObject = objects[thisKey].nodes[nodeKey];
+                realityEditor.network.updateObject(objects[thisKey], req, thisKey);
 
-                        thisObject.x = getNodes[nodeKey].x;
-                        thisObject.y = getNodes[nodeKey].y;
-                        thisObject.scale = getNodes[nodeKey].scale;
-                        thisObject.matrix = getNodes[nodeKey].matrix;
-                        thisObject.name = getNodes[nodeKey].name;
-                        if(getNodes[nodeKey].text)
-                        thisObject.text = getNodes[nodeKey].text;
-                    }
-                }
+                _this.cout("got object");
 
-                _this.cout("got object and nodes");
-
-
-              //  console.log("got everything");
-                for (var nodeKey in objects[thisKey].nodes){
-                   // console.log(nodeKey);
-                  //  console.log(globalDOMCach["iframe" + nodeKey]._loaded);
-                    if(globalDOMCach["iframe" + nodeKey]) {
-                        if(globalDOMCach["iframe" + nodeKey]._loaded)
-                        realityEditor.network.onElementLoad(thisKey, nodeKey);
-                    }
-                }
 
             });
         }
     }
+
+    if (typeof thisAction.reloadNode !== "undefined") {
+        console.log("gotdata: "+thisAction.reloadNode.object +" "+thisAction.reloadNode.node);
+        console.log('http://' + objects[thisAction.reloadNode.object].ip + ':' + httpPort + '/object/' + thisAction.reloadNode.object + "/node/" + thisAction.reloadNode.node+"/");
+        if(thisAction.reloadNode.object in objects) {
+                this.getData(
+                    'http://' + objects[thisAction.reloadNode.object].ip + ':' + httpPort + '/object/' + thisAction.reloadNode.object + "/node/" + thisAction.reloadNode.node+"/", thisAction.reloadNode.object, function (req, thisKey, thisNode) {
+
+                    console.log("------------------------------");
+                    console.log(thisKey+"  "+thisNode);
+                        console.log(req);
+
+                        if(!objects[thisKey].nodes[thisNode]){
+                            objects[thisKey].nodes[thisNode] = req;
+                        } else {
+                            realityEditor.network.updateNode(objects[thisKey].nodes[thisNode], req, thisKey, thisNode);
+                        }
+
+
+                    _this.cout("got object");
+
+                }, thisAction.reloadNode.node);
+            }
+        }
+
 
     if (typeof thisAction.advertiseConnection !== "undefined") {
         this.realityEditor.advertisement.logic(thisAction.advertiseConnection);
@@ -461,24 +586,25 @@ realityEditor.network.deleteData = function(url) {
 realityEditor.network.deleteLinkFromObject = function(ip, thisObjectKey, thisKey) {
     // generate action for all links to be reloaded after upload
     this.cout("I am deleting a link: " + ip);
-    this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/" + thisKey);
+    this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/" + thisKey+"/lastEditor/"+globalStates.tempUuid);
 };
 
 realityEditor.network.deleteBlockFromObject = function(ip, thisObjectKey, thisLogicKey, thisBlockKey) {
     // generate action for all links to be reloaded after upload
     this.cout("I am deleting a block: " + ip);
     // /logic/*/*/block/*/
-    this.deleteData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/block/" + thisBlockKey);
+    this.deleteData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/block/" + thisBlockKey+"/lastEditor/"+globalStates.tempUuid);
 };
 
 realityEditor.network.deleteBlockLinkFromObject = function(ip, thisObjectKey, thisLogicKey, thisBlockLinkKey) {
     // generate action for all links to be reloaded after upload
     this.cout("I am deleting a block link: " + ip);
     // /logic/*/*/link/*/
-    this.deleteData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/link/" + thisBlockLinkKey);
+    this.deleteData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/link/" + thisBlockLinkKey+"/lastEditor/"+globalStates.tempUuid);
 };
 
-realityEditor.network.getData = function(url, thisKey, callback) {
+realityEditor.network.getData = function(url, thisKey, callback, thisNode) {
+    if(!thisNode) thisNode = null;
     var _this = this;
     var req = new XMLHttpRequest();
     try {
@@ -489,9 +615,10 @@ realityEditor.network.getData = function(url, thisKey, callback) {
                 if (req.status === 200) {
                     // JSON.parse(req.responseText) etc.
                     if(req.responseText)
-                        callback(JSON.parse(req.responseText), thisKey)
+                        callback(JSON.parse(req.responseText), thisKey, thisNode);
                 } else {
                     // Handle error case
+                    console.log("could not load content")
                     _this.cout("could not load content");
                 }
             }
@@ -604,11 +731,13 @@ realityEditor.network.postLinkToServer = function(linkObject, objects){
 
 realityEditor.network.postNewLink = function(ip, thisObjectKey, thisKey, content) {
     // generate action for all links to be reloaded after upload
-    this.cout("sending Link");
+    content.lastEditor = globalStates.tempUuid;
+        this.cout("sending Link");
     this.postData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/" + thisKey, content);
 };
 
 realityEditor.network.postNewNode = function(ip, objectKey, nodeKey, node) {
+    node.lastEditor = globalStates.tempUuid;
     this.postData('http://' + ip + ':' + httpPort + '/object/' + objectKey + '/node/' + nodeKey, node, function(err) {
         if (err) {
             console.log('postNewNode error:', err);
@@ -620,6 +749,7 @@ realityEditor.network.postNewNode = function(ip, objectKey, nodeKey, node) {
 realityEditor.network.postNewBlockLink = function(ip, thisObjectKey, thisLogicKey, thisBlockLinkKey, blockLink) {
     this.cout("sending Block Link");
     var simpleBlockLink = this.realityEditor.gui.crafting.utilities.convertBlockLinkToServerFormat(blockLink);
+    simpleBlockLink.lastEditor = globalStates.tempUuid;
     // /logic/*/*/link/*/
     this.postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/link/" + thisBlockLinkKey, simpleBlockLink);
 };
@@ -627,7 +757,9 @@ realityEditor.network.postNewBlockLink = function(ip, thisObjectKey, thisLogicKe
 realityEditor.network.postNewLogicNode = function(ip, thisObjectKey, thisLogicKey, logic) {
     this.cout("sending Logic Node");
     // /logic/*/*/node/
+
     var simpleLogic = this.realityEditor.gui.crafting.utilities.convertLogicToServerFormat(logic);
+    simpleLogic.lastEditor = globalStates.tempUuid;
     this.postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/node/", simpleLogic);
 };
 
@@ -635,6 +767,7 @@ realityEditor.network.postNewBlockPosition = function(ip, thisObjectKey, thisLog
     // generate action for all links to be reloaded after upload
     this.cout("I am moving a block: " + ip);
     // /logic/*/*/block/*/
+    content.lastEditor = globalStates.tempUuid;
     if (typeof content.x === "number" && typeof content.y === "number") {
         this.postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey +"/blockPosition/" + thisBlockKey, content);
     }
@@ -643,6 +776,7 @@ realityEditor.network.postNewBlockPosition = function(ip, thisObjectKey, thisLog
 realityEditor.network.postNewBlock = function(ip, thisObjectKey, thisLogicKey, thisBlockKey, block) {
     this.cout("sending Block");
     // /logic/*/*/block/*/
+    block.lastEditor = globalStates.tempUuid;
     this.postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey + "/block/" + thisBlockKey, block);
 };
 
@@ -714,6 +848,7 @@ realityEditor.network.sendResetContent = function(object, node, type) {
         content.matrix = tempThisObject.matrix;
     }
 
+    content.lastEditor = globalStates.tempUuid;
     if (typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
         this.postData('http://' + objects[object].ip + ':' + httpPort + '/object/' + object + "/size/" + node, content);
     }

@@ -53,7 +53,6 @@
 
 var ec = 0;
 var disp = {};
-
 var uiButtons;
 var guiButtonImage;
 var httpPort = 8080;
@@ -65,6 +64,7 @@ var timeCorrection = {delta: 0, now: 0, then: 0};
  **********************************************************************************************************************/
 
 var globalStates = {
+	tempUuid : "0000",
 	debug: false,
 	overlay: 0,
 	device: "",
