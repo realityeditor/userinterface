@@ -269,6 +269,11 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             }
             paletteElementsResized = true;
         }
+        if (globalStates.guiState === "node") {
+            palette.style.display = 'none';
+        } else {
+            palette.style.display = 'block';
+        }
     }
 
     function pocketHide() {
