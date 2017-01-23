@@ -110,6 +110,10 @@ function MemoryPointer(link, isObjectA) {
 MemoryPointer.prototype.update = function() {
     var object = this.object;
     var connectedObject = this.connectedObject;
+    if (!this.alive) {
+        this.remove();
+        return;
+    }
     if (!object || !connectedObject) {
         this.remove();
         return;
@@ -188,6 +192,10 @@ MemoryPointer.prototype.updateForceSimulation = function() {
 
 
 MemoryPointer.prototype.draw = function() {
+    if (!this.alive) {
+        return;
+    }
+
     this.lastDraw = Date.now();
 
     var cvZ = this.connectedNode.screenLinearZ || 10;
@@ -203,6 +211,9 @@ MemoryPointer.prototype.remove = function() {
 };
 
 function getMemoryPointerWithId(id) {
+    if (pointers[id] && !pointers[id].alive) {
+        delete pointers[id];
+    }
     return pointers[id];
 }
 
