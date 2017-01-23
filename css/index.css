@@ -580,12 +580,21 @@ body {
     overflow: hidden;
 }
 
+.memoryContainer.memoryPointer {
+    border: 4px solid #01FFFC;
+    width: 112px;
+    height: 112px;
+    border-radius: 16px;
+    position: absolute;
+    margin-left: -60px;
+    margin-top: -60px;
+}
+
 .memoryContainer {
     margin: 2.5px;
 }
 
-#overlay.overlayMemory, .memoryContainer.memoryPointer,
-.memoryWeb > .memoryContainer {
+#overlay.overlayMemory, .memoryWeb > .memoryContainer {
     position: absolute;
     margin-left: -30px;
     margin-top: -30px;
@@ -618,15 +627,15 @@ body {
     -webkit-user-select: none;
     -webkit-touch-callout: none;
 
-    object-fit: none;
+    object-fit: cover;
     object-position: center;
 }
 
 .memoryContainer > .memory {
     border: none;
     border-radius: 0px;
-    width: 60px;
-    height: 60px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
