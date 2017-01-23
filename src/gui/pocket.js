@@ -183,16 +183,10 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             if (pocketShown()) {
                 return true;
             }
-            if (globalStates.guiState === "node" && globalProgram.objectA) {
-                return true;
-            }
-            if (globalStates.guiState !== "ui") {
-                return false;
-            }
             if (globalStates.preferencesButtonState) {
                 return false;
             }
-            return true;
+            return globalStates.guiState === "ui" || globalStates.guiState === "node";
         }
 
         button.addEventListener('pointerenter', function() {
