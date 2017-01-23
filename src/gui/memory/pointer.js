@@ -66,6 +66,20 @@ function MemoryPointer(link, isObjectA) {
     this.link = link;
     this.isObjectA = isObjectA;
 
+    this.object = null;
+    this.connectedNode = null;
+    this.connectedObject = null;
+
+    if (this.isObjectA) {
+        this.object = objects[this.link.objectA];
+        this.connectedObject = objects[this.link.objectB];
+        this.connectedNode = this.connectedObject.nodes[this.link.nodeB];
+    } else {
+        this.object = objects[this.link.objectB];
+        this.connectedObject = objects[this.link.objectA];
+        this.connectedNode = this.connectedObject.nodes[this.link.nodeA];
+    }
+
     this.element = document.createElement('div');
     this.element.classList.add('memoryContainer');
     this.element.classList.add('memoryPointer');
@@ -73,59 +87,32 @@ function MemoryPointer(link, isObjectA) {
 
     document.querySelector('.memoryPointerContainer').appendChild(this.element);
 
-    this.memory = new realityEditor.gui.memory.MemoryContainer(this.element); // TODO
+    this.memory = new realityEditor.gui.memory.MemoryContainer(this.element);
+    this.memory.set(this.object);
 
-    this.memory.set(this.getObject());
     this.x = 0;
     this.y = 0;
 
-    var globalIndex = Object.keys(objects).indexOf(this.getObject().objectId);
-    var theta = 2 * Math.PI * globalIndex / Object.keys(objects).length;
-    this.offsetX = Math.cos(theta) * 20;
-    this.offsetY = Math.sin(theta) * 20;
-
     this.alive = true;
     this.lastDraw = Date.now();
-    this.idleTimeout = 100;
+    this.idleTimeout = 250;
+
+    this.beginForceSimulation();
 
     this.update = this.update.bind(this);
     this.update();
 
-    pointers[this.getObject().objectId] = this;
+    pointers[this.object.objectId] = this;
 }
 
-MemoryPointer.prototype.getObject = function() {
-    if (this.isObjectA) {
-        return objects[this.link.objectA];
-    } else {
-        return objects[this.link.objectB];
-    }
-};
-
-MemoryPointer.prototype.getConnectedObject = function() {
-    if (this.isObjectA) {
-        return objects[this.link.objectB];
-    } else {
-        return objects[this.link.objectA];
-    }
-};
-
-MemoryPointer.prototype.getConnectedValue = function() {
-    if (this.isObjectA) {
-        return this.getConnectedObject().nodes[this.link.nodeB];
-    } else {
-        return this.getConnectedObject().nodes[this.link.nodeA];
-    }
-};
-
 MemoryPointer.prototype.update = function() {
-    var object = this.getObject();
-    var connectedObject = this.getConnectedObject();
+    var object = this.object;
+    var connectedObject = this.connectedObject;
     if (!object || !connectedObject) {
         this.remove();
         return;
     }
-    if (object.objectVisible || !connectedObject.objectVisible) {
+    if (object.objectVisible) {
         this.remove();
         return;
     }
@@ -139,30 +126,78 @@ MemoryPointer.prototype.update = function() {
         return;
     }
 
+    this.updateForceSimulation();
     requestAnimationFrame(this.update);
 };
+
+MemoryPointer.prototype.beginForceSimulation = function() {
+    this.simNode = {
+        id: 'this',
+        x: this.x,
+        y: this.y
+    };
+    this.forceNodes = [this.simNode];
+
+    for (var nodeKey in this.connectedObject.nodes) {
+        var node = this.connectedObject.nodes[nodeKey];
+        this.forceNodes.push({
+            id: nodeKey,
+            fx: node.screenX - this.connectedNode.screenX,
+            fy: node.screenY - this.connectedNode.screenY
+        });
+    }
+
+    var links = [{
+        source: this.connectedObject.objectId + this.connectedNode.name,
+        target: 'this'
+    }];
+
+    this.force = d3.forceSimulation()
+        .force('link', d3.forceLink().distance(80).id(function(d) { return d.id; }))
+        .force('charge', d3.forceManyBody().strength(-20));
+
+    this.force.nodes(this.forceNodes);
+
+    this.force.force('link')
+        .links(links);
+
+    this.force.stop();
+};
+
+MemoryPointer.prototype.updateForceSimulation = function() {
+    for (var i = 0; i < this.forceNodes.length; i++) {
+        var forceNode = this.forceNodes[i];
+        if (forceNode.id === 'this') {
+            continue;
+        }
+        var node = this.connectedObject.nodes[forceNode.id];
+        forceNode.fx = node.screenX - this.connectedNode.screenX;
+        forceNode.fy = node.screenY - this.connectedNode.screenY;
+    }
+
+    this.force.alpha(1);
+    this.force.force('link').distance((this.connectedNode.screenLinearZ || 5) * 20);
+    this.force.tick();
+
+    this.x = this.simNode.x + this.connectedNode.screenX;
+    this.y = this.simNode.y + this.connectedNode.screenY;
+};
+
+
 
 MemoryPointer.prototype.draw = function() {
     this.lastDraw = Date.now();
 
-    var connectedValue = this.getConnectedValue();
-    var cvX = connectedValue.screenX || 0;
-    var cvY = connectedValue.screenY || 0;
-    var cvZ = connectedValue.screenLinearZ || 10;
+    var cvZ = this.connectedNode.screenLinearZ || 10;
     var scale = cvZ / 10;
 
-    var deltaX = cvX - this.offsetX * cvZ - this.x;
-    var deltaY = cvY - this.offsetY * cvZ - this.y;
-    var alpha = 0.66;
-    this.x += deltaX * alpha;
-    this.y += deltaY * alpha;
     this.element.style.transform = 'translate3d(' + this.x + 'px,' + this.y + 'px, 2px) scale(' + scale + ')';
 };
 
 MemoryPointer.prototype.remove = function() {
     this.alive = false;
     this.memory.remove();
-    delete pointers[this.getObject().objectId];
+    delete pointers[this.object.objectId];
 };
 
 function getMemoryPointerWithId(id) {
