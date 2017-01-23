@@ -68,17 +68,19 @@ function MemoryPointer(link, isObjectA) {
 
     this.object = null;
     this.connectedNode = null;
+    this.connectedNodeKey = null;
     this.connectedObject = null;
 
     if (this.isObjectA) {
         this.object = objects[this.link.objectA];
         this.connectedObject = objects[this.link.objectB];
-        this.connectedNode = this.connectedObject.nodes[this.link.nodeB];
+        this.connectedNodeKey = this.link.nodeB;
     } else {
         this.object = objects[this.link.objectB];
         this.connectedObject = objects[this.link.objectA];
-        this.connectedNode = this.connectedObject.nodes[this.link.nodeA];
+        this.connectedNodeKey = this.link.nodeA;
     }
+    this.connectedNode = this.connectedObject.nodes[this.connectedNodeKey];
 
     this.element = document.createElement('div');
     this.element.classList.add('memoryContainer');
@@ -148,7 +150,7 @@ MemoryPointer.prototype.beginForceSimulation = function() {
     }
 
     var links = [{
-        source: this.connectedObject.objectId + this.connectedNode.name,
+        source: this.connectedNodeKey,
         target: 'this'
     }];
 
