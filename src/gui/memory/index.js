@@ -445,10 +445,6 @@ function memoryCanCreate() {
     if (Object.keys(globalObjects).length !== 1 || typeof globalObjects.dummy !== 'undefined') {
         return false;
     }
-    // User is in ui mode
-    if (globalStates.guiState !== 'ui') {
-        return false;
-    }
     if (globalStates.freezeButtonState) {
         return false;
     }
@@ -458,7 +454,13 @@ function memoryCanCreate() {
     if (globalStates.preferencesButtonState) {
         return false;
     }
-    return true;
+    if (globalStates.guiState === 'ui') {
+        return true;
+    }
+    if (globalStates.guiState === 'node' && !globalProgram.objectA) {
+        return true;
+    }
+    return false;
 }
 
 exports.initMemoryBar = initMemoryBar;
