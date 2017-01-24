@@ -86,7 +86,7 @@ realityEditor.network.addHeartbeatObject = function (beat) {
                             thisObject.guiState = new LogicGUIState();
                             var container = document.getElementById('craftingBoard');
                             thisObject.grid = new _this.realityEditor.gui.crafting.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight);
-                            _this.realityEditor.gui.crafting.utilities.convertLinksFromServer(thisObject);
+                            //_this.realityEditor.gui.crafting.utilities.convertLinksFromServer(thisObject);
                         }
                     }
 
@@ -257,6 +257,8 @@ realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
         syncLinksWithRemote(origin, remote.links);
     }
 
+    realityEditor.gui.crafting.updateGrid(objects[thisKey].nodes[nodeKey].grid);
+
     if(globalStates.currentLogic) {
         
         if(globalStates.currentLogic.uuid === nodeKey) {
@@ -273,6 +275,7 @@ realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
                 realityEditor.network.onElementLoad(thisKey, nodeKey);
         }
     }
+
 };
 
 function syncBlocksWithRemote(origin, remoteBlocks) {
@@ -335,7 +338,7 @@ function shouldSyncBlock(origin, blockKey, mode) {
 
 function syncLinksWithRemote(origin, remoteLinks) {
     
-    var convertedRemoteLinks = getEditorLinks(origin, remoteLinks);
+    //var convertedRemoteLinks = getEditorLinks(origin, remoteLinks);
     
     // delete old links
     
@@ -351,15 +354,15 @@ function syncLinksWithRemote(origin, remoteLinks) {
     
     // add missing links (update existing links too)
     
-    for (linkKey in convertedRemoteLinks) {
-        if (!convertedRemoteLinks.hasOwnProperty(linkKey)) continue;
+    for (linkKey in remoteLinks) {
+        if (!remoteLinks.hasOwnProperty(linkKey)) continue;
 
         if (shouldSyncLink(origin, linkKey, "create")) {
             console.log("add link " + linkKey);
 
             origin.links[linkKey] = new BlockLink();
-            for (var key in convertedRemoteLinks[linkKey]){
-                origin.links[linkKey][key] = convertedRemoteLinks[linkKey][key];
+            for (var key in remoteLinks[linkKey]){
+                origin.links[linkKey][key] = remoteLinks[linkKey][key];
             }
         }
     }
@@ -371,15 +374,17 @@ function syncLinksWithRemote(origin, remoteLinks) {
 }
 
 function shouldSyncLink(origin, linkKey, mode) {
-
-    if (mode === "create") {
-        if (!origin.links[linkKey]) return true;
-
-    } else if (mode === "delete") {
-        
-    }
     
-    return realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink(origin.links[linkKey])
+    return true;
+
+    //if (mode === "create") {
+    //    if (!origin.links[linkKey]) return true;
+    //
+    //} else if (mode === "delete") {
+    //    
+    //}
+    //
+    //return realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink(origin.links[linkKey])
 
 }
 
