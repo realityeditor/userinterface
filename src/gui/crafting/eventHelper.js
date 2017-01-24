@@ -51,9 +51,11 @@ createNameSpace("realityEditor.gui.crafting.eventHelper");
 
 // done
 realityEditor.gui.crafting.eventHelper.getCellOverPointer = function(pointerX, pointerY) {
-    var grid = globalStates.currentLogic.grid;
-    // returns cell if position is within grid bounds, null otherwise
-    return grid.getCellFromPointerPosition(pointerX, pointerY);
+    if(globalStates.currentLogic) {
+        var grid = globalStates.currentLogic.grid;
+        // returns cell if position is within grid bounds, null otherwise
+        return grid.getCellFromPointerPosition(pointerX, pointerY);
+    }
 };
 
 // done
@@ -91,6 +93,7 @@ realityEditor.gui.crafting.eventHelper.convertToTempBlock = function(contents) {
 realityEditor.gui.crafting.eventHelper.moveBlockDomToPosition = function(contents, pointerX, pointerY) {
     var grid = globalStates.currentLogic.grid;
     var domElement = this.getDomElementForBlock(contents.block);
+
     if (!domElement) return;
     domElement.style.left = pointerX - this.offsetForItem(contents.item);
     domElement.style.top = pointerY - grid.blockRowHeight/2;

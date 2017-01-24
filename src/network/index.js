@@ -590,6 +590,12 @@ realityEditor.network.deleteLinkFromObject = function(ip, thisObjectKey, thisKey
     this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/" + thisKey+"/lastEditor/"+globalStates.tempUuid);
 };
 
+realityEditor.network.deleteNodeFromObject = function(ip, thisObjectKey, thisKey) {
+    // generate action for all links to be reloaded after upload
+    this.cout("I am deleting a link: " + ip);
+    this.deleteData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisKey+"/node/lastEditor/"+globalStates.tempUuid);
+};
+
 realityEditor.network.deleteBlockFromObject = function(ip, thisObjectKey, thisLogicKey, thisBlockKey) {
     // generate action for all links to be reloaded after upload
     this.cout("I am deleting a block: " + ip);

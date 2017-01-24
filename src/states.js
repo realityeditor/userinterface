@@ -94,6 +94,7 @@ var globalStates = {
 	freezeButtonState: false,
 	logButtonState: false,
 	editingMode: false,
+	editingNode: false,
 	guiURL: "",
 	newURLText: "",
 	platform: navigator.platform,
