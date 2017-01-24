@@ -123,6 +123,8 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
     var bigPocketButton;
     var bigTrashButton;
 
+    var inMemoryDeletion = false;
+
     var realityElements = [
         {
             name: 'reality-control-slider-kinetic',
@@ -195,6 +197,12 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
                 return true;
             }
             if (globalStates.preferencesButtonState) {
+                return false;
+            }
+            if (globalStates.editingNode) {
+                return false;
+            }
+            if (inMemoryDeletion) {
                 return false;
             }
             return globalStates.guiState === "ui" || globalStates.guiState === "node";
@@ -337,10 +345,12 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
 
     function pocketOnMemoryDeletionStart() {
         uiButtons.classList.add('bigTrash');
+        inMemoryDeletion = true;
         bigTrashButton.src = bigTrashImages[0].src;
     }
 
     function pocketOnMemoryDeletionStop() {
+        inMemoryDeletion = false;
         uiButtons.classList.remove('bigTrash');
     }
 

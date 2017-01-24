@@ -914,7 +914,12 @@ realityEditor.network.sendResetContent = function(object, node, type) {
         tempThisObject = objects[object].nodes[node];
     }
     else if (type === "ui"){
-        tempThisObject = objects[object];
+        if (object === node) {
+            tempThisObject = objects[object];
+        } else {
+            console.warn('Refusing to reset content of frame');
+            return;
+        }
     }
     var content = {};
     content.x = tempThisObject.x;
