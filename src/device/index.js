@@ -682,6 +682,7 @@ realityEditor.device.onMultiTouchStart = function(evt) {
 		globalStates.editingModeLocation = target.nodeId;
 		globalStates.editingModeKind = target.type;
 		globalStates.editingModeHaveObject = true;
+		realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
 	}
 	globalMatrix.matrixtouchOn = target.nodeId;
 	globalMatrix.copyStillFromMatrixSwitch = true;
@@ -743,6 +744,7 @@ realityEditor.device.onMultiTouchMove = function(evt) {
  **/
 
 realityEditor.device.onMultiTouchEnd = function(evt) {
+	realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
 	evt.preventDefault();
     
 // generate action for all links to be reloaded after upload

@@ -187,11 +187,18 @@ realityEditor.network.updateObject = function (origin, remote, thisKey) {
         }
     }
 
+
+    var missingFrames = {};
+    for (var frameKey in origin.frames) {
+        missingFrames[frameKey] = true;
+    }
+
     for (var frameKey in remote.frames) {
         if(!origin.frames[frameKey]) {
             origin.frames[frameKey] = remote.frames[frameKey];
             continue;
         }
+        missingFrames[frameKey] = false;
         var oFrame = origin.frames[frameKey];
         var rFrame = remote.frames[frameKey];
         oFrame.x = rFrame.x;
@@ -199,9 +206,6 @@ realityEditor.network.updateObject = function (origin, remote, thisKey) {
         oFrame.scale = rFrame.scale;
 
         oFrame.name = rFrame.name;
-        if(rFrame.text) {
-            oFrame.text = rFrame.text;
-        }
         if(rFrame.matrix) {
             oFrame.matrix = rFrame.matrix;
         }
@@ -210,6 +214,14 @@ realityEditor.network.updateObject = function (origin, remote, thisKey) {
             realityEditor.network.onElementLoad(thisKey, frameKey);
         }
 
+    }
+
+    for (var frameKey in missingFrames) {
+        if (!missingFrames[frameKey]) {
+            continue;
+        }
+        // Frame was deleted on remote, let's delete it here
+        realityEditor.gui.frame.deleteLocally(origin.objectId, frameKey);
     }
 };
 
@@ -606,7 +618,7 @@ realityEditor.network.deleteData = function(url, content) {
     //request.setRequestHeader("Content-length", params.length);
     // request.setRequestHeader("Connection", "close");
     if (content) {
-        request.send(content);
+        request.send(JSON.stringify(content));
     } else {
         request.send();
     }

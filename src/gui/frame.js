@@ -111,10 +111,15 @@ function deleteFrame(objectId, frameId) {
     var object = objects[objectId];
     var url = 'http://' + object.ip + ':' + httpPort + '/object/' + objectId + '/frames/' + frameId;
     realityEditor.network.deleteData(url, {lastEditor: globalStates.tempUuid});
+    deleteLocally(objectId, frameId);
+}
+
+function deleteLocally(objectId, frameId) {
+    var object = objects[objectId];
 
     // clean up locally, copy-pasted from server.js
 
-    delete object.frames[frameId];
+    realityEditor.gui.ar.draw.deleteFrame(objectId, frameId);
 
     // Delete frame's nodes
     var deletedNodes = {};
@@ -122,7 +127,7 @@ function deleteFrame(objectId, frameId) {
         var node = object.nodes[nodeId];
         if (node.frame === frameId) {
             deletedNodes[nodeId] = true;
-            delete object.nodes[nodeId];
+            realityEditor.gui.ar.draw.deleteNode(objectId, nodeId);
         }
     }
 
@@ -161,6 +166,7 @@ realityEditor.gui.frame = {
     create: create,
     update: update,
     delete: deleteFrame,
+    deleteLocally: deleteLocally,
     Frame: Frame
 };
 
