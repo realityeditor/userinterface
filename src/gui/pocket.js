@@ -209,13 +209,14 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
                 return;
             }
 
-            if (globalStates.guiState === 'node' && !globalProgram.objectA) {
+            // Show hover
+            button.src = buttonImages[1].src;
+
+            if (!globalProgram.objectA) {
                 return;
             }
 
             toggleShown();
-            // Show hover
-            button.src = buttonImages[1].src;
         });
         ec++;
 
@@ -225,10 +226,6 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             }
 
             if (pocketButtonIsBig()) {
-                return;
-            }
-
-            if (globalStates.guiState !== 'node') {
                 return;
             }
 
