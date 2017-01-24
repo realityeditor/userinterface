@@ -183,7 +183,10 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             if (objectIds.length !== 1) {
                 return;
             }
-            realityEditor.gui.frame.create(objectIds[0], new realityEditor.gui.frame.Frame(evt.target.dataset.src));
+            var src = evt.target.dataset.src;
+            var width = evt.target.dataset.width;
+            var height = evt.target.dataset.height;
+            realityEditor.gui.frame.create(objectIds[0], new realityEditor.gui.frame.Frame(src, width, height));
             pocketHide();
         });
 

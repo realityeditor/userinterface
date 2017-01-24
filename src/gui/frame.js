@@ -99,12 +99,12 @@ function update(objectId, frameId) {
     });
 }
 
-function Frame(src) {
+function Frame(src, width, height) {
     this.src = src;
     this.x = 0;
     this.y = 0;
-    this.width = 500;
-    this.height = 500;
+    this.width = width;
+    this.height = height;
     this.scale = 1;
     this.developer = true;
     this.matrix = [
