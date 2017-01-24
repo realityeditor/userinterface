@@ -454,6 +454,9 @@ function memoryCanCreate() {
     if (globalStates.preferencesButtonState) {
         return false;
     }
+    if (globalStates.editingMode) {
+        return false;
+    }
     if (globalStates.guiState === 'ui') {
         return true;
     }
