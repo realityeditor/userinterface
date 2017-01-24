@@ -303,7 +303,7 @@ realityEditor.device.onTrueTouchUp = function(evt){
 		console.log("finale "+evt.pageX);
 		realityEditor.device.endTrash(target.nodeId);
 
-		
+
 		if(evt.pageX >= (globalStates.height-60)){
 
 			for(var objectKey in objects){

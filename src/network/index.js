@@ -186,6 +186,7 @@ realityEditor.network.updateObject = function (origin, remote, thisKey) {
                 realityEditor.network.onElementLoad(thisKey, nodeKey);
         }
     }
+
 };
 
 

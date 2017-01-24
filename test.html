@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/pep/0.4.1/pep.js"></script>
+</head>
+<body>
+<object class="svgClass" type="image/svg+xml" data="svg/menu/test.svg" id="menu" style="width: 160px; height: 160px; touch-action: none" touch-action="none"></object>
+<style type="text/css">
+    .fill{fill:#01FFFD;}
+    .inactive{opacity:0;}
+    .active{opacity:0.3;}
+    .touched{opacity:0.6;}
+
+    *{
+        touch-action:none;
+    }
+
+</style>
+
+<script>
+
+    window.onload=function() {
+        // Get the Object by ID
+        var a = document.getElementById("menu");
+        // Get the SVG document inside the Object tag
+        var svgDoc = a.contentDocument;
+
+
+        var linkElm = svgDoc.createElementNS("http://www.w3.org/1999/xhtml", "link");
+        linkElm.setAttribute("href", "menu.css");
+        linkElm.setAttribute("type", "text/css");
+        linkElm.setAttribute("rel", "stylesheet");
+        svgDoc.getElementById("Layer_1").appendChild(linkElm);
+
+        // Get one of the SVG items by ID;
+        var svgItem = svgDoc.getElementById("bg");
+        // Set the colour to something else
+       // svgItem.setAttribute("fill", "lime");
+        a.setAttribute("touch-action", "none");
+
+
+        svgItem.addEventListener("pointerdown",
+            function(){ console.log("clicked");
+                svgItem.setAttribute("class", "addFill active");
+            }, false);
+
+
+
+
+
+    };
+
+</script>
+
+</body>
+</html>

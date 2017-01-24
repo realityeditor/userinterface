@@ -158,9 +158,9 @@ MemoryPointer.prototype.beginForceSimulation = function() {
         target: 'this'
     }];
 
-    this.force = d3.forceSimulation()
-        .force('link', d3.forceLink().distance(80).id(function(d) { return d.id; }))
-        .force('charge', d3.forceManyBody().strength(-20));
+    this.force = d3.forceSimulation();
+    this.force.force('link', d3.forceLink().distance(10).strength(5).id(function(d) { return d.id; }));
+    this.force.force('charge', d3.forceManyBody().strength(-2000));
 
     this.force.nodes(this.forceNodes);
 
