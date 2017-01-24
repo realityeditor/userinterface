@@ -107,6 +107,7 @@ realityEditor.gui.crafting.utilities.convertLogicToServerFormat = function(logic
     return logicServer;
 };
 
+/*
 // todo hasOwnProperty
 // convert links from in/out -> block not in edge row into 2 links, one from in/out->edge and another from edge->block
 // this puts the data in a format that is convenient for the UI while keeping the server data efficient
@@ -143,3 +144,4 @@ realityEditor.gui.crafting.utilities.convertLinksFromServer = function(logic) {
     globalStates.currentLogic = priorLogic;
     
 };
+*/

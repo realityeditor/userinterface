@@ -920,15 +920,15 @@ createNameSpace("realityEditor.gui.crafting.grid");
         return new CellLocation(x * 2, y * 2);
     }
 
-    function addBlockLink(nodeA, nodeB, logicA, logicB, addToLogic, isServerOnlyLink) {
+    function addBlockLink(nodeA, nodeB, logicA, logicB, addToLogic) {
         if (nodeA && nodeB) {
             var blockLink = new BlockLink();
             blockLink.nodeA = nodeA;
             blockLink.nodeB = nodeB;
             blockLink.logicA = logicA;
-            blockLink.logicB = logicB; 
-
-            var linkKey = isServerOnlyLink ? edgeBlockLinkKey(blockLink) : "blockLink" + realityEditor.device.utilities.uuidTime();
+            blockLink.logicB = logicB;
+            
+            var linkKey = isFixedNameLink(nodeA, nodeB) ? "blockLink-" + nodeA + "-" + nodeB : "blockLink" + realityEditor.device.utilities.uuidTime();
             
             blockLink.globalId = linkKey;
 
@@ -936,83 +936,89 @@ createNameSpace("realityEditor.gui.crafting.grid");
                 if (!doesLinkAlreadyExist(blockLink)) {
                     globalStates.currentLogic.links[linkKey] = blockLink;
                 }
-            }
-
-            if (addToLogic || isServerOnlyLink) {
                 uploadLinkIfNecessary(blockLink, linkKey);
             }
-
+            
             return blockLink;
 
         }
         return null;
     }
+    
+    function isFixedNameLink(nodeA, nodeB) {
+        if ( (isInOutBlock(nodeA) || isEdgePlaceholderBlock(nodeA)) &&
+             (isInOutBlock(nodeB) || isEdgePlaceholderBlock(nodeB)) ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     function uploadLinkIfNecessary(blockLink, linkKey) {
         var keys = realityEditor.gui.crafting.eventHelper.getServerObjectLogicKeys(globalStates.currentLogic);
-        if (realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink(blockLink)) {
+        //if (realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink(blockLink)) {
             realityEditor.network.postNewBlockLink(keys.ip, keys.objectKey, keys.logicKey, linkKey, blockLink);
-        } else {
-            // instead of uploading in->edgePlaceholder and edgePlaceholder->block, upload in->block
-            var surroundingLinks = getLinksSurroundingEdgeLink(blockLink);
-            if (surroundingLinks.length > 0) {
-                surroundingLinks.forEach( function(link) {
-                    addBlockLink(link.nodeA, link.nodeB, link.logicA, link.logicB, false, true);
-                });
-            }
-        }
+        //} else {
+        //    // instead of uploading in->edgePlaceholder and edgePlaceholder->block, upload in->block
+        //    var surroundingLinks = getLinksSurroundingEdgeLink(blockLink);
+        //    if (surroundingLinks.length > 0) {
+        //        surroundingLinks.forEach( function(link) {
+        //            addBlockLink(link.nodeA, link.nodeB, link.logicA, link.logicB, false, true);
+        //        });
+        //    }
+        //}
     }
 
-    function getLinksSurroundingEdgeLink(edgeLink) {
-
-        var foundLinks = [];
-        if (!edgeLink) return [];
-        var link, key, newLink;
-        
-        if (isEdgePlaceholderBlock(edgeLink.nodeA)) {
-
-            // this = edgeLink -> [smth1]
-            // find all thats = [smth2] -> edgeLink
-            // upload blocklink [smth2] -> [smth1] for each
-            
-            for (key in globalStates.currentLogic.links) {
-                if (!globalStates.currentLogic.links.hasOwnProperty(key)) continue;
-                link = globalStates.currentLogic.links[key];
-                if (link.nodeB === edgeLink.nodeA) {
-                    newLink = new BlockLink();
-                    newLink.nodeA = link.nodeA;
-                    newLink.logicA = link.logicA;
-                    newLink.nodeB = edgeLink.nodeB;
-                    newLink.logicB = edgeLink.logicB;
-                    newLink.globalId = "blockLink" + realityEditor.device.utilities.uuidTime();
-                    foundLinks.push(newLink);
-                }
-            }
-
-
-        } else if (isEdgePlaceholderBlock(edgeLink.nodeB)) {
-
-            // this = [smth1] -> edgeLink
-            // find all thats = edgeLink -> [smth2]
-            // upload blocklink [smth1] -> [smth2] for each
-
-            for (key in globalStates.currentLogic.links) {
-                if (!globalStates.currentLogic.links.hasOwnProperty(key)) continue;
-                link = globalStates.currentLogic.links[key];
-                if (link.nodeA === edgeLink.nodeB) {
-                    newLink = new BlockLink();
-                    newLink.nodeA = edgeLink.nodeA;
-                    newLink.logicA = edgeLink.logicA;
-                    newLink.nodeB = link.nodeB;
-                    newLink.logicB = link.logicB;
-                    newLink.globalId = "blockLink" + realityEditor.device.utilities.uuidTime();
-                    foundLinks.push(newLink);
-                }
-            }
-        }
-
-        return foundLinks;
-    }
+    //function getLinksSurroundingEdgeLink(edgeLink) {
+    //
+    //    var foundLinks = [];
+    //    if (!edgeLink) return [];
+    //    var link, key, newLink;
+    //    
+    //    if (isEdgePlaceholderBlock(edgeLink.nodeA)) {
+    //
+    //        // this = edgeLink -> [smth1]
+    //        // find all thats = [smth2] -> edgeLink
+    //        // upload blocklink [smth2] -> [smth1] for each
+    //        
+    //        for (key in globalStates.currentLogic.links) {
+    //            if (!globalStates.currentLogic.links.hasOwnProperty(key)) continue;
+    //            link = globalStates.currentLogic.links[key];
+    //            if (link.nodeB === edgeLink.nodeA) {
+    //                newLink = new BlockLink();
+    //                newLink.nodeA = link.nodeA;
+    //                newLink.logicA = link.logicA;
+    //                newLink.nodeB = edgeLink.nodeB;
+    //                newLink.logicB = edgeLink.logicB;
+    //                newLink.globalId = "blockLink" + realityEditor.device.utilities.uuidTime();
+    //                foundLinks.push(newLink);
+    //            }
+    //        }
+    //
+    //
+    //    } else if (isEdgePlaceholderBlock(edgeLink.nodeB)) {
+    //
+    //        // this = [smth1] -> edgeLink
+    //        // find all thats = edgeLink -> [smth2]
+    //        // upload blocklink [smth1] -> [smth2] for each
+    //
+    //        for (key in globalStates.currentLogic.links) {
+    //            if (!globalStates.currentLogic.links.hasOwnProperty(key)) continue;
+    //            link = globalStates.currentLogic.links[key];
+    //            if (link.nodeA === edgeLink.nodeB) {
+    //                newLink = new BlockLink();
+    //                newLink.nodeA = edgeLink.nodeA;
+    //                newLink.logicA = edgeLink.logicA;
+    //                newLink.nodeB = link.nodeB;
+    //                newLink.logicB = link.logicB;
+    //                newLink.globalId = "blockLink" + realityEditor.device.utilities.uuidTime();
+    //                foundLinks.push(newLink);
+    //            }
+    //        }
+    //    }
+    //
+    //    return foundLinks;
+    //}
 
     function blockWithID(globalID, logic) {
         return logic.blocks[globalID];
@@ -1125,12 +1131,12 @@ createNameSpace("realityEditor.gui.crafting.grid");
     }
 
     function removeBlockLink(linkKey) {
-        if (realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink(globalStates.currentLogic.links[linkKey])) {
+        //if (realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink(globalStates.currentLogic.links[linkKey])) {
             var keys = realityEditor.gui.crafting.eventHelper.getServerObjectLogicKeys(globalStates.currentLogic);
             realityEditor.network.deleteBlockLinkFromObject(keys.ip, keys.objectKey, keys.logicKey, linkKey);
-        } else {
-            deleteSurroundingBlockLinksFromServer(linkKey);
-        }
+        //} else {
+        //    deleteSurroundingBlockLinksFromServer(linkKey);
+        //}
         delete globalStates.currentLogic.links[linkKey];
     }
 
@@ -1153,12 +1159,12 @@ createNameSpace("realityEditor.gui.crafting.grid");
             if (!logic.links.hasOwnProperty(linkKey)) continue;
             var link = logic.links[linkKey];
             if (link.nodeA === blockID || link.nodeB === blockID) {
-                if (realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink(link)) {
+                //if (realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink(link)) {
                     var keys = realityEditor.gui.crafting.eventHelper.getServerObjectLogicKeys(logic);
                     realityEditor.network.deleteBlockLinkFromObject(keys.ip, keys.objectKey, keys.logicKey, linkKey);
-                } else {
-                    deleteSurroundingBlockLinksFromServer(linkKey);
-                }
+                //} else {
+                //    deleteSurroundingBlockLinksFromServer(linkKey);
+                //}
                 delete logic.links[linkKey];
             }
         }

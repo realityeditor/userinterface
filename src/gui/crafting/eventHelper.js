@@ -261,10 +261,10 @@ realityEditor.gui.crafting.eventHelper.shouldUploadBlock = function(block) {
     return !this.crafting.grid.isInOutBlock(block.globalId) && !block.isPortBlock; //&& !(block.x === -1 || block.y === -1)
 };
 
-realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink = function(blockLink) {
-    if (!blockLink) return false;
-    return (!this.crafting.grid.isEdgePlaceholderLink(blockLink)); // add links to surrounding instead of uploading itself
-};
+//realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink = function(blockLink) {
+//    if (!blockLink) return false;
+//    //return (!this.crafting.grid.isEdgePlaceholderLink(blockLink)); // add links to surrounding instead of uploading itself
+//};
 
 // todo add: if (!_.hasOwnProperty(key)) continue;
 realityEditor.gui.crafting.eventHelper.getServerObjectLogicKeys = function(logic) {
