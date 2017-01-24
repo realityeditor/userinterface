@@ -72,8 +72,9 @@ realityEditor.gui.crafting.updateGrid = function(grid) {
     for (var blockKey in globalStates.currentLogic.blocks) {
         var block = globalStates.currentLogic.blocks[blockKey];
         if (block.isPortBlock) continue; // don't render invisible input/output blocks
+        
         if (this.grid.isBlockOutsideGrid(block, grid) && !block.isPortBlock) { // cleanup incorrectly setup blocks // TODO: prevent this in the first place rather than checking each time
-            this.grid.removeBlock(globalStates.currentLogic, blockKey);
+        //    this.grid.removeBlock(globalStates.currentLogic, blockKey);
             continue;
         }
 
