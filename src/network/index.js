@@ -595,7 +595,7 @@ realityEditor.network.onInternalPostMessage = function(e) {
     }
 };
 
-realityEditor.network.deleteData = function(url) {
+realityEditor.network.deleteData = function(url, content) {
     var request = new XMLHttpRequest();
     request.open('DELETE', url, true);
     var _this = this;
@@ -605,7 +605,11 @@ realityEditor.network.deleteData = function(url) {
     request.setRequestHeader("Content-type", "application/json");
     //request.setRequestHeader("Content-length", params.length);
     // request.setRequestHeader("Connection", "close");
-    request.send();
+    if (content) {
+        request.send(content);
+    } else {
+        request.send();
+    }
     this.cout("deleteData");
 };
 
