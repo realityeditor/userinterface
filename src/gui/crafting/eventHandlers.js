@@ -88,6 +88,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             var _this = this;
             activeHoldTimer = setTimeout( function() {
                 _this.crafting.eventHelper.styleBlockForHolding(thisTappedContents, true);
+                realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
             }, HOLD_TIME_THRESHOLD);
 
             this.crafting.eventHelper.updateCraftingVisibility(cell, thisTappedContents);
@@ -104,6 +105,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
     }
 
     function onPointerMove(e, setStateMove) {
+
         if (setStateMove) {
             touchState = TS_MOVE;
         }
@@ -165,6 +167,9 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             this.crafting.eventHelper.updateCraftingVisibility(cell, tappedContents);
 
         } else if (touchState === TS_MOVE) {
+
+            realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
+
             // snap if to grid position if necessary, otherwise just move block to pointer position
             var didSnap = this.crafting.eventHelper.snapBlockToCellIfPossible(tappedContents, cell, e.pageX, e.pageY); //TODO: move to inside the canPlaceBlockInCell block to avoid redundant checks
             if (!didSnap) {
@@ -194,6 +199,15 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
         }
 
         this.cout("pointerMove ->" + touchState);
+    }
+
+    function onDocumentUp(e) {
+      if(globalStates.guiState === "logic") {
+          var tappedContents = globalStates.currentLogic.guiState.tappedContents;
+          realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
+          if(tappedContents)
+          this.crafting.eventHelper.removeTappedContents(tappedContents);
+      }
     }
 
     function onPointerUp(e, didPointerLeave) {
@@ -237,7 +251,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
 
             // remove entirely if dragged to menu
             if (didPointerLeave) {
-                this.crafting.eventHelper.removeTappedContents(tappedContents);
+             //   this.crafting.eventHelper.removeTappedContents(tappedContents);
             } else {
                 if (this.crafting.eventHelper.canPlaceBlockInCell(tappedContents, cell)) {
                     this.crafting.eventHelper.placeBlockInCell(tappedContents, cell); // move the block to the cell you're over
@@ -260,7 +274,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
     
     function onPointerLeave(e) {
         if (e.pageX > window.innerWidth - (menuBarWidth + 20)) {
-            onPointerUp.call(this, e, true);
+           // onPointerUp.call(this, e, true);
         }
     }
 
@@ -275,7 +289,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
         document.getElementById('blockSettingsContainer').contentWindow.postMessage(
             JSON.stringify(msg), '*');
     }
-    
+
+    exports.onDocumentUp = onDocumentUp;
     exports.onPointerDown = onPointerDown;
     exports.onPointerMove = onPointerMove;
     exports.onPointerUp = onPointerUp;

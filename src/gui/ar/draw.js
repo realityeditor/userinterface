@@ -379,7 +379,7 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
                     thisObject.x, thisObject.y, 0, 1
                 ];
 
-                if (globalStates.editingMode) {
+                if (globalStates.editingMode || globalStates.editingNode === nodeKey) {
 
                     // todo test if this can be made touch related
                     if (type === "logic") {
@@ -775,6 +775,8 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
         theObject.addEventListener("pointerleave", realityEditor.device.onTouchLeave.bind(realityEditor.device), false);
         ec++;
 
+        theObject.addEventListener("pointermove", realityEditor.device.onTouchMove.bind(realityEditor.device), false);
+        ec++;
 
         if (globalStates.editingMode) {
             // todo this needs to be changed backword
@@ -845,3 +847,16 @@ realityEditor.gui.ar.draw.killObjects = function (objectKey, thisObject) {
         this.cout("killObjects");
     }
 };
+
+realityEditor.gui.ar.draw.deleteNode = function (objectId, nodeId) {
+
+    delete objects[objectId].nodes[nodeId];
+    globalDOMCach["thisObject" + nodeId].parentNode.removeChild(globalDOMCach["thisObject" + nodeId]);
+    delete globalDOMCach["thisObject" + nodeId];
+    delete globalDOMCach["iframe" + nodeId];
+    delete globalDOMCach[nodeId];
+    delete globalDOMCach["canvas" + nodeId];
+
+}
+
+

@@ -424,7 +424,9 @@ realityEditor.gui.crafting.addDatacraftingEventListeners = function() {
         var datacraftingEventDiv = document.getElementById('datacraftingEventDiv');
         if (!datacraftingEventDiv) return;
         datacraftingEventDiv.addEventListener("pointerdown", this.eventHandlers.onPointerDown.bind(this.eventHandlers));
-        datacraftingEventDiv.addEventListener("pointermove", this.eventHandlers.onPointerMove.bind(this.eventHandlers));
+       // datacraftingEventDiv.addEventListener("pointermove", this.eventHandlers.onPointerMove.bind(this.eventHandlers));
+        document.addEventListener("pointermove", this.eventHandlers.onPointerMove.bind(this.eventHandlers));
+
         datacraftingEventDiv.addEventListener("pointerup", this.eventHandlers.onPointerUp.bind(this.eventHandlers));
         datacraftingEventDiv.addEventListener("pointerout", this.eventHandlers.onPointerLeave.bind(this.eventHandlers));
         //datacraftingEventDiv.addEventListener("pointercancel", this.eventHandlers.onPointerUp.bind(this.eventHandlers));
