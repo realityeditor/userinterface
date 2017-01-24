@@ -227,89 +227,298 @@ realityEditor.network.updateObject = function (origin, remote, thisKey) {
 
 
 realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
-        if(!origin) {
-            origin = remote;
-        } else {
 
-            origin.x =  remote.x;
-            origin.y =  remote.y;
-            origin.scale =  remote.scale;
-
-            origin.name =  remote.name;
-            if(remote.text)
-                origin.text =  remote.text;
-            if(remote.matrix)
-                origin.matrix =  remote.matrix;
+    console.log(remote.links, origin.links, remote.blocks, origin.blocks);
+    
+    if(!origin) {
+        
+        origin = remote;
+        
+    } else {
+    
+        origin.x =  remote.x;
+        origin.y =  remote.y;
+        origin.scale =  remote.scale;
+        origin.name =  remote.name;
+        if(remote.text) {
+            origin.text =  remote.text;
         }
-
-    if (remote.blocks) {
-        if (!origin.blocks) origin.blocks = {};
-        for(var x in origin.blocks){
-            if (!origin.blocks[x]) origin.blocks[x] = {};
-            for (var y in remote.blocks[x]){
-                origin.blocks[x][y] = remote.blocks[x][y];
-            }
+        if(remote.matrix) {
+            origin.matrix =  remote.matrix;
         }
-        for(var remoteBlockKey in remote.blocks){
-            var remoteBlock = remote.blocks[remoteBlockKey];
-            if (!origin.blocks[remoteBlockKey]) {
-                origin.blocks[remoteBlockKey] = remoteBlock;
-            }
-        }
+        
     }
     
-    if (remote.links) {
-        //realityEditor.gui.crafting.utilities.convertLinksFromServer(remote);
-        
-        console.log(remote.links, origin.links, remote.blocks, origin.blocks);
-        
-        var realRemoteLinks = this.getRealLinks(remote);
-        console.log(realRemoteLinks);
-
-        //var originRealLinks = this.getRealLinks(origin);
-        //console.log(originRealLinks);
-
-        /*
-        if (!origin.links) origin.links = {};
-		for(var x in origin.links){
-            if (!origin.links[x]) origin.links[x] = {};
-            for (var y in remote.links[x]){
-                origin.links[x][y] = remote.links[x][y];
-            }
-        }
-        */
-
-        if (!origin.links) origin.links = {};
-        for(var x in origin.links){
-            if (!origin.links[x]) origin.links[x] = {};
-            for (var y in realRemoteLinks[x]){
-                origin.links[x][y] = realRemoteLinks[x][y];
-            }
-        }
-        for(var remoteLinkKey in realRemoteLinks){
-            var remoteLink = realRemoteLinks[remoteLinkKey];
-            if (!origin.links[remoteLinkKey]) {
-                origin.links[remoteLinkKey] = remoteLink;
-            }
-        }
-        
+    if (remote.blocks) {
+        syncBlocksWithRemote(origin, remote.blocks);
     }
+    
+    /*
+    if (remote.links) {
+        syncLinksWithRemote(origin, remote.links);
+    }
+    */
+    
+    //if (remote.blocks) {
+    //    
+    //    for (var x in remote.blocks) {
+    //        
+    //        // add
+    //        if (!origin.blocks[x]) {
+    //            origin.blocks[x] = new Block();
+    //            for (var y in remote.blocks[x]){
+    //                origin.blocks[x][y] = remote.blocks[x][y];
+    //            }
+    //
+    //        // update
+    //        } else {
+    //            for (var y in remote.blocks[x]){
+    //                origin.blocks[x][y] = remote.blocks[x][y];
+    //            }
+    //        }
+    //        
+    //        
+    //    }
+    //
+    //    // remove
+    //    for (var x in origin.blocks) {
+    //        if (!remote.blocks[x] && realityEditor.gui.crafting.eventHelper.shouldUploadBlock(origin.blocks[x])) {
+    //            delete origin.guiState.blockDomElements[x];
+    //            delete origin.blocks[x];
+    //        }
+    //    }
+    //}
+    //
+    //if (remote.links) {
+    //    var realRemoteLinks = this.getRealLinks(remote);
+    //
+    //    for (var x in remote.links) {
+    //
+    //        // add
+    //        if (!origin.links[x]) {
+    //            origin.links[x] = new BlockLink();
+    //            for (var y in realRemoteLinks[x]){
+    //                origin.links[x][y] = realRemoteLinks[x][y];
+    //            }
+    //
+    //            // update
+    //        } else {
+    //            for (var y in realRemoteLinks[x]){
+    //                origin.links[x][y] = realRemoteLinks[x][y];
+    //            }
+    //        }
+    //
+    //    }
+    //
+    //    // remove
+    //    for (var x in origin.links) {
+    //        if (!realRemoteLinks[x] && realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink(origin.links[x])) {
+    //            delete origin.links[x];
+    //        }
+    //    }
+    //}
 
-    if(globalStates.currentLogic){
+    if(globalStates.currentLogic) {
+        
         if(globalStates.currentLogic.uuid === nodeKey) {
             console.log("YES");
             realityEditor.gui.crafting.forceRedraw(globalStates.currentLogic);
         }
+        
     } else {
         console.log("NO");
-    
-    
+        
         if(globalDOMCach["iframe" + nodeKey]) {
             if(globalDOMCach["iframe" + nodeKey]._loaded)
                 realityEditor.network.onElementLoad(thisKey, nodeKey);
         }
     }
 };
+
+function syncBlocksWithRemote(origin, remoteBlocks) {
+
+    console.log("blocks before = ");
+    console.log(origin.blocks);
+
+    // delete old blocks
+
+    for (var blockKey in origin.blocks) {
+        if (!origin.blocks.hasOwnProperty(blockKey)) continue;
+        
+        if (shouldSyncBlock(origin, blockKey, "delete")) {
+            console.log("delete block " + blockKey);
+            
+            var domElement = origin.guiState.blockDomElements[blockKey];
+            if (domElement) {
+                domElement.parentNode.removeChild(domElement);
+                delete origin.guiState.blockDomElements[blockKey];
+            }
+            delete origin.blocks[blockKey];
+            
+        }
+    }
+
+    // add missing blocks (updates existing ones too)
+
+    for (blockKey in remoteBlocks) {
+        if (!remoteBlocks.hasOwnProperty(blockKey)) continue;
+        
+        if (shouldSyncBlock(origin, blockKey, "create")) {
+            console.log("add block " + blockKey);
+            
+            origin.blocks[blockKey] = new Block();
+            for (var key in remoteBlocks[blockKey]){
+                origin.blocks[blockKey][key] = remoteBlocks[blockKey][key];
+            }
+            
+        }
+    }
+    
+    console.log("blocks after = ");
+    console.log(origin.blocks);
+    
+}
+
+function shouldSyncBlock(origin, blockKey, mode) {
+
+    if (mode === "create") {
+        if (!origin.blocks[blockKey]) return true;
+
+    } else if (mode === "delete") {
+
+        if (!origin.blocks[blockKey]) return false;
+
+    }
+
+    return realityEditor.gui.crafting.eventHelper.shouldUploadBlock(origin.blocks[blockKey]); // && (origin.blocks[blockKey].x !== -1)
+}
+
+
+
+function syncLinksWithRemote(origin, remoteLinks) {
+
+    for (var linkKey in origin.links) {
+        if (!origin.links.hasOwnProperty(linkKey)) continue;
+
+        if (shouldSyncLink(origin, linkKey, "delete")) {
+            console.log("delete link " + linkKey);
+        }
+    }
+    
+    for (linkKey in remoteLinks) {
+        if (!remoteLinks.hasOwnProperty(linkKey)) continue;
+
+        if (shouldSyncLink(origin, linkKey, "create")) {
+            console.log("add link " + linkKey);
+        }
+    }
+
+    // add missing links
+    // update existing links
+    // delete old links
+    
+}
+
+function shouldSyncLink(origin, linkKey, mode) {
+
+    if (mode === "create") {
+        if (!origin.links[linkKey]) return true;
+
+    } else if (mode === "delete") {
+        
+    }
+    
+    return realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink(origin.links[linkKey])
+
+}
+
+
+
+
+//realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
+//        if(!origin) {
+//            origin = remote;
+//        } else {
+//
+//            origin.x =  remote.x;
+//            origin.y =  remote.y;
+//            origin.scale =  remote.scale;
+//
+//            origin.name =  remote.name;
+//            if(remote.text)
+//                origin.text =  remote.text;
+//            if(remote.matrix)
+//                origin.matrix =  remote.matrix;
+//        }
+//
+//    if (remote.blocks) {
+//        if (!origin.blocks) origin.blocks = {};
+//        for(var x in origin.blocks){
+//            if (!origin.blocks[x]) origin.blocks[x] = {};
+//            for (var y in remote.blocks[x]){
+//                origin.blocks[x][y] = remote.blocks[x][y];
+//            }
+//        }
+//        for(var remoteBlockKey in remote.blocks){
+//            var remoteBlock = remote.blocks[remoteBlockKey];
+//            if (!origin.blocks[remoteBlockKey]) {
+//                origin.blocks[remoteBlockKey] = remoteBlock;
+//            }
+//        }
+//    }
+//    
+//    if (remote.links) {
+//        //realityEditor.gui.crafting.utilities.convertLinksFromServer(remote);
+//        
+//        console.log(remote.links, origin.links, remote.blocks, origin.blocks);
+//        
+//        var realRemoteLinks = this.getRealLinks(remote);
+//        console.log(realRemoteLinks);
+//
+//        //var originRealLinks = this.getRealLinks(origin);
+//        //console.log(originRealLinks);
+//
+//        /*
+//        if (!origin.links) origin.links = {};
+//		for(var x in origin.links){
+//            if (!origin.links[x]) origin.links[x] = {};
+//            for (var y in remote.links[x]){
+//                origin.links[x][y] = remote.links[x][y];
+//            }
+//        }
+//        */
+//
+//        if (!origin.links) origin.links = {};
+//        for(var x in origin.links){
+//            if (!origin.links[x]) origin.links[x] = {};
+//            for (var y in realRemoteLinks[x]){
+//                origin.links[x][y] = realRemoteLinks[x][y];
+//            }
+//        }
+//        for(var remoteLinkKey in realRemoteLinks){
+//            var remoteLink = realRemoteLinks[remoteLinkKey];
+//            if (!origin.links[remoteLinkKey]) {
+//                origin.links[remoteLinkKey] = remoteLink;
+//            }
+//        }
+//        
+//    }
+//
+//    if(globalStates.currentLogic){
+//        if(globalStates.currentLogic.uuid === nodeKey) {
+//            console.log("YES");
+//            realityEditor.gui.crafting.forceRedraw(globalStates.currentLogic);
+//        }
+//    } else {
+//        console.log("NO");
+//    
+//    
+//        if(globalDOMCach["iframe" + nodeKey]) {
+//            if(globalDOMCach["iframe" + nodeKey]._loaded)
+//                realityEditor.network.onElementLoad(thisKey, nodeKey);
+//        }
+//    }
+//};
 
 // todo hasOwnProperty
 // convert links from in/out -> block not in edge row into 2 links, one from in/out->edge and another from edge->block
