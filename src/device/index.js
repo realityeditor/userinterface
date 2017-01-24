@@ -769,6 +769,26 @@ realityEditor.device.onMultiTouchEnd = function(evt) {
 		//  if(globalStates.editingModeKind=== "node") {
         if (globalStates.editingModeKind === 'ui' && globalStates.editingModeObject !== globalStates.editingModeLocation) {
             realityEditor.gui.frame.update(globalStates.editingModeObject, globalStates.editingModeLocation);
+            // reposition all of this frame's nodes relative to their parent
+            var object = objects[globalStates.editingModeObject];
+            var frameId = globalStates.editingModeLocation;
+            var frame = tempThisObject;
+
+            for (var nodeId in object.nodes) {
+                var node = object.nodes[nodeId];
+                if (node.frame !== frameId) {
+                    continue;
+                }
+                node.x = frame.x + (Math.random() - 0.5) * 160;
+                node.y = frame.y + (Math.random() - 0.5) * 160;
+            }
+
+            if (evt.changedTouches && evt.changedTouches.length >= 1) {
+                var x = evt.changedTouches[0].pageX;
+                if (x > window.innerWidth - 60) {
+                    realityEditor.gui.frame.delete(globalStates.editingModeObject, frameId);
+                }
+            }
         } else if (typeof content.x === "number" && typeof content.y === "number" && typeof content.scale === "number") {
 			realityEditor.network.postData('http://' + objects[globalStates.editingModeObject].ip + ':' + httpPort + '/object/' + globalStates.editingModeObject + "/size/" + globalStates.editingModeLocation, content);
 		}
