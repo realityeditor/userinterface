@@ -253,74 +253,14 @@ realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
         syncBlocksWithRemote(origin, remote.blocks);
     }
     
-    
     if (remote.links) {
         syncLinksWithRemote(origin, remote.links);
     }
-    
-    
-    //if (remote.blocks) {
-    //    
-    //    for (var x in remote.blocks) {
-    //        
-    //        // add
-    //        if (!origin.blocks[x]) {
-    //            origin.blocks[x] = new Block();
-    //            for (var y in remote.blocks[x]){
-    //                origin.blocks[x][y] = remote.blocks[x][y];
-    //            }
-    //
-    //        // update
-    //        } else {
-    //            for (var y in remote.blocks[x]){
-    //                origin.blocks[x][y] = remote.blocks[x][y];
-    //            }
-    //        }
-    //        
-    //        
-    //    }
-    //
-    //    // remove
-    //    for (var x in origin.blocks) {
-    //        if (!remote.blocks[x] && realityEditor.gui.crafting.eventHelper.shouldUploadBlock(origin.blocks[x])) {
-    //            delete origin.guiState.blockDomElements[x];
-    //            delete origin.blocks[x];
-    //        }
-    //    }
-    //}
-    //
-    //if (remote.links) {
-    //    var realRemoteLinks = this.getRealLinks(remote);
-    //
-    //    for (var x in remote.links) {
-    //
-    //        // add
-    //        if (!origin.links[x]) {
-    //            origin.links[x] = new BlockLink();
-    //            for (var y in realRemoteLinks[x]){
-    //                origin.links[x][y] = realRemoteLinks[x][y];
-    //            }
-    //
-    //            // update
-    //        } else {
-    //            for (var y in realRemoteLinks[x]){
-    //                origin.links[x][y] = realRemoteLinks[x][y];
-    //            }
-    //        }
-    //
-    //    }
-    //
-    //    // remove
-    //    for (var x in origin.links) {
-    //        if (!realRemoteLinks[x] && realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink(origin.links[x])) {
-    //            delete origin.links[x];
-    //        }
-    //    }
-    //}
 
     if(globalStates.currentLogic) {
         
         if(globalStates.currentLogic.uuid === nodeKey) {
+            
             console.log("YES");
             realityEditor.gui.crafting.forceRedraw(globalStates.currentLogic);
         }
@@ -469,7 +409,9 @@ function getEditorLinks(origin, remoteLinks) {
             //blockLink1.logicB = link.logicB;
             //realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink1)] = blockLink1;
 
-            var linkKey = linkParts[0];
+            //var linkKey = linkParts[0];
+            
+            var linkKey = link.globalId;
             
             var nodeA = linkParts[1];
             var logicA = parseInt(linkParts[2]);
