@@ -280,6 +280,7 @@ function BlockLink() {
 	// keeps track of the path from the start block to end block and how to draw it
 	this.route = null;
 	this.ballAnimationCount = 0;
+    this.globalId = null;
 }
 
 /**

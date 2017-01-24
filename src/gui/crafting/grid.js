@@ -929,6 +929,8 @@ createNameSpace("realityEditor.gui.crafting.grid");
             blockLink.logicB = logicB; 
 
             var linkKey = isServerOnlyLink ? edgeBlockLinkKey(blockLink) : "blockLink" + realityEditor.device.utilities.uuidTime();
+            
+            blockLink.globalId = linkKey;
 
             if (addToLogic) {
                 if (!doesLinkAlreadyExist(blockLink)) {
@@ -982,6 +984,7 @@ createNameSpace("realityEditor.gui.crafting.grid");
                     newLink.logicA = link.logicA;
                     newLink.nodeB = edgeLink.nodeB;
                     newLink.logicB = edgeLink.logicB;
+                    newLink.globalId = "blockLink" + realityEditor.device.utilities.uuidTime();
                     foundLinks.push(newLink);
                 }
             }
@@ -1002,6 +1005,7 @@ createNameSpace("realityEditor.gui.crafting.grid");
                     newLink.logicA = edgeLink.logicA;
                     newLink.nodeB = link.nodeB;
                     newLink.logicB = link.logicB;
+                    newLink.globalId = "blockLink" + realityEditor.device.utilities.uuidTime();
                     foundLinks.push(newLink);
                 }
             }
