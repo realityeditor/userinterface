@@ -581,6 +581,11 @@ body {
     overflow: hidden;
 }
 
+#overlay.overlayMemory {
+    background-position: center center;
+    background-size: cover;
+}
+
 .element-template {
     border-color: white;
     display: inline-block;
