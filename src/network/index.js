@@ -453,59 +453,159 @@ function getEditorLinks(origin, remoteLinks) {
     for (var linkKey in remoteLinks) {
         if (!remoteLinks.hasOwnProperty(linkKey)) continue;
         var link = remoteLinks[linkKey];
-
-        if (realityEditor.gui.crafting.grid.isInOutBlock(link.nodeA) && origin.blocks[link.nodeB] && origin.blocks[link.nodeB].y !== 0) {
-            // create separate links from in->edge and edge->block
-            var x = link.nodeA.slice(-1);
-
-            // add first link
-            var blockLink1 = new BlockLink();
-            blockLink1.nodeA = link.nodeA;
-            blockLink1.nodeB = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(true, x);
-            blockLink1.logicA = link.logicA;
-            blockLink1.logicB = link.logicB;
-            realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink1)] = blockLink1;
-
-            // add second link
-            var blockLink2 = new BlockLink();
-            blockLink2.nodeA = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(true, x);
-            blockLink2.nodeB = link.nodeB;
-            blockLink2.logicA = link.logicA;
-            blockLink2.logicB = link.logicB;
-            realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink2)] = blockLink2;
-
-        } else if (realityEditor.gui.crafting.grid.isInOutBlock(link.nodeB) && origin.blocks[link.nodeA] && origin.blocks[link.nodeA].y !== 3) {
-
-            // create separate links from block->edge and edge->out
-            var x = link.nodeB.slice(-1);
-
-            // add first link
-            var blockLink1 = new BlockLink();
-            blockLink1.nodeA = link.nodeA;
-            blockLink1.nodeB = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(false, x);
-            blockLink1.logicA = link.logicA;
-            blockLink1.logicB = link.logicB;
-            realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink1)] = blockLink1;
-
-            // add second link
-            var blockLink2 = new BlockLink();
-            blockLink2.nodeA = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(false, x);
-            blockLink2.nodeB = link.nodeB;
-            blockLink2.logicA = link.logicA;
-            blockLink2.logicB = link.logicB;
-            realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink2)] = blockLink2;
-
-
-        } else {
-
+        
+        var linkParts = linkKey.split("-"); // ["blockLink", "in0", "0", "out0", "0"]
+        if (linkParts.length !== 5) {
             realLinks[linkKey] = link;
 
+        } else {
+            
+            //var x = link.nodeA.slice(-1);
+            
+            //var blockLink1 = new BlockLink();
+            //blockLink1.nodeA = link.nodeA;
+            //blockLink1.nodeB = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(true, x);
+            //blockLink1.logicA = link.logicA;
+            //blockLink1.logicB = link.logicB;
+            //realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink1)] = blockLink1;
+
+            var linkKey = linkParts[0];
+            
+            var nodeA = linkParts[1];
+            var logicA = parseInt(linkParts[2]);
+            
+            var nodeB = linkParts[3];
+            var logicB = parseInt(linkParts[4]);
+
+            var inX = nodeA.slice(-1);
+            var outX = nodeB.slice(-1);
+            
+            
+            /*
+            if (nodeA.startsWith("in")) {
+                var l1 = new BlockLink();
+                l1.nodeA = nodeA;
+                l1.logicA = logicA;
+                l1.nodeB = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(true, inX);
+                l1.logicB = logicA;
+                var l1Key = "blockLink1" + realityEditor.device.utilities.uuidTime();
+                realLinks[l1Key] = l1;
+            }
+
+            if (nodeB.startsWith("out")) {
+
+                var l2 = new BlockLink();
+                l2.nodeA = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(false, outX);
+                l2.logicA = logicB;
+                l2.nodeB = nodeB;
+                l2.logicB = logicB;
+                var l2Key = "blockLink2" + realityEditor.device.utilities.uuidTime();
+                realLinks[l2Key] = l2;
+
+            }
+            
+            if (nodeA.startsWith("in") && nodeB.startsWith("out")) {
+
+                var l3 = new BlockLink();
+                l3.nodeA = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(true, inX);
+                l3.logicA = logicA;
+                l3.nodeB = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(false, outX);
+                l3.logicB = logicB;
+                var l3Key = "blockLink3" + realityEditor.device.utilities.uuidTime();
+                realLinks[l3Key] = l3;
+            }
+            */
+
+            var l = new BlockLink();
+            l.logicA = logicA;
+            l.logicB = logicB;
+            
+            if (nodeA.startsWith("in")) {
+                l.nodeA = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(true, inX);
+            } else {
+                l.nodeA = nodeA;
+            }
+            
+            if (nodeB.startsWith("out")) {
+                l.nodeB = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(false, outX);
+            } else {
+                l.nodeB = nodeB;
+                
+            }
+            
+            //var lKey = "blockLink" + realityEditor.device.utilities.uuidTime();
+            realLinks[linkKey] = l;
         }
+        
     }
 
     return realLinks;
-    
+
 }
+
+//function getEditorLinks_old(origin, remoteLinks) {
+//
+//    // add block/link methods haven't been generalized to work on any logic,
+//    // it currently relies on currentLogic, so we need to set/reset that around this method // todo: generalize these logic methods so this hack isn't necessary
+//
+//    var realLinks = {};
+//
+//    for (var linkKey in remoteLinks) {
+//        if (!remoteLinks.hasOwnProperty(linkKey)) continue;
+//        var link = remoteLinks[linkKey];
+//
+//        if (realityEditor.gui.crafting.grid.isInOutBlock(link.nodeA) && origin.blocks[link.nodeB] && origin.blocks[link.nodeB].y !== 0) {
+//            // create separate links from in->edge and edge->block
+//            var x = link.nodeA.slice(-1);
+//
+//            // add first link
+//            var blockLink1 = new BlockLink();
+//            blockLink1.nodeA = link.nodeA;
+//            blockLink1.nodeB = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(true, x);
+//            blockLink1.logicA = link.logicA;
+//            blockLink1.logicB = link.logicB;
+//            realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink1)] = blockLink1;
+//
+//            // add second link
+//            var blockLink2 = new BlockLink();
+//            blockLink2.nodeA = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(true, x);
+//            blockLink2.nodeB = link.nodeB;
+//            blockLink2.logicA = link.logicA;
+//            blockLink2.logicB = link.logicB;
+//            realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink2)] = blockLink2;
+//
+//        } else if (realityEditor.gui.crafting.grid.isInOutBlock(link.nodeB) && origin.blocks[link.nodeA] && origin.blocks[link.nodeA].y !== 3) {
+//
+//            // create separate links from block->edge and edge->out
+//            var x = link.nodeB.slice(-1);
+//
+//            // add first link
+//            var blockLink1 = new BlockLink();
+//            blockLink1.nodeA = link.nodeA;
+//            blockLink1.nodeB = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(false, x);
+//            blockLink1.logicA = link.logicA;
+//            blockLink1.logicB = link.logicB;
+//            realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink1)] = blockLink1;
+//
+//            // add second link
+//            var blockLink2 = new BlockLink();
+//            blockLink2.nodeA = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(false, x);
+//            blockLink2.nodeB = link.nodeB;
+//            blockLink2.logicA = link.logicA;
+//            blockLink2.logicB = link.logicB;
+//            realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink2)] = blockLink2;
+//
+//
+//        } else {
+//
+//            realLinks[linkKey] = link;
+//
+//        }
+//    }
+//
+//    return realLinks;
+//    
+//}
 
 
 
@@ -595,6 +695,7 @@ function getEditorLinks(origin, remoteLinks) {
 //    }
 //};
 
+/*
 // todo hasOwnProperty
 // convert links from in/out -> block not in edge row into 2 links, one from in/out->edge and another from edge->block
 // this puts the data in a format that is convenient for the UI while keeping the server data efficient
@@ -660,6 +761,7 @@ realityEditor.network.getRealLinks = function(logic) {
     
     return realLinks;
 };
+*/
 
 
 
