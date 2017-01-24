@@ -86,10 +86,23 @@ realityEditor.gui.crafting.updateGrid = function(grid) {
     }
 };
 
+realityEditor.gui.crafting.forceRedraw = function(logic) {
+    var _this = this;
+    for (var key in logic.blocks) {
+        if (!logic.blocks.hasOwnProperty(key)) continue;
+        if (logic.blocks[key].isPortBlock) continue;
+        _this.removeBlockDom(logic.blocks[key]);
+    }
+    this.updateGrid(logic.grid);
+    this.redrawDataCrafting();
+};
+
 realityEditor.gui.crafting.removeBlockDom = function(block) {
     var blockDomElement = this.eventHelper.getDomElementForBlock(block);
-    blockDomElement.parentNode.removeChild(blockDomElement);
-    delete globalStates.currentLogic.guiState.blockDomElements[block.globalId];
+    if (blockDomElement) {
+        blockDomElement.parentNode.removeChild(blockDomElement);
+        delete globalStates.currentLogic.guiState.blockDomElements[block.globalId];   
+    }
 };
 
 realityEditor.gui.crafting.shouldRemoveBlockDom = function(blockDomElement) {
