@@ -226,7 +226,7 @@ realityEditor.network.updateObject = function (origin, remote, thisKey) {
 };
 
 
-realityEditor.network.updateNode= function (origin, remote, thisKey, nodeKey) {
+realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
         if(!origin) {
             origin = remote;
         } else {
@@ -250,8 +250,26 @@ realityEditor.network.updateNode= function (origin, remote, thisKey, nodeKey) {
                 origin.blocks[x][y] = remote.blocks[x][y];
             }
         }
+        for(var remoteBlockKey in remote.blocks){
+            var remoteBlock = remote.blocks[remoteBlockKey];
+            if (!origin.blocks[remoteBlockKey]) {
+                origin.blocks[remoteBlockKey] = remoteBlock;
+            }
+        }
     }
+    
     if (remote.links) {
+        //realityEditor.gui.crafting.utilities.convertLinksFromServer(remote);
+        
+        console.log(remote.links, origin.links, remote.blocks, origin.blocks);
+        
+        var realRemoteLinks = this.getRealLinks(remote);
+        console.log(realRemoteLinks);
+
+        //var originRealLinks = this.getRealLinks(origin);
+        //console.log(originRealLinks);
+
+        /*
         if (!origin.links) origin.links = {};
 		for(var x in origin.links){
             if (!origin.links[x]) origin.links[x] = {};
@@ -259,26 +277,104 @@ realityEditor.network.updateNode= function (origin, remote, thisKey, nodeKey) {
                 origin.links[x][y] = remote.links[x][y];
             }
         }
+        */
+
+        if (!origin.links) origin.links = {};
+        for(var x in origin.links){
+            if (!origin.links[x]) origin.links[x] = {};
+            for (var y in realRemoteLinks[x]){
+                origin.links[x][y] = realRemoteLinks[x][y];
+            }
+        }
+        for(var remoteLinkKey in realRemoteLinks){
+            var remoteLink = realRemoteLinks[remoteLinkKey];
+            if (!origin.links[remoteLinkKey]) {
+                origin.links[remoteLinkKey] = remoteLink;
+            }
+        }
+        
     }
 
-if(globalStates.currentLogic){
-    if(globalStates.currentLogic.uuid === nodeKey) {
-        console.log("YES");
-        realityEditor.gui.crafting.craftingBoardHide();
-        realityEditor.gui.crafting.craftingBoardVisible(thisKey, nodeKey);
-        // console.log(globalStates.currentLogic.grid);
-//   realityEditor.gui.crafting.craftingBoardVisible(thisKey, nodeKey);
-        // realityEditor.gui.crafting.updateGrid(globalStates.currentLogic.grid);
+    if(globalStates.currentLogic){
+        if(globalStates.currentLogic.uuid === nodeKey) {
+            console.log("YES");
+            realityEditor.gui.crafting.forceRedraw(globalStates.currentLogic);
+        }
+    } else {
+        console.log("NO");
+    
+    
+        if(globalDOMCach["iframe" + nodeKey]) {
+            if(globalDOMCach["iframe" + nodeKey]._loaded)
+                realityEditor.network.onElementLoad(thisKey, nodeKey);
+        }
     }
-} else {
-    console.log("NO");
+};
 
+// todo hasOwnProperty
+// convert links from in/out -> block not in edge row into 2 links, one from in/out->edge and another from edge->block
+// this puts the data in a format that is convenient for the UI while keeping the server data efficient
+realityEditor.network.getRealLinks = function(logic) {
 
-    if(globalDOMCach["iframe" + nodeKey]) {
-        if(globalDOMCach["iframe" + nodeKey]._loaded)
-            realityEditor.network.onElementLoad(thisKey, nodeKey);
+    // add block/link methods haven't been generalized to work on any logic,
+    // it currently relies on currentLogic, so we need to set/reset that around this method // todo: generalize these logic methods so this hack isn't necessary
+
+    var realLinks = {};
+    
+    for (var linkKey in logic.links) {
+        if (!logic.links.hasOwnProperty(linkKey)) continue;
+        var link = logic.links[linkKey];
+
+        if (realityEditor.gui.crafting.grid.isInOutBlock(link.nodeA) && logic.blocks[link.nodeB] && logic.blocks[link.nodeB].y !== 0) {
+            // create separate links from in->edge and edge->block
+            var x = link.nodeA.slice(-1);
+
+            // add first link
+            var blockLink1 = new BlockLink();
+            blockLink1.nodeA = link.nodeA;
+            blockLink1.nodeB = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(true, x);
+            blockLink1.logicA = link.logicA;
+            blockLink1.logicB = link.logicB;
+            realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink1)] = blockLink1;
+
+            // add second link
+            var blockLink2 = new BlockLink();
+            blockLink2.nodeA = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(true, x);
+            blockLink2.nodeB = link.nodeB;
+            blockLink2.logicA = link.logicA;
+            blockLink2.logicB = link.logicB;
+            realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink2)] = blockLink2;
+            
+        } else if (realityEditor.gui.crafting.grid.isInOutBlock(link.nodeB) && logic.blocks[link.nodeA] && logic.blocks[link.nodeA].y !== 3) {
+
+            // create separate links from block->edge and edge->out
+            var x = link.nodeB.slice(-1);
+
+            // add first link
+            var blockLink1 = new BlockLink();
+            blockLink1.nodeA = link.nodeA;
+            blockLink1.nodeB = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(false, x);
+            blockLink1.logicA = link.logicA;
+            blockLink1.logicB = link.logicB;
+            realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink1)] = blockLink1;
+            
+            // add second link
+            var blockLink2 = new BlockLink();
+            blockLink2.nodeA = realityEditor.gui.crafting.eventHelper.edgePlaceholderName(false, x);
+            blockLink2.nodeB = link.nodeB;
+            blockLink2.logicA = link.logicA;
+            blockLink2.logicB = link.logicB;
+            realLinks[realityEditor.gui.crafting.grid.edgeBlockLinkKey(blockLink2)] = blockLink2;
+            
+
+        } else {
+            
+            realLinks[linkKey] = link;
+            
+        }
     }
-}
+    
+    return realLinks;
 };
 
 

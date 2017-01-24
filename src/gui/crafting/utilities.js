@@ -111,13 +111,16 @@ realityEditor.gui.crafting.utilities.convertLogicToServerFormat = function(logic
 // convert links from in/out -> block not in edge row into 2 links, one from in/out->edge and another from edge->block
 // this puts the data in a format that is convenient for the UI while keeping the server data efficient
 realityEditor.gui.crafting.utilities.convertLinksFromServer = function(logic) {
-
+    
+    // add block/link methods haven't been generalized to work on any logic,
+    // it currently relies on currentLogic, so we need to set/reset that around this method // todo: generalize these logic methods so this hack isn't necessary
+    var priorLogic = globalStates.currentLogic;
     globalStates.currentLogic = logic;
 
     for (var linkKey in logic.links) {
         var link = logic.links[linkKey];
 
-        if (this.crafting.grid.isInOutBlock(link.nodeA) && logic.blocks[link.nodeB].y !== 0) {
+        if (this.crafting.grid.isInOutBlock(link.nodeA) && logic.blocks[link.nodeB] && logic.blocks[link.nodeB].y !== 0) {
             // create separate links from in->edge and edge->block
             var x = link.nodeA.slice(-1);
             this.crafting.grid.addBlockLink(link.nodeA, this.crafting.eventHelper.edgePlaceholderName(true, x), link.logicA, link.logicB, true);
@@ -125,7 +128,7 @@ realityEditor.gui.crafting.utilities.convertLinksFromServer = function(logic) {
 
             delete logic.links[linkKey];
 
-        } else if (this.crafting.grid.isInOutBlock(link.nodeB) && logic.blocks[link.nodeA].y !== 3) {
+        } else if (this.crafting.grid.isInOutBlock(link.nodeB) && logic.blocks[link.nodeA] && logic.blocks[link.nodeA].y !== 3) {
 
             // create separate links from block->edge and edge->out
             var x = link.nodeB.slice(-1);
@@ -136,5 +139,7 @@ realityEditor.gui.crafting.utilities.convertLinksFromServer = function(logic) {
         }
     }
 
-    globalStates.currentLogic = null;
+    // restore prior state
+    globalStates.currentLogic = priorLogic;
+    
 };

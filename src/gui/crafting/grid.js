@@ -926,7 +926,7 @@ createNameSpace("realityEditor.gui.crafting.grid");
             blockLink.nodeA = nodeA;
             blockLink.nodeB = nodeB;
             blockLink.logicA = logicA;
-            blockLink.logicB = logicB;
+            blockLink.logicB = logicB; 
 
             var linkKey = isServerOnlyLink ? edgeBlockLinkKey(blockLink) : "blockLink" + realityEditor.device.utilities.uuidTime();
 
@@ -1246,5 +1246,7 @@ createNameSpace("realityEditor.gui.crafting.grid");
     exports.removeBlockLink = removeBlockLink;
     exports.removeBlock = removeBlock;
     exports.removeLinksForBlock = removeLinksForBlock;
+    // todo: change so doesn't need to be public
+    exports.edgeBlockLinkKey = edgeBlockLinkKey;
 
 }(realityEditor.gui.crafting.grid));
