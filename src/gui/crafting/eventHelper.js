@@ -258,7 +258,7 @@ realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(t
 
 // todo why is isInOutBlock in grid by isPortBlock in here?
 realityEditor.gui.crafting.eventHelper.shouldUploadBlock = function(block) {
-    return !this.crafting.grid.isInOutBlock(block.globalId) && !block.isPortBlock;
+    return !this.crafting.grid.isInOutBlock(block.globalId) && !block.isPortBlock; //&& !(block.x === -1 || block.y === -1)
 };
 
 realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink = function(blockLink) {
@@ -649,7 +649,7 @@ realityEditor.gui.crafting.eventHelper.isOutputBlock = function(block) {
 
 realityEditor.gui.crafting.eventHelper.addBlockFromMenu = function(blockJSON, pointerX, pointerY) {
     var globalId = this.generateBlockGlobalId();
-    var addedBlock = this.crafting.grid.addBlock(-1, -1, blockJSON, globalId);
+    var addedBlock = this.crafting.grid.addBlock(-1, -1, blockJSON, globalId); // TODO: only upload after you've placed it
     this.crafting.addDomElementForBlock(addedBlock, globalStates.currentLogic.grid, true);
 
     globalStates.currentLogic.guiState.tappedContents = {
