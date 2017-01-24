@@ -605,6 +605,35 @@ realityEditor.network.onInternalPostMessage = function(e) {
         objects[msgContent.object].nodes[nodeKey] = node;
         realityEditor.network.postNewNode(objects[msgContent.object].ip, msgContent.object, nodeKey, node);
     }
+
+    if (typeof msgContent.beginTouchEditing !== "undefined") {
+        var element = document.getElementById(msgContent.node);
+        realityEditor.device.beginTouchEditing(element);
+    }
+
+    if (typeof msgContent.touchEvent !== "undefined") {
+        var event = msgContent.touchEvent;
+        var target = document.getElementById(msgContent.node);
+        if (!target) {
+            return;
+        }
+        var fakeEvent = {
+            currentTarget: target,
+            pageX: event.x,
+            pageY: event.y
+        };
+        if (event.type === 'touchmove') {
+            realityEditor.device.onTouchMove(fakeEvent);
+        } else if (event.type === 'touchend') {
+            realityEditor.device.onMultiTouchEnd(fakeEvent);
+            var frame = document.getElementById('iframe' + msgContent.node);
+            if (frame) {
+                frame.contentWindow.postMessage(JSON.stringify({
+                    stopTouchEditing: true
+                }), "*");
+            }
+        }
+    }
 };
 
 realityEditor.network.deleteData = function(url, content) {
