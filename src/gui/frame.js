@@ -68,6 +68,7 @@ function create(objectId, frame) {
     var object = objects[objectId];
     var url = 'http://' + object.ip + ':' + httpPort + '/object/' + objectId + '/frames/';
     frame = sanitizeFrame(frame);
+    frame.lastEditor = globalStates.tempUuid;
     realityEditor.network.postData(url, frame, function(err, response) {
         if (err) {
             console.error('frameCreate', err);
@@ -89,6 +90,7 @@ function create(objectId, frame) {
 function update(objectId, frameId) {
     var object = objects[objectId];
     var frame = sanitizeFrame(object.frames[frameId]);
+    frame.lastEditor = globalStates.tempUuid;
 
     var url = 'http://' + object.ip + ':' + httpPort + '/object/' + objectId + '/frames/' + frameId;
     realityEditor.network.postData(url, frame, function(err) {
@@ -108,7 +110,7 @@ function update(objectId, frameId) {
 function deleteFrame(objectId, frameId) {
     var object = objects[objectId];
     var url = 'http://' + object.ip + ':' + httpPort + '/object/' + objectId + '/frames/' + frameId;
-    realityEditor.network.deleteData(url);
+    realityEditor.network.deleteData(url, {lastEditor: globalStates.tempUuid});
 
     // clean up locally, copy-pasted from server.js
 
