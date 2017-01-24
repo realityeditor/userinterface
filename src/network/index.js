@@ -186,6 +186,31 @@ realityEditor.network.updateObject = function (origin, remote, thisKey) {
                 realityEditor.network.onElementLoad(thisKey, nodeKey);
         }
     }
+
+    for (var frameKey in remote.frames) {
+        if(!origin.frames[frameKey]) {
+            origin.frames[frameKey] = remote.frames[frameKey];
+            continue;
+        }
+        var oFrame = origin.frames[frameKey];
+        var rFrame = remote.frames[frameKey];
+        oFrame.x = rFrame.x;
+        oFrame.y = rFrame.y;
+        oFrame.scale = rFrame.scale;
+
+        oFrame.name = rFrame.name;
+        if(rFrame.text) {
+            oFrame.text = rFrame.text;
+        }
+        if(rFrame.matrix) {
+            oFrame.matrix = rFrame.matrix;
+        }
+
+        if (globalDOMCach["iframe" + frameKey] && globalDOMCach["iframe" + frameKey]._loaded) {
+            realityEditor.network.onElementLoad(thisKey, frameKey);
+        }
+
+    }
 };
 
 
