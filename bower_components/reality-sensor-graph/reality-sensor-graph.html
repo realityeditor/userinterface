@@ -1,0 +1,103 @@
+<!-- Imports polymer -->
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/reality-node/reality-node.html">
+
+<!-- Defines element markup -->
+<dom-module id="reality-sensor-graph">
+  <template>
+    <style>
+      #container {
+        border: 2px solid #fff;
+        background: rgba(255, 255, 255, 0.3);
+        margin: 0;
+        padding: 0;
+      }
+
+      #graph {
+        stroke: none;
+        fill: #00ff00;
+      }
+    </style>
+
+    <reality-node name="input" value="{{value}}"></reality-node>
+
+    <svg id="container" width="300" height="300" version="1.1" xmlns="http://www.w3.org/2000/svg" touch-action="none">
+      <path id="graph"></path>
+    </svg>
+
+  </template>
+</dom-module>
+
+<script src="/bower_components/pepjs/dist/pep.min.js"></script>
+<!-- Registers custom element -->
+<script>
+Polymer({
+  is: 'reality-sensor-graph',
+  properties: {
+    ticks: {
+      type: Number,
+      value: 10,
+      observer: 'drawGraph'
+    },
+    value: {
+      type: Number,
+      value: 0,
+      observer: 'onValueChange'
+    },
+    width: {
+      type: Number,
+      value: 300,
+      observer: 'onDimensionsChange'
+    },
+    height: {
+      type: Number,
+      value: 300,
+      observer: 'onDimensionsChange'
+    }
+  },
+  data: [0.2, 0.1, 0.3, 0.4, 0.7, 0.8, 0.5, 0.6, 0.4, 0.9],
+  isReady: false,
+
+  onDimensionsChange: function() {
+    if (!this.isReady) {
+      return;
+    }
+    this.$.container.style.width = this.width + 'px';
+    this.$.container.style.height = this.height + 'px';
+    this.drawGraph();
+  },
+  onValueChange: function() {
+    if (!this.isReady) {
+      return;
+    }
+    this.data.push(this.value);
+    this.data.shift();
+    this.drawGraph();
+  },
+  drawGraph: function() {
+    if (!this.isReady) {
+      return;
+    }
+    var path = ['M 0', this.height, 'L'];
+    for (var i = 0; i < this.ticks; i++) {
+      var x = i * this.width / (this.ticks - 1);
+      var value = 0;
+      if (i < this.data.length) {
+        value = this.data[i];
+      }
+      var y = (1 - value) * this.height;
+      path.push(x);
+      path.push(y);
+    }
+    path.push(this.width);
+    path.push(this.height);
+    path.push('Z');
+
+    this.$.graph.setAttribute('d', path.join(' '));
+  },
+  ready: function() {
+    this.isReady = true;
+    this.drawGraph();
+  }
+});
+</script>
