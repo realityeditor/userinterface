@@ -550,9 +550,7 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 
 	// clear the timeout that makes the logic nodes moveable.
 	clearTimeout(realityEditor.device.touchTimer);
-
-	realityEditor.gui.crafting.eventHandlers.onDocumentUp(evt);
-
+    
 	if (globalStates.pocketButtonDown) {
 		pocketItem.pocket.objectVisible = false;
 
