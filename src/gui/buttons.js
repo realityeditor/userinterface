@@ -84,8 +84,8 @@ realityEditor.gui.buttons.preload = function(array) {
 realityEditor.gui.buttons.guiButtonUp = function(event){
 		if(event.button !== "gui") return;
 
-        realityEditor.gui.menus.off("main",["logic","logicPocket","logicSetting","setting","pocket"]);
-        realityEditor.gui.menus.on("main",["gui"]);
+        realityEditor.gui.menus.buttonOff("main",["logic","logicPocket","logicSetting","setting","pocket"]);
+        realityEditor.gui.menus.buttonOn("main",["gui"]);
 
 
         realityEditor.gui.pocket.pocketHide();
@@ -103,8 +103,8 @@ realityEditor.gui.buttons.guiButtonUp = function(event){
 realityEditor.gui.buttons.logicButtonUp = function(event){
         if(event.button !== "logic") return;
 
-        realityEditor.gui.menus.off("main",["gui","logicPocket","logicSetting","setting","pocket"]);
-        realityEditor.gui.menus.on("main",["logic"]);
+        realityEditor.gui.menus.buttonOff("main",["gui","logicPocket","logicSetting","setting","pocket"]);
+        realityEditor.gui.menus.buttonOff("main",["logic"]);
 
         realityEditor.gui.pocket.pocketHide();
 
