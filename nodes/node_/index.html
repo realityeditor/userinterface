@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>IO</title>
+    <style>
+        body, html {
+            width: 220px;
+            height: 220px;
+            margin: 0;
+            padding: 0;
+        }
+
+        img {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div style="width:160px; height:160px; overflow: hidden; position: absolute;top:30px;left:30px;">
+    <svg id = "1" height="160" width="160">
+        <circle id = "2" cx="80" cy="80" r="74" stroke="#00ffff" stroke-width="8" fill="#000000" />
+    </svg>
+</div>
+<div id="textNote" style="visibility: visible; position: absolute; overflow: hidden;top:190px;left:0px; width:220px; height:30px; text-align: center; font-size:1.6em; font-weight: bold; font-family: Helvetica, Arial, sans-serif;
+color: #ffffff"></div>
+
+<script>
+    var objects = {};
+
+    var svgEl = document.getElementById('1');
+
+    var svg = svgEl.getElementById('2');
+    var thisText =  document.getElementById("textNote");
+
+    window.addEventListener("message", function (e) {
+
+        var msg = JSON.parse(e.data);
+
+        if (typeof msg.node !== "undefined" && typeof msg.object !== "undefined") {
+            parent.postMessage(
+                  //  {data :
+                            JSON.stringify({
+                        version: 170,
+                        node: msg.node,
+                        object: msg.object,
+                        height: document.body.scrollHeight,
+                        width: document.body.scrollWidth,
+                        sendMatrix: false,
+                        fullScreen: false
+                   // })
+        })
+                    // this needs to contain the final interface source
+                    , "*");
+            if(msg.nodes[msg.node]) {
+
+                if (msg.nodes[msg.node].text) {
+                 //   console.log("from node: "+msg.nodes[msg.node].text);
+                    document.getElementById("textNote").innerHTML = msg.nodes[msg.node].text;
+                } else {
+                  //  console.log("from node: "+msg.nodes[msg.node].name);
+                    document.getElementById("textNote").innerHTML = msg.nodes[msg.node].name;
+                }
+            }
+            objects.node = msg.node;
+            objects.object = msg.object;
+
+          //  thisText.innerHTML = objects[msg.object].nodes[msg.node].name;
+
+        }
+
+        if (typeof msg.uiActionFeedback !== "undefined") {
+
+            if (msg.uiActionFeedback === 0)
+                svg.setAttribute("stroke", '#ff019f');
+            if (msg.uiActionFeedback === 1)
+                svg.setAttribute("stroke", '#00ffff');
+            if (msg.uiActionFeedback === 2)
+                svg.setAttribute("stroke", '#3af431');
+            if (msg.uiActionFeedback === 3)
+                svg.setAttribute("stroke", '#f9f90a');
+        }
+    }, false);
+</script>
+</body>
+</html>
