@@ -185,10 +185,23 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             if (objectIds.length !== 1) {
                 return;
             }
+            var parentObject = objects[objectIds[0]];
             var src = evt.target.dataset.src;
             var width = evt.target.dataset.width;
             var height = evt.target.dataset.height;
-            realityEditor.gui.frame.create(objectIds[0], new realityEditor.gui.frame.Frame(src, width, height));
+            var frame = new realityEditor.gui.frame.Frame(src, width, height);
+
+            var tempMatrix = [];
+            var r = globalMatrix.r;
+
+            var arUtilities = realityEditor.gui.ar.utilities;
+            arUtilities.multiplyMatrix(globalObjects[objectIds[0]], globalStates.projectionMatrix, r);
+            arUtilities.multiplyMatrix(rotateX, r, tempMatrix);
+            parentObject.temp = tempMatrix;
+            var matrixTouch = arUtilities.screenCoordinatesToMatrixXY(parentObject, [evt.clientX, evt.clientY]);
+            frame.x = matrixTouch[0];
+            frame.y = matrixTouch[1];
+            realityEditor.gui.frame.create(objectIds[0], frame);
             pocketHide();
         });
 
