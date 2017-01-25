@@ -258,7 +258,7 @@ realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(t
 
 // todo why is isInOutBlock in grid by isPortBlock in here?
 realityEditor.gui.crafting.eventHelper.shouldUploadBlock = function(block) {
-    return !this.crafting.grid.isInOutBlock(block.globalId) && !block.isPortBlock; //&& !(block.x === -1 || block.y === -1)
+    return !this.crafting.grid.isInOutBlock(block.globalId);// && !block.isPortBlock; //&& !(block.x === -1 || block.y === -1)
 };
 
 //realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink = function(blockLink) {
@@ -444,7 +444,7 @@ realityEditor.gui.crafting.eventHelper.replacePortBlocksIfNecessary = function(c
                 var nameOutput = ["","","",""];
                 var blockPos = _this.crafting.grid.convertGridPosToBlockPos(cell.location.col, cell.location.row);
                 var inOrOut = blockPos.y === 0 ? "In" : "Out";
-                var type = "edge";
+                var type = "default";
                 var name = "edgePlaceholder" + inOrOut + blockPos.x;
                 var globalId = name;
                 var blockJSON = _this.crafting.utilities.toBlockJSON(type, name, width, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput);

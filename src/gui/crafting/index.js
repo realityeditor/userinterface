@@ -222,7 +222,7 @@ realityEditor.gui.crafting.redrawDataCrafting = function() {
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    this.grid.forEachLink( function(link) {
+    grid.forEachLink( function(link) {
         var startCell =  _this.grid.getCellForBlock(grid, _this.grid.blockWithID(link.nodeA, globalStates.currentLogic), link.logicA);
         var endCell =  _this.grid.getCellForBlock(grid, _this.grid.blockWithID(link.nodeB, globalStates.currentLogic), link.logicB);
         _this.drawDataCraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
@@ -349,7 +349,7 @@ realityEditor.gui.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
     this.cout("craftingBoardVisible for object: " + objectKey + " and node: "+nodeKey);
 
     if (DEBUG_DATACRAFTING) { // TODO: BEN DEBUG - turn off debugging!
-        var logic = new LogicNode();
+        var logic = new Logic();
         this.initializeDataCraftingGrid(logic);
     } else {
         var nodeLogic = objects[objectKey].nodes[nodeKey];
@@ -490,7 +490,7 @@ realityEditor.gui.crafting.initializeDataCraftingGrid = function(logic) {
     container.className = "craftingBoardBlur";
 
     // initializes the data model for the datacrafting board
-    logic.grid = new this.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight);
+    logic.grid = new this.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight, logic.uuid);
 
     var datacraftingCanvas = document.createElement('canvas');
     datacraftingCanvas.setAttribute('id', 'datacraftingCanvas');
