@@ -77,6 +77,9 @@ function create(objectId, frame) {
         if (!response.frameId) {
             return;
         }
+        if (!object.frames) {
+            object.frames = {};
+        }
         object.frames[response.frameId] = frame;
     });
 }
