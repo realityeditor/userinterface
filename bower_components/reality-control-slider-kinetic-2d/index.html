@@ -8432,11 +8432,11 @@ Polymer({
   properties: {
     valueX: {
       type: Number,
-      value: 0.5
+      value: 0
     },
     valueY: {
       type: Number,
-      value: 0.5
+      value: 0
     }
   },
   height: 520,
@@ -8448,8 +8448,8 @@ Polymer({
     this.onPointerMove(e);
   },
   limit: function(value) {
-    if (value < 0) {
-      return 0;
+    if (value < -1) {
+      return -1;
     }
     if (value > 1) {
       return 1;
@@ -8480,8 +8480,8 @@ Polymer({
       dX = 0;
     }
 
-    this.valueX = this.limit(dX / this.width + 0.5);
-    this.valueY = this.limit(dY / this.height + 0.5);
+    this.valueX = this.limit(dX / this.width * 2);
+    this.valueY = this.limit(dY / this.height * 2);
 
     var scale = Math.sqrt(dY * dY + dX * dX) / 150;
     if (scale > 153 / 150) {
