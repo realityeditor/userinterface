@@ -1,0 +1,148 @@
+<!-- Imports polymer -->
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/reality-node/reality-node.html">
+
+<!-- Defines element markup -->
+<dom-module id="reality-control-slider-kinetic">
+  <template>
+    <style>
+      path {
+        stroke-width: 6px;
+        stroke: #00ffff;
+        fill: rgba(0, 255, 255, 0.3);
+      }
+      #padUpper.active, #padLower.active {
+        stroke: #00ff00;
+        fill: rgba(0, 255, 255, 0.3);
+      }
+      path.active {
+        stroke: #00ff00;
+        fill: #00ff00;
+      }
+
+
+      #activation {
+        stroke: #00ff00;
+        fill: #00ff00;
+      }
+
+    </style>
+
+    <reality-node name="value" value="{{value}}"></reality-node>
+    <svg id="container" width="206" height="526" version="1.1" xmlns="http://www.w3.org/2000/svg" touch-action="none">
+        <defs>
+          <clipPath id="kinetic-outline">
+            <path d="M0 260 L 0 160 L 100 110 L 200 160 L 200 360 L 100 410 L 0 360 Z"></path>
+          </clipPath>
+        </defs>
+      <g transform="translate(3 3)" touch-action="none">
+        <path id="arrowUpper1" d="M0 75 L 0 50 L 100 0 L 200 50 L 200 75 L 100 25 Z"></path>
+        <path id="arrowUpper0" d="M0 130 L 0 105 L 100 55 L 200 105 L 200 130 L 100 80 Z"></path>
+        <path id="padUpper" d="M0 260 L 0 160 L 100 110 L 200 160 L 200 260"></path>
+        <g transform="translate(200 520) rotate(180)">
+          <path id="arrowLower1" d="M0 75 L 0 50 L 100 0 L 200 50 L 200 75 L 100 25 Z"></path>
+          <path id="arrowLower0" d="M0 130 L 0 105 L 100 55 L 200 105 L 200 130 L 100 80 Z"></path>
+          <path id="padLower" d="M0 260 L 0 160 L 100 110 L 200 160 L 200 260"></path>
+        </g>
+        <rect id="activation" x="0" y="255" width="200" height="0"
+              clip-path="url(#kinetic-outline)"/>
+      </g>
+
+    </svg>
+  </template>
+</dom-module>
+
+<script src="/bower_components/pepjs/dist/pep.min.js"></script>
+<!-- Registers custom element -->
+<script>
+Polymer({
+  is: 'reality-control-slider-kinetic',
+  properties: {
+    value: {
+      type: Number,
+      value: 0.5
+    }
+  },
+  height: 520,
+  width: 200,
+  pointers: {},
+  onPointerDown: function(e) {
+    e.preventDefault();
+    this.pointers[e.pointerId] = true;
+    this.onPointerMove(e);
+  },
+  onPointerMove: function(e) {
+    e.preventDefault();
+    if (!this.pointers[e.pointerId]) {
+      return;
+    }
+    var rect = this.$.container.getBoundingClientRect();
+
+    var dY = e.clientY - rect.top - this.height / 2 - 3;
+    var absY = Math.abs(dY);
+
+    var deadzone = 10;
+    var arrowLevel0 = 160;
+    var arrowLevel1 = 210;
+    if (absY < deadzone) {
+      absY = 0;
+      dY = 0;
+    }
+    this.$.activation.setAttribute('height', absY);
+
+    var value = dY / this.height + 0.5;
+    if (value < 0) {
+      value = 0;
+    }
+    if (value > 1) {
+      value = 1;
+    }
+    this.value = value;
+
+    this.$.container.querySelectorAll('path.active').forEach(function(path) {
+      path.classList.remove('active');
+    });
+
+    var arrow0 = this.$.arrowUpper0;
+    var arrow1 = this.$.arrowUpper1;
+
+    if (dY < -deadzone) {
+      this.$.padUpper.classList.add('active');
+      this.$.activation.setAttribute('y', (this.height / 2) + dY);
+    } else if (dY > deadzone) {
+      this.$.padLower.classList.add('active');
+      this.$.activation.setAttribute('y', this.height / 2);
+      arrow0 = this.$.arrowLower0;
+      arrow1 = this.$.arrowLower1;
+    }
+
+    if (absY > arrowLevel0) {
+      arrow0.classList.add('active');
+    }
+    if (absY > arrowLevel1) {
+      arrow1.classList.add('active');
+    }
+  },
+  onPointerUp: function(e) {
+    e.preventDefault();
+    this.pointers[e.pointerId] = false;
+  },
+  fixClipPath: function() {
+    var clipPathId = 'kinetic-outline-' + (Math.random() + '').substr(2);
+    this.$$('clipPath').id = clipPathId;
+    this.$.activation.setAttribute('clip-path', 'url(#' + clipPathId + ')');
+  },
+  ready: function() {
+    this.onPointerDown = this.onPointerDown.bind(this);
+    this.onPointerMove = this.onPointerMove.bind(this);
+    this.onPointerUp = this.onPointerUp.bind(this);
+
+    this.$.container.addEventListener('pointermove', this.onPointerMove);
+    this.$.container.addEventListener('pointerdown', this.onPointerDown);
+    this.$.container.addEventListener('pointerup', this.onPointerUp);
+    this.$.container.addEventListener('pointercancel', this.onPointerUp);
+
+    this.fixClipPath();
+  }
+});
+</script>

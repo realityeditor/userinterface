@@ -1,0 +1,65 @@
+<!-- Imports polymer -->
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/reality-node/reality-node.html">
+
+<!-- Defines element markup -->
+<dom-module id="reality-sensor-linear">
+  <template>
+    <style>
+      #container {
+        width: 200px;
+        height: 48px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border: 2px solid #fff;
+        padding: 0;
+        margin: 0;
+      }
+      #value {
+        width: 120px;
+        height: 48px;
+        background-color: #00ff00;
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <reality-node name="input" value="{{value}}"></reality-node>
+    <div id="container">
+      <div id="value"></div>
+    </div>
+  </template>
+</dom-module>
+
+<!-- Registers custom element -->
+<script>
+Polymer({
+  is: 'reality-sensor-linear',
+  properties: {
+    value: {
+      type: Number,
+      value: 0,
+      observer: 'onValueChange'
+    },
+    width: {
+      type: Number,
+      value: 200,
+      observer: 'onDimensionsChange'
+    },
+    height: {
+      type: Number,
+      value: 48,
+      observer: 'onDimensionsChange'
+    }
+  },
+  onDimensionsChange: function() {
+    this.$.container.style.width = this.width + 'px';
+    this.$.container.style.height = this.height + 'px';
+    this.$.value.style.height = this.height + 'px';
+    this.onValueChange();
+  },
+  onValueChange: function() {
+    this.$.value.style.width = this.value * this.width + 'px';
+  },
+  ready: function() {
+  }
+});
+</script>

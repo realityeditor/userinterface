@@ -1,0 +1,47 @@
+<!-- Imports polymer -->
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/reality-node/reality-node.html">
+
+<!-- Defines element markup -->
+<dom-module id="reality-sensor-digital">
+  <template>
+    <style>
+      div {
+        border: 2px solid #fff;
+        background-color: rgba(255, 255, 255, 0.3);
+        width: 48px;
+        height: 48px;
+      }
+      div.active {
+        background-color: #00ff00;
+        border-color: #00ff00;
+      }
+    </style>
+
+    <reality-node name="input" value="{{value}}"></reality-node>
+    <div id="output"></div>
+  </template>
+</dom-module>
+
+<!-- Registers custom element -->
+<script>
+Polymer({
+  is: 'reality-sensor-digital',
+  properties: {
+    value: {
+      type: Number,
+      value: 0,
+      observer: 'onValueChange'
+    }
+  },
+  onValueChange: function() {
+    if (this.value > 0.5) {
+      this.$.output.classList.add('active');
+    } else {
+      this.$.output.classList.remove('active');
+    }
+  },
+  ready: function() {
+  }
+});
+</script>

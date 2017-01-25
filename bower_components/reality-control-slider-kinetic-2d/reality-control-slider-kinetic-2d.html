@@ -1,0 +1,206 @@
+<!-- Imports polymer -->
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/reality-node/reality-node.html">
+
+<!-- Defines element markup -->
+<dom-module id="reality-control-slider-kinetic-2d">
+  <template>
+    <style>
+      path {
+        stroke-width: 6px;
+        stroke: #00ffff;
+        fill: rgba(0, 255, 255, 0.3);
+      }
+      path.active {
+        stroke: #00ff00;
+        fill: #00ff00;
+      }
+      #activation {
+        stroke: #00ff00;
+        fill: #00ff00;
+      }
+      path.slice {
+        display: none;
+      }
+      path.slice.active {
+        display: block;
+        stroke: #00ff00;
+        fill: #00ff00;
+      }
+    </style>
+
+    <reality-node name="valueX" value="{{valueX}}"></reality-node>
+    <reality-node name="valueY" value="{{valueY}}"></reality-node>
+
+    <svg id="container" width="526" height="526" version="1.1" xmlns="http://www.w3.org/2000/svg" touch-action="none">
+      <defs>
+        <clipPath id="kinetic-outline">
+          <path id="sliceN" class="slice" d="M159.5 160 L 260 109.5 L 360.5 160 L 260 260.5 Z"></path>
+          <path id="sliceE" class="slice" d="M259.5 260 L 360 159.5 L 410.5 260 L 360 360.5 Z"></path>
+          <path id="sliceS" class="slice" d="M260 259.5 L 360.5 360 L 260 410.5 L 159.5 360 Z"></path>
+          <path id="sliceW" class="slice" d="M260.5 260 L 160 360.5 L 109.5 260 L 160 159.5 Z"></path>
+        </clipPath>
+      </defs>
+
+      <g transform="translate(3 3)">
+        <path d="M160 160 L 260 110 L 360 160 L 410 260 L 360 360 L 260 410 L 160 360 L 110 260 Z"></path>
+
+        <path id="activation" d="M160 160 L 260 110 L 360 160 L 410 260 L 360 360 L 260 410 L 160 360 L 110 260 Z" clip-path="url(#kinetic-outline)"></path>
+        <path id="arrowN1" d="M160 75 L 160 50 L 260 0 L 360 50 L 360 75 L 260 25 Z"></path>
+        <path id="arrowN0" d="M160 130 L 160 105 L 260 55 L 360 105 L 360 130 L 260 80 Z"></path>
+
+
+        <g transform="translate(520 0) rotate(90)">
+          <path id="arrowE1" d="M160 75 L 160 50 L 260 0 L 360 50 L 360 75 L 260 25 Z"></path>
+          <path id="arrowE0" d="M160 130 L 160 105 L 260 55 L 360 105 L 360 130 L 260 80 Z"></path>
+        </g>
+        <g transform="translate(520 520) rotate(180)">
+          <path id="arrowS1" d="M160 75 L 160 50 L 260 0 L 360 50 L 360 75 L 260 25 Z"></path>
+          <path id="arrowS0" d="M160 130 L 160 105 L 260 55 L 360 105 L 360 130 L 260 80 Z"></path>
+        </g>
+        <g transform="translate(0 520) rotate(270)">
+          <path id="arrowW1" d="M160 75 L 160 50 L 260 0 L 360 50 L 360 75 L 260 25 Z"></path>
+          <path id="arrowW0" d="M160 130 L 160 105 L 260 55 L 360 105 L 360 130 L 260 80 Z"></path>
+        </g>
+      </g>
+    </svg>
+
+  </template>
+</dom-module>
+
+<script src="/bower_components/pepjs/dist/pep.min.js"></script>
+<!-- Registers custom element -->
+<script>
+Polymer({
+  is: 'reality-control-slider-kinetic-2d',
+  properties: {
+    valueX: {
+      type: Number,
+      value: 0.5
+    },
+    valueY: {
+      type: Number,
+      value: 0.5
+    }
+  },
+  height: 520,
+  width: 520,
+  pointers: {},
+  onPointerDown: function(e) {
+    e.preventDefault();
+    this.pointers[e.pointerId] = true;
+    this.onPointerMove(e);
+  },
+  limit: function(value) {
+    if (value < 0) {
+      return 0;
+    }
+    if (value > 1) {
+      return 1;
+    }
+    return value;
+  },
+  onPointerMove: function(e) {
+    e.preventDefault();
+    if (!this.pointers[e.pointerId]) {
+      return;
+    }
+    var rect = this.$.container.getBoundingClientRect();
+
+    var dY = e.clientY - rect.top - 258;
+    var dX = e.clientX - rect.left - 258;
+    var absY = Math.abs(dY);
+    var absX = Math.abs(dX);
+
+    var deadzone = 30;
+    var arrowLevel0 = 160;
+    var arrowLevel1 = 210;
+    if (absY < deadzone) {
+      absY = 0;
+      dY = 0;
+    }
+    if (absX < deadzone) {
+      absX = 0;
+      dX = 0;
+    }
+
+    this.valueX = this.limit(dX / this.width + 0.5);
+    this.valueY = this.limit(dY / this.height + 0.5);
+
+    var scale = Math.sqrt(dY * dY + dX * dX) / 150;
+    if (scale > 153 / 150) {
+      scale = 153 / 150;
+    }
+    if (scale > deadzone / 150) {
+      var centerDiff = 260 - 260 * scale;
+
+      this.$.activation.setAttribute('transform', 'translate(' + centerDiff +
+            ',' + centerDiff + ') scale(' + scale + ')');
+    } else {
+      this.$.activation.setAttribute('transform', 'scale(0)');
+    }
+
+    var activePaths = [].slice.call(this.$.container.querySelectorAll('path.active'));
+    activePaths.forEach(function(path) {
+      path.classList.remove('active');
+    });
+
+    var arrowX0 = this.$.arrowW0;
+    var arrowX1 = this.$.arrowW1;
+
+    if (dX < -deadzone) {
+      this.$.sliceW.classList.add('active');
+    } else if (dX > deadzone) {
+      this.$.sliceE.classList.add('active');
+      arrowX0 = this.$.arrowE0;
+      arrowX1 = this.$.arrowE1;
+    }
+
+    if (absX > arrowLevel0) {
+      arrowX0.classList.add('active');
+    }
+    if (absX > arrowLevel1) {
+      arrowX1.classList.add('active');
+    }
+
+    var arrowY0 = this.$.arrowN0;
+    var arrowY1 = this.$.arrowN1;
+
+    if (dY < -deadzone) {
+      this.$.sliceN.classList.add('active');
+    } else if (dY > deadzone) {
+      this.$.sliceS.classList.add('active');
+      arrowY0 = this.$.arrowS0;
+      arrowY1 = this.$.arrowS1;
+    }
+
+    if (absY > arrowLevel0) {
+      arrowY0.classList.add('active');
+    }
+    if (absY > arrowLevel1) {
+      arrowY1.classList.add('active');
+    }
+  },
+  onPointerUp: function(e) {
+    e.preventDefault();
+    this.pointers[e.pointerId] = false;
+  },
+  fixClipPath: function() {
+    var clipPathId = 'kinetic-outline-' + (Math.random() + '').substr(2);
+    this.$$('clipPath').id = clipPathId;
+    this.$.activation.setAttribute('clip-path', 'url(#' + clipPathId + ')');
+  },
+  ready: function() {
+    this.onPointerDown = this.onPointerDown.bind(this);
+    this.onPointerMove = this.onPointerMove.bind(this);
+    this.onPointerUp = this.onPointerUp.bind(this);
+
+    this.$.container.addEventListener('pointermove', this.onPointerMove);
+    this.$.container.addEventListener('pointerdown', this.onPointerDown);
+    this.$.container.addEventListener('pointerup', this.onPointerUp);
+    this.$.container.addEventListener('pointercancel', this.onPointerUp);
+
+    this.fixClipPath();
+  }
+});
+</script>

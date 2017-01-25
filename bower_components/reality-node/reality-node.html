@@ -1,0 +1,83 @@
+<!-- Imports polymer -->
+<link rel="import" href="/bower_components/polymer/polymer.html">
+
+<!-- Defines element markup -->
+<dom-module id="reality-node">
+  <template>
+  </template>
+
+<script src="object.js"></script>
+<!-- Registers custom element -->
+<script>
+var isDemoMode = window.location.search.indexOf('demo=true') >= 0;
+
+/* global HybridObject */
+var hybridObject;
+if ((typeof HybridObject === 'undefined') || isDemoMode) {
+  console.warn('HybridObject undefined or isDemoMode');
+  hybridObject = {
+    addReadListener: function() {},
+    write: function() {},
+    sendCreateNode: function() {}
+  };
+} else {
+  hybridObject = new HybridObject();
+}
+
+Polymer({
+  is: 'reality-node',
+  properties: {
+    name: {
+      type: String,
+      observer: 'onNameChange'
+    },
+    value: {
+      type: Number,
+      value: 0,
+      observer: 'onValueChange',
+      notify: true
+    }
+  },
+  isReadValue: false,
+  onNameChange: function() {
+    // addReadListener doesn't have a removeReadListener so this can get real inefficient real fast
+    hybridObject.addReadListener(this.name, this.onRead);
+  },
+  onValueChange: function() {
+    if (!this.isReadValue) {
+      if (this.name) {
+        hybridObject.write(this.name, this.value);
+      }
+    }
+  },
+  onRead: function(value) {
+    this.isReadValue = true;
+    this.value = value;
+    this.isReadValue = false;
+  },
+  created: function() {
+    this.onRead = this.onRead.bind(this);
+  },
+  demonstrateMotion: function() {
+    var newValue = this.value + 0.003;
+    if (newValue > 1) {
+      newValue = 0;
+    }
+    this.isReadValue = true;
+    this.value = newValue;
+    this.isReadValue = false;
+    window.requestAnimationFrame(this.demonstrateMotion);
+  },
+  ready: function() {
+    // Hardcoded demonstration mode
+    if (isDemoMode) {
+      this.demonstrateMotion = this.demonstrateMotion.bind(this);
+      this.demonstrateMotion();
+    }
+
+    hybridObject.sendCreateNode(this.name);
+  }
+});
+</script>
+
+</dom-module>
