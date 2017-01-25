@@ -851,12 +851,27 @@ realityEditor.gui.ar.draw.killObjects = function (objectKey, thisObject) {
 realityEditor.gui.ar.draw.deleteNode = function (objectId, nodeId) {
 
     delete objects[objectId].nodes[nodeId];
-    globalDOMCach["thisObject" + nodeId].parentNode.removeChild(globalDOMCach["thisObject" + nodeId]);
-    delete globalDOMCach["thisObject" + nodeId];
+    if (globalDOMCach["thisObject" + nodeId]) {
+        if (globalDOMCach["thisObject" + nodeId].parentNode) {
+            globalDOMCach["thisObject" + nodeId].parentNode.removeChild(globalDOMCach["thisObject" + nodeId]);
+        }
+        delete globalDOMCach["thisObject" + nodeId];
+    }
     delete globalDOMCach["iframe" + nodeId];
     delete globalDOMCach[nodeId];
     delete globalDOMCach["canvas" + nodeId];
 
-}
+};
+
+realityEditor.gui.ar.draw.deleteFrame = function (objectId, frameId) {
+
+    delete objects[objectId].frames[frameId];
+    globalDOMCach["thisObject" + frameId].parentNode.removeChild(globalDOMCach["thisObject" + frameId]);
+    delete globalDOMCach["thisObject" + frameId];
+    delete globalDOMCach["iframe" + frameId];
+    delete globalDOMCach[frameId];
+    delete globalDOMCach["canvas" + frameId];
+
+};
 
 

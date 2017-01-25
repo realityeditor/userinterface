@@ -68,6 +68,7 @@ function create(objectId, frame) {
     var object = objects[objectId];
     var url = 'http://' + object.ip + ':' + httpPort + '/object/' + objectId + '/frames/';
     frame = sanitizeFrame(frame);
+    frame.lastEditor = globalStates.tempUuid;
     realityEditor.network.postData(url, frame, function(err, response) {
         if (err) {
             console.error('frameCreate', err);
@@ -79,16 +80,17 @@ function create(objectId, frame) {
         object.frames[response.frameId] = frame;
     });
 }
+
 /**
  * Update a frame on the server
  *
  * @param {String} objectId
  * @param {String} frameId
  */
-
 function update(objectId, frameId) {
     var object = objects[objectId];
     var frame = sanitizeFrame(object.frames[frameId]);
+    frame.lastEditor = globalStates.tempUuid;
 
     var url = 'http://' + object.ip + ':' + httpPort + '/object/' + objectId + '/frames/' + frameId;
     realityEditor.network.postData(url, frame, function(err) {
@@ -99,12 +101,57 @@ function update(objectId, frameId) {
     });
 }
 
-function Frame(src) {
+/**
+ * Delete a frame on the server
+ *
+ * @param {String} objectId
+ * @param {String} frameId
+ */
+function deleteFrame(objectId, frameId) {
+    var object = objects[objectId];
+    var url = 'http://' + object.ip + ':' + httpPort + '/object/' + objectId + '/frames/' + frameId;
+    realityEditor.network.deleteData(url, {lastEditor: globalStates.tempUuid});
+    deleteLocally(objectId, frameId);
+}
+
+function deleteLocally(objectId, frameId) {
+    var object = objects[objectId];
+
+    // clean up locally, copy-pasted from server.js
+
+    realityEditor.gui.ar.draw.deleteFrame(objectId, frameId);
+
+    // Delete frame's nodes
+    var deletedNodes = {};
+    for (var nodeId in object.nodes) {
+        var node = object.nodes[nodeId];
+        if (node.frame === frameId) {
+            deletedNodes[nodeId] = true;
+            realityEditor.gui.ar.draw.deleteNode(objectId, nodeId);
+        }
+    }
+
+    // Delete links involving frame's nodes
+    for (var linkObjectId in objects) {
+        var linkObject = objects[linkObjectId];
+
+        for (var linkId in linkObject.links) {
+            var link = linkObject.links[linkId];
+            if (link.objectA === objectId || link.objectB === objectId) {
+                if (deletedNodes[link.nodeA] || deletedNodes[link.nodeB]) {
+                    delete linkObject.links[linkId];
+                }
+            }
+        }
+    }
+}
+
+function Frame(src, width, height) {
     this.src = src;
     this.x = 0;
     this.y = 0;
-    this.width = 500;
-    this.height = 500;
+    this.width = width;
+    this.height = height;
     this.scale = 1;
     this.developer = true;
     this.matrix = [
@@ -118,6 +165,8 @@ function Frame(src) {
 realityEditor.gui.frame = {
     create: create,
     update: update,
+    delete: deleteFrame,
+    deleteLocally: deleteLocally,
     Frame: Frame
 };
 
