@@ -1,0 +1,19 @@
+{
+  "name": "reality-control-slider-kinetic-2d",
+  "version": "0.0.0",
+  "description": "Reality Editor 2d kinetic slider",
+  "license": "MIT",
+  "main": "reality-control-slider-kinetic-2d.html",
+  "keywords": [
+    "polymer",
+    "web-components"
+  ],
+  "ignore": [
+    "**/.*",
+    "bower_components"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0",
+    "pepjs": "^0.4.1"
+  }
+}

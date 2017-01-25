@@ -588,7 +588,6 @@ body {
 
 .element-template {
     border-color: white;
-    display: inline-block;
     margin: 3px;
     overflow: hidden;
 }

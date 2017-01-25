@@ -1,0 +1,84 @@
+<!-- Imports polymer -->
+<link rel="import" href="/bower_components/polymer/polymer.html">
+
+<!-- Defines element markup -->
+<dom-module id="reality-io">
+  <template>
+  </template>
+</dom-module>
+
+<!-- Registers custom element -->
+<script>
+/* global HybridObject */
+var hybridObject;
+if (typeof HybridObject !== 'undefined') {
+  hybridObject = new HybridObject();
+} else {
+  console.warn('HybridObject undefined');
+  hybridObject = {
+    addReadListener: function() {},
+    write: function() {}
+  };
+}
+
+Polymer({
+  is: 'reality-io',
+  properties: {
+    input: {
+      type: String,
+      observer: 'onInputChange'
+    },
+    output: {
+      type: String,
+      observer: 'onOutputChange'
+    },
+    value: {
+      type: Number,
+      value: 0,
+      observer: 'onValueChange',
+      notify: true
+    }
+  },
+  onInputChange: function() {
+    if (this.input && this.output) {
+      console.warn('Input and output both defined on reality-io ', this);
+    }
+    // addReadListener doesn't have a removeReadListener so this can get real inefficient real fast
+    hybridObject.addReadListener(this.input, this.onRead);
+  },
+  onValueChange: function() {
+    if (this.output) {
+      hybridObject.write(this.output, this.value);
+    }
+  },
+  onOutputChange: function() {
+    if (this.input && this.output) {
+      console.warn('Input and output both defined on reality-io ', this);
+    }
+    hybridObject.write(this.output, this.value);
+  },
+  onRead: function(value) {
+    if (this.input) {
+      this.value = value;
+    }
+  },
+  created: function() {
+    this.onRead = this.onRead.bind(this);
+  },
+  demonstrateMotion: function() {
+    var newValue = this.value + 0.003;
+    if (newValue > 1) {
+      newValue = 0;
+    }
+    this.value = newValue;
+    window.requestAnimationFrame(this.demonstrateMotion);
+  },
+  ready: function() {
+    // Hardcoded demonstration mode
+    if (window.location.search.indexOf('demo=true') >= 0) {
+      this.demonstrateMotion = this.demonstrateMotion.bind(this);
+      this.demonstrateMotion();
+    }
+  }
+});
+</script>

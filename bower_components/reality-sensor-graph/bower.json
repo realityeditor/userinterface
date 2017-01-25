@@ -1,0 +1,19 @@
+{
+  "name": "reality-sensor-graph",
+  "version": "0.0.0",
+  "description": "Reality Editor graph of sensor values",
+  "license": "MIT",
+  "main": "reality-sensor-graph.html",
+  "keywords": [
+    "polymer",
+    "web-components"
+  ],
+  "ignore": [
+    "**/.*",
+    "bower_components"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0",
+    "pepjs": "^0.4.2"
+  }
+}
