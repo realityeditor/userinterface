@@ -193,6 +193,10 @@ realityEditor.network.updateObject = function (origin, remote, thisKey) {
         missingFrames[frameKey] = true;
     }
 
+    if (!remote.frames) {
+        remote.frames = {};
+    }
+
     for (var frameKey in remote.frames) {
         if(!origin.frames[frameKey]) {
             origin.frames[frameKey] = remote.frames[frameKey];
