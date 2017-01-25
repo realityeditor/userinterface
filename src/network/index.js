@@ -85,7 +85,7 @@ realityEditor.network.addHeartbeatObject = function (beat) {
                         if(thisObject.type === "logic") {
                             thisObject.guiState = new LogicGUIState();
                             var container = document.getElementById('craftingBoard');
-                            thisObject.grid = new _this.realityEditor.gui.crafting.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight);
+                            thisObject.grid = new _this.realityEditor.gui.crafting.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight, thisObject.uuid);
                             //_this.realityEditor.gui.crafting.utilities.convertLinksFromServer(thisObject);
                         }
                     }
@@ -245,6 +245,18 @@ realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
         }
         if(remote.matrix) {
             origin.matrix =  remote.matrix;
+        }
+
+        if(origin.type === "logic") {
+            if (!origin.guiState) {
+                origin.guiState = new LogicGUIState();
+            }
+            
+            if (!origin.grid) {
+                var container = document.getElementById('craftingBoard');
+                origin.grid = new realityEditor.gui.crafting.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight, origin.uuid);                
+            }
+
         }
         
     }

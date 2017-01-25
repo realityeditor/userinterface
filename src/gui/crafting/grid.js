@@ -63,7 +63,7 @@ createNameSpace("realityEditor.gui.crafting.grid");
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // the grid is the overall data structure for managing block locations and calculating routes between them
-    function Grid(containerWidth, containerHeight) {
+    function Grid(containerWidth, containerHeight, logicID) {
 
         this.size = 7; // number of rows and columns
         this.blockColWidth = 2 * (containerWidth / 11);
@@ -81,6 +81,8 @@ createNameSpace("realityEditor.gui.crafting.grid");
                 this.cells.push(cell);
             }
         }
+        
+        this.logicID = logicID; // the Logic Node associated with this Grid
     }
 
 // the cell has a location in the grid, possibly an associated Block object
@@ -261,6 +263,23 @@ createNameSpace("realityEditor.gui.crafting.grid");
 // -- GRID METHODS -- //
 
 //      -- GRID UTILITIES -- //
+    
+    Grid.prototype.parentLogic = function() {
+        for (var key in objects) {
+            var object = objects[key];
+            for (var logicKey in object.nodes) {
+                if (object.nodes[logicKey].type === "logic") {
+                    if (object.nodes[logicKey].uuid === this.logicID) {
+                        return object.nodes[logicKey];
+                    }
+                }
+            }
+        }
+        console.log("ERROR: DIDN'T FIND LOGIC NODE FOR THIS GRID");
+    };
+
+
+
 
 // utility - returns the x,y coordinates of corners for a link so that they can be rendered
 // (includes the offsets - these are the actual points to draw on the screen exactly as is)
@@ -462,6 +481,26 @@ createNameSpace("realityEditor.gui.crafting.grid");
         return this.getCell(col, row);
     };
 
+    Grid.prototype.forEachLink = function(action) {
+        var logic = this.parentLogic();
+        for (var linkKey in logic.links) {
+            if (!logic.links.hasOwnProperty(linkKey)) continue;
+            if (isInOutLink(logic.links[linkKey])) continue; // ignore in/out links for processing
+            action(logic.links[linkKey]);
+        }
+        if (logic.guiState.tempLink) {
+            action(logic.guiState.tempLink);
+        }
+    };
+
+    Grid.prototype.allLinks = function() {
+        var linksArray = [];
+        this.forEachLink(function(link) {
+            linksArray.push(link);
+        });
+        return linksArray;
+    };
+
 //      -- GRID ROUTING ALGORITHM -- //
 
 // *** main method for routing ***
@@ -474,13 +513,13 @@ createNameSpace("realityEditor.gui.crafting.grid");
 
         that.resetCellRouteCounts();
 
-        forEachLink( function(link) {
+        this.forEachLink( function(link) {
             that.calculateLinkRoute(link);
         });
         var overlaps = that.determineMaxOverlaps();
         that.calculateOffsets(overlaps); // todo: still some minor bugs in the offset function
 
-        forEachLink( function(link) {
+        this.forEachLink( function(link) {
             var points = that.getPointsForLink(link);
             link.route.pointData = preprocessPointsForDrawing(points);
         });
@@ -489,9 +528,11 @@ createNameSpace("realityEditor.gui.crafting.grid");
 // given a link, calculates all the corner points between the start block and end block,
 // and sets the route of the link to contain the corner points and all the cells between
     Grid.prototype.calculateLinkRoute = function(link) {
+        
+        var logic = this.parentLogic();
 
-        var nodeA = blockWithID(link.nodeA, globalStates.currentLogic);
-        var nodeB = blockWithID(link.nodeB, globalStates.currentLogic);
+        var nodeA = blockWithID(link.nodeA, logic);
+        var nodeB = blockWithID(link.nodeB, logic);
 
         var startLocation = convertBlockPosToGridPos(nodeA.x + link.logicA, nodeA.y);
         var endLocation = convertBlockPosToGridPos(nodeB.x + link.logicB, nodeB.y);
@@ -615,6 +656,9 @@ createNameSpace("realityEditor.gui.crafting.grid");
 // counts how many routes overlap eachother in each row and column, and sorts them, so that
 // they can be displaced around the center of the row/column and not overlap one another
     Grid.prototype.determineMaxOverlaps = function() {
+        
+        var logic = this.parentLogic();
+        
         var colRouteOverlaps = [];
         var horizontallySortedLinks;
         for (var c = 0; c < this.size; c++) {
@@ -624,16 +668,16 @@ createNameSpace("realityEditor.gui.crafting.grid");
 
             // decreases future overlaps of links in the grid by sorting them left/right
             // so that links going to the left don't need to cross over links going to the right
-            horizontallySortedLinks = allLinks().sort(function(link1, link2){
+            horizontallySortedLinks = this.allLinks().sort(function(link1, link2){
                 var p1 = link1.route.getOrderPreferences();
                 var p2 = link2.route.getOrderPreferences();
                 var horizontalOrder = p1.horizontal - p2.horizontal;
                 var verticalOrder = p1.vertical - p2.vertical;
 
-                var block1A = blockWithID(link1.nodeA, globalStates.currentLogic);
-                var block1B = blockWithID(link1.nodeB, globalStates.currentLogic);
-                var block2A = blockWithID(link2.nodeA, globalStates.currentLogic);
-                var block2B = blockWithID(link2.nodeB, globalStates.currentLogic);
+                var block1A = blockWithID(link1.nodeA, logic);
+                var block1B = blockWithID(link1.nodeB, logic);
+                var block2A = blockWithID(link2.nodeA, logic);
+                var block2B = blockWithID(link2.nodeB, logic);
 
                 var startCellLocation1 = convertBlockPosToGridPos(block1A.x, block1A.y);
                 var endCellLocation1 = convertBlockPosToGridPos(block1B.x, block1B.y);
@@ -704,7 +748,7 @@ createNameSpace("realityEditor.gui.crafting.grid");
         // for each route in column
         for (var r = 0; r < this.size; r++) {
             var thisRowRouteOverlaps = [];
-            allLinks().sort(function(link1, link2){
+            this.allLinks().sort(function(link1, link2){
                 // vertically sorts them so that links starting near horizontal center of block are below those
                 // starting near edges, so they don't overlap. requires that we sort horizontally before vertically
                 var centerIndex = Math.ceil((horizontallySortedLinks.length-1)/2);
@@ -946,79 +990,14 @@ createNameSpace("realityEditor.gui.crafting.grid");
     }
     
     function isFixedNameLink(nodeA, nodeB) {
-        if ( (isInOutBlock(nodeA) || isEdgePlaceholderBlock(nodeA)) &&
-             (isInOutBlock(nodeB) || isEdgePlaceholderBlock(nodeB)) ) {
-            return true;
-        } else {
-            return false;
-        }
+        return ( (isInOutBlock(nodeA) || isEdgePlaceholderBlock(nodeA)) &&
+                 (isInOutBlock(nodeB) || isEdgePlaceholderBlock(nodeB)) );
     }
 
     function uploadLinkIfNecessary(blockLink, linkKey) {
         var keys = realityEditor.gui.crafting.eventHelper.getServerObjectLogicKeys(globalStates.currentLogic);
-        //if (realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink(blockLink)) {
-            realityEditor.network.postNewBlockLink(keys.ip, keys.objectKey, keys.logicKey, linkKey, blockLink);
-        //} else {
-        //    // instead of uploading in->edgePlaceholder and edgePlaceholder->block, upload in->block
-        //    var surroundingLinks = getLinksSurroundingEdgeLink(blockLink);
-        //    if (surroundingLinks.length > 0) {
-        //        surroundingLinks.forEach( function(link) {
-        //            addBlockLink(link.nodeA, link.nodeB, link.logicA, link.logicB, false, true);
-        //        });
-        //    }
-        //}
+        realityEditor.network.postNewBlockLink(keys.ip, keys.objectKey, keys.logicKey, linkKey, blockLink);
     }
-
-    //function getLinksSurroundingEdgeLink(edgeLink) {
-    //
-    //    var foundLinks = [];
-    //    if (!edgeLink) return [];
-    //    var link, key, newLink;
-    //    
-    //    if (isEdgePlaceholderBlock(edgeLink.nodeA)) {
-    //
-    //        // this = edgeLink -> [smth1]
-    //        // find all thats = [smth2] -> edgeLink
-    //        // upload blocklink [smth2] -> [smth1] for each
-    //        
-    //        for (key in globalStates.currentLogic.links) {
-    //            if (!globalStates.currentLogic.links.hasOwnProperty(key)) continue;
-    //            link = globalStates.currentLogic.links[key];
-    //            if (link.nodeB === edgeLink.nodeA) {
-    //                newLink = new BlockLink();
-    //                newLink.nodeA = link.nodeA;
-    //                newLink.logicA = link.logicA;
-    //                newLink.nodeB = edgeLink.nodeB;
-    //                newLink.logicB = edgeLink.logicB;
-    //                newLink.globalId = "blockLink" + realityEditor.device.utilities.uuidTime();
-    //                foundLinks.push(newLink);
-    //            }
-    //        }
-    //
-    //
-    //    } else if (isEdgePlaceholderBlock(edgeLink.nodeB)) {
-    //
-    //        // this = [smth1] -> edgeLink
-    //        // find all thats = edgeLink -> [smth2]
-    //        // upload blocklink [smth1] -> [smth2] for each
-    //
-    //        for (key in globalStates.currentLogic.links) {
-    //            if (!globalStates.currentLogic.links.hasOwnProperty(key)) continue;
-    //            link = globalStates.currentLogic.links[key];
-    //            if (link.nodeA === edgeLink.nodeB) {
-    //                newLink = new BlockLink();
-    //                newLink.nodeA = edgeLink.nodeA;
-    //                newLink.logicA = edgeLink.logicA;
-    //                newLink.nodeB = link.nodeB;
-    //                newLink.logicB = link.logicB;
-    //                newLink.globalId = "blockLink" + realityEditor.device.utilities.uuidTime();
-    //                foundLinks.push(newLink);
-    //            }
-    //        }
-    //    }
-    //
-    //    return foundLinks;
-    //}
 
     function blockWithID(globalID, logic) {
         return logic.blocks[globalID];
@@ -1103,25 +1082,6 @@ createNameSpace("realityEditor.gui.crafting.grid");
     function isInOutBlock(blockID) {
         var re = /^(in|out)\d$/;
         return re.test(blockID);
-    }
-
-    function forEachLink(action) {
-        for (var linkKey in globalStates.currentLogic.links) {
-            if (!globalStates.currentLogic.links.hasOwnProperty(linkKey)) continue;
-            if (isInOutLink(globalStates.currentLogic.links[linkKey])) continue; // ignore in/out links for processing
-            action(globalStates.currentLogic.links[linkKey]);
-        }
-        if (globalStates.currentLogic.guiState.tempLink) {
-            action(globalStates.currentLogic.guiState.tempLink);
-        }
-    }
-
-    function allLinks() {
-        var linksArray = [];
-        forEachLink(function(link) {
-            linksArray.push(link);
-        });
-        return linksArray;
     }
 
     function setTempLink(newTempLink) {
@@ -1251,7 +1211,6 @@ createNameSpace("realityEditor.gui.crafting.grid");
     exports.isEdgePlaceholderLink = isEdgePlaceholderLink;
     exports.isEdgePlaceholderBlock = isEdgePlaceholderBlock;
     exports.isInOutBlock = isInOutBlock;
-    exports.forEachLink = forEachLink;
     exports.setTempLink = setTempLink;
     exports.removeBlockLink = removeBlockLink;
     exports.removeBlock = removeBlock;
