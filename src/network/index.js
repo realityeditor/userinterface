@@ -599,11 +599,22 @@ realityEditor.network.onInternalPostMessage = function(e) {
         var node = new Node();
         node.name = msgContent.createNode.name;
         node.frame = msgContent.node;
-        node.x = (tempThisObject.x || 0) + (Math.random() - 0.5) * 160;
-        node.y = (tempThisObject.y || 0) + (Math.random() - 0.5) * 160;
         var nodeKey = node.frame + msgContent.createNode.name;
-        objects[msgContent.object].nodes[nodeKey] = node;
-        realityEditor.network.postNewNode(objects[msgContent.object].ip, msgContent.object, nodeKey, node);
+        var nodesIndex = 0;
+        var object = objects[msgContent.object];
+        for (var otherNodeKey in object.nodes) {
+            var otherNode = object.nodes[otherNodeKey];
+            if (otherNodeKey === nodeKey) {
+                break;
+            }
+            if (otherNode.frame === msgContent.node) {
+                nodesIndex += 1;
+            }
+        }
+        node.x = (tempThisObject.x || 0) + 200 * nodesIndex;
+        node.y = (tempThisObject.y || 0) + 200 * nodesIndex;
+        object.nodes[nodeKey] = node;
+        realityEditor.network.postNewNode(object.ip, msgContent.object, nodeKey, node);
     }
 
     if (typeof msgContent.beginTouchEditing !== "undefined") {
