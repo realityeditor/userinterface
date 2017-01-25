@@ -619,12 +619,20 @@ realityEditor.network.onInternalPostMessage = function(e) {
         }
         var fakeEvent = {
             currentTarget: target,
+            clientX: event.x,
+            clientY: event.y,
             pageX: event.x,
-            pageY: event.y
+            pageY: event.y,
+            preventDefault: function(){}
         };
         if (event.type === 'touchmove') {
+            if (overlayDiv.style.display !== 'inline') {
+                realityEditor.device.onDocumentPointerDown(fakeEvent);
+            }
+            realityEditor.device.onDocumentPointerMove(fakeEvent);
             realityEditor.device.onTouchMove(fakeEvent);
         } else if (event.type === 'touchend') {
+            realityEditor.device.onDocumentPointerUp(fakeEvent);
             realityEditor.device.onMultiTouchEnd(fakeEvent);
             var frame = document.getElementById('iframe' + msgContent.node);
             if (frame) {
