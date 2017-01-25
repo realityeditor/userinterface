@@ -110,14 +110,18 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             touchState = TS_MOVE;
         }
         var cell = this.crafting.eventHelper.getCellOverPointer(e.pageX, e.pageY);
-        if (!cell) { // moved to menu  //  e.pageX > window.innerWidth - menuBarWidth
-            return this.onPointerUp(e, true);
+        if (!cell) { // moved to sidebar menu
+            if (touchState !== TS_MOVE) {
+                return this.onPointerUp(e);
+            }
+        
+        } else {
+            this.crafting.eventHelper.updateCraftingBackgroundVisibility("move", cell, globalStates.currentLogic.guiState.tappedContents);
         }
+        
         var contents = this.crafting.eventHelper.getCellContents(cell);
         var tappedContents = globalStates.currentLogic.guiState.tappedContents;
-
-        this.crafting.eventHelper.updateCraftingBackgroundVisibility("move", cell, globalStates.currentLogic.guiState.tappedContents);
-
+        
         if (touchState === TS_TAP_BLOCK) {
 
             // if you moved to a different cell, go to TS_CONNECT
@@ -126,9 +130,13 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
                 if (this.crafting.eventHelper.canDrawLineFrom(tappedContents)) {
                     touchState = TS_CONNECT;
                     clearTimeout(activeHoldTimer);
+                    realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
+
                 } else {
                     touchState = TS_NONE;
                     clearTimeout(activeHoldTimer);
+                    realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
+
                 }
 
                 // otherwise if enough time has passed, change to TS_HOLD
@@ -149,9 +157,9 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             touchState = TS_MOVE;
             this.crafting.eventHelper.convertToTempBlock(tappedContents);
             this.crafting.eventHelper.moveBlockDomToPosition(tappedContents, e.pageX, e.pageY);
-            
-        } else if (touchState === TS_CONNECT) {
 
+        } else if (touchState === TS_CONNECT) {
+            
             // if you are over an eligible block, create a temp link and re-route grid
             if (contents && this.crafting.eventHelper.canConnectBlocks(tappedContents, contents)){
                 this.crafting.eventHelper.resetLinkLine();
@@ -166,7 +174,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             
         } else if (touchState === TS_MOVE) {
 
-            realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
+            realityEditor.gui.pocket.pocketOnMemoryDeletionStart(); //displays the big trash can icon
 
             // snap if to grid position if necessary, otherwise just move block to pointer position
             var didSnap = this.crafting.eventHelper.snapBlockToCellIfPossible(tappedContents, cell, e.pageX, e.pageY); //TODO: move to inside the canPlaceBlockInCell block to avoid redundant checks
@@ -195,16 +203,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
         }
     }
 
-    function onDocumentUp(e) {
-      if(globalStates.guiState === "logic") {
-          var tappedContents = globalStates.currentLogic.guiState.tappedContents;
-          realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
-          if(tappedContents)
-          this.crafting.eventHelper.removeTappedContents(tappedContents);
-      }
-    }
-
-    function onPointerUp(e, didPointerLeave) {
+    function onPointerUp(e) {
         if (e.target !== e.currentTarget) return; // prevents event bubbling
 
         var cell = this.crafting.eventHelper.getCellOverPointer(e.pageX, e.pageY);
@@ -213,6 +212,8 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
 
         //this.crafting.eventHelper.toggleDatacraftingExceptPort(tappedContents, true); // always make sure the background shows again
         this.crafting.eventHelper.updateCraftingBackgroundVisibility("up", cell, globalStates.currentLogic.guiState.tappedContents);
+
+        realityEditor.gui.pocket.pocketOnMemoryDeletionStop(); //hides the big trash can icon
 
         if (touchState === TS_TAP_BLOCK) {
             // for now -> do nothing
@@ -245,8 +246,9 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
         } else if (touchState === TS_MOVE) {
 
             // remove entirely if dragged to menu
-            if (didPointerLeave) {
-             //   this.crafting.eventHelper.removeTappedContents(tappedContents);
+            var isOverSidebar = (e.pageX > window.innerWidth - (menuBarWidth + 20));
+            if (isOverSidebar) {
+                this.crafting.eventHelper.removeTappedContents(tappedContents);
             } else {
                 if (this.crafting.eventHelper.canPlaceBlockInCell(tappedContents, cell)) {
                     this.crafting.eventHelper.placeBlockInCell(tappedContents, cell); // move the block to the cell you're over
@@ -263,14 +265,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
         globalStates.currentLogic.guiState.tappedContents = null;
         cutLineStart = null;
         touchState = TS_NONE;
-        this.cout("pointerUp ->" + touchState + "(" + didPointerLeave + ")");
-    }
-    
-    // dragging onto sidebar menu triggers onPointerUp
-    function onPointerLeave(e) {
-        if (e.pageX > window.innerWidth - (menuBarWidth + 20)) {
-           // onPointerUp.call(this, e, true);
-        }
+        this.cout("pointerUp ->" + touchState);
     }
 
     function onLoadBlock(object,logic,block,publicData) {
@@ -285,11 +280,9 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             JSON.stringify(msg), '*');
     }
 
-    exports.onDocumentUp = onDocumentUp;
     exports.onPointerDown = onPointerDown;
     exports.onPointerMove = onPointerMove;
     exports.onPointerUp = onPointerUp;
-    exports.onPointerLeave = onPointerLeave;
     exports.onLoadBlock = onLoadBlock;
     
 })(realityEditor.gui.crafting.eventHandlers);
