@@ -8415,7 +8415,7 @@ Polymer({
   properties: {
     value: {
       type: Number,
-      value: 0.5
+      value: 0
     }
   },
   height: 520,
@@ -8445,9 +8445,9 @@ Polymer({
     }
     this.$.activation.setAttribute('height', absY);
 
-    var value = dY / this.height + 0.5;
-    if (value < 0) {
-      value = 0;
+    var value = dY / this.height * 2;
+    if (value < -1) {
+      value = -1;
     }
     if (value > 1) {
       value = 1;
