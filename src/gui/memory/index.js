@@ -60,6 +60,13 @@ createNameSpace("realityEditor.gui.memory");
 (function(exports) {
 
 var imageCache = {};
+var knownObjects = {};
+try {
+    knownObjects = JSON.parse(window.localStorage.getItem('realityEditor.memory.knownObject') || '{}');
+} catch(e) {
+    console.warn('Defaulting knownObjects due to data corruption');
+}
+
 
 function MemoryContainer(element) {
     this.element = element;
@@ -226,6 +233,7 @@ MemoryContainer.prototype.stopDragging = function() {
         if (imageRect.top < memoryBarHeight) {
             var newContainer = getBarContainerAtLeft(imageRect.left);
             if (newContainer) {
+                addKnownObject(this.obj.objectId);
                 newContainer.set(this.obj);
             }
         } else {
@@ -296,10 +304,6 @@ MemoryContainer.prototype.onTouchEnd = function() {
 MemoryContainer.prototype.remember = function() {
     if (!this.memory && !this.image) {
         return;
-    }
-
-    if (document.querySelector('.memoryWeb')) {
-        removeMemoryWeb();
     }
 
     realityEditor.gui.pocket.pocketHide();
@@ -410,6 +414,10 @@ function addObjectMemory(obj) {
         freeMemory = pendingMemorizations[obj.objectId];
         delete pendingMemorizations[obj.objectId];
     } else {
+        if (!knownObjects[obj.objectId]) {
+            console.warn('staying away from memories of a strange object');
+            return;
+        }
         freeMemory = barContainers.filter(function(container) {
             // Container either doesn't have a memory or the memory is of this object
             return !container.memory || container.memory.id === obj.objectId;
@@ -427,8 +435,15 @@ function addObjectMemory(obj) {
         }
     });
 
+    addKnownObject(obj.objectId);
     freeMemory.set(obj);
 }
+
+function addKnownObject(objectId) {
+    knownObjects[objectId] = true;
+    window.localStorage.setItem('realityEditor.memory.knownObject', JSON.stringify(knownObjects));
+}
+
 
 function getMemoryWithId(id) {
     for (var i = 0; i < barContainers.length; i++) {
