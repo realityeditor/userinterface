@@ -162,6 +162,9 @@ function Node() {
 	// defines the origin Hardware interface of the IO Point. For example if this is arduinoYun the Server associates
 	// indicates how much calls per second is happening on this node
 	this.stress = 0;
+    // TODO(hobinjk): investigate why this isn't set automatically
+    this.width = 220;
+    this.height = 220;
 }
 
 /**
