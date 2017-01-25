@@ -290,6 +290,7 @@ realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
             
             console.log("YES");
             realityEditor.gui.crafting.forceRedraw(globalStates.currentLogic);
+
         }
         
     } else {
@@ -995,6 +996,10 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
         objectData: {
             ip: objects[objectKey].ip
         },
+<<<<<<< HEAD
+=======
+        //objectData: objects[objectKey],
+>>>>>>> ecb07afb08dd688f904ddeffea73ef18b41bba02
         node: nodeKey,
         nodes: nodes
     };
