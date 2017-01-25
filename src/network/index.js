@@ -987,7 +987,9 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
 
     var newStyle = {
         object: objectKey,
-        objectData: objects[objectKey],
+        objectData: {
+            ip: objects[objectKey].ip
+        },
         node: nodeKey,
         nodes: nodes
     };
