@@ -8445,7 +8445,7 @@ Polymer({
     }
     this.$.activation.setAttribute('height', absY);
 
-    var value = dY / this.height * 2;
+    var value = -dY / this.height * 2;
     if (value < -1) {
       value = -1;
     }

@@ -8481,7 +8481,7 @@ Polymer({
     }
 
     this.valueX = this.limit(dX / this.width * 2);
-    this.valueY = this.limit(dY / this.height * 2);
+    this.valueY = this.limit(-dY / this.height * 2);
 
     var scale = Math.sqrt(dY * dY + dX * dX) / 150;
     if (scale > 153 / 150) {
