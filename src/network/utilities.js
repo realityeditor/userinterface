@@ -63,3 +63,56 @@ realityEditor.network.utilities.rename = function(object, before, after) {
         delete object[before];
     }
 };
+
+realityEditor.network.utilities.syncBlocksWithRemote = function(origin, remoteBlocks) {
+    // delete old blocks
+    for (var blockKey in origin.blocks) {
+        if (!origin.blocks.hasOwnProperty(blockKey)) continue;
+        if (this.shouldSyncBlock(origin, blockKey, "delete")) {
+            var domElement = origin.guiState.blockDomElements[blockKey];
+            if (domElement) {
+                domElement.parentNode.removeChild(domElement);
+                delete origin.guiState.blockDomElements[blockKey];
+            }
+            delete origin.blocks[blockKey];
+        }
+    }
+
+    // add missing blocks (updates existing ones too)
+    for (blockKey in remoteBlocks) {
+        if (!remoteBlocks.hasOwnProperty(blockKey)) continue;
+        if (this.shouldSyncBlock(origin, blockKey, "create")) {
+            origin.blocks[blockKey] = new Block();
+            for (var key in remoteBlocks[blockKey]){
+                origin.blocks[blockKey][key] = remoteBlocks[blockKey][key];
+            }
+        }
+    }
+};
+
+realityEditor.network.utilities.shouldSyncBlock = function(origin, blockKey, mode) {
+    if (mode === "create") {
+        if (!origin.blocks[blockKey]) return true;
+    } else if (mode === "delete") {
+        if (!origin.blocks[blockKey]) return false;
+    }
+    return realityEditor.gui.crafting.eventHelper.shouldUploadBlock(origin.blocks[blockKey]); // && (origin.blocks[blockKey].x !== -1)
+};
+
+realityEditor.network.utilities.syncLinksWithRemote = function(origin, remoteLinks) {
+    // delete old links
+    for (var linkKey in origin.links) {
+        if (!origin.links.hasOwnProperty(linkKey)) continue;
+        delete origin.links[linkKey];
+    }
+
+    // add missing links (update existing links too)
+    for (linkKey in remoteLinks) {
+        if (!remoteLinks.hasOwnProperty(linkKey)) continue;
+        
+        origin.links[linkKey] = new BlockLink();
+        for (var key in remoteLinks[linkKey]){
+            origin.links[linkKey][key] = remoteLinks[linkKey][key];
+        }
+    }
+};
