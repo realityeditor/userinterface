@@ -275,6 +275,9 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
 
             if (realityEditor.gui.memory.memoryCanCreate()) {
                 realityEditor.gui.memory.createMemory();
+                if (globalStates.guiState === "node") {
+                    globalStates.drawDotLine = false;
+                }
             }
 
             toggleShown();
