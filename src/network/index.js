@@ -987,12 +987,15 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
 
     var newStyle = {
         object: objectKey,
-        objectData: {
-            ip: objects[objectKey].ip
-        },
         node: nodeKey,
         nodes: nodes
     };
+
+    if (objects[objectKey] && objects[objectKey].ip) {
+        newStyle.objectData = {
+            ip: objects[objectKey].ip
+        };
+    }
 
     if (version < 170) {
         newStyle = oldStyle;
