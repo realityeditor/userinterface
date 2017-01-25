@@ -201,6 +201,20 @@ MemoryPointer.prototype.draw = function() {
     var cvZ = this.connectedNode.screenLinearZ || 10;
     var scale = cvZ / 10;
 
+    var tol = 60 * scale;
+    if (this.x < tol) {
+        this.x = tol;
+    }
+    if (this.y < tol) {
+        this.y = tol;
+    }
+    if (this.x > globalStates.height - tol) {
+        this.x = globalStates.height - tol;
+    }
+    if (this.y > globalStates.width - tol) {
+        this.y = globalStates.width - tol;
+    }
+
     this.element.style.transform = 'translate3d(' + this.x + 'px,' + this.y + 'px, 2px) scale(' + scale + ')';
 };
 
