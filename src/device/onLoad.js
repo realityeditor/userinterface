@@ -56,7 +56,7 @@ createNameSpace("realityEditor.device");
 
 realityEditor.device.onload = function () {
 
-        window.location.href = "of://kickoff";
+        //window.location.href = "of://kickoff";
 
 
     realityEditor.gui.menus.init();

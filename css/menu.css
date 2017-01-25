@@ -16,7 +16,7 @@
     height: 125px;
     right: 0px;
     top: 0px;
-    visibility: hidden;
+    visibility: visible;
 }
 #guiButtonDiv {
     position: fixed;
@@ -211,5 +211,11 @@
 .colorBackground {
     background-color: #00FFFF;
 }
+.blue{fill:#00FFFF;}
+.green{fill:#00FF00;}
+.red{fill:#FF007C;}
+.inactive{opacity:0; touch-action: none}
+.active{opacity:0.3; touch-action: none}
+.touched{opacity:0.6; touch-action: none}
 
 

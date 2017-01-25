@@ -87,31 +87,24 @@ realityEditor.gui.menus.menus = {
 realityEditor.gui.menus.history = [];
 
 realityEditor.gui.menus.getElements = function (element) {
-    var o,l;
+    var svgDoc,l;
 		if (element === "logic" || element === "gui") {
-        o = document.getElementById("mainButton");
+            svgDoc = document.getElementById("mainButton");
     } else {
-        o = document.getElementById(element+"Button");
+            svgDoc = document.getElementById(element+"Button");
     }
 
     l = document.getElementById(element+"ButtonDiv");
 
-    var svgDoc = o.contentDocument;
-
-    var linkElm = svgDoc.createElementNS("http://www.w3.org/1999/xhtml", "link");
-    linkElm.setAttribute("href", "menu.css");
-    linkElm.setAttribute("type", "text/css");
-    linkElm.setAttribute("rel", "stylesheet");
-    svgDoc.getElementById("Layer_1").appendChild(linkElm);
 
     var svgElement;
 
     if (element === "gui") {
-        svgElement= {item: o, overlay: l,  bg:svgDoc.getElementById("bg0"), state: ["",""]}
+        svgElement= {item: svgDoc, overlay: l,  bg:svgDoc.getElementById("bg0"), state: ["",""]}
     } else if (element === "logic") {
-        svgElement= {item: o, overlay: l,  bg:svgDoc.getElementById("bg1"), state: ["",""]}
+        svgElement= {item: svgDoc, overlay: l,  bg:svgDoc.getElementById("bg1"), state: ["",""]}
     } else {
-        svgElement= {item: o, overlay: l, bg:svgDoc.getElementById("bg"), state: ["",""]}
+        svgElement= {item: svgDoc, overlay: l, bg:svgDoc.getElementById("bg"), state: ["",""]}
     }
 
     svgElement.bg.setAttribute("class", "blue inactive");
