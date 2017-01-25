@@ -52,51 +52,80 @@ createNameSpace("realityEditor.gui.crafting");
 realityEditor.gui.crafting.updateGrid = function(grid) {
     console.log("update grid!");
 
+    var previousLogic = globalStates.currentLogic;
+    
+    var logic = grid.parentLogic();
+    globalStates.currentLogic = logic;
+
     // *** this does all the backend work ***
     grid.recalculateAllRoutes();
 
-    var guiState = globalStates.currentLogic.guiState;
 
-    // reset domElements 
-    for (var domKey in guiState.blockDomElements) {
-        var blockDomElement = guiState.blockDomElements[domKey];
+    // UPDATE THE UI IF OPEN
+    var blockContainer = document.getElementById('blocks');
+    
+    if (globalStates.currentLogic && grid.parentLogic() && (grid.parentLogic().uuid === globalStates.currentLogic.uuid) && blockContainer) {
 
-        // remove dom elements if their blocks are gone or needs to be reset
-        if (this.shouldRemoveBlockDom(blockDomElement)) {
-            blockDomElement.parentNode.removeChild(blockDomElement);
-            delete guiState.blockDomElements[domKey];
+        // reset domElements 
+        for (var domKey in logic.guiState.blockDomElements) {
+            var blockDomElement = logic.guiState.blockDomElements[domKey];
+
+            // remove dom elements if their blocks are gone or needs to be reset
+            if (this.shouldRemoveBlockDom(blockDomElement)) {
+                blockDomElement.parentNode.removeChild(blockDomElement);
+                delete logic.guiState.blockDomElements[domKey];
+            }
+        }
+
+        // add new domElement for each block that needs one
+        for (var blockKey in logic.blocks) {
+            var block = logic.blocks[blockKey];
+            if (block.isPortBlock) continue; // don't render invisible input/output blocks
+
+            if (realityEditor.gui.crafting.grid.isBlockOutsideGrid(block, grid) && !block.isPortBlock) { // don't render blocks offscreen
+                continue;
+            }
+
+            // only add if the block doesn't already have one
+            var blockDomElement = logic.guiState.blockDomElements[block.globalId];
+            if (!blockDomElement) {
+                this.addDomElementForBlock(block, grid);
+            }
+
         }
     }
-
-    // add new domElement for each block that needs one
-    for (var blockKey in globalStates.currentLogic.blocks) {
-        var block = globalStates.currentLogic.blocks[blockKey];
-        if (block.isPortBlock) continue; // don't render invisible input/output blocks
-        if (this.grid.isBlockOutsideGrid(block, grid) && !block.isPortBlock) { // cleanup incorrectly setup blocks // TODO: prevent this in the first place rather than checking each time
-            this.grid.removeBlock(globalStates.currentLogic, blockKey);
-            continue;
-        }
-
-        // only add if the block doesn't already have one
-        var blockDomElement = guiState.blockDomElements[block.globalId];
-        if (!blockDomElement) {
-            this.addDomElementForBlock(block, grid);
-        }
-
-    }
+    
+    globalStates.currentLogic = previousLogic;
 };
 
+realityEditor.gui.crafting.forceRedraw = function(logic) {
+    var _this = this;
+    for (var key in logic.blocks) {
+        if (!logic.blocks.hasOwnProperty(key)) continue;
+        if (logic.blocks[key].isPortBlock) continue;
+        _this.removeBlockDom(logic.blocks[key]);
+    }
+    this.updateGrid(logic.grid);
+    this.redrawDataCrafting();
+};
+
+    // todo: pass in logic instead of using currentLogic
 realityEditor.gui.crafting.removeBlockDom = function(block) {
     var blockDomElement = this.eventHelper.getDomElementForBlock(block);
-    blockDomElement.parentNode.removeChild(blockDomElement);
-    delete globalStates.currentLogic.guiState.blockDomElements[block.globalId];
+    if (blockDomElement) {
+        blockDomElement.parentNode.removeChild(blockDomElement);
+        delete globalStates.currentLogic.guiState.blockDomElements[block.globalId];   
+    }
 };
 
+    // todo: pass in logic instead of using currentLogic
 realityEditor.gui.crafting.shouldRemoveBlockDom = function(blockDomElement) {
-    return (this.getBlockForDom(blockDomElement) === null);
+    return (this.getBlockForDom(blockDomElement) === null); // remove the dom if there isn't a corresponding block
 };
 
+    // todo: pass in logic instead of using currentLogic
 realityEditor.gui.crafting.getBlockForDom = function(blockDomElement) {
+    if (!globalStates.currentLogic) return null;
     for (var blockKey in globalStates.currentLogic.blocks) {
         var block = globalStates.currentLogic.blocks[blockKey];
         if (globalStates.currentLogic.guiState.blockDomElements[block.globalId] === blockDomElement) {
@@ -106,6 +135,7 @@ realityEditor.gui.crafting.getBlockForDom = function(blockDomElement) {
     return null;
 };
 
+    // todo: pass in logic instead of using currentLogic
 realityEditor.gui.crafting.addDomElementForBlock = function(block, grid, isTempBlock) {
     var blockDomElement = document.createElement('div');
     blockDomElement.setAttribute('class','blockDivPlaced');
@@ -208,7 +238,7 @@ realityEditor.gui.crafting.redrawDataCrafting = function() {
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    this.grid.forEachLink( function(link) {
+    grid.forEachLink( function(link) {
         var startCell =  _this.grid.getCellForBlock(grid, _this.grid.blockWithID(link.nodeA, globalStates.currentLogic), link.logicA);
         var endCell =  _this.grid.getCellForBlock(grid, _this.grid.blockWithID(link.nodeB, globalStates.currentLogic), link.logicB);
         _this.drawDataCraftingLine(ctx, link, 5, startCell.getColorHSL(), endCell.getColorHSL(), timeCorrection);
@@ -335,10 +365,14 @@ realityEditor.gui.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
     this.cout("craftingBoardVisible for object: " + objectKey + " and node: "+nodeKey);
 
     if (DEBUG_DATACRAFTING) { // TODO: BEN DEBUG - turn off debugging!
-        var logic = new LogicNode();
+        var logic = new Logic();
         this.initializeDataCraftingGrid(logic);
     } else {
         var nodeLogic = objects[objectKey].nodes[nodeKey];
+        if (!nodeLogic.guiState) {
+            console.log("adding new LogicGUIState");
+            nodeLogic.guiState = new LogicGUIState();
+        }
         this.initializeDataCraftingGrid(nodeLogic);
     }
 };
@@ -472,7 +506,7 @@ realityEditor.gui.crafting.initializeDataCraftingGrid = function(logic) {
     container.className = "craftingBoardBlur";
 
     // initializes the data model for the datacrafting board
-    logic.grid = new this.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight);
+    logic.grid = new this.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight, logic.uuid);
 
     var datacraftingCanvas = document.createElement('canvas');
     datacraftingCanvas.setAttribute('id', 'datacraftingCanvas');

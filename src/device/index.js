@@ -357,8 +357,9 @@ realityEditor.device.onTrueTouchUp = function(evt){
 			realityEditor.network.deleteNodeFromObject(objects[target.objectId].ip, target.objectId, target.nodeId);
 
 		} else {
-
-			realityEditor.network.sendResetContent(target.objectId, target.nodeId, target.type);
+            if (target.objectId !== "pocket") {
+                realityEditor.network.sendResetContent(target.objectId, target.nodeId, "logic");
+            }
 		}
 
 

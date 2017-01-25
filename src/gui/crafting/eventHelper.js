@@ -174,130 +174,82 @@ realityEditor.gui.crafting.eventHelper.styleBlockForPlacement = function(content
     }
 };
 
-realityEditor.gui.crafting.eventHelper.updateCraftingVisibility = function(currentCell, tappedContents) {
+realityEditor.gui.crafting.eventHelper.updateCraftingBackgroundVisibility = function(event, cell, contents) {
+    
+    if (event === "down" || event === "move") {
 
-    if (!this.areCellsEqual(currentCell, tappedContents.cell)) {
-        if (tappedContents.block.isPortBlock) {
-            //console.log("moved away from port, show bkg");
-            this.toggleDatacraftingExceptPort(tappedContents, true);
+        var currentBlock = cell.blockAtThisLocation();
+        if (currentBlock && currentBlock.isPortBlock) {
+            this.toggleDatacraftingExceptPort(contents, false);
+        } else {
+            this.toggleDatacraftingExceptPort(contents, true);
         }
-    } else {
-        if (tappedContents.block.isPortBlock) {
-            //console.log("moved back to port, hide bkg");
-            this.toggleDatacraftingExceptPort(tappedContents, false);
-        }
+        
+    } else if (event === "up") {
+
+        this.toggleDatacraftingExceptPort(contents, true);
+        
     }
+    
 };
 
 realityEditor.gui.crafting.eventHelper.visibilityCounter = null;
-realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(contents, shouldShow) {
+realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(tappedContents, shouldShow) {
+    var _this = this;
     if (shouldShow !== globalStates.currentLogic.guiState.isCraftingBackgroundShown) {
         console.log("show datacrafting background? " + shouldShow);
-
-
+        
         var craftingBoard = document.getElementById("craftingBoard");
         var datacraftingCanvas = document.getElementById("datacraftingCanvas");
         var blockPlaceholders = document.getElementById("blockPlaceholders");
         var blocks = document.getElementById("blocks");
 
-        var forceRedraw = function(element){
-            if (!element) { return; }
-            var n = document.createTextNode(' ');
-            var disp = element.style.display;  // don't worry about previous display style
-            element.appendChild(n);
-            element.style.display = 'none';
-            setTimeout(function(){
-                element.style.display = disp;
-                n.parentNode.removeChild(n);
-            },20); // you can play with this timeout to make it as short as possible
-        };
-
         if (shouldShow) {
-
-            //craftingBoard.style.webkitBackdropFilter = "blur(30px)";
-
+            
             if(this.visibilityCounter){
                 clearTimeout( this.visibilityCounter);
                 craftingBoard.className = "craftingBoardBlur";
                 this.visibilityCounter = null;
+                // force the dom to re-render
+                datacraftingCanvas.style.display = "inline";
 
-
-            // force the dom to re-render
-            //craftingBoard.style.visibility = "hidden";
-            //craftingBoard.style.visibility = "visible";
-            //forceRedraw(craftingBoard);
-
-            datacraftingCanvas.style.display = "inline";
-
-            //var tappedRowIndex = Math.floor(contents.cell.location.row / 2);
-            //var tappedColIndex = Math.floor(contents.cell.location.col / 2);
-
-            blockPlaceholders.childNodes.forEach( function(blockPlaceholderRow, rowIndex) {
-                //blockPlaceholderRow.style.opacity = "1.0";
-
-                if (!(rowIndex === 0 || rowIndex === 6)) {
-                    blockPlaceholderRow.setAttribute("class", "blockPlaceholderRow visibleFadeIn");
-                }
-
-
-                //blockPlaceholderRow.childNodes.forEach( function(blockPlaceholder, colIndex) {
-                //    blockPlaceholder.style.opacity = "1.0";
-                //});
-            });
-
-            blocks.childNodes.forEach( function(blockDom) {
-                //blockDom.style.opacity = "1.0";
-                blockDom.setAttribute("class", "blockDivPlaced visibleFadeIn");
-
-            });
+                // animate opacity from 0 -> 1
+                blockPlaceholders.childNodes.forEach( function(blockPlaceholderRow, rowIndex) {
+                    if (!(rowIndex === 0 || rowIndex === 6)) {
+                        blockPlaceholderRow.setAttribute("class", "blockPlaceholderRow visibleFadeIn");
+                    }
+                });
+                blocks.childNodes.forEach( function(blockDom) {
+                    blockDom.setAttribute("class", "blockDivPlaced visibleFadeIn");
+                });
             }
-
-            //globalStates.guiState = "logic";
-
+            
         } else {
-
-            //craftingBoard.style.webkitBackdropFilter = "none";
-           this.visibilityCounter = setTimeout(function(){ craftingBoard.className = "craftingBoardClear";
-
-            // force the dom to re-render
-            //craftingBoard.style.visibility = "hidden";
-            //craftingBoard.style.visibility = "visible";
-            //forceRedraw(craftingBoard);
-
-            datacraftingCanvas.style.display = "none";
-
-            var tappedRowIndex = Math.floor(contents.cell.location.row / 2);
-            var tappedColIndex = Math.floor(contents.cell.location.col / 2);
-
-            blockPlaceholders.childNodes.forEach( function(blockPlaceholderRow, rowIndex) {
-                if (!(rowIndex === 0 || rowIndex === 6)) {
-                    //blockPlaceholderRow.style.opacity = "0.0";
-                    blockPlaceholderRow.setAttribute("class", "blockPlaceholderRow invisibleFadeOut");
-                }
-
-                //blockPlaceholderRow.childNodes.forEach( function(blockPlaceholder, colIndex) {
-                //    if (!(rowIndex === tappedRowIndex && colIndex === tappedColIndex)) {
-                //        blockPlaceholder.style.opacity = "0.5";
-                //    }
-                //});
-            });
-
-            blocks.childNodes.forEach( function(blockDom) {
-                var block = realityEditor.gui.crafting.getBlockForDom(blockDom);
-
-                if (!(block.y === 0 || block.y === 3)) {
-                    //blockDom.style.opacity = "0.0";
-                    blockDom.setAttribute("class", "blockDivPlaced invisibleFadeOut");
-                }
-
-                //if (!(block.x === tappedColIndex && block.y === tappedRowIndex)) {
-                //    blockDom.style.opacity = "0.5";
-                //}
-            });
-           }, 300);
-
-            //globalStates.guiState = "node";
-
+            
+            var tappedBlock;
+            if (tappedContents) {
+                tappedBlock = tappedContents.block;
+            }
+            
+            this.visibilityCounter = setTimeout( function(){
+                craftingBoard.className = "craftingBoardClear";
+                datacraftingCanvas.style.display = "none";
+                
+                // animate opacity from 1 -> 0
+                blockPlaceholders.childNodes.forEach( function(blockPlaceholderRow, rowIndex) {
+                   if (!(rowIndex === 0 || rowIndex === 6)) {
+                       blockPlaceholderRow.setAttribute("class", "blockPlaceholderRow invisibleFadeOut");
+                   }
+                });
+                
+                blocks.childNodes.forEach( function(blockDom) {
+                    var block = realityEditor.gui.crafting.getBlockForDom(blockDom);
+                    var isTappedBlock = tappedBlock && _this.areBlocksEqual(tappedBlock, block);
+                    if (!(block.y === 0 || block.y === 3 || isTappedBlock)) {
+                        blockDom.setAttribute("class", "blockDivPlaced invisibleFadeOut");
+                    }
+                });
+            }, 300);
         }
 
         globalStates.currentLogic.guiState.isCraftingBackgroundShown = shouldShow;
@@ -306,13 +258,13 @@ realityEditor.gui.crafting.eventHelper.toggleDatacraftingExceptPort = function(c
 
 // todo why is isInOutBlock in grid by isPortBlock in here?
 realityEditor.gui.crafting.eventHelper.shouldUploadBlock = function(block) {
-    return !this.crafting.grid.isInOutBlock(block.globalId) && !block.isPortBlock;
+    return !this.crafting.grid.isInOutBlock(block.globalId);// && !block.isPortBlock; //&& !(block.x === -1 || block.y === -1)
 };
 
-realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink = function(blockLink) {
-    if (!blockLink) return false;
-    return (!this.crafting.grid.isEdgePlaceholderLink(blockLink)); // add links to surrounding instead of uploading itself
-};
+//realityEditor.gui.crafting.eventHelper.shouldUploadBlockLink = function(blockLink) {
+//    if (!blockLink) return false;
+//    //return (!this.crafting.grid.isEdgePlaceholderLink(blockLink)); // add links to surrounding instead of uploading itself
+//};
 
 // todo add: if (!_.hasOwnProperty(key)) continue;
 realityEditor.gui.crafting.eventHelper.getServerObjectLogicKeys = function(logic) {
@@ -492,7 +444,7 @@ realityEditor.gui.crafting.eventHelper.replacePortBlocksIfNecessary = function(c
                 var nameOutput = ["","","",""];
                 var blockPos = _this.crafting.grid.convertGridPosToBlockPos(cell.location.col, cell.location.row);
                 var inOrOut = blockPos.y === 0 ? "In" : "Out";
-                var type = "edge";
+                var type = "default";
                 var name = "edgePlaceholder" + inOrOut + blockPos.x;
                 var globalId = name;
                 var blockJSON = _this.crafting.utilities.toBlockJSON(type, name, width, privateData, publicData, activeInputs, activeOutputs, nameInput, nameOutput);
@@ -697,7 +649,7 @@ realityEditor.gui.crafting.eventHelper.isOutputBlock = function(block) {
 
 realityEditor.gui.crafting.eventHelper.addBlockFromMenu = function(blockJSON, pointerX, pointerY) {
     var globalId = this.generateBlockGlobalId();
-    var addedBlock = this.crafting.grid.addBlock(-1, -1, blockJSON, globalId);
+    var addedBlock = this.crafting.grid.addBlock(-1, -1, blockJSON, globalId); // TODO: only upload after you've placed it
     this.crafting.addDomElementForBlock(addedBlock, globalStates.currentLogic.grid, true);
 
     globalStates.currentLogic.guiState.tappedContents = {

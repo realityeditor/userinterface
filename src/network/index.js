@@ -85,8 +85,8 @@ realityEditor.network.addHeartbeatObject = function (beat) {
                         if(thisObject.type === "logic") {
                             thisObject.guiState = new LogicGUIState();
                             var container = document.getElementById('craftingBoard');
-                            thisObject.grid = new _this.realityEditor.gui.crafting.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight);
-                            _this.realityEditor.gui.crafting.utilities.convertLinksFromServer(thisObject);
+                            thisObject.grid = new _this.realityEditor.gui.crafting.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight, thisObject.uuid);
+                            //_this.realityEditor.gui.crafting.utilities.convertLinksFromServer(thisObject);
                         }
                     }
 
@@ -226,79 +226,83 @@ realityEditor.network.updateObject = function (origin, remote, thisKey) {
 };
 
 
-realityEditor.network.updateNode= function (origin, remote, thisKey, nodeKey) {
-        if(!origin) {
-            origin = remote;
-        } else {
+realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
 
-            origin.x =  remote.x;
-            origin.y =  remote.y;
-            origin.scale =  remote.scale;
+    console.log(remote.links, origin.links, remote.blocks, origin.blocks);
 
-            origin.name =  remote.name;
-            if(remote.text)
-                origin.text =  remote.text;
-            if(remote.matrix)
-                origin.matrix =  remote.matrix;
+    var isRemoteNodeDeleted = (Object.keys(remote).length === 0 && remote.constructor === Object);
+
+    // delete local node if needed
+    if (origin && isRemoteNodeDeleted) {
+
+        realityEditor.gui.ar.draw.deleteNode(thisKey, nodeKey);
+
+        if (objects[thisKey].nodes[nodeKey]) {
+            delete objects[thisKey].nodes[nodeKey];
         }
+        return;
+    }
+
+    if(!origin) {
+
+        origin = remote;
+
+    } else {
+
+        origin.x =  remote.x;
+        origin.y =  remote.y;
+        origin.scale =  remote.scale;
+        origin.name =  remote.name;
+        if(remote.text) {
+            origin.text =  remote.text;
+        }
+        if(remote.matrix) {
+            origin.matrix =  remote.matrix;
+        }
+
+        if(origin.type === "logic") {
+            if (!origin.guiState) {
+                origin.guiState = new LogicGUIState();
+            }
+
+            if (!origin.grid) {
+                var container = document.getElementById('craftingBoard');
+                origin.grid = new realityEditor.gui.crafting.grid.Grid(container.clientWidth - menuBarWidth, container.clientHeight, origin.uuid);
+            }
+
+        }
+
+    }
 
     if (remote.blocks) {
-        if (!origin.blocks) origin.blocks = {};
-        for(var x in origin.blocks){
-            if (!origin.blocks[x]) origin.blocks[x] = {};
-            for (var y in remote.blocks[x]){
-                origin.blocks[x][y] = remote.blocks[x][y];
-            }
-        }
+        this.utilities.syncBlocksWithRemote(origin, remote.blocks);
     }
+
     if (remote.links) {
-        if (!origin.links) origin.links = {};
-		for(var x in origin.links){
-            if (!origin.links[x]) origin.links[x] = {};
-            for (var y in remote.links[x]){
-                origin.links[x][y] = remote.links[x][y];
-            }
+        this.utilities.syncLinksWithRemote(origin, remote.links);
+    }
+
+    realityEditor.gui.crafting.updateGrid(objects[thisKey].nodes[nodeKey].grid);
+
+    if(globalStates.currentLogic) {
+
+        if(globalStates.currentLogic.uuid === nodeKey) {
+
+            console.log("YES");
+            realityEditor.gui.crafting.forceRedraw(globalStates.currentLogic);
+
+        }
+
+    } else {
+        console.log("NO");
+
+        if(globalDOMCach["iframe" + nodeKey]) {
+            if(globalDOMCach["iframe" + nodeKey]._loaded)
+                realityEditor.network.onElementLoad(thisKey, nodeKey);
         }
     }
 
-if(globalStates.currentLogic){
-    if(globalStates.currentLogic.uuid === nodeKey) {
-        console.log("YES");
-        realityEditor.gui.crafting.craftingBoardHide();
-        realityEditor.gui.crafting.craftingBoardVisible(thisKey, nodeKey);
-        // console.log(globalStates.currentLogic.grid);
-//   realityEditor.gui.crafting.craftingBoardVisible(thisKey, nodeKey);
-        // realityEditor.gui.crafting.updateGrid(globalStates.currentLogic.grid);
-    }
-} else {
-    console.log("NO");
-
-
-    if(globalDOMCach["iframe" + nodeKey]) {
-        if(globalDOMCach["iframe" + nodeKey]._loaded)
-            realityEditor.network.onElementLoad(thisKey, nodeKey);
-    }
-}
 };
-
-
-
-
-/*
-    for (var nodeKey in remote) {
-        if(typeof remote[nodeKey] === "object"){
-            if(typeof origin[nodeKey] === "undefined" && typeof remote[nodeKey] !== "undefined"){
-                origin[nodeKey] ={};
-            } else continue;
-            origin[nodeKey].uuid = nodeKey;
-            this.updateKey(origin[nodeKey], remote[nodeKey])
-        } else {
-            if(typeof remote[nodeKey] !== "undefined") {
-                origin[nodeKey] = remote[nodeKey];
-            }
-        }
-    }*/
-
 
 realityEditor.network.onAction = function (action) {
     var _this = this;
@@ -384,7 +388,9 @@ console.log("gotdata");
         console.log("gotdata: "+thisAction.reloadNode.object +" "+thisAction.reloadNode.node);
         console.log('http://' + objects[thisAction.reloadNode.object].ip + ':' + httpPort + '/object/' + thisAction.reloadNode.object + "/node/" + thisAction.reloadNode.node+"/");
         if(thisAction.reloadNode.object in objects) {
-                this.getData(
+            // TODO: getData         webServer.get('/object/*/') ... instead of /object/node
+
+            this.getData(
                     'http://' + objects[thisAction.reloadNode.object].ip + ':' + httpPort + '/object/' + thisAction.reloadNode.object + "/node/" + thisAction.reloadNode.node+"/", thisAction.reloadNode.object, function (req, thisKey, thisNode) {
 
                     console.log("------------------------------");
@@ -681,7 +687,7 @@ realityEditor.network.deleteLinkFromObject = function(ip, thisObjectKey, thisKey
 
 realityEditor.network.deleteNodeFromObject = function(ip, thisObjectKey, thisKey) {
     // generate action for all links to be reloaded after upload
-    this.cout("I am deleting a link: " + ip);
+    this.cout("I am deleting a node: " + ip);
     this.deleteData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisKey+"/node/lastEditor/"+globalStates.tempUuid);
 };
 
@@ -987,6 +993,9 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
 
     var newStyle = {
         object: objectKey,
+        objectData: {
+            ip: objects[objectKey].ip
+        },
         node: nodeKey,
         nodes: nodes
     };

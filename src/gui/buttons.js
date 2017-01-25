@@ -463,6 +463,8 @@ realityEditor.gui.buttons.draw = function() {
 			pocketItem.pocket.nodes[pocketItemId] = new Logic();
 
 			var thisItem = pocketItem.pocket.nodes[pocketItemId];
+            
+            thisItem.uuid = pocketItemId;
 
 			thisItem.x = globalStates.pointerPosition[0] - (globalStates.height / 2);
 			thisItem.y = globalStates.pointerPosition[1] - (globalStates.width / 2);
