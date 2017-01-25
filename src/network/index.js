@@ -186,6 +186,43 @@ realityEditor.network.updateObject = function (origin, remote, thisKey) {
                 realityEditor.network.onElementLoad(thisKey, nodeKey);
         }
     }
+
+
+    var missingFrames = {};
+    for (var frameKey in origin.frames) {
+        missingFrames[frameKey] = true;
+    }
+
+    for (var frameKey in remote.frames) {
+        if(!origin.frames[frameKey]) {
+            origin.frames[frameKey] = remote.frames[frameKey];
+            continue;
+        }
+        missingFrames[frameKey] = false;
+        var oFrame = origin.frames[frameKey];
+        var rFrame = remote.frames[frameKey];
+        oFrame.x = rFrame.x;
+        oFrame.y = rFrame.y;
+        oFrame.scale = rFrame.scale;
+
+        oFrame.name = rFrame.name;
+        if(rFrame.matrix) {
+            oFrame.matrix = rFrame.matrix;
+        }
+
+        if (globalDOMCach["iframe" + frameKey] && globalDOMCach["iframe" + frameKey]._loaded) {
+            realityEditor.network.onElementLoad(thisKey, frameKey);
+        }
+
+    }
+
+    for (var frameKey in missingFrames) {
+        if (!missingFrames[frameKey]) {
+            continue;
+        }
+        // Frame was deleted on remote, let's delete it here
+        realityEditor.gui.frame.deleteLocally(origin.objectId, frameKey);
+    }
 };
 
 
@@ -568,9 +605,46 @@ realityEditor.network.onInternalPostMessage = function(e) {
         objects[msgContent.object].nodes[nodeKey] = node;
         realityEditor.network.postNewNode(objects[msgContent.object].ip, msgContent.object, nodeKey, node);
     }
+
+    if (typeof msgContent.beginTouchEditing !== "undefined") {
+        var element = document.getElementById(msgContent.node);
+        realityEditor.device.beginTouchEditing(element);
+    }
+
+    if (typeof msgContent.touchEvent !== "undefined") {
+        var event = msgContent.touchEvent;
+        var target = document.getElementById(msgContent.node);
+        if (!target) {
+            return;
+        }
+        var fakeEvent = {
+            currentTarget: target,
+            clientX: event.x,
+            clientY: event.y,
+            pageX: event.x,
+            pageY: event.y,
+            preventDefault: function(){}
+        };
+        if (event.type === 'touchmove') {
+            if (overlayDiv.style.display !== 'inline') {
+                realityEditor.device.onDocumentPointerDown(fakeEvent);
+            }
+            realityEditor.device.onDocumentPointerMove(fakeEvent);
+            realityEditor.device.onTouchMove(fakeEvent);
+        } else if (event.type === 'touchend') {
+            realityEditor.device.onDocumentPointerUp(fakeEvent);
+            realityEditor.device.onMultiTouchEnd(fakeEvent);
+            var frame = document.getElementById('iframe' + msgContent.node);
+            if (frame) {
+                frame.contentWindow.postMessage(JSON.stringify({
+                    stopTouchEditing: true
+                }), "*");
+            }
+        }
+    }
 };
 
-realityEditor.network.deleteData = function(url) {
+realityEditor.network.deleteData = function(url, content) {
     var request = new XMLHttpRequest();
     request.open('DELETE', url, true);
     var _this = this;
@@ -580,7 +654,11 @@ realityEditor.network.deleteData = function(url) {
     request.setRequestHeader("Content-type", "application/json");
     //request.setRequestHeader("Content-length", params.length);
     // request.setRequestHeader("Connection", "close");
-    request.send();
+    if (content) {
+        request.send(JSON.stringify(content));
+    } else {
+        request.send();
+    }
     this.cout("deleteData");
 };
 
@@ -844,7 +922,12 @@ realityEditor.network.sendResetContent = function(object, node, type) {
         tempThisObject = objects[object].nodes[node];
     }
     else if (type === "ui"){
-        tempThisObject = objects[object];
+        if (object === node) {
+            tempThisObject = objects[object];
+        } else {
+            console.warn('Refusing to reset content of frame');
+            return;
+        }
     }
     var content = {};
     content.x = tempThisObject.x;

@@ -123,24 +123,34 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
     var bigPocketButton;
     var bigTrashButton;
 
+    var inMemoryDeletion = false;
+
     var realityElements = [
-        'reality-closed-loop-circle',
-        'reality-closed-loop-slider-2d',
-        'reality-closed-loop-slider',
-        'reality-control-button',
-        'reality-control-circle',
-        'reality-control-circle-2d',
-        'reality-control-slider',
-        'reality-control-slider-2d',
-        'reality-control-slider-kinetic',
-        'reality-control-slider-kinetic-2d',
-        'reality-control-switch',
-        'reality-control-switch-multi',
-        'reality-sensor-digital',
-        'reality-sensor-graph',
-        'reality-sensor-linear',
-        'reality-sensor-orientation',
-        'reality-sensor-rotation'
+        {
+            name: 'reality-control-slider-kinetic',
+            width: 206,
+            height: 526
+        },
+        {
+            name: 'reality-control-slider-kinetic-2d',
+            width: 526,
+            height: 526
+        },
+        {
+            name: 'reality-sensor-graph',
+            width: 304,
+            height: 304
+        },
+        {
+            name: 'reality-sensor-linear',
+            width: 204,
+            height: 52
+        },
+        {
+            name: 'reality-sensor-digital',
+            width: 52,
+            height: 52
+        }
     ];
 
     var paletteElementsResized = false;
@@ -175,7 +185,23 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             if (objectIds.length !== 1) {
                 return;
             }
-            realityEditor.gui.frame.create(objectIds[0], new realityEditor.gui.frame.Frame(evt.target.dataset.src));
+            var parentObject = objects[objectIds[0]];
+            var src = evt.target.dataset.src;
+            var width = evt.target.dataset.width;
+            var height = evt.target.dataset.height;
+            var frame = new realityEditor.gui.frame.Frame(src, width, height);
+
+            var tempMatrix = [];
+            var r = globalMatrix.r;
+
+            var arUtilities = realityEditor.gui.ar.utilities;
+            arUtilities.multiplyMatrix(globalObjects[objectIds[0]], globalStates.projectionMatrix, r);
+            arUtilities.multiplyMatrix(rotateX, r, tempMatrix);
+            parentObject.temp = tempMatrix;
+            var matrixTouch = arUtilities.screenCoordinatesToMatrixXY(parentObject, [evt.clientX, evt.clientY]);
+            frame.x = matrixTouch[0];
+            frame.y = matrixTouch[1];
+            realityEditor.gui.frame.create(objectIds[0], frame);
             pocketHide();
         });
 
@@ -184,6 +210,12 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
                 return true;
             }
             if (globalStates.preferencesButtonState) {
+                return false;
+            }
+            if (globalStates.editingNode) {
+                return false;
+            }
+            if (inMemoryDeletion) {
                 return false;
             }
             return globalStates.guiState === "ui" || globalStates.guiState === "node";
@@ -198,13 +230,14 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
                 return;
             }
 
-            if (globalStates.guiState === 'node' && !globalProgram.objectA) {
+            // Show hover
+            button.src = buttonImages[1].src;
+
+            if (!globalProgram.objectA) {
                 return;
             }
 
             toggleShown();
-            // Show hover
-            button.src = buttonImages[1].src;
         });
         ec++;
 
@@ -214,10 +247,6 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             }
 
             if (pocketButtonIsBig()) {
-                return;
-            }
-
-            if (globalStates.guiState !== 'node') {
                 return;
             }
 
@@ -329,22 +358,35 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
 
     function pocketOnMemoryDeletionStart() {
         uiButtons.classList.add('bigTrash');
+        inMemoryDeletion = true;
         bigTrashButton.src = bigTrashImages[0].src;
     }
 
     function pocketOnMemoryDeletionStop() {
+        inMemoryDeletion = false;
         uiButtons.classList.remove('bigTrash');
     }
 
     function resizePaletteElement(element) {
-        var bounds = element.getBoundingClientRect();
-        var parentBounds = element.parentNode.getBoundingClientRect();
+        var container = element.parentNode;
+        var parentBounds = container.getBoundingClientRect();
+        var width = container.dataset.width;
+        var height = container.dataset.height;
 
-        var scale = Math.min(parentBounds.width / bounds.width, parentBounds.height / bounds.height, 1);
+        var paletteElementSize = parentBounds.width - 6;
+
+        var scale = Math.min(paletteElementSize / width, paletteElementSize / height, 1);
         element.style.transform = 'scale(' + scale + ')';
-        element.style.width = parentBounds.width + 'px';
-        element.style.height = parentBounds.height + 'px';
+        element.style.width = paletteElementSize + 'px';
+        element.style.height = paletteElementSize + 'px';
+
+        var offsetX = (paletteElementSize - width * scale) / 2;
+        var offsetY = (paletteElementSize - height * scale) / 2;
+
+        container.style.paddingTop = offsetY + 'px';
+        container.style.paddingLeft = offsetX + 'px';
     }
+
 
     function createPocketUIPalette() {
         for (var i = 0; i<realityElements.length; i++){
@@ -352,11 +394,15 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             var container = document.createElement('div');
             container.classList.add('palette-container');
             container.classList.add('element-template');
-            container.dataset.src = '/bower_components/' + element + '/index.html';
+            container.dataset.src = '/bower_components/' + element.name + '/index.html';
+
+            container.dataset.width = element.width;
+            container.dataset.height = element.height;
 
             var elt = document.createElement('iframe');
             elt.classList.add('palette-element');
-            elt.src = '/bower_components/' + element + '/index.html?demo=true';
+            elt.src = '/bower_components/' + element.name + '/index.html?demo=true';
+
             paletteElements.push(elt);
             container.appendChild(elt);
 
