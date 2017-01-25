@@ -6,7 +6,10 @@
     <script src="https://code.jquery.com/pep/0.4.1/pep.js"></script>
 </head>
 <body>
-<object class="svgClass" type="image/svg+xml" data="svg/menu/test.svg" id="menu" style="width: 160px; height: 160px; touch-action: none" touch-action="none"></object>
+<div id="buttonDiv" touch-action="none" style="width: 160px; height: 160px; z-index: 20; position:fixed; top: 0; left:0;"></div>
+    <object class="svgClass" type="image/svg+xml" data="svg/menu/test.svg" id="menu" style="position:fixed; top: 0; left:0; width: 160px; height: 160px; z-index:10"></object>
+
+
 <style type="text/css">
     .fill{fill:#01FFFD;}
     .inactive{opacity:0;}
@@ -41,7 +44,7 @@
         a.setAttribute("touch-action", "none");
 
 
-        svgItem.addEventListener("pointerdown",
+        document.getElementById("buttonDiv").addEventListener("pointerdown",
             function(){ console.log("clicked");
                 svgItem.setAttribute("class", "addFill active");
             }, false);

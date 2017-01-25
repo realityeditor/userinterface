@@ -876,10 +876,14 @@ realityEditor.device.setStates = function(developerState, extendedTrackingState,
     }
 
     if (globalStates.editingMode) {
-        document.getElementById('resetButton').style.visibility = "visible";
+
+        realityEditor.gui.menus.on("editing",["reset","unconstrained"]);
+
+       /* document.getElementById('resetButton').style.visibility = "visible";
         document.getElementById('unconstButton').style.visibility = "visible";
         document.getElementById('resetButtonDiv').style.display = "inline";
         document.getElementById('unconstButtonDiv').style.display = "inline";
+        */
     }
 
     // Once all the states are send the alternative checkbox is loaded

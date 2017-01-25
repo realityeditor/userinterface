@@ -18,6 +18,24 @@
     top: 0px;
     visibility: hidden;
 }
+#guiButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 62px;
+    right: 0px;
+    top: 0px;
+    visibility: hidden;
+    z-index: 20;
+}
+#logicButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 62px;
+    right: 0px;
+    top: 63px;
+    visibility: hidden;
+    z-index: 20;
+}
 #backButton {
     position: fixed;
     width: 60px;
@@ -25,10 +43,16 @@
     right: 0px;
     top: 0px;
     visibility: hidden;
-
 }
-
-
+#backButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 125px;
+    right: 0px;
+    top: 0px;
+    visibility: hidden;
+    z-index: 20;
+}
 #freezeButton {
     position: fixed;
     width: 60px;
@@ -37,7 +61,15 @@
     top: 260px;
     visibility: hidden;
 }
-
+#freezeButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 260px;
+    visibility: hidden;
+    z-index: 20;
+}
 #settingButton {
     position: fixed;
     width: 60px;
@@ -45,6 +77,15 @@
     right: 0px;
     top: 195px;
     visibility: hidden;
+}
+#settingButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 195px;
+    visibility: hidden;
+    z-index: 20;
 }
 #logicSettingButton {
     position: fixed;
@@ -54,7 +95,15 @@
     top: 195px;
     visibility: hidden;
 }
-
+#logicSettingButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 195px;
+    visibility: hidden;
+    z-index: 20;
+}
 #pocketButton {
     position: fixed;
     width: 60px;
@@ -63,7 +112,15 @@
     top: 130px;
     visibility: hidden;
 }
-
+#pocketButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 130px;
+    visibility: hidden;
+    z-index: 20;
+}
 #logicPocketButton {
     position: fixed;
     width: 60px;
@@ -72,7 +129,15 @@
     top: 130px;
     visibility: hidden;
 }
-
+#logicPocketButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 130px;
+    visibility: hidden;
+    z-index: 20;
+}
 #resetButton {
     position: fixed;
     width: 60px;
@@ -81,7 +146,15 @@
     top: 0px;
     visibility: hidden;
 }
-
+#resetButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 130px;
+    top: 0px;
+    visibility: hidden;
+    z-index: 20;
+}
 #unconstrainedButton {
     position: fixed;
     width: 60px;
@@ -90,7 +163,15 @@
     top: 0px;
     visibility: hidden;
 }
-
+#unconstrainedButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 65px;
+    top: 0px;
+    visibility: hidden;
+    z-index: 20;
+}
 #bigTrashButton {
     position: fixed;
     top: 0px;
@@ -100,7 +181,16 @@
     pointer-events:none;
     visibility: hidden;
 }
-
+#bigTrashButtonDiv {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    width: 60px;
+    height: 320px;
+    pointer-events:none;
+    visibility: hidden;
+    z-index: 20;
+}
 #bigPocketButton {
     position: fixed;
     top: 0px;
@@ -109,3 +199,17 @@
     height: 320px;
     visibility: hidden;
 }
+#bigPocketButtonDiv {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    width: 60px;
+    height: 320px;
+    visibility: hidden;
+    z-index: 20;
+}
+.colorBackground {
+    background-color: #00FFFF;
+}
+
+

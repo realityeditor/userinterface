@@ -350,7 +350,8 @@ realityEditor.gui.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
 realityEditor.gui.crafting.craftingBoardHide = function() {
 
     if(globalStates.currentLogic) {
-        document.getElementById('freezeButton').src = freezeButtonImage[0].src;
+        realityEditor.gui.menus.off("logic",["freeze"]);
+
         globalStates.freezeButtonState = false;
         var memoryBackground = document.querySelector('.memoryBackground');
         memoryBackground.innerHTML = '';
@@ -361,8 +362,8 @@ realityEditor.gui.crafting.craftingBoardHide = function() {
     // remove the block menu if it's showing
     this.blockMenu.resetBlockMenu();
     // reset side menu buttons
-    document.getElementById('preferencesButton').src = preferencesButtonImage[0].src;
-    document.getElementById('pocketButton').src = pocketButtonImage[0].src;
+    realityEditor.gui.menus.off("logic",["setting","pocket"]);
+
     // hide the crafting board div
     document.getElementById("craftingBoard").style.visibility = "hidden";
     document.getElementById("craftingBoard").style.display = "none";

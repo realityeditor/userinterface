@@ -58,6 +58,7 @@
 
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" type="text/css" href="css/menu.css">
     <link rel="stylesheet" href="thirdPartyCode/switchery.css"/>
 
     <!-- Javascript -->
@@ -82,6 +83,7 @@
     <script src="src/gui/index.js"></script>
     <script src="src/gui/utilities.js"></script>
     <script src="src/gui/buttons.js"></script>
+    <script src="src/gui/menus.js"></script>
     <script src="src/gui/instantConnection.js"></script>
     <script src="src/gui/pocket.js"></script>
     <script src="src/gui/preferences.js"></script>
@@ -202,17 +204,17 @@
 <!-- This is the Interface frontend GUI part -->
 
 <div class='Interfaces' id="UIButtons">
-    <object type="image/svg+xml" data="svg/menu/back.svg" id="backButton"></object>
-    <object type="image/svg+xml" data="svg/menu/bigPocket.svg" id="bigPocketButton"></object>
-    <object type="image/svg+xml" data="svg/menu/bigTrash.svg" id="bigTrashButton"></object>
-    <object type="image/svg+xml" data="svg/menu/test.svg" id="freezeButton"></object>
-    <object type="image/svg+xml" data="svg/menu/logicPocket.svg" id="logicPocketButton"></object>
-    <object type="image/svg+xml" data="svg/menu/logicSetting.svg" id="logicSettingButton"></object>
-    <object type="image/svg+xml" data="svg/menu/main.svg" id="mainButton"></object>
-    <object type="image/svg+xml" data="svg/menu/pocket.svg" id="pocketButton"></object>
-    <object type="image/svg+xml" data="svg/menu/reset.svg" id="resetButton"></object>
-    <object type="image/svg+xml" data="svg/menu/setting.svg" id="settingButton"></object>
-    <object type="image/svg+xml" data="svg/menu/unconstrained.svg" id="unconstrainedButton"></object>
+    <div id="backButtonDiv"></div><object type="image/svg+xml" data="svg/menu/back.svg" id="backButton"></object>
+    <div id="bigPocketButtonDiv"></div><object type="image/svg+xml" data="svg/menu/bigPocket.svg" id="bigPocketButton"></object>
+    <div id="bigTrashButtonDiv"></div><object type="image/svg+xml" data="svg/menu/bigTrash.svg" id="bigTrashButton"></object>
+    <div id="freezeButtonDiv"></div><object type="image/svg+xml" data="svg/menu/freeze.svg" id="freezeButton"></object>
+    <div id="logicPocketButtonDiv"></div><object type="image/svg+xml" data="svg/menu/logicPocket.svg" id="logicPocketButton"></object>
+    <div id="logicSettingButtonDiv"></div><object type="image/svg+xml" data="svg/menu/logicSetting.svg" id="logicSettingButton"></object>
+    <div id="guiButtonDiv"></div><div id="logicButtonDiv"></div><object type="image/svg+xml" data="svg/menu/main.svg" id="mainButton"></object>
+    <div id="pocketButtonDiv"></div><object type="image/svg+xml" data="svg/menu/pocket.svg" id="pocketButton"></object>
+    <div id="resetButtonDiv"></div><object type="image/svg+xml" data="svg/menu/reset.svg" id="resetButton"></object>
+    <div id="settingButtonDiv"></div><object type="image/svg+xml" data="svg/menu/setting.svg" id="settingButton"></object>
+    <div id="unconstrainedButtonDiv"></div><object type="image/svg+xml" data="svg/menu/unconstrained.svg" id="unconstrainedButton"></object>
 </div>
 
 <div class='memoryBackground'></div>
