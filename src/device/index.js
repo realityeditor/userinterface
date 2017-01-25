@@ -614,6 +614,9 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 	overlayDiv.style.display = "none";
 
 	overlayDiv.classList.remove('overlayMemory');
+	overlayDiv.classList.remove('overlayAction');
+	overlayDiv.classList.remove('overlayPositive');
+	overlayDiv.classList.remove('overlayNegative');
 
 	realityEditor.gui.pocket.pocketOnMemoryCreationStop();
 	if (overlayDiv.style.backgroundImage !== '' && overlayDiv.style.backgroundImage !== 'none') {
