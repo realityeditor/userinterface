@@ -306,10 +306,6 @@ MemoryContainer.prototype.remember = function() {
         return;
     }
 
-    if (document.querySelector('.memoryWeb')) {
-        removeMemoryWeb();
-    }
-
     realityEditor.gui.pocket.pocketHide();
 
     var memoryBackground = document.querySelector('.memoryBackground');
