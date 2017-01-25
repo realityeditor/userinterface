@@ -153,9 +153,6 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
         }
     ];
 
-    var paletteElementsResized = false;
-    var paletteElements = [];
-
     function pocketInit() {
         realityEditor.gui.buttons.preload(buttonImages,
             'png/pocket.png', 'png/pocketOver.png', 'png/pocketSelect.png', 'png/pocketEmpty.png'
@@ -312,12 +309,6 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
     function pocketShow() {
         pocket.classList.add('pocketShown');
         updateButtons();
-        if (!paletteElementsResized) {
-            for (var i = 0; i < paletteElements.length; i++) {
-                resizePaletteElement(paletteElements[i]);
-            }
-            paletteElementsResized = true;
-        }
         if (globalStates.guiState === "node") {
             palette.style.display = 'none';
         } else {
@@ -367,32 +358,10 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
         uiButtons.classList.remove('bigTrash');
     }
 
-    function resizePaletteElement(element) {
-        var container = element.parentNode;
-        var parentBounds = container.getBoundingClientRect();
-        var width = container.dataset.width;
-        var height = container.dataset.height;
-
-        var paletteElementSize = parentBounds.width - 6;
-
-        var scale = Math.min(paletteElementSize / width, paletteElementSize / height, 1);
-        element.style.transform = 'scale(' + scale + ')';
-        element.style.width = paletteElementSize + 'px';
-        element.style.height = paletteElementSize + 'px';
-
-        var offsetX = (paletteElementSize - width * scale) / 2;
-        var offsetY = (paletteElementSize - height * scale) / 2;
-
-        container.style.paddingTop = offsetY + 'px';
-        container.style.paddingLeft = offsetX + 'px';
-    }
-
-
     function createPocketUIPalette() {
         for (var i = 0; i<realityElements.length; i++){
             var element = realityElements[i];
             var container = document.createElement('div');
-            container.classList.add('palette-container');
             container.classList.add('element-template');
             container.dataset.src = '/bower_components/' + element.name + '/index.html';
 
@@ -403,10 +372,24 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             elt.classList.add('palette-element');
             elt.src = '/bower_components/' + element.name + '/index.html?demo=true';
 
-            paletteElements.push(elt);
             container.appendChild(elt);
-
             palette.appendChild(container);
+
+            var paletteElementSize = Math.floor(parseFloat(window.getComputedStyle(container).width)) - 6;
+
+            var scale = Math.min(
+                paletteElementSize / element.width,
+                paletteElementSize / element.height,
+                1
+            );
+
+            elt.style.transform = 'scale(' + scale + ')';
+
+            var offsetX = (paletteElementSize - element.width * scale) / 2;
+            var offsetY = (paletteElementSize - element.height * scale) / 2;
+
+            elt.style.marginTop = offsetY + 'px';
+            elt.style.marginLeft = offsetX + 'px';
         }
     }
 
