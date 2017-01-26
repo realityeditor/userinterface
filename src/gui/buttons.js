@@ -397,11 +397,6 @@ realityEditor.gui.buttons.pocketButtonEnter = function(event) {
         return;
     }
 
-    var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
-
-    realityEditor.gui.menus.off("main",["pocket"]);
-   // todo check what is this for  if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1+indexChange].src;
-
     if (pocketItem.pocket.nodes[pocketItemId]) {
         pocketItem.pocket.objectVisible = false;
 
@@ -417,17 +412,16 @@ realityEditor.gui.buttons.pocketButtonLeave = function(event) {
         return;
     }
 
-    var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
-    if (globalStates.pocketButtonState === true) {
-        console.log("state!")
-        realityEditor.gui.menus.off("main",["pocket"]);
-     // todo   if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0+indexChange].src;
-    }
-    else {
-        realityEditor.gui.menus.off("main",["pocket"]);
-        console.log("land!")
-      // todo  if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2+indexChange].src;
-    }
+    // var currentMenu = globalStates.guiState === "logic" ? "logic" : "main";
+    // if (globalStates.pocketButtonState === true) {
+    //     realityEditor.gui.menus.off(currentMenu, ["pocket"]);
+    //     // 0 is off, 2 is on
+    //  // todo   if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0+indexChange].src;
+    // }
+    // else {
+    //     realityEditor.gui.menus.on(currentMenu ,["pocket"]);
+    //   // todo  if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2+indexChange].src;
+    // }
 
     // this is where the virtual point creates object
 
