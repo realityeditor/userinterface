@@ -53,11 +53,8 @@ realityEditor.gui.pocket.pocketButtonAction = function() {
 
 	console.log("state: " + globalStates.pocketButtonState);
 
-	var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
-
 	if (globalStates.pocketButtonState === true) {
 		console.log("buttonon");
-		if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0+indexChange].src;
 		globalStates.pocketButtonState = false;
 
 		if (globalStates.guiState === 'logic') {
@@ -67,7 +64,6 @@ realityEditor.gui.pocket.pocketButtonAction = function() {
 	}
 	else {
 		console.log("buttonoff");
-		if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2+indexChange].src;
 		globalStates.pocketButtonState = true;
 
 		if (globalStates.guiState === 'logic') {
@@ -113,15 +109,8 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
  */
 (function(exports) {
 
-    var buttonImages = [];
-    var bigPocketImages = [];
-    var bigTrashImages = [];
     var pocket;
     var palette;
-    var uiButtons;
-    var button;
-    var bigPocketButton;
-    var bigTrashButton;
 
     var inMemoryDeletion = false;
 
@@ -154,24 +143,8 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
     ];
 
     function pocketInit() {
-        realityEditor.gui.buttons.preload(buttonImages,
-            'png/pocket.png', 'png/pocketOver.png', 'png/pocketSelect.png', 'png/pocketEmpty.png'
-        );
-        realityEditor.gui.buttons.preload(bigPocketImages,
-            'png/bigPocket.png', 'png/bigPocketOver.png', 'png/bigPocketSelect.png', 'png/bigPocketEmpty.png'
-        );
-        realityEditor.gui.buttons.preload(bigTrashImages,
-            'png/bigTrash.png', 'png/bigTrashOver.png', 'png/bigTrashSelect.png', 'png/bigTrashEmpty.png'
-        );
-
         pocket = document.querySelector('.pocket');
         palette = document.querySelector('.palette');
-
-        uiButtons = document.getElementById('UIButtons');
-
-        button = document.getElementById('pocketButton');
-        bigPocketButton = document.getElementById('bigPocketButton');
-        bigTrashButton = document.getElementById('bigTrashButton');
 
         // On touching an element-template, upload to currently visible object
         pocket.addEventListener('pointerdown', function(evt) {
@@ -202,102 +175,75 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             pocketHide();
         });
 
-        function isPocketWanted() {
-            if (pocketShown()) {
-                return true;
-            }
-            if (globalStates.preferencesButtonState) {
-                return false;
-            }
-            if (globalStates.editingNode) {
-                return false;
-            }
-            if (inMemoryDeletion) {
-                return false;
-            }
-            return globalStates.guiState === "ui" || globalStates.guiState === "node";
-        }
-
-        button.addEventListener('pointerenter', function() {
-            if (!isPocketWanted()) {
-                return;
-            }
-
-            if (pocketButtonIsBig()) {
-                return;
-            }
-
-            // Show hover
-            button.src = buttonImages[1].src;
-
-            if (!globalProgram.objectA) {
-                return;
-            }
-
-            toggleShown();
-        });
-        ec++;
-
-        button.addEventListener('pointerup', function() {
-            if (!isPocketWanted()) {
-                return;
-            }
-
-            if (pocketButtonIsBig()) {
-                return;
-            }
-
-            toggleShown();
-        });
-        ec++;
-
-        button.addEventListener('pointerleave', function() {
-            if (!isPocketWanted()) {
-                return;
-            }
-
-            // Undo the hover state
-            updateButtons();
-        });
-        ec++;
-
-        bigPocketButton.addEventListener('pointerenter', function() {
-            if (!isPocketWanted()) {
-                return;
-            }
-
-            if (!pocketButtonIsBig()) {
-                return;
-            }
-
-            if (realityEditor.gui.memory.memoryCanCreate()) {
-                realityEditor.gui.memory.createMemory();
-                if (globalStates.guiState === "node") {
-                    globalStates.drawDotLine = false;
-                }
-            }
-
-            toggleShown();
-            bigPocketButton.src = bigPocketImages[1].src;
-        });
-        ec++;
-
-        bigPocketButton.addEventListener('pointerleave', function() {
-            if (!isPocketWanted()) {
-                return;
-            }
-
-            // Undo the hover state
-            updateButtons();
-        });
-        ec++;
-
         createPocketUIPalette();
 		pocketHide();
     }
 
+    function isPocketWanted() {
+        if (pocketShown()) {
+            return true;
+        }
+        if (globalStates.preferencesButtonState) {
+            return false;
+        }
+        if (globalStates.editingNode) {
+            return false;
+        }
+        if (inMemoryDeletion) {
+            return false;
+        }
+        return globalStates.guiState === "ui" || globalStates.guiState === "node";
+    }
+
+    function onPocketButtonEnter() {
+        if (!isPocketWanted()) {
+            return;
+        }
+
+        if (pocketButtonIsBig()) {
+            return;
+        }
+
+        if (!globalProgram.objectA) {
+            return;
+        }
+
+        toggleShown();
+    }
+
+    function onPocketButtonUp() {
+        if (!isPocketWanted()) {
+            return;
+        }
+
+        if (pocketButtonIsBig()) {
+            return;
+        }
+
+        toggleShown();
+    }
+
+    function onBigPocketButtonEnter() {
+        if (!isPocketWanted()) {
+            return;
+        }
+
+        if (!pocketButtonIsBig()) {
+            return;
+        }
+
+        if (realityEditor.gui.memory.memoryCanCreate()) {
+            realityEditor.gui.memory.createMemory();
+            if (globalStates.guiState === "node") {
+                globalStates.drawDotLine = false;
+            }
+        }
+
+        toggleShown();
+    }
+
     function pocketButtonIsBig() {
-        return uiButtons.classList.contains('bigPocket');
+        return realityEditor.gui.menus.getVisibility('bigPocket');
     }
 
     function toggleShown() {
@@ -311,7 +257,7 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
 
     function pocketShow() {
         pocket.classList.add('pocketShown');
-        updateButtons();
+        realityEditor.gui.menus.buttonOn('main', ['pocket']);
         if (globalStates.guiState === "node") {
             palette.style.display = 'none';
         } else {
@@ -321,44 +267,11 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
 
     function pocketHide() {
         pocket.classList.remove('pocketShown');
-        uiButtons.classList.remove('bigPocket', 'bigTrash');
-        updateButtons();
-    }
-
-    function updateButtons() {
-        if (pocketShown()) {
-            button.src = buttonImages[2].src;
-            bigPocketButton.src = bigPocketImages[2].src;
-            bigTrashButton.src = bigTrashImages[2].src;
-        } else {
-            button.src = buttonImages[0].src;
-            bigPocketButton.src = bigPocketImages[0].src;
-            bigTrashButton.src = bigTrashImages[0].src;
-        }
+        realityEditor.gui.menus.buttonOff('main', ['pocket']);
     }
 
     function pocketShown() {
         return pocket.classList.contains('pocketShown');
-    }
-
-    function pocketOnMemoryCreationStart() {
-        uiButtons.classList.add('bigPocket');
-        bigPocketButton.src = bigPocketImages[0].src;
-    }
-
-    function pocketOnMemoryCreationStop() {
-        uiButtons.classList.remove('bigPocket');
-    }
-
-    function pocketOnMemoryDeletionStart() {
-        uiButtons.classList.add('bigTrash');
-        inMemoryDeletion = true;
-        bigTrashButton.src = bigTrashImages[0].src;
-    }
-
-    function pocketOnMemoryDeletionStop() {
-        inMemoryDeletion = false;
-        uiButtons.classList.remove('bigTrash');
     }
 
     function createPocketUIPalette() {
@@ -400,9 +313,9 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
     exports.pocketShown = pocketShown;
     exports.pocketShow = pocketShow;
     exports.pocketHide = pocketHide;
-    exports.pocketOnMemoryCreationStart = pocketOnMemoryCreationStart;
-    exports.pocketOnMemoryCreationStop = pocketOnMemoryCreationStop;
-    exports.pocketOnMemoryDeletionStart = pocketOnMemoryDeletionStart;
-    exports.pocketOnMemoryDeletionStop = pocketOnMemoryDeletionStop;
+
+    exports.onPocketButtonEnter = onPocketButtonEnter;
+    exports.onPocketButtonUp = onPocketButtonUp;
+    exports.onBigPocketButtonEnter = onBigPocketButtonEnter;
 
 }(realityEditor.gui.pocket));

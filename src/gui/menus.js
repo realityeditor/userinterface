@@ -347,6 +347,7 @@ realityEditor.gui.menus.pointerEnter = function(event) {
    // console.log("Enter on: "+event.button);
 
     realityEditor.gui.buttons.pocketButtonEnter(event);
+    realityEditor.gui.buttons.bigPocketButtonEnter(event);
 
     realityEditor.gui.buttons.buttonActionEnter(event);
 };

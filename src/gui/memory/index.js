@@ -261,7 +261,7 @@ MemoryContainer.prototype.onPointerUp = function() {
 
         overlayDiv.style.backgroundImage = 'none';
         overlayDiv.classList.remove('overlayMemory');
-        overlayDiv.style.visibility = 'hidden';
+        overlayDiv.style.display = 'none';
         activeThumbnail = '';
         var potentialObjects = Object.keys(globalObjects);
         if (potentialObjects.length !== 1) {
@@ -327,7 +327,7 @@ MemoryContainer.prototype.remember = function() {
 
     window.location.href = href;
 
-    document.getElementById('freezeButton').src = freezeButtonImage[2].src;
+    realityEditor.gui.menus.on('main', ['freeze']);
     globalStates.freezeButtonState = true;
 };
 

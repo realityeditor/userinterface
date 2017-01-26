@@ -189,9 +189,8 @@ realityEditor.gui.buttons.settingButtonUp = function(event) {
             this.gui.preferences.preferencesHide();
 
             realityEditor.gui.menus.off("setting", ["setting"]);
-            // todo why is it visibility and not display?
 
-            overlayDiv.style.visibility = "visible";
+            overlayDiv.style.display = "inline";
 
             if (globalStates.editingMode) {
                 realityEditor.gui.menus.on("editing", []);
@@ -212,7 +211,7 @@ realityEditor.gui.buttons.settingButtonUp = function(event) {
 
             this.gui.preferences.preferencesVisible();
 
-            overlayDiv.style.visibility = "hidden";
+            overlayDiv.style.display = "none";
 
             if (globalStates.UIOffMode) {
                 // If clearSky is hiding the buttons, make sure the buttons are
@@ -375,6 +374,8 @@ realityEditor.gui.buttons.draw = function() {
 realityEditor.gui.buttons.pocketButtonUp = function(event) {
     if (event.button !== "pocket") return;
 
+    realityEditor.gui.pocket.onPocketButtonUp();
+
     if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
         return;
     }
@@ -389,6 +390,8 @@ realityEditor.gui.buttons.pocketButtonUp = function(event) {
 
 realityEditor.gui.buttons.pocketButtonEnter = function(event) {
     if (event.button !== "pocket") return;
+
+    realityEditor.gui.pocket.onPocketButtonEnter();
 
     if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
         return;
@@ -469,9 +472,15 @@ realityEditor.gui.buttons.pocketButtonLeave = function(event) {
         //addElement("pocket", pocketItemId, "nodes/" + thisItem.type + "/index.html",  pocketItem.pocket, "logic",globalStates);
 
     }
-    realityEditor.gui.pocket.setPocketPosition(evt);
+    realityEditor.gui.pocket.setPocketPosition(event);
+};
 
+realityEditor.gui.buttons.bigPocketButtonEnter = function(event) {
+    if (event.button !== "bigPocket") {
+        return;
+    }
 
+    realityEditor.gui.pocket.onBigPocketButtonEnter();
 };
 
 /*
