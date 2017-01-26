@@ -76,6 +76,7 @@ realityEditor.gui.menus.menus = {
     main: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue"},
     logic: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue"},
     gui: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue"},
+    setting: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue"},
     editing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", reset: "blue", unconstrained: "blue"},
     crafting: {back: "blue", logicPocket: "green", logicSetting: "blue", freeze: "blue"},
     bigTrash: {bigTrash: "red"},
@@ -84,7 +85,17 @@ realityEditor.gui.menus.menus = {
     clearSky: {}
 };
 
+realityEditor.gui.menus.getVisibility = function(item){
+if(this.buttons[item].item.style.visibility !== "hidden"){
+    return true;
+}else {
+    return false;
+}
+};
+
 realityEditor.gui.menus.history = [];
+
+realityEditor.gui.menus.historySteps = 5;
 
 realityEditor.gui.menus.getElements = function (element) {
     var svgDoc,l;
@@ -154,7 +165,17 @@ realityEditor.gui.menus.init = function () {
 };
 
 realityEditor.gui.menus.on = function(menuDiv, buttonArray) {
+    console.log(menuDiv);
+    if(realityEditor.gui.menus.history.length>=realityEditor.gui.menus.historySteps) {
+        realityEditor.gui.menus.history.shift();
+    }
     realityEditor.gui.menus.history.push(menuDiv);
+
+    if(globalStates.editingMode){
+        if(menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic"){
+            menuDiv = "editing";
+        }
+    }
 
     // activate menu Items
     for(var key in this.buttons){
@@ -179,6 +200,18 @@ realityEditor.gui.menus.on = function(menuDiv, buttonArray) {
 };
 
 realityEditor.gui.menus.off = function(menuDiv, buttonArray) {
+
+    if(realityEditor.gui.menus.history.length>=realityEditor.gui.menus.historySteps) {
+        realityEditor.gui.menus.history.shift();
+    }
+    realityEditor.gui.menus.history.push(menuDiv);
+
+    if(globalStates.editingMode){
+        if(menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic"){
+            menuDiv = "editing";
+        }
+    }
+
     // activate menu Items
     for(var key in this.buttons){
         if(key in this.menus[menuDiv]){
@@ -266,6 +299,15 @@ realityEditor.gui.menus.pointerUp = function(event) {
     realityEditor.gui.buttons.pocketButtonUp(event);
 
 
+    if(event.button === "back"){
+        if(realityEditor.gui.menus.history.length>0) {
+            realityEditor.gui.menus.history.pop();
+            var lastMenu = realityEditor.gui.menus.history.length - 1;
+            realityEditor.gui.menus.on(lastMenu, []);
+
+            // if you want action based on the menu item, place it here
+        }
+    }
 };
 
 realityEditor.gui.menus.pointerEnter = function(event) {

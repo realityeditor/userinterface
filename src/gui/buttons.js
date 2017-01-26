@@ -104,7 +104,7 @@ realityEditor.gui.buttons.logicButtonUp = function(event){
         if(event.button !== "logic") return;
 
         realityEditor.gui.menus.buttonOff("main",["gui","logicPocket","logicSetting","setting","pocket"]);
-        realityEditor.gui.menus.buttonOff("main",["logic"]);
+        realityEditor.gui.menus.buttonOn("main",["logic"]);
 
         realityEditor.gui.pocket.pocketHide();
 
@@ -116,7 +116,7 @@ realityEditor.gui.buttons.logicButtonUp = function(event){
 realityEditor.gui.buttons.resetButtonUp = function(event) {
         if (event.button !== "reset") return;
 
-        realityEditor.gui.menus.on("editing",[]);
+        realityEditor.gui.menus.off("editing",["reset"]);
 
 
         for (var key in objects) {
@@ -188,7 +188,7 @@ realityEditor.gui.buttons.settingButtonUp = function(event) {
         if (globalStates.preferencesButtonState === true) {
             this.gui.preferences.preferencesHide();
 
-            realityEditor.gui.menus.off("main", ["setting"]);
+            realityEditor.gui.menus.off("setting", ["setting"]);
             // todo why is it visibility and not display?
 
             overlayDiv.style.visibility = "visible";
@@ -206,7 +206,7 @@ realityEditor.gui.buttons.settingButtonUp = function(event) {
         }
         else {
 
-            realityEditor.gui.menus.on("main", ["setting"]);
+            realityEditor.gui.menus.on("setting", ["setting"]);
 
             this.gui.preferences.addElementInPreferences();
 
@@ -274,7 +274,7 @@ realityEditor.gui.buttons.draw = function() {
 			globalMatrix.matrixtouchOn = "";
 		} else {
 
-            realityEditor.gui.menus.on("main",[]);
+          //  realityEditor.gui.menus.on("setting",[]);
 
 			this.realityEditor.device.removeEventHandlers();
 			globalStates.editingMode = false;
