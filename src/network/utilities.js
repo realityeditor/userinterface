@@ -121,13 +121,13 @@ realityEditor.network.utilities.syncLinksWithRemote = function(origin, remoteLin
 // (keys such as grid and links sometimes contain cyclic references)
 realityEditor.network.utilities.getNodesJsonForIframes = function(nodes) {
     var simpleNodes = {};
-    var keysToKeep = ["text", "name"];
+    var keysToExclude = ["links", "blocks", "grid", "guiState"];
     for (var node in nodes) {
         if (!nodes.hasOwnProperty(node)) continue;
         simpleNodes[node] = {};
         for (var key in nodes[node]) {
             if (!nodes[node].hasOwnProperty(key)) continue;
-            if (keysToKeep.indexOf(key) > -1) {
+            if (keysToExclude.indexOf(key) === -1) {
                 simpleNodes[node][key] = nodes[node][key];
             }
         }
