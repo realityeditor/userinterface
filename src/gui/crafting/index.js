@@ -347,16 +347,9 @@ realityEditor.gui.crafting.drawDataCraftingLine = function(context, linkObject, 
 
 realityEditor.gui.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
 
-
-    //document.getElementById('freezeButton').src = freezeButtonImage[2].src;
+    globalStates.freezeStateBeforeCrafting = globalStates.freezeButtonState;
     globalStates.freezeButtonState = true;
     window.location.href = "of://freeze";
-    //
-    //// update side menu buttons
-    //document.getElementById('guiButtonImage').src = guiButtonImage[5].src;
-    //document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
-    //globalStates.pocketButtonState = true;
-    //document.getElementById('pocketButton').src = pocketButtonImage[4].src;
 
     globalStates.pocketButtonState = true;
     
@@ -394,7 +387,20 @@ realityEditor.gui.crafting.craftingBoardHide = function() {
         //globalStates.freezeButtonState = false;
         var memoryBackground = document.querySelector('.memoryBackground');
         memoryBackground.innerHTML = '';
-        //window.location.href = "of://unfreeze";
+        
+        if (globalStates.freezeButtonState && !globalStates.freezeStateBeforeCrafting) {
+            
+            realityEditor.gui.menus.buttonOff("default", ["freeze"]);
+            globalStates.freezeButtonState = false;
+            window.location.href = "of://unfreeze";
+            
+            
+        } else if (!globalStates.freezeButtonState && globalStates.freezeStateBeforeCrafting) {
+            
+            realityEditor.gui.menus.buttonOn("default", ["freeze"]);
+            globalStates.freezeButtonState = true;
+            window.location.href = "of://freeze";
+        }
     }
 
 
