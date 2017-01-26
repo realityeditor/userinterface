@@ -357,7 +357,8 @@ realityEditor.gui.menus.pointerUp = function(event) {
                 var blockSettingsContainer = document.getElementById('blockSettingsContainer');
                 if (blockSettingsContainer) {
                     realityEditor.gui.buttons.settingButtonUp({button: "setting"});
-                    
+                } else {
+                    realityEditor.gui.buttons.logicButtonUp({button: "logic"}); // default option is to go back to main
                 }
             }
         } else {
