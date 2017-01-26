@@ -995,11 +995,13 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
         objectValues: nodes
     };
 
+    var simpleNodes = this.utilities.getNodesJsonForIframes(nodes);
+
     var newStyle = {
         object: objectKey,
         objectData:{},
         node: nodeKey,
-        nodes: nodes
+        nodes: simpleNodes
     };
 
     if (objects[objectKey] && objects[objectKey].ip) {
@@ -1007,7 +1009,7 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
             ip: objects[objectKey].ip
         };
     }
-
+    
     if (version < 170) {
         newStyle = oldStyle;
     }

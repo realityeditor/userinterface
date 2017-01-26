@@ -116,3 +116,21 @@ realityEditor.network.utilities.syncLinksWithRemote = function(origin, remoteLin
         }
     }
 };
+
+// avoids serializing cyclic data structures by only including minimal information needed for node iframe
+// (keys such as grid and links sometimes contain cyclic references)
+realityEditor.network.utilities.getNodesJsonForIframes = function(nodes) {
+    var simpleNodes = {};
+    var keysToKeep = ["text", "name"];
+    for (var node in nodes) {
+        if (!nodes.hasOwnProperty(node)) continue;
+        simpleNodes[node] = {};
+        for (var key in nodes[node]) {
+            if (!nodes[node].hasOwnProperty(key)) continue;
+            if (keysToKeep.indexOf(key) > -1) {
+                simpleNodes[node][key] = nodes[node][key];
+            }
+        }
+    }
+    return simpleNodes;
+};
