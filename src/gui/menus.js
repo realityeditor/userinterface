@@ -172,7 +172,7 @@ realityEditor.gui.menus.on = function(menuDiv, buttonArray) {
     realityEditor.gui.menus.history.push(menuDiv);
 
     if(globalStates.editingMode){
-        if(menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic"){
+        if((menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic") && !globalStates.preferencesButtonState){
             menuDiv = "editing";
         }
     }
@@ -292,13 +292,24 @@ realityEditor.gui.menus.backButton = function (event, callback){
     }
 }
 
-realityEditor.gui.buttons.animationEnter = function (event){
+realityEditor.gui.buttons.buttonActionEnter = function (event){
     // make button react to touch
     var button = realityEditor.gui.menus.buttons;
-    button[event.button].state[0] = button[event.button].bg.classList[0];
-    button[event.button].state[1] = button[event.button].bg.classList[1];
-    button[event.button].bg.setAttribute("class",   button[event.button].state[0]+" touched");
+    button[event.button].bg.setAttribute("class",   button[event.button].bg.classList[0]+" touched");
 };
+
+realityEditor.gui.buttons.buttonActionLeave = function (event){
+    // make button react to touch
+    var button = realityEditor.gui.menus.buttons;
+    if(button[event.button].bg.classList[1] !=="active") {
+        button[event.button].bg.setAttribute("class", button[event.button].bg.classList[0] + " " + "inactive");
+    } else {
+        button[event.button].bg.setAttribute("class", button[event.button].bg.classList[0] + " " + "active");
+    }
+};
+
+
+
 
 /********************************************************************
  * Pointer Events for Buttons
@@ -337,7 +348,7 @@ realityEditor.gui.menus.pointerEnter = function(event) {
 
     realityEditor.gui.buttons.pocketButtonEnter(event);
 
-    realityEditor.gui.buttons.animationEnter(event);
+    realityEditor.gui.buttons.buttonActionEnter(event);
 };
 
 realityEditor.gui.menus.pointerLeave = function(event) {
@@ -345,6 +356,7 @@ realityEditor.gui.menus.pointerLeave = function(event) {
 
     realityEditor.gui.buttons.pocketButtonLeave(event);
 
+    realityEditor.gui.buttons.buttonActionLeave(event);
 };
 
 realityEditor.gui.menus.pointerMove = function(event) {
