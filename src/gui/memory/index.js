@@ -169,9 +169,11 @@ MemoryContainer.prototype.startDragging = function() {
     var isBar = barContainers.indexOf(this) >= 0;
 
     if (isBar) {
-        realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
+        realityEditor.gui.menus.on("bigTrash",[]);
+        //realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
     } else {
-        realityEditor.gui.pocket.pocketOnMemoryCreationStart();
+        realityEditor.gui.menus.on("bigPocket",[]);
+       // realityEditor.gui.pocket.pocketOnMemoryCreationStart();
     }
 };
 
@@ -197,9 +199,11 @@ MemoryContainer.prototype.stopDragging = function() {
     var isBar = barContainers.indexOf(this) >= 0;
 
     if (isBar) {
-        realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
+        realityEditor.gui.menus.on("main",[]);
+        //realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
     } else {
-        realityEditor.gui.pocket.pocketOnMemoryCreationStop();
+        realityEditor.gui.menus.on("main",[]);
+       //realityEditor.gui.pocket.pocketOnMemoryCreationStop();
     }
 
     var imageRect = this.image.getBoundingClientRect();
@@ -257,7 +261,7 @@ MemoryContainer.prototype.onPointerUp = function() {
 
         overlayDiv.style.backgroundImage = 'none';
         overlayDiv.classList.remove('overlayMemory');
-        overlayDiv.style.visibility = 'hidden';
+        overlayDiv.style.display = 'none';
         activeThumbnail = '';
         var potentialObjects = Object.keys(globalObjects);
         if (potentialObjects.length !== 1) {
@@ -274,7 +278,8 @@ MemoryContainer.prototype.onPointerUp = function() {
             window.location.href = 'of://memorize';
             event.stopPropagation();
         }
-        realityEditor.gui.pocket.pocketOnMemoryCreationStop();
+        realityEditor.gui.menus.on("main",[]);
+      //  realityEditor.gui.pocket.pocketOnMemoryCreationStop();
     } else if (this.dragging) {
         return;
     } else {
@@ -322,7 +327,7 @@ MemoryContainer.prototype.remember = function() {
 
     window.location.href = href;
 
-    document.getElementById('freezeButton').src = freezeButtonImage[2].src;
+    realityEditor.gui.menus.on('main', ['freeze']);
     globalStates.freezeButtonState = true;
 };
 
@@ -394,7 +399,8 @@ function removeMemoryBar() {
 function createMemory() {
     overlayDiv.classList.add('overlayMemory');
     window.location.href = 'of://createMemory';
-    realityEditor.gui.pocket.pocketOnMemoryCreationStart();
+    realityEditor.gui.menus.on("bigPocket",[]);
+   // realityEditor.gui.pocket.pocketOnMemoryCreationStart();
 }
 
 function receiveThumbnail(thumbnailUrl) {

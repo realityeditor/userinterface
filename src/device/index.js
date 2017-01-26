@@ -122,7 +122,8 @@ realityEditor.device.endTrash = function(nodeID) {
 	realityEditor.device.deactivateMultiTouch();
 	realityEditor.device.deactivateNodeMove(nodeID);
 	setTimeout(function() {
-		realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
+        realityEditor.gui.menus.buttonOn("main",[]);
+		//realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
 	}, 0);
 	globalStates.editingNode = null;
 };
@@ -219,7 +220,8 @@ realityEditor.device.onTouchDown = function(evt) {
 							globalStates.editingModeObject = target.objectId;
 							realityEditor.device.activateMultiTouch();
 							realityEditor.device.activateNodeMove(target.nodeId);
-							realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
+                            realityEditor.gui.menus.on("bigTrash",[]);
+							//realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
 
 						}, 400);
 					}
@@ -256,7 +258,8 @@ realityEditor.device.beginTouchEditing = function(target) {
 	realityEditor.device.activateNodeMove(target.nodeId);
 	// Only display the trash can if it's something we can delete (a frame)
 	if (target.objectId !== target.nodeId) {
-		realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
+        realityEditor.gui.menus.on("bigTrash",[]);
+		//realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
 	}
 
 	realityEditor.device.onMultiTouchStart({
@@ -616,8 +619,12 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 	overlayDiv.classList.remove('overlayAction');
 	overlayDiv.classList.remove('overlayPositive');
 	overlayDiv.classList.remove('overlayNegative');
-
-	realityEditor.gui.pocket.pocketOnMemoryCreationStop();
+    
+    if (globalStates.guiState !== "logic") {
+        realityEditor.gui.menus.on("main",[]);
+    }
+	
+    //realityEditor.gui.pocket.pocketOnMemoryCreationStop();
 	if (overlayDiv.style.backgroundImage !== '' && overlayDiv.style.backgroundImage !== 'none') {
 		overlayDiv.style.backgroundImage = 'none';
 		window.location.href = 'of://clearMemory';
@@ -653,7 +660,8 @@ realityEditor.device.onDocumentPointerDown = function(evt) {
 	}
 
 	if (realityEditor.gui.memory.memoryCanCreate() && window.innerWidth - evt.clientX > 65) {
-		realityEditor.gui.pocket.pocketOnMemoryCreationStart();
+        realityEditor.gui.menus.on("bigPocket",[]);
+	//	realityEditor.gui.pocket.pocketOnMemoryCreationStart();
 	}
 
 	/*
@@ -727,7 +735,9 @@ realityEditor.device.onMultiTouchStart = function(evt) {
 		globalStates.editingModeLocation = target.nodeId;
 		globalStates.editingModeKind = target.type;
 		globalStates.editingModeHaveObject = true;
-		realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
+		if(target.type === "logic")
+        realityEditor.gui.menus.on("bigTrash",[]);
+		//realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
 	}
 	globalMatrix.matrixtouchOn = target.nodeId;
 	globalMatrix.copyStillFromMatrixSwitch = true;
@@ -796,7 +806,8 @@ realityEditor.device.onMultiTouchEnd = function(evt) {
 // generate action for all links to be reloaded after upload
 	if (globalStates.editingModeHaveObject) {
 		if (globalStates.editingMode) {
-			realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
+            realityEditor.gui.menus.on("main",[]);
+			//realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
 		}
 		if (globalStates.editingNode) {
 			if (globalStates.editingModeKind === 'ui') {
@@ -949,10 +960,14 @@ realityEditor.device.setStates = function(developerState, extendedTrackingState,
     }
 
     if (globalStates.editingMode) {
-        document.getElementById('resetButton').style.visibility = "visible";
+
+        realityEditor.gui.menus.on("editing",[]);
+
+       /* document.getElementById('resetButton').style.visibility = "visible";
         document.getElementById('unconstButton').style.visibility = "visible";
         document.getElementById('resetButtonDiv').style.display = "inline";
         document.getElementById('unconstButtonDiv').style.display = "inline";
+        */
     }
 
     // Once all the states are send the alternative checkbox is loaded
