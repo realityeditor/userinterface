@@ -234,6 +234,7 @@ realityEditor.gui.menus.off = function(menuDiv, buttonArray) {
 
 
 realityEditor.gui.menus.buttonOn = function(menuDiv,buttonArray) {
+if(!menuDiv) menuDiv = "main";
 
     for(var i = 0; i< buttonArray.length;i++){
         var keyI = buttonArray[i];
@@ -247,6 +248,7 @@ realityEditor.gui.menus.buttonOn = function(menuDiv,buttonArray) {
 
 
 realityEditor.gui.menus.buttonOff = function(menuDiv,buttonArray) {
+    if(!menuDiv) menuDiv = "main";
 
     for(var i = 0; i< buttonArray.length;i++){
         var keyI = buttonArray[i];
@@ -278,6 +280,30 @@ realityEditor.gui.menus.back = function() {
     this.history.pop();
 };
 
+realityEditor.gui.menus.backButton = function (event, callback){
+    if(event.button === "back"){
+        if(realityEditor.gui.menus.history.length>0) {
+            realityEditor.gui.menus.history.pop();
+            var lastMenu = realityEditor.gui.menus.history.length - 1;
+            realityEditor.gui.menus.on(lastMenu, []);
+            // if you want action based on the menu item, place it here
+            callback(event,lastMenu);
+        }
+    }
+}
+
+realityEditor.gui.buttons.animationEnter = function (event){
+    // make button react to touch
+    var button = realityEditor.gui.menus.buttons;
+    button[event.button].state[0] = button[event.button].bg.classList[0];
+    button[event.button].state[1] = button[event.button].bg.classList[1];
+    button[event.button].bg.setAttribute("class",   button[event.button].state[0]+" touched");
+};
+
+/********************************************************************
+ * Pointer Events for Buttons
+ ********************************************************************/
+
 
 
 realityEditor.gui.menus.pointerDown = function(event) {
@@ -298,28 +324,20 @@ realityEditor.gui.menus.pointerUp = function(event) {
     realityEditor.gui.buttons.freezeButtonUp(event);
     realityEditor.gui.buttons.pocketButtonUp(event);
 
+    realityEditor.gui.menus.backButton(event, function(event, lastMenu){
+        var button = event.button;
+       //  place action in here for when back button is pressed
 
-    if(event.button === "back"){
-        if(realityEditor.gui.menus.history.length>0) {
-            realityEditor.gui.menus.history.pop();
-            var lastMenu = realityEditor.gui.menus.history.length - 1;
-            realityEditor.gui.menus.on(lastMenu, []);
+    })
 
-            // if you want action based on the menu item, place it here
-        }
-    }
 };
 
 realityEditor.gui.menus.pointerEnter = function(event) {
-    console.log("Enter on: "+event.button);
+   // console.log("Enter on: "+event.button);
 
     realityEditor.gui.buttons.pocketButtonEnter(event);
 
-    // make button react to touch
-    var button = realityEditor.gui.menus.buttons;
-    button[event.button].state[0] = button[event.button].bg.classList[0];
-    button[event.button].state[1] = button[event.button].bg.classList[1];
-    button[event.button].bg.setAttribute("class",   button[event.button].state[0]+" touched");
+    realityEditor.gui.buttons.animationEnter(event);
 };
 
 realityEditor.gui.menus.pointerLeave = function(event) {
@@ -327,13 +345,8 @@ realityEditor.gui.menus.pointerLeave = function(event) {
 
     realityEditor.gui.buttons.pocketButtonLeave(event);
 
-
-    // make button react to touch
-    var button = realityEditor.gui.menus.buttons;
-  //  button[event.button].bg.setAttribute("class",   button[event.button].state[0]+" "+ button[event.button].state[1]);
 };
 
 realityEditor.gui.menus.pointerMove = function(event) {
     console.log("Move on: "+event.button);
 };
-
