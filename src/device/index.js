@@ -619,8 +619,12 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 	overlayDiv.classList.remove('overlayAction');
 	overlayDiv.classList.remove('overlayPositive');
 	overlayDiv.classList.remove('overlayNegative');
-    realityEditor.gui.menus.on("main",[]);
-	//realityEditor.gui.pocket.pocketOnMemoryCreationStop();
+    
+    if (globalStates.guiState !== "logic") {
+        realityEditor.gui.menus.on("main",[]);
+    }
+	
+    //realityEditor.gui.pocket.pocketOnMemoryCreationStop();
 	if (overlayDiv.style.backgroundImage !== '' && overlayDiv.style.backgroundImage !== 'none') {
 		overlayDiv.style.backgroundImage = 'none';
 		window.location.href = 'of://clearMemory';

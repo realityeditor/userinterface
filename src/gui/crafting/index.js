@@ -348,26 +348,29 @@ realityEditor.gui.crafting.drawDataCraftingLine = function(context, linkObject, 
 realityEditor.gui.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
 
 
-        document.getElementById('freezeButton').src = freezeButtonImage[2].src;
-        globalStates.freezeButtonState = true;
-        window.location.href = "of://freeze";
+    //document.getElementById('freezeButton').src = freezeButtonImage[2].src;
+    globalStates.freezeButtonState = true;
+    window.location.href = "of://freeze";
+    //
+    //// update side menu buttons
+    //document.getElementById('guiButtonImage').src = guiButtonImage[5].src;
+    //document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
+    //globalStates.pocketButtonState = true;
+    //document.getElementById('pocketButton').src = pocketButtonImage[4].src;
+    
+    this.cout("craftingBoardVisible for object: " + objectKey + " and node: "+nodeKey);
 
-
-
-    // update side menu buttons
-    document.getElementById('guiButtonImage').src = guiButtonImage[5].src;
-    document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
-    globalStates.pocketButtonState = true;
-    document.getElementById('pocketButton').src = pocketButtonImage[4].src;
     globalStates.guiState = "logic";
     document.getElementById("craftingBoard").style.visibility = "visible";
     document.getElementById("craftingBoard").style.display = "inline";
-    this.cout("craftingBoardVisible for object: " + objectKey + " and node: "+nodeKey);
-
+    
+    realityEditor.gui.menus.on("crafting", ["freeze"]);
+    
     if (DEBUG_DATACRAFTING) { // TODO: BEN DEBUG - turn off debugging!
         var logic = new Logic();
         this.initializeDataCraftingGrid(logic);
     } else {
+        
         var nodeLogic = objects[objectKey].nodes[nodeKey];
         if (!nodeLogic.guiState) {
             console.log("adding new LogicGUIState");
@@ -384,12 +387,12 @@ realityEditor.gui.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
 realityEditor.gui.crafting.craftingBoardHide = function() {
 
     if(globalStates.currentLogic) {
-        realityEditor.gui.menus.off("logic",["freeze"]);
+        //realityEditor.gui.menus.off("logic",["freeze"]);
 
-        globalStates.freezeButtonState = false;
+        //globalStates.freezeButtonState = false;
         var memoryBackground = document.querySelector('.memoryBackground');
         memoryBackground.innerHTML = '';
-        window.location.href = "of://unfreeze";
+        //window.location.href = "of://unfreeze";
     }
 
 

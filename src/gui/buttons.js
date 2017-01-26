@@ -373,6 +373,12 @@ realityEditor.gui.buttons.draw = function() {
 
 realityEditor.gui.buttons.pocketButtonUp = function(event) {
     if (event.button !== "pocket") return;
+    
+    if (globalStates.guiState === "logic") {
+        realityEditor.gui.menus.buttonOff("default", ["freeze"]);
+        realityEditor.gui.menus.on("crafting", ["pocket"]);
+
+    }
 
     realityEditor.gui.pocket.onPocketButtonUp();
 
