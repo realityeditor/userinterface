@@ -149,7 +149,7 @@ MemoryContainer.prototype.onTouchStart = function(event) {
 };
 
 MemoryContainer.prototype.startDragging = function() {
-    if (!this.memory) {
+    if (!this.memory || !this.image) {
         return;
     }
     this.dragging = true;
