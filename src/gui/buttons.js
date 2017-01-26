@@ -172,7 +172,7 @@ realityEditor.gui.buttons.unconstrainedButtonUp = function(event) {
     };
 
 realityEditor.gui.buttons.settingButtonUp = function(event) {
-        if (event.button !== "setting") return;
+        if (event.button !== "setting" && event.button !== "logicSetting") return;
 
        // realityEditor.gui.menus.on("main", ["setting"]);
 
@@ -180,7 +180,7 @@ realityEditor.gui.buttons.settingButtonUp = function(event) {
 
         if (globalStates.guiState === "logic") {
             realityEditor.gui.crafting.eventHelper.hideBlockSettings();
-            realityEditor.gui.menus.on("main", ["setting"]);
+            realityEditor.gui.menus.off("crafting", ["logicSetting"]);
             return;
         }
 
@@ -247,7 +247,10 @@ realityEditor.gui.buttons.freezeButtonUp = function(event) {
 
 
 realityEditor.gui.buttons.draw = function() {
-
+    
+    this.preload(blockTabImage,
+        'png/iconBlocks.png', 'png/iconEvents.png', 'png/iconSignals.png', 'png/iconMath.png', 'png/iconWeb.png'
+    );
 
     document.getElementById("extendedTrackingSwitch").addEventListener("change", function () {
 		if (document.getElementById("extendedTrackingSwitch").checked) {
@@ -360,7 +363,7 @@ realityEditor.gui.buttons.draw = function() {
 
 
     realityEditor.gui.buttons.pocketButtonDown = function(event) {
-        if (event.button !== "pocket") return;
+        if (event.button !== "pocket" && event.button !== "logicPocket") return;
 
         if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
             return;
@@ -372,13 +375,7 @@ realityEditor.gui.buttons.draw = function() {
 
 
 realityEditor.gui.buttons.pocketButtonUp = function(event) {
-    if (event.button !== "pocket") return;
-    
-    if (globalStates.guiState === "logic") {
-        realityEditor.gui.menus.buttonOff("default", ["freeze"]);
-        realityEditor.gui.menus.on("crafting", ["pocket"]);
-
-    }
+    if (event.button !== "pocket" && event.button !== "logicPocket") return;
 
     realityEditor.gui.pocket.onPocketButtonUp();
 

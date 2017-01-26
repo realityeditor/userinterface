@@ -283,7 +283,7 @@ realityEditor.gui.menus.back = function() {
 realityEditor.gui.menus.backButton = function (event, callback){
     if(event.button === "back"){
 
-        realityEditor.gui.menus.buttonOff("default", ["freeze"]);
+        realityEditor.gui.menus.buttonOff("crafting", ["back"]);
         
         if(realityEditor.gui.menus.history.length>0) {
             console.log("history:" + realityEditor.gui.menus.history);
@@ -346,7 +346,22 @@ realityEditor.gui.menus.pointerUp = function(event) {
         // if you want action based on the menu item, place it here
         if (lastMenu === "main") {
             realityEditor.gui.buttons.logicButtonUp({button: "logic"});
-            //realityEditor.gui.crafting.craftingBoardHide();
+        
+        } else if (lastMenu === "crafting") {
+
+            var existingMenu = document.getElementById('menuContainer');
+            if (existingMenu && existingMenu.style.display !== 'none') {
+                globalStates.pocketButtonDown = true; // hack to trigger pocket button using back button
+                realityEditor.gui.buttons.pocketButtonUp({button: "logicPocket"});
+            } else {
+                var blockSettingsContainer = document.getElementById('blockSettingsContainer');
+                if (blockSettingsContainer) {
+                    realityEditor.gui.buttons.settingButtonUp({button: "setting"});
+                    
+                } else {
+                    realityEditor.gui.buttons.logicButtonUp({button: "logic"}); // default option is to go back to main
+                }
+            }
         }
     });
 };

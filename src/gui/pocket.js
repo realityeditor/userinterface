@@ -58,8 +58,9 @@ realityEditor.gui.pocket.pocketButtonAction = function() {
 		globalStates.pocketButtonState = false;
 
 		if (globalStates.guiState === 'logic') {
-		realityEditor.gui.crafting.blockMenuVisible();
-			console.log("blockMenuVisible");
+		    realityEditor.gui.crafting.blockMenuVisible();
+
+            realityEditor.gui.menus.on("crafting",["logicPocket"]);
 		}
 	}
 	else {
@@ -68,7 +69,9 @@ realityEditor.gui.pocket.pocketButtonAction = function() {
 
 		if (globalStates.guiState === 'logic') {
 			realityEditor.gui.crafting.blockMenuHide();
-		}
+            realityEditor.gui.menus.off("crafting",["logicPocket"]);
+
+        }
 	}
 
 };

@@ -357,6 +357,8 @@ realityEditor.gui.crafting.craftingBoardVisible = function(objectKey, nodeKey) {
     //document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
     //globalStates.pocketButtonState = true;
     //document.getElementById('pocketButton').src = pocketButtonImage[4].src;
+
+    globalStates.pocketButtonState = true;
     
     this.cout("craftingBoardVisible for object: " + objectKey + " and node: "+nodeKey);
 
@@ -413,6 +415,13 @@ realityEditor.gui.crafting.craftingBoardHide = function() {
  **/
 
 realityEditor.gui.crafting.blockMenuVisible = function() {
+    
+    // hide block settings if necessary
+    blockSettingsContainer = document.getElementById('blockSettingsContainer');
+    if (blockSettingsContainer) {
+        realityEditor.gui.buttons.settingButtonUp({button: "setting"});
+    }
+    
     var _this = this;
     //temporarily hide all other datacrafting divs. redisplay them when menu hides
     document.getElementById("datacraftingCanvas").style.display = "none";
@@ -451,7 +460,8 @@ realityEditor.gui.crafting.blockMenuHide = function() {
         existingMenu.style.display = 'none';
         if (!globalStates.pocketButtonState) {
             globalStates.pocketButtonState = true;
-            document.getElementById('pocketButton').src = pocketButtonImage[4].src;
+            //document.getElementById('pocketButton').src = pocketButtonImage[4].src;
+            realityEditor.gui.menus.off("crafting",["logicPocket"]);
         }
     }
 };
