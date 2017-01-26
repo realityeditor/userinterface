@@ -731,6 +731,7 @@ realityEditor.device.onMultiTouchStart = function(evt) {
 		globalStates.editingModeLocation = target.nodeId;
 		globalStates.editingModeKind = target.type;
 		globalStates.editingModeHaveObject = true;
+		if(target.type === "logic")
         realityEditor.gui.menus.on("bigTrash",[]);
 		//realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
 	}
