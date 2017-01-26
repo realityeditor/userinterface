@@ -311,6 +311,10 @@ MemoryContainer.prototype.remember = function() {
         return;
     }
 
+    if (globalStates.guiState === 'node' && globalStates.drawDotLine) {
+        return;
+    }
+
     realityEditor.gui.pocket.pocketHide();
 
     var memoryBackground = document.querySelector('.memoryBackground');
