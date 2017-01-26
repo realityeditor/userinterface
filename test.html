@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/pep/0.4.1/pep.js"></script>
+</head>
+<body>
+<link rel="stylesheet" type="text/css" href="css/button.css">
+<div id="buttonDiv" touch-action="none"
+     style="width: 160px; height: 160px; z-index: 20; position:fixed; top: 0; left:0;">
+    <svg version="1.1" id="menu" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 60 60" style="enable-background:new 0 0 60 60; position:fixed; top: 0; left:0; width: 160px; height: 160px; z-index:10" xml:space="preserve">
+<style type="text/css">
+	.st0 {
+        fill: #FFFFFF;
+        stroke: #000000;
+        stroke-miterlimit: 10;
+    }
+</style>
+<rect id="bg" width="60" height="60"/>
+<rect x="13.2" y="26.7" class="st0" width="23.3" height="23.3"/>
+<rect x="17.3" y="8.3" class="st0" width="29.7" height="9.4"/>
+</svg>
+
+</div>
+
+
+<style type="text/css">
+    .fill {
+        fill: #01FFFD;
+    }
+
+    .inactive {
+        opacity: 0;
+    }
+
+    .active {
+        opacity: 0.3;
+    }
+
+    .touched {
+        opacity: 0.6;
+    }
+
+    * {
+        touch-action: none;
+    }
+</style>
+
+<script>
+
+    window.onload = function () {
+
+        var svgItem = document.getElementById("menu").getElementById("bg");
+
+        document.getElementById("buttonDiv").addEventListener("pointerdown",
+            function () {
+                console.log("clicked");
+                svgItem.setAttribute("class", "addFill active");
+            }, false);
+
+    };
+
+</script>
+
+</body>
+</html>

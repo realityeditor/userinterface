@@ -81,84 +81,176 @@ realityEditor.gui.buttons.preload = function(array) {
  * @desc
  **/
 
+realityEditor.gui.buttons.guiButtonUp = function(event){
+		if(event.button !== "gui") return;
+
+        realityEditor.gui.menus.buttonOff("main",["logic","logicPocket","logicSetting","setting","pocket"]);
+        realityEditor.gui.menus.buttonOn("main",["gui"]);
+
+
+        realityEditor.gui.pocket.pocketHide();
+        globalStates.guiState = "ui";
+        if (globalStates.guiState !== "logic") {
+            if (DEBUG_DATACRAFTING) {
+                realityEditor.gui.crafting.craftingBoardVisible(); // TODO: BEN DEBUG - revert to previous line
+            } else {
+                realityEditor.gui.crafting.craftingBoardHide();
+            }
+        }
+
+	};
+
+realityEditor.gui.buttons.logicButtonUp = function(event){
+        if(event.button !== "logic") return;
+
+        realityEditor.gui.menus.buttonOff("main",["gui","logicPocket","logicSetting","setting","pocket"]);
+        realityEditor.gui.menus.buttonOff("main",["logic"]);
+
+        realityEditor.gui.pocket.pocketHide();
+
+        globalStates.guiState = "node";
+
+        realityEditor.gui.crafting.craftingBoardHide();
+    };
+
+realityEditor.gui.buttons.resetButtonUp = function(event) {
+        if (event.button !== "reset") return;
+
+        realityEditor.gui.menus.on("editing",[]);
+
+
+        for (var key in objects) {
+            if (!globalObjects.hasOwnProperty(key)) {
+                continue;
+            }
+
+            var tempResetObject = objects[key];
+
+            if (globalStates.guiState ==="ui") {
+                tempResetObject.matrix = [];
+
+                tempResetObject.x = 0;
+                tempResetObject.y = 0;
+                tempResetObject.scale = 1;
+
+                realityEditor.network.sendResetContent(key, key, "ui");
+            }
+
+            if (globalStates.guiState ==="node") {
+                for (var subKey in tempResetObject.nodes) {
+                    var tempResetValue = tempResetObject.nodes[subKey];
+
+
+
+                    tempResetValue.matrix = [];
+
+                    // tempResetValue.x = randomIntInc(0, 200) - 100;
+                    // tempResetValue.y = randomIntInc(0, 200) - 100;
+                    tempResetValue.scale = 1;
+
+                    realityEditor.network.sendResetContent(key, subKey, tempResetValue.type);
+                }
+            }
+
+        }
+    };
+
+
+
+realityEditor.gui.buttons.unconstrainedButtonUp = function(event) {
+        if (event.button !== "unconstrained") return;
+
+        if (globalStates.unconstrainedPositioning === true) {
+
+            realityEditor.gui.menus.off("editing", ["unconstrained"]);
+            globalStates.unconstrainedPositioning = false;
+        }
+        else {
+            realityEditor.gui.menus.on("editing", ["unconstrained"]);
+            globalStates.unconstrainedPositioning = true;
+        }
+    };
+
+realityEditor.gui.buttons.settingButtonUp = function(event) {
+        if (event.button !== "setting") return;
+
+       // realityEditor.gui.menus.on("main", ["setting"]);
+
+        realityEditor.gui.pocket.pocketHide();
+
+        if (globalStates.guiState === "logic") {
+            realityEditor.gui.crafting.eventHelper.hideBlockSettings();
+            realityEditor.gui.menus.on("main", ["setting"]);
+            return;
+        }
+
+
+        if (globalStates.preferencesButtonState === true) {
+            this.gui.preferences.preferencesHide();
+
+            realityEditor.gui.menus.off("main", ["setting"]);
+            // todo why is it visibility and not display?
+
+            overlayDiv.style.visibility = "visible";
+
+            if (globalStates.editingMode) {
+                realityEditor.gui.menus.on("editing", []);
+            }
+
+            if (globalStates.UIOffMode) {
+                // If clearSky is hiding the buttons, make sure the buttons are hidden as preferences exits
+               // document.body.classList.add('clearSky');
+              //  realityEditor.gui.menus.on("clearSky", []);
+            }
+
+        }
+        else {
+
+            realityEditor.gui.menus.on("main", ["setting"]);
+
+            this.gui.preferences.addElementInPreferences();
+
+            this.gui.preferences.preferencesVisible();
+
+            overlayDiv.style.visibility = "hidden";
+
+            if (globalStates.UIOffMode) {
+                // If clearSky is hiding the buttons, make sure the buttons are
+                // hidden as preferences appears.
+               // document.body.classList.add('clearSky');
+                //  realityEditor.gui.menus.on("clearSky", []);
+            }
+
+        }
+    };
+
+realityEditor.gui.buttons.freezeButtonUp = function(event) {
+    if (event.button !== "freeze") return;
+
+        realityEditor.gui.pocket.pocketHide();
+
+        if (globalStates.freezeButtonState === true) {
+
+            realityEditor.gui.menus.buttonOff("default", ["freeze"]);
+
+            globalStates.freezeButtonState = false;
+            var memoryBackground = document.querySelector('.memoryBackground');
+            memoryBackground.innerHTML = '';
+            window.location.href = "of://unfreeze";
+        }
+        else {
+            realityEditor.gui.menus.buttonOn("default", ["freeze"]);
+            globalStates.freezeButtonState = true;
+            window.location.href = "of://freeze";
+        }
+    };
+
+
+
 realityEditor.gui.buttons.draw = function() {
 
-	this.preload(freezeButtonImage,
-		'png/freeze.png', 'png/freezeOver.png', 'png/freezeSelect.png', 'png/freezeEmpty.png'
-	);
-	this.preload(guiButtonImage,
-		'png/intOneOver.png', 'png/intOneSelect.png', 'png/intTwoOver.png', 'png/intTwoSelect.png', 'png/intEmpty.png', 'png/intThree.png'
-	);
 
-	this.preload(pocketButtonImage,
-		'png/pocket.png', 'png/pocketOver.png', 'png/pocketSelect.png', 'png/pocketEmpty.png', 'png/blockPocket.png', 'png/blockPocketOver.png', 'png/blockPocketSelect.png'
-	);
-
-	this.preload(preferencesButtonImage,
-		'png/pref.png', 'png/prefOver.png', 'png/prefSelect.png', 'png/prefEmpty.png', 'png/blockPref.png', 'png/blockPrefOver.png', 'png/blockPrefSelect.png'
-	);
-	this.preload(reloadButtonImage,
-		'png/reloadOver.png', 'png/reload.png', 'png/reloadEmpty.png'
-	);
-	this.preload(resetButtonImage,
-		'png/reset.png', 'png/resetOver.png', 'png/resetSelect.png', 'png/resetEmpty.png'
-	);
-
-	this.preload(unconstButtonImage,
-		'png/unconst.png', 'png/unconstOver.png', 'png/unconstSelect.png', 'png/unconstEmpty.png'
-	);
-
-	this.preload(loadNewUiImage,
-		'png/load.png', 'png/loadOver.png'
-	);
-
-	this.preload(blockTabImage,
-		'png/iconBlocks.png', 'png/iconEvents.png', 'png/iconSignals.png', 'png/iconMath.png', 'png/iconWeb.png'
-	);
-
-	this.preload(memoryWebButtonImage,
-		'png/memoryWeb.png', 'png/memoryWebOver.png', 'png/memoryWebSelect.png'
-	);
-
-	document.getElementById("guiButtonImage1").addEventListener("touchstart", function () {
-		document.getElementById('guiButtonImage').src = guiButtonImage[0].src;
-		// kickoff();
-    }.bind(this));
-	ec++;
-
-	document.getElementById("guiButtonImage1").addEventListener("touchend", function () {
-		realityEditor.gui.pocket.pocketHide();
-
-		document.getElementById('guiButtonImage').src = guiButtonImage[1].src;
-
-		globalStates.guiState = "ui";
-
-		if (globalStates.guiState !== "logic") {
-			if (DEBUG_DATACRAFTING) {
-				this.gui.crafting.craftingBoardVisible(); // TODO: BEN DEBUG - revert to previous line
-			} else {
-				this.gui.crafting.craftingBoardHide();
-			}
-		}
-	}.bind(this));
-	ec++;
-
-	document.getElementById("guiButtonImage2").addEventListener("touchstart", function () {
-		document.getElementById('guiButtonImage').src = guiButtonImage[2].src;
-	}.bind(this));
-	ec++;
-
-	document.getElementById("guiButtonImage2").addEventListener("touchend", function () {
-		realityEditor.gui.pocket.pocketHide();
-
-		document.getElementById('guiButtonImage').src = guiButtonImage[3].src;
-		globalStates.guiState = "node";
-
-		this.gui.crafting.craftingBoardHide();
-	}.bind(this));
-	ec++;
-
-	document.getElementById("extendedTrackingSwitch").addEventListener("change", function () {
+    document.getElementById("extendedTrackingSwitch").addEventListener("change", function () {
 		if (document.getElementById("extendedTrackingSwitch").checked) {
 			globalStates.extendedTracking = true;
 			window.location.href = "of://extendedTrackingOn";
@@ -172,11 +264,18 @@ realityEditor.gui.buttons.draw = function() {
 	document.getElementById("editingModeSwitch").addEventListener("change", function () {
 
 		if (document.getElementById("editingModeSwitch").checked) {
+
+           // realityEditor.gui.menus.on("editing",[]);
+
 			this.realityEditor.device.addEventHandlers();
 			globalStates.editingMode = true;
-			window.location.href = "of://developerOn";
+
+            window.location.href = "of://developerOn";
 			globalMatrix.matrixtouchOn = "";
 		} else {
+
+            realityEditor.gui.menus.on("main",[]);
+
 			this.realityEditor.device.removeEventHandlers();
 			globalStates.editingMode = false;
 			window.location.href = "of://developerOff";
@@ -186,12 +285,19 @@ realityEditor.gui.buttons.draw = function() {
 
 	document.getElementById("turnOffUISwitch").addEventListener("change", function () {
 		if (document.getElementById("turnOffUISwitch").checked) {
+
+          //  realityEditor.gui.menus.on("clearSky",[]);
+
 			globalStates.UIOffMode = true;
 			timeForContentLoaded = 240000;
 			window.location.href = "of://clearSkyOn";
 
 			document.body.classList.add('clearSky');
 		} else {
+
+           // realityEditor.gui.menus.on("main",[]);
+
+
 			globalStates.UIOffMode = false;
 			timeForContentLoaded = 240;
 			window.location.href = "of://clearSkyOff";
@@ -201,55 +307,6 @@ realityEditor.gui.buttons.draw = function() {
 	}.bind(this));
 	ec++;
 
-	document.getElementById("resetButton").addEventListener("touchstart", function () {
-		document.getElementById('resetButton').src = resetButtonImage[1].src;
-
-	}.bind(this));
-	ec++;
-
-	document.getElementById("resetButton").addEventListener("touchend", function () {
-
-		document.getElementById('resetButton').src = resetButtonImage[0].src;
-		//  window.location.href = "of://loadNewUI"+globalStates.newURLText;
-
-
-		for (var key in objects) {
-			if (!globalObjects.hasOwnProperty(key)) {
-				continue;
-			}
-
-			var tempResetObject = objects[key];
-
-			if (globalStates.guiState ==="ui") {
-				tempResetObject.matrix = [];
-
-				tempResetObject.x = 0;
-				tempResetObject.y = 0;
-				tempResetObject.scale = 1;
-
-				this.realityEditor.network.sendResetContent(key, key, "ui");
-			}
-
-			if (globalStates.guiState ==="node") {
-				for (var subKey in tempResetObject.nodes) {
-					var tempResetValue = tempResetObject.nodes[subKey];
-
-
-
-					tempResetValue.matrix = [];
-
-					// tempResetValue.x = randomIntInc(0, 200) - 100;
-					// tempResetValue.y = randomIntInc(0, 200) - 100;
-					tempResetValue.scale = 1;
-
-					this.realityEditor.network.sendResetContent(key, subKey, tempResetValue.type);
-				}
-			}
-
-		}
-
-	}.bind(this));
-	ec++;
 
 	/**
 	 * @desc
@@ -257,25 +314,8 @@ realityEditor.gui.buttons.draw = function() {
 	 * @param node
 	 **/
 
-	document.getElementById("unconstButton").addEventListener("touchstart", function () {
-		document.getElementById('unconstButton').src = unconstButtonImage[1].src;
-	}.bind(this));
-	ec++;
 
-	document.getElementById("unconstButton").addEventListener("touchend", function () {
-		if (globalStates.unconstrainedPositioning === true) {
-			document.getElementById('unconstButton').src = unconstButtonImage[0].src;
-			globalStates.unconstrainedPositioning = false;
 
-		}
-		else {
-			document.getElementById('unconstButton').src = unconstButtonImage[2].src;
-			globalStates.unconstrainedPositioning = true;
-
-		}
-
-	}.bind(this));
-	ec++;
 
 	document.getElementById("loadNewUI").addEventListener("touchstart", function () {
 		if (globalStates.extendedTracking === true) {
@@ -294,91 +334,14 @@ realityEditor.gui.buttons.draw = function() {
 	}.bind(this));
 	ec++;
 
-	document.getElementById("preferencesButton").addEventListener("touchstart", function () {
-		document.getElementById('preferencesButton').src = preferencesButtonImage[1].src;
-	}.bind(this));
-	ec++;
-
-	document.getElementById("preferencesButton").addEventListener("touchend", function () {
-		realityEditor.gui.pocket.pocketHide();
-
-		if (globalStates.guiState === "logic") {
-		this.realityEditor.gui.crafting.eventHelper.hideBlockSettings();
-			document.getElementById('preferencesButton').src = preferencesButtonImage[4].src;
-			return;
-		}
-
-		if (globalStates.preferencesButtonState === true) {
-			this.gui.preferences.preferencesHide();
-
-			// todo why is it visibility and not display?
-
-			overlayDiv.style.visibility = "visible";
-
-			if (globalStates.editingMode) {
-				document.getElementById('resetButton').style.visibility = "visible";
-				document.getElementById('unconstButton').style.visibility = "visible";
-				document.getElementById('resetButtonDiv').style.display = "inline";
-				document.getElementById('unconstButtonDiv').style.display = "inline";
-			}
-
-			if (globalStates.UIOffMode) {
-				// If clearSky is hiding the buttons, make sure the buttons are hidden as preferences exits
-				document.body.classList.add('clearSky');
-			}
-
-		}
-		else {
-
-			document.getElementById('resetButton').style.visibility = "hidden";
-			document.getElementById('unconstButton').style.visibility = "hidden";
-			document.getElementById('resetButtonDiv').style.display = "none";
-			document.getElementById('unconstButtonDiv').style.display = "none";
-
-			this.gui.preferences.addElementInPreferences();
-
-			this.gui.preferences.preferencesVisible();
-
-			overlayDiv.style.visibility = "hidden";
-
-			if (globalStates.UIOffMode) {
-				// If clearSky is hiding the buttons, make sure the buttons are
-				// hidden as preferences appears.
-				document.body.classList.add('clearSky');
-			}
-
-		}
-
-	}.bind(this));
-	ec++;
+}
 
 	/**
 	 * Freeze Button
 	 */
 
-	document.getElementById("freezeButton").addEventListener("touchstart", function () {
-		document.getElementById('freezeButton').src = freezeButtonImage[1].src;
-	}.bind(this));
-	ec++;
-	document.getElementById("freezeButton").addEventListener("touchend", function () {
-		realityEditor.gui.pocket.pocketHide();
 
-		if (globalStates.freezeButtonState === true) {
-			document.getElementById('freezeButton').src = freezeButtonImage[0].src;
-			globalStates.freezeButtonState = false;
-			var memoryBackground = document.querySelector('.memoryBackground');
-			memoryBackground.innerHTML = '';
-			window.location.href = "of://unfreeze";
-		}
-		else {
-			document.getElementById('freezeButton').src = freezeButtonImage[2].src;
-			globalStates.freezeButtonState = true;
-			window.location.href = "of://freeze";
-		}
-
-	}.bind(this));
-	ec++;
-
+/*
 	document.getElementById("reloadButton").addEventListener("touchstart", function () {
 		document.getElementById('reloadButton').src = reloadButtonImage[0].src;
 		window.location.href = "of://reload";
@@ -389,140 +352,129 @@ realityEditor.gui.buttons.draw = function() {
 		// location.reload(true);
 	}.bind(this));
 	ec++;
+	*/
 
 	/**
 	 * Pocket Button
 	 */
 
-	var thisPocket =  document.getElementById("pocketButton");
-
-	thisPocket.addEventListener("pointerdown", function () {console.log("pointerdown");
-		if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
-			return;
-		}
-
-		globalStates.pocketButtonDown = true;
-
-	}.bind(this), false);
-
-	thisPocket.addEventListener("pointerup", function () { console.log("pointerup");
-		if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
-			return;
-		}
-
-		if(globalStates.pocketButtonDown){
-			this.gui.pocket.pocketButtonAction();
-		}
-		globalStates.pocketButtonDown = false;
-		globalStates.pocketButtonUp = true;
-	}.bind(this), false);
-
-	thisPocket.addEventListener("pointerenter", function () { console.log("pointerenter");
-		if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
-			return;
-		}
-
-		var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
-		if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1+indexChange].src;
-
-		// this is where the virtual point disapears!
 
 
-		if (pocketItem.pocket.nodes[pocketItemId]) {
-			pocketItem.pocket.objectVisible = false;
+    realityEditor.gui.buttons.pocketButtonDown = function(event) {
+        if (event.button !== "pocket") return;
+
+        if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
+            return;
+        }
+
+        globalStates.pocketButtonDown = true;
+
+    };
 
 
-		this.gui.ar.draw.hideTransformed("pocket", pocketItemId, pocketItem.pocket.nodes[pocketItemId], "logic");
-			delete pocketItem.pocket.nodes[pocketItemId];
-		}
+realityEditor.gui.buttons.pocketButtonUp = function(event) {
+    if (event.button !== "pocket") return;
 
+    if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
+        return;
+    }
 
+    if(globalStates.pocketButtonDown){
+        this.gui.pocket.pocketButtonAction();
+    }
+    globalStates.pocketButtonDown = false;
+    globalStates.pocketButtonUp = true;
 
-	}.bind(this), false);
-    
-	thisPocket.addEventListener("pointerleave", function (evt) { console.log("pointerleave");
-		if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
-			return;
-		}
+};
 
-		var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
-		if (globalStates.pocketButtonState === true) {
-			if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0+indexChange].src;
-		}
-		else {
-			if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2+indexChange].src;
-		}
+realityEditor.gui.buttons.pocketButtonEnter = function(event) {
+    if (event.button !== "pocket") return;
 
-		// this is where the virtual point creates object
+    if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
+        return;
+    }
 
-		// todo for testing only
-		if (globalStates.pocketButtonDown === true && globalStates.guiState ==="node") {
+    var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
 
-			pocketItemId = this.realityEditor.device.utilities.uuidTime();
-			console.log(pocketItemId);
-			pocketItem.pocket.nodes[pocketItemId] = new Logic();
+    realityEditor.gui.menus.off("main",["pocket"]);
+   // todo check what is this for  if (!globalStates.UIOffMode) document.getElementById('pocketButton').src = pocketButtonImage[1+indexChange].src;
 
-			var thisItem = pocketItem.pocket.nodes[pocketItemId];
-            
+    if (pocketItem.pocket.nodes[pocketItemId]) {
+        pocketItem.pocket.objectVisible = false;
+
+        this.gui.ar.draw.hideTransformed("pocket", pocketItemId, pocketItem.pocket.nodes[pocketItemId], "logic");
+        delete pocketItem.pocket.nodes[pocketItemId];
+    }
+};
+
+realityEditor.gui.buttons.pocketButtonLeave = function(event) {
+    if (event.button !== "pocket") return;
+
+    if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
+        return;
+    }
+
+    var indexChange = (globalStates.guiState === "logic") ? 4 : 0;
+    if (globalStates.pocketButtonState === true) {
+        console.log("state!")
+        realityEditor.gui.menus.off("main",["pocket"]);
+     // todo   if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[0+indexChange].src;
+    }
+    else {
+        realityEditor.gui.menus.off("main",["pocket"]);
+        console.log("land!")
+      // todo  if (!globalStates.UIOffMode)    document.getElementById('pocketButton').src = pocketButtonImage[2+indexChange].src;
+    }
+
+    // this is where the virtual point creates object
+
+    // todo for testing only
+    if (globalStates.pocketButtonDown === true && globalStates.guiState ==="node") {
+
+        pocketItemId = realityEditor.device.utilities.uuidTime();
+        console.log(pocketItemId);
+        pocketItem.pocket.nodes[pocketItemId] = new Logic();
+
+        var thisItem = pocketItem.pocket.nodes[pocketItemId];
+
             thisItem.uuid = pocketItemId;
 
-			thisItem.x = globalStates.pointerPosition[0] - (globalStates.height / 2);
-			thisItem.y = globalStates.pointerPosition[1] - (globalStates.width / 2);
+        thisItem.x = globalStates.pointerPosition[0] - (globalStates.height / 2);
+        thisItem.y = globalStates.pointerPosition[1] - (globalStates.width / 2);
 
-			// else {
-			// var matrixTouch =  screenCoordinatesToMatrixXY(thisItem, [evt.clientX,evt.clientY]);
-			// thisItem.x = matrixTouch[0];
-			// thisItem.y = matrixTouch[1];
-			//}
-			thisItem.loaded = false;
+        // else {
+        // var matrixTouch =  screenCoordinatesToMatrixXY(thisItem, [evt.clientX,evt.clientY]);
+        // thisItem.x = matrixTouch[0];
+        // thisItem.y = matrixTouch[1];
+        //}
+        thisItem.loaded = false;
 
-			var thisObject = pocketItem.pocket;
-			// this is a work around to set the state of an objects to not being visible.
-			thisObject.objectId = "pocket";
-			thisObject.name = "pocket";
-			thisObject.objectVisible = false;
-			thisObject.screenZ = 1000;
-			thisObject.fullScreen = false;
-			thisObject.sendMatrix = false;
-			thisObject.loaded = false;
-			thisObject.integerVersion = 170;
-			thisObject.matrix = [];
-			// thisObject.nodes = {};
-			thisObject.protocol = "R1";
+        var thisObject = pocketItem.pocket;
+        // this is a work around to set the state of an objects to not being visible.
+        thisObject.objectId = "pocket";
+        thisObject.name = "pocket";
+        thisObject.objectVisible = false;
+        thisObject.screenZ = 1000;
+        thisObject.fullScreen = false;
+        thisObject.sendMatrix = false;
+        thisObject.loaded = false;
+        thisObject.integerVersion = 170;
+        thisObject.matrix = [];
+        // thisObject.nodes = {};
+        thisObject.protocol = "R1";
 
-			//
-			//thisObject.visibleCounter = timeForContentLoaded;
+        //
+        //thisObject.visibleCounter = timeForContentLoaded;
 
-			//addElement("pocket", pocketItemId, "nodes/" + thisItem.type + "/index.html",  pocketItem.pocket, "logic",globalStates);
+        //addElement("pocket", pocketItemId, "nodes/" + thisItem.type + "/index.html",  pocketItem.pocket, "logic",globalStates);
 
-		}
-		this.gui.pocket.setPocketPosition(evt);
+    }
+    realityEditor.gui.pocket.setPocketPosition(evt);
 
-		//TODO: this is a debug method to create random blocks by dragging out from the pocket button while in crafting mode. should be removed eventually.
-		/*
-		 if (globalStates.pocketButtonDown === true && globalStates.guiState === "logic" && !globalStates.currentLogic.tempBlock) {
-		 console.log("create new block from pocket");
 
-		 // Returns a random integer between min (included) and max (excluded)
-		 // Using Math.round() will give you a non-uniform distribution!
-		 function getRandomInt(min, max) {
-		 min = Math.ceil(min);
-		 max = Math.floor(max);
-		 return Math.floor(Math.random() * (max - min)) + min;
-		 }
+};
 
-		 var blockWidth = getRandomInt(1,5); //1;
-		 var itemSelected = 0;
-
-		 createTempBlockOnPointer(blockWidth, evt.pageX, evt.pageY, itemSelected);
-		 }
-		 */
-
-		// globalStates.pocketButtonDown = false;
-		// globalStates.pocketButtonUp = false;
-	}.bind(this), false);
-	ec++;
-
+/*
 	document.getElementById("reloadButton").addEventListener("touchstart", function () {
 		if (!globalStates.UIOffMode)    document.getElementById('reloadButton').src = reloadButtonImage[0].src;
 		window.location.href = "of://reload";
@@ -534,6 +486,7 @@ realityEditor.gui.buttons.draw = function() {
 		window.open("index.html?v=" + Math.floor((Math.random() * 100) + 1));
 	}.bind(this));
 	ec++;
+
 
 	var memoryWebButton = document.getElementById('memoryWebButton');
 	memoryWebButton.addEventListener('touchstart', function() {
@@ -560,3 +513,4 @@ realityEditor.gui.buttons.draw = function() {
 
 	this.cout("GUI");
 };
+*/

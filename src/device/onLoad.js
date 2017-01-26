@@ -56,6 +56,13 @@ createNameSpace("realityEditor.device");
 
 realityEditor.device.onload = function () {
 
+        //window.location.href = "of://kickoff";
+
+
+    realityEditor.gui.menus.init();
+
+    realityEditor.gui.menus.on("main",["gui"]);
+
 
 	globalStates.tempUuid = realityEditor.device.utilities.uuidTimeShort();
 	console.log("-----------------------------:  "+globalStates.tempUuid);
@@ -76,7 +83,7 @@ realityEditor.device.onload = function () {
 
 	if (globalStates.platform === 'iPhone' || globalStates.platform === "iPod touch") {
 
-		document.getElementById("logButtonDiv").style.visibility = "hidden";
+		//document.getElementById("logButtonDiv").style.visibility = "hidden";
 		// document.getElementById("reloadButtonDiv").style.visibility = "hidden";
 		//   document.getElementById("preferencesButtonDiv").style.bottom = "36px";
 
