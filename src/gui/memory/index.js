@@ -149,7 +149,7 @@ MemoryContainer.prototype.onTouchStart = function(event) {
 };
 
 MemoryContainer.prototype.startDragging = function() {
-    if (!this.memory) {
+    if (!this.memory || !this.image) {
         return;
     }
     this.dragging = true;
@@ -308,6 +308,10 @@ MemoryContainer.prototype.onTouchEnd = function() {
 
 MemoryContainer.prototype.remember = function() {
     if (!this.memory && !this.image) {
+        return;
+    }
+
+    if (globalStates.guiState === 'node' && globalStates.drawDotLine) {
         return;
     }
 

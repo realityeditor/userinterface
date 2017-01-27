@@ -118,8 +118,6 @@ realityEditor.gui.menus.getElements = function (element) {
         svgElement= {item: svgDoc, overlay: l, bg:svgDoc.getElementById("bg"), state: ["",""]}
     }
 
-    svgElement.bg.setAttribute("class", "blue inactive");
-
     svgElement.overlay.button = element;
     return svgElement;
 };

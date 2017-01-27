@@ -177,6 +177,9 @@ MemoryPointer.prototype.updateForceSimulation = function() {
             continue;
         }
         var node = this.connectedObject.nodes[forceNode.id];
+        if (!node) {
+            continue;
+        }
         forceNode.fx = node.screenX - this.connectedNode.screenX;
         forceNode.fy = node.screenY - this.connectedNode.screenY;
     }
@@ -202,17 +205,25 @@ MemoryPointer.prototype.draw = function() {
     var scale = cvZ / 10;
 
     var tol = 60 * scale;
-    if (this.x < tol) {
-        this.x = tol;
-    }
-    if (this.y < tol) {
-        this.y = tol;
-    }
-    if (this.x > globalStates.height - tol) {
-        this.x = globalStates.height - tol;
-    }
-    if (this.y > globalStates.width - tol) {
-        this.y = globalStates.width - tol;
+
+    var connectedNodeIsOffscreen = (this.connectedNode.screenX < -tol) ||
+        (this.connectedNode.screenY < -tol) ||
+        (this.connectedNode.screenX > globalStates.height + tol) ||
+        (this.connectedNode.screenY > globalStates.width + tol);
+
+    if (!connectedNodeIsOffscreen) {
+        if (this.x < tol) {
+            this.x = tol;
+        }
+        if (this.y < tol) {
+            this.y = tol;
+        }
+        if (this.x > globalStates.height - tol) {
+            this.x = globalStates.height - tol;
+        }
+        if (this.y > globalStates.width - tol) {
+            this.y = globalStates.width - tol;
+        }
     }
 
     this.element.style.transform = 'translate3d(' + this.x + 'px,' + this.y + 'px, 2px) scale(' + scale + ')';
