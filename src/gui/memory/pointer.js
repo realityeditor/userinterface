@@ -177,6 +177,9 @@ MemoryPointer.prototype.updateForceSimulation = function() {
             continue;
         }
         var node = this.connectedObject.nodes[forceNode.id];
+        if (!node) {
+            continue;
+        }
         forceNode.fx = node.screenX - this.connectedNode.screenX;
         forceNode.fy = node.screenY - this.connectedNode.screenY;
     }
