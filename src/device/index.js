@@ -208,7 +208,9 @@ realityEditor.device.onTouchDown = function(evt) {
 				globalProgram.objectA = target.objectId;
 				globalProgram.nodeA = target.nodeId;
 
-				if(objects[target.objectId].nodes[target.nodeId].type === "logic"){
+				var type = objects[target.objectId].nodes[target.nodeId].type;
+
+				if (type === "logic" || type === "node") {
 
 					if(!globalStates.editingMode) {
 						this.touchTimer = setTimeout(function () {
@@ -220,7 +222,9 @@ realityEditor.device.onTouchDown = function(evt) {
 							globalStates.editingModeObject = target.objectId;
 							realityEditor.device.activateMultiTouch();
 							realityEditor.device.activateNodeMove(target.nodeId);
-                            realityEditor.gui.menus.on("bigTrash",[]);
+							if (type === "logic") {
+								realityEditor.gui.menus.on("bigTrash",[]);
+							}
 							//realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
 
 						}, 400);
@@ -336,11 +340,11 @@ realityEditor.device.onTrueTouchUp = function(evt){
 		console.log("finale "+evt.pageX);
 		realityEditor.device.endTrash(target.nodeId);
 
-		if (target.type !== 'logic') {
+		if (target.type !== 'logic' && target.type !== 'node') {
 			return;
 		}
 
-		if(evt.pageX >= (globalStates.height-60)){
+		if(target.type === 'logic' && evt.pageX >= (globalStates.height-60)){
 
 			for(var objectKey in objects){
 				var thisObject = objects[objectKey];
@@ -360,9 +364,9 @@ realityEditor.device.onTrueTouchUp = function(evt){
 			realityEditor.network.deleteNodeFromObject(objects[target.objectId].ip, target.objectId, target.nodeId);
 
 		} else {
-            if (target.objectId !== "pocket") {
-                realityEditor.network.sendResetContent(target.objectId, target.nodeId, "logic");
-            }
+			if (target.objectId !== "pocket") {
+				realityEditor.network.sendResetContent(target.objectId, target.nodeId, target.type);
+			}
 		}
 
 
@@ -477,7 +481,7 @@ realityEditor.device.onTouchMove = function(evt) {
 			globalStates.editingModeObjectY = evt.pageY;
 
 			var tempThisObject = null;
-			if (target.type === 'logic') {
+			if (target.type === 'logic' || target.type === 'node') {
 				tempThisObject = objects[target.objectId].nodes[target.nodeId];
 			} else {
 				tempThisObject = realityEditor.device.getEditingModeObject();
