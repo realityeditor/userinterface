@@ -313,6 +313,7 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
                     }), '*');
 
             if (type === "node") {
+                thisObject.temp = this.ar.utilities.copyMatrix(thisTransform2);
                 globalDOMCach[nodeKey].style.visibility = 'visible';
                 // document.getElementById("text" + nodeKey).style.visibility = 'visible';
                 if (globalStates.editingMode) {
