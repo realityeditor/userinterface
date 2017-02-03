@@ -8415,7 +8415,8 @@ Polymer({
   properties: {
     value: {
       type: Number,
-      value: 0
+      value: 0,
+      observer: 'onValueChange'
     }
   },
   height: 520,
@@ -8434,18 +8435,13 @@ Polymer({
     var rect = this.$.container.getBoundingClientRect();
 
     var dY = e.clientY - rect.top - this.height / 2 - 3;
-    var absY = Math.abs(dY);
+    var value = -dY / this.height * 2;
 
     var deadzone = 10;
-    var arrowLevel0 = 160;
-    var arrowLevel1 = 210;
-    if (absY < deadzone) {
-      absY = 0;
-      dY = 0;
+    if (Math.abs(dY) < deadzone) {
+      value = 0;
     }
-    this.$.activation.setAttribute('height', absY);
 
-    var value = -dY / this.height * 2;
     if (value < -1) {
       value = -1;
     }
@@ -8453,6 +8449,16 @@ Polymer({
       value = 1;
     }
     this.value = value;
+  },
+  onValueChange: function() {
+    var dY = -this.value * this.height / 2;
+    var absY = Math.abs(dY);
+
+    var deadzone = 10;
+    var arrowLevel0 = 160;
+    var arrowLevel1 = 210;
+    this.$.activation.setAttribute('height', absY);
+
 
     this.$.container.querySelectorAll('path.active').forEach(function(path) {
       path.classList.remove('active');

@@ -8432,11 +8432,13 @@ Polymer({
   properties: {
     valueX: {
       type: Number,
-      value: 0
+      value: 0,
+      observer: 'onValueChange'
     },
     valueY: {
       type: Number,
-      value: 0
+      value: 0,
+      observer: 'onValueChange'
     }
   },
   height: 520,
@@ -8465,23 +8467,28 @@ Polymer({
 
     var dY = e.clientY - rect.top - 258;
     var dX = e.clientX - rect.left - 258;
+
+    var deadzone = 30;
+    if (Math.abs(dY) < deadzone) {
+      dY = 0;
+    }
+    if (Math.abs(dX) < deadzone) {
+      dX = 0;
+    }
+
+    this.valueY = this.limit(-dY / this.height * 2);
+    this.valueX = this.limit(dX / this.width * 2);
+  },
+  onValueChange: function() {
+    var dY = -this.valueY * this.height / 2;
+    var dX = this.valueX * this.width / 2;
+
     var absY = Math.abs(dY);
     var absX = Math.abs(dX);
 
     var deadzone = 30;
     var arrowLevel0 = 160;
     var arrowLevel1 = 210;
-    if (absY < deadzone) {
-      absY = 0;
-      dY = 0;
-    }
-    if (absX < deadzone) {
-      absX = 0;
-      dX = 0;
-    }
-
-    this.valueX = this.limit(dX / this.width * 2);
-    this.valueY = this.limit(-dY / this.height * 2);
 
     var scale = Math.sqrt(dY * dY + dX * dX) / 150;
     if (scale > 153 / 150) {
