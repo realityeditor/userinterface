@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="cache-control" content="max-age=0"/>
-    <meta http-equiv="cache-control" content="no-cache"/>
-    <meta http-equiv="expires" content="0"/>
-    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
-    <meta http-equiv="pragma" content="no-cache"/>
+
     <meta charset="utf-8">
     <title>Reality Editor</title>
 
     <!-- Sets initial viewport load and disables zooming  -->
-    <meta name="viewport" content="initial-scale=2, maximum-scale=2,  minimal-ui">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,  minimal-ui">
 
 
     <!-- Include the compiled Ratchet CSS -->
@@ -18,7 +14,7 @@
     <link href="css/ratchet-theme-ios.css" rel="stylesheet">
 
     <!-- Include the compiled Ratchet JS -->
-    <script src="js/ratchet.js"></script>
+    <script src="js/ratchet.min.js"></script>
 </head>
 <body style="background-color: #efeff4;">
 <div style="position: absolute; right: 0px; width: 65px; top:0px; bottom: 0px; background-color: #222222"></div>
@@ -26,7 +22,7 @@
 <div>
 
     <header class="bar bar-nav" style="right:65px; left:0px">
-        <a class="" href="index.html" data-transition="fade">
+        <a class="" href="index.html" data-ignore="push">
             <button class="btn btn-link btn-nav pull-left">
                 <span class="icon icon-left-nav"></span>
                 Back
@@ -42,7 +38,7 @@
                     <img class="media-object pull-left" src="../svg/move.svg"
                          style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
                     AR-UI Repositioning <small style="color: #b1b1b1;">object developer access required</small>
-                    <div class="toggle">
+                    <div class="toggle" id="editingMode">
                         <div class="toggle-handle"></div>
                     </div>
                 </li>
@@ -58,13 +54,14 @@
                     <img class="media-object pull-left" src="../svg/download.svg"
                          style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
                     External Interface URL<br>
-                    <button class="btn btn-positive pull-right" style="width: 80px; height: 40px; margin-top: 8px">Activate</button>
+                    <button class="btn btn-positive pull-right" style="width: 80px; height: 40px; margin-top: 8px" onclick="reloadUI()">Activate</button>
 
-                    <input type="text" style=" margin-left: 35px; margin-top:10px;width: 340px" placeholder="http://...">
+                    <input type="text" id="externalText" style=" margin-left: 35px; margin-top:10px;width: 340px" placeholder="http://..." oninput="newURLTextLoad()">
                 </li>
             </ul>
     </div>
 
 </div>
+<script src="js/settings.js"></script>
 </body>
 </html>

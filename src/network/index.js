@@ -445,6 +445,12 @@ realityEditor.network.onInternalPostMessage = function(e) {
         msgContent = JSON.parse(e);
     }
 
+    if (typeof msgContent.settings !== "undefined") {
+        realityEditor.network.onSettingPostMessage(msgContent);
+        return;
+    }
+
+
     if (msgContent.resendOnElementLoad) {
         var elt = document.getElementById('iframe' + msgContent.nodeKey);
         if (elt) {
@@ -537,7 +543,7 @@ realityEditor.network.onInternalPostMessage = function(e) {
 
                         });
 
-                        window.addEventListener("devicemotion", function () {
+                        window.addEventListener("devicemotion", function (event) {
 
                             var thisState = globalStates.acceleration;
 
@@ -663,6 +669,76 @@ realityEditor.network.onInternalPostMessage = function(e) {
             }
         }
     }
+
+};
+
+
+realityEditor.network.onSettingPostMessage = function(msgContent) {
+
+    var self = document.getElementById("settingsIframe");
+
+    if (msgContent.settings.getSettings) {
+        self.contentWindow.postMessage(JSON.stringify({getSettings: {
+            extendedTracking: globalStates.extendedTracking,
+            editingMode: globalStates.editingMode,
+            clearSkyState: globalStates.clearSkyState,
+            externalState: globalStates.externalState
+        }
+        }), "*");
+    }
+
+    if(msgContent.settings.getObjects){
+
+        var thisObjects = {};
+
+        for (var keyPref in objects) {
+            thisObjects[keyPref] = {
+              name: objects[keyPref].name,
+                ip:    objects[keyPref].ip,
+                version : objects[keyPref].version,
+                nodes: Object.keys(objects[keyPref].nodes).length,
+                links: Object.keys(objects[keyPref].links).length
+
+            };
+        }
+
+        self.contentWindow.postMessage(JSON.stringify({getObjects: thisObjects}), "*");
+    }
+
+    if (msgContent.settings.setSettings) {
+        if (typeof msgContent.settings.setSettings.extendedTracking !== "undefined") {
+
+            globalStates.extendedTracking = msgContent.settings.setSettings.extendedTracking;
+
+            console.log("jetzt aber mal richtig hier!!", globalStates.extendedTracking);
+
+            if (globalStates.extendedTracking === true) {
+                window.location.href = "of://extendedTrackingOn";
+            } else {
+                window.location.href = "of://extendedTrackingOff";
+            }
+        }
+
+        if (typeof msgContent.settings.setSettings.editingMode !== "undefined") {
+
+            if (msgContent.settings.setSettings.editingMode) {
+
+                realityEditor.device.addEventHandlers();
+                globalStates.editingMode = true;
+
+                window.location.href = "of://developerOn";
+                globalMatrix.matrixtouchOn = "";
+            } else {
+                realityEditor.device.removeEventHandlers();
+                globalStates.editingMode = false;
+                window.location.href = "of://developerOff";
+            }
+
+        }
+
+    }
+
+
 };
 
 realityEditor.network.deleteData = function(url, content) {

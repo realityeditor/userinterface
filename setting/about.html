@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="cache-control" content="max-age=0"/>
-    <meta http-equiv="cache-control" content="no-cache"/>
-    <meta http-equiv="expires" content="0"/>
-    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
-    <meta http-equiv="pragma" content="no-cache"/>
+
     <meta charset="utf-8">
     <title>Reality Editor</title>
 
     <!-- Sets initial viewport load and disables zooming  -->
-    <meta name="viewport" content="initial-scale=2, maximum-scale=2,  minimal-ui">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,  minimal-ui">
 
 
     <!-- Include the compiled Ratchet CSS -->
@@ -18,15 +14,21 @@
     <link href="css/ratchet-theme-ios.css" rel="stylesheet">
 
     <!-- Include the compiled Ratchet JS -->
-    <script src="js/ratchet.js"></script>
+    <script src="js/ratchet.min.js"></script>
 </head>
 <body style="background-color: #efeff4;">
+
+<script src="../src/index.js"></script>
+<script src="../src/gui/ar/lines.js"></script>
+<script src="../src/gui/ar/utilities.js"></script>
+<script src="js/logo.js"></script>
+
 <div style="position: absolute; right: 0px; width: 65px; top:0px; bottom: 0px; background-color: #222222"></div>
 
 <div>
 
     <header class="bar bar-nav" style="right:65px; left:0px">
-        <a class="" href="index.html" data-transition="fade">
+        <a class="" href="index.html" data-ignore="push">
             <button class="btn btn-link btn-nav pull-left">
                 <span class="icon icon-left-nav"></span>
                 Back
@@ -34,26 +36,18 @@
             <h1 class="title">About</h1></a>
     </header>
 
-    <script>
-        console.log("got here");
-    </script>
+
 
     <!-- Wrap all non-bar HTML in the .content div (this is actually what scrolls) -->
     <div class="content" style="right:65px;">
+     <script src="js/logo.js" class="js-custom"></script>
             <ul class="table-view">
                 <li class="table-view-cell">
                     <div style="margin-left: 100px;margin-top: 20px; height: 160px; overflow: hidden;">
                         <canvas id="reLogo" width="1500" height="850" style=" -webkit-transform: scale(0.2,0.2); width:1500px; margin-left: -15px;margin-top: -10px; border:0px; z-index: 20; background: transparent; transform-origin: left top;"></canvas>
                     </div>
                     <div style="width: 470px;">
-                    <br><br>
-
-                        <script src="../js/interactWithLines.js"></script>
-                        <script src="../js/utilities.js"></script>
-                        <script src="js/logo.js"></script>
-
-
-
+                    <br>
 
                     <p>The Reality Editor is partially based on research conducted in the MIT Media Lab and contributions of the open hybrid community.
                     The Reality Editor Graphical User Interface code is written in Javascript and its source code is available under: https://github.com/openhybrid/editor.
@@ -691,7 +685,5 @@
     </div>
 
 </div>
-
-
 </body>
 </html>

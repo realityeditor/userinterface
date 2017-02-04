@@ -247,10 +247,12 @@ realityEditor.gui.buttons.freezeButtonUp = function(event) {
 
 
 realityEditor.gui.buttons.draw = function() {
-    
+    /*
     this.preload(blockTabImage,
         'png/iconBlocks.png', 'png/iconEvents.png', 'png/iconSignals.png', 'png/iconMath.png', 'png/iconWeb.png'
-    );
+    );*/
+
+    this.preload(loadNewUiImage, 'png/load.png', 'png/loadOver.png');
 
     document.getElementById("extendedTrackingSwitch").addEventListener("change", function () {
 		if (document.getElementById("extendedTrackingSwitch").checked) {
@@ -329,8 +331,10 @@ realityEditor.gui.buttons.draw = function() {
 	}.bind(this));
 	ec++;
 
+	console.log("add new UI button");
 	document.getElementById("loadNewUI").addEventListener("touchend", function () {
 		document.getElementById('loadNewUI').src = loadNewUiImage[0].src;
+		console.log("of://loadNewUI"+globalStates.newURLText);
 		window.location.href = "of://loadNewUI"+globalStates.newURLText;
 
 	}.bind(this));
