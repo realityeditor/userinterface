@@ -266,11 +266,22 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
         } else {
             palette.style.display = 'block';
         }
+        setPaletteElementDemo(true);
+    }
+
+    function setPaletteElementDemo(value) {
+        var paletteElements = document.querySelectorAll('.palette-element');
+        for (var i = 0; i < paletteElements.length; i++) {
+            var elt = paletteElements[i];
+            // TODO(hobinjk): stringify is not required except for legacy reasons
+            elt.contentWindow.postMessage(JSON.stringify({demo: value}), '*');
+        }
     }
 
     function pocketHide() {
         pocket.classList.remove('pocketShown');
         realityEditor.gui.menus.buttonOff('main', ['pocket']);
+        setPaletteElementDemo(false);
     }
 
     function pocketShown() {
