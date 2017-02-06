@@ -8317,6 +8317,7 @@ Polymer({
     }
   },
   isReadValue: false,
+  demonstrating: false,
   onNameChange: function() {
     // addReadListener doesn't have a removeReadListener so this can get real inefficient real fast
     hybridObject.addReadListener(this.name, this.onRead);
@@ -8336,7 +8337,17 @@ Polymer({
   created: function() {
     this.onRead = this.onRead.bind(this);
   },
+  startDemonstrating: function() {
+    this.demonstrating = true;
+    this.demonstrateMotion();
+  },
+  stopDemonstrating: function() {
+    this.demonstrating = false;
+  },
   demonstrateMotion: function() {
+    if (!this.demonstrating) {
+      return;
+    }
     var newValue = this.value + 0.003;
     if (newValue > 1) {
       newValue = 0;
@@ -8347,11 +8358,18 @@ Polymer({
     window.requestAnimationFrame(this.demonstrateMotion);
   },
   ready: function() {
-    // Hardcoded demonstration mode
-    if (isDemoMode) {
-      this.demonstrateMotion = this.demonstrateMotion.bind(this);
-      this.demonstrateMotion();
-    }
+    this.demonstrateMotion = this.demonstrateMotion.bind(this);
+    window.addEventListener('message', function(msg) {
+      var data = JSON.parse(msg.data);
+      if (!data.hasOwnProperty('demo')) {
+        return;
+      }
+      if (data.demo) {
+        this.startDemonstrating();
+      } else {
+        this.stopDemonstrating();
+      }
+    }.bind(this));
 
     hybridObject.sendCreateNode(this.name);
   }
