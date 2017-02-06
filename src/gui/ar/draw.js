@@ -113,13 +113,8 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
 
             //   document.getElementById("controls").innerHTML = (toAxisAngle(tempMatrix2)[0]).toFixed(1)+" "+(toAxisAngle(tempMatrix2)[1]).toFixed(1);
 
-            if (globalStates.guiState ==="ui" || Object.keys(generalObject.nodes).length === 0) {
-                this.drawTransformed(objectKey, objectKey, generalObject, tempMatrix, "ui", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
-                this.addElement(objectKey, objectKey, "http://" + generalObject.ip + ":" + httpPort + "/obj/" + generalObject.name + "/", generalObject, "ui", thisGlobalStates);
-            }
-            else {
-                this.hideTransformed(objectKey, objectKey, generalObject, "ui");
-            }
+            this.drawTransformed(objectKey, objectKey, generalObject, tempMatrix, "ui", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix, globalStates.guiState === "ui");
+            this.addElement(objectKey, objectKey, "http://" + generalObject.ip + ":" + httpPort + "/obj/" + generalObject.name + "/", generalObject, "ui", thisGlobalStates);
 
             // do this for staying compatible with older versions but use new routing after some time.
             // dataPointInterfaces are clearly their own thing and should not be part of obj
@@ -140,32 +135,23 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
 
                 generalNode = generalObject.nodes[nodeKey];
 
-                if (globalStates.guiState ==="node" || globalStates.guiState === "logic") {
-                    this.drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, generalNode.type, thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
+                this.drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, generalNode.type, thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix, globalStates.guiState === "node" || globalStates.guiState === "logic");
 
 
-                    this.addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, thisGlobalStates);
-
-                } else {
-                    this.hideTransformed(objectKey, nodeKey, generalNode, generalNode.type);
-                }
+                this.addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, thisGlobalStates);
             }
 
             for (var nodeKey in generalObject.frames) {
                 generalNode = generalObject.frames[nodeKey];
-                if (globalStates.guiState === "ui") {
-                    this.drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, "ui", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
-                    var keyedSrc = generalNode.src;
-                    if (keyedSrc.indexOf('?') >= 0) {
-                        keyedSrc += '&';
-                    } else {
-                        keyedSrc += '?';
-                    }
-                    keyedSrc += 'nodeKey=' + nodeKey;
-                    this.addElement(objectKey, nodeKey, keyedSrc, generalNode, "ui", thisGlobalStates);
+                this.drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, "ui", thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix, globalStates.guiState === "ui");
+                var keyedSrc = generalNode.src;
+                if (keyedSrc.indexOf('?') >= 0) {
+                    keyedSrc += '&';
                 } else {
-                    this.hideTransformed(objectKey, nodeKey, generalNode, "ui");
+                    keyedSrc += '?';
                 }
+                keyedSrc += 'nodeKey=' + nodeKey;
+                this.addElement(objectKey, nodeKey, keyedSrc, generalNode, "ui", thisGlobalStates);
             }
         }
 
@@ -244,16 +230,12 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
             //console.log(document.getElementById("iframe"+ nodeKey));
             generalNode = generalObject.nodes[nodeKey];
 
-            if ( (globalStates.guiState === "node" || globalStates.guiState === "logic") && generalNode.type === "logic") {
-                this.drawTransformed(objectKey, nodeKey, generalNode,
-                    thisMatrix, generalNode.type, globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix);
+            var isVisible = (globalStates.guiState === "node" || globalStates.guiState === "logic") && generalNode.type === "logic";
 
-                this.addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, globalStates);
+            this.drawTransformed(objectKey, nodeKey, generalNode,
+                thisMatrix, generalNode.type, globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix, isVisible);
 
-                /* } else {
-                 hideTransformed("pocket", nodeKey, generalNode, "logic");
-                 }*/
-            }
+            this.addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, globalStates);
         }
     }
     /// todo Test
@@ -285,8 +267,7 @@ var thisTransform = [];
 var thisKey;
 var thisSubKey;
 
-realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisObject, thisTransform2, type, globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix) {
-
+realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisObject, thisTransform2, type, globalStates, globalCanvas, globalLogic, globalDOMCach, globalMatrix, isVisible) {
 
     var objectKey = objectKey;
     var nodeKey = nodeKey;
@@ -301,10 +282,15 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
 
     //console.log(JSON.stringify(thisTransform2));
 
-    if (globalStates.notLoading !== nodeKey && thisObject.loaded === true) {
+    if (globalStates.notLoading === nodeKey || !thisObject.loaded) {
+        return;
+    }
+
+    if (thisObject.visible !== isVisible) {
         if (!thisObject.visible) {
             thisObject.visible = true;
             globalDOMCach["thisObject" + nodeKey].style.display = 'inline';
+            globalDOMCach["thisObject" + nodeKey].classList.remove('backgroundObject');
             globalDOMCach["iframe" + nodeKey].style.visibility = 'visible';
             globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
                 JSON.stringify(
@@ -368,200 +354,208 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
              }
              }*/
 
-        }
-        if (thisObject.visible) {
-            // this needs a better solution
-            if (thisObject.fullScreen !== true) {
+        } else if (thisObject.visible) {
+            globalDOMCach["thisObject" + nodeKey].classList.add('backgroundObject');
+            // globalDOMCach["iframe" + nodeKey].style.visibility = 'hidden';
+            globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
+                JSON.stringify(
+                    {
+                        visibility: "hidden"
+                    }), '*');
 
-                finalMatrixTransform2 = [
-                    thisObject.scale, 0, 0, 0,
-                    0, thisObject.scale, 0, 0,
-                    0, 0, 1, 0,
-                    thisObject.x, thisObject.y, 0, 1
-                ];
+            thisObject.visible = false;
+            thisObject.visibleEditing = false;
 
-                if (globalStates.editingMode || globalStates.editingNode === nodeKey) {
-
-                    // todo test if this can be made touch related
-                    if (type === "logic") {
-                        thisObject.temp = this.ar.utilities.copyMatrix(thisTransform2);
-                    }
-
-
-                    if (globalMatrix.matrixtouchOn === nodeKey) {
-                        //if(globalStates.unconstrainedPositioning===true)
-                        thisObject.temp = this.ar.utilities.copyMatrix(thisTransform2);
-
-                        //  console.log(thisObject.temp);
-
-                        if (globalMatrix.copyStillFromMatrixSwitch) {
-                            globalMatrix.visual = this.ar.utilities.copyMatrix(thisTransform2);
-                            if (typeof thisObject.matrix === "object")
-                                if (thisObject.matrix.length > 0)
-                                // thisObject.begin = copyMatrix(multiplyMatrix(thisObject.matrix, thisObject.temp));
-                                    this.ar.utilities.multiplyMatrix(thisObject.matrix, thisObject.temp, thisObject.begin);
-
-                                else
-                                    thisObject.begin = this.ar.utilities.copyMatrix(thisObject.temp);
-                            else
-                                thisObject.begin = this.ar.utilities.copyMatrix(thisObject.temp);
-
-                            if (globalStates.unconstrainedPositioning === true)
-                            // thisObject.matrix = copyMatrix(multiplyMatrix(thisObject.begin, invertMatrix(thisObject.temp)));
-
-                                this.ar.utilities.multiplyMatrix(thisObject.begin,  this.ar.utilities.invertMatrix(thisObject.temp), thisObject.matrix);
-
-                            globalMatrix.copyStillFromMatrixSwitch = false;
-                        }
-
-                        if (globalStates.unconstrainedPositioning === true)
-                            thisTransform2 = globalMatrix.visual;
-
-                    }
-
-                    if (typeof thisObject.matrix[1] !== "undefined") {
-                        if (thisObject.matrix.length > 0) {
-                            if (globalStates.unconstrainedPositioning === false) {
-                                //thisObject.begin = copyMatrix(multiplyMatrix(thisObject.matrix, thisObject.temp));
-                                this.ar.utilities.multiplyMatrix(thisObject.matrix, thisObject.temp, thisObject.begin);
-                            }
-
-                            var r = globalMatrix.r, r2 = globalMatrix.r2;
-                            this.ar.utilities.multiplyMatrix(thisObject.begin,  this.ar.utilities.invertMatrix(thisObject.temp), r);
-                            this.ar.utilities.multiplyMatrix(finalMatrixTransform2, r, r2);
-                            this.ar.utilities.estimateIntersection(nodeKey, r2, thisObject);
-                        } else {
-                            this.ar.utilities.estimateIntersection(nodeKey, null, thisObject);
-                        }
-
-                    } else {
-
-                        this.ar.utilities.estimateIntersection(nodeKey, null, thisObject);
-                    }
-                }
-
-                if (thisObject.matrix.length < 13) {
-
-                    this.ar.utilities.multiplyMatrix(finalMatrixTransform2, thisTransform2, thisTransform);
-                } else {
-                    var r = globalMatrix.r;
-                    this.ar.utilities.multiplyMatrix(thisObject.matrix, thisTransform2, r);
-                    this.ar.utilities.multiplyMatrix(finalMatrixTransform2, r, thisTransform);
-
-                    // thisTransform = multiplyMatrix(finalMatrixTransform2, multiplyMatrix(thisObject.matrix, thisTransform2));
-                }
-
-                //    else {
-                //        multiplyMatrix(finalMatrixTransform2, thisTransform2,thisTransform);
-                //   }
-
-                // console.log(nodeKey);
-                // console.log(globalDOMCach["thisObject" + nodeKey]);
-                // console.log(globalDOMCach["thisObject" + nodeKey].visibility);
-
-                this.webkitTransformMatrix3d(globalDOMCach["thisObject" + nodeKey], thisTransform);
-
-                // this is for later
-                // The matrix has been changed from Vuforia 3 to 4 and 5. Instead of  thisTransform[3][2] it is now thisTransform[3][3]
-                thisObject.screenX = thisTransform[12] / thisTransform[15] + (globalStates.height / 2);
-                thisObject.screenY = thisTransform[13] / thisTransform[15] + (globalStates.width / 2);
-                thisObject.screenZ = thisTransform[14];
-
-            }
-            if (type === "ui") {
-
-                if (thisObject.sendMatrix === true || thisObject.sendAcceleration === true) {
-
-                    var thisMsg = {};
-
-                    if(thisObject.sendMatrix === true) {
-                        thisMsg.modelViewMatrix = globalObjects[objectKey];
-                    }
-
-                    if(thisObject.sendAcceleration === true) {
-                        thisMsg.acceleration = globalStates.acceleration;
-                    }
-
-                    this.cout(thisMsg);
-                    globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
-                        JSON.stringify(thisMsg), '*');
-                    //  console.log("I am here");
-
-                }
-            } else {
-
-                thisObject.screenLinearZ = (((10001 - (20000 / thisObject.screenZ)) / 9999) + 1) / 2;
-                // map the linearized zBuffer to the final ball size
-                thisObject.screenLinearZ = this.ar.utilities.map(thisObject.screenLinearZ, 0.996, 1, 50, 1);
-
-            }
-
-
-            if (type === "logic" && objectKey!=="pocket"){
-
-                if (globalStates.pointerPosition[0] > -1 && globalProgram.objectA) {
-
-                    var size = (thisObject.screenLinearZ * 40) * thisObject.scale;
-                    var x = thisObject.screenX;
-                    var y = thisObject.screenY;
-
-                    globalCanvas.hasContent = true;
-
-                    globalLogic.rectPoints = [
-                        [x - (-1 * size), y - (-0.42 * size)],
-                        [x - (-1 * size), y - (0.42 * size)],
-                        [x - (-0.42 * size), y - (size)],
-                        [x - (0.42 * size), y - (size)],
-                        [x - (size), y - (0.42 * size)],
-                        [x - (size), y - (-0.42 * size)],
-                        [x - (0.42 * size), y - (-1 * size)],
-                        [x - (-0.42 * size), y - (-1 * size)]
-                    ];
-                    /* var context = globalCanvas.context;
-                     context.setLineDash([]);
-                     // context.restore();
-                     context.beginPath();
-                     context.moveTo(globalLogic.rectPoints[0][0], globalLogic.rectPoints[0][1]);
-                     context.lineTo(globalLogic.rectPoints[1][0], globalLogic.rectPoints[1][1]);
-                     context.lineTo(globalLogic.rectPoints[2][0], globalLogic.rectPoints[2][1]);
-                     context.lineTo(globalLogic.rectPoints[3][0], globalLogic.rectPoints[3][1]);
-                     context.lineTo(globalLogic.rectPoints[4][0], globalLogic.rectPoints[4][1]);
-                     context.lineTo(globalLogic.rectPoints[5][0], globalLogic.rectPoints[5][1]);
-                     context.lineTo(globalLogic.rectPoints[6][0], globalLogic.rectPoints[6][1]);
-                     context.lineTo(globalLogic.rectPoints[7][0], globalLogic.rectPoints[7][1]);
-                     context.closePath();
-
-                     if (globalLogic.farFrontElement === nodeKey) {
-                     context.strokeStyle = "#ff0000";
-                     } else {
-                     context.strokeStyle = "#f0f0f0";
-                     }*/
-                    if (this.ar.utilities.insidePoly(globalStates.pointerPosition, globalLogic.rectPoints)) {
-                        if(thisObject.animationScale ===0 && !globalStates.editingMode)
-                            globalDOMCach["logic" + nodeKey].className = "mainEditing scaleIn";
-                        thisObject.animationScale =1;
-                    }
-                    else {
-                        if(thisObject.animationScale ===1)
-                            globalDOMCach["logic" + nodeKey].className = "mainEditing scaleOut";
-                        thisObject.animationScale =0;
-                    }
-
-                    // context.stroke();
-                } else{
-                    if(thisObject.animationScale ===1) {
-                        globalDOMCach["logic" + nodeKey].className = "mainEditing scaleOut";
-                        thisObject.animationScale =0;
-                    }
-                }
-
-            }
-
-
-
+            globalDOMCach[nodeKey].style.visibility = 'hidden';
+            globalDOMCach["canvas" + nodeKey].style.display = 'none';
         }
     }
 
+    // this needs a better solution
+    if (thisObject.fullScreen !== true) {
+
+        finalMatrixTransform2 = [
+            thisObject.scale, 0, 0, 0,
+            0, thisObject.scale, 0, 0,
+            0, 0, 1, 0,
+            thisObject.x, thisObject.y, 0, 1
+        ];
+
+        if (globalStates.editingMode || globalStates.editingNode === nodeKey) {
+
+            // todo test if this can be made touch related
+            if (type === "logic") {
+                thisObject.temp = this.ar.utilities.copyMatrix(thisTransform2);
+            }
+
+
+            if (globalMatrix.matrixtouchOn === nodeKey) {
+                //if(globalStates.unconstrainedPositioning===true)
+                thisObject.temp = this.ar.utilities.copyMatrix(thisTransform2);
+
+                //  console.log(thisObject.temp);
+
+                if (globalMatrix.copyStillFromMatrixSwitch) {
+                    globalMatrix.visual = this.ar.utilities.copyMatrix(thisTransform2);
+                    if (typeof thisObject.matrix === "object")
+                        if (thisObject.matrix.length > 0)
+                        // thisObject.begin = copyMatrix(multiplyMatrix(thisObject.matrix, thisObject.temp));
+                            this.ar.utilities.multiplyMatrix(thisObject.matrix, thisObject.temp, thisObject.begin);
+
+                        else
+                            thisObject.begin = this.ar.utilities.copyMatrix(thisObject.temp);
+                    else
+                        thisObject.begin = this.ar.utilities.copyMatrix(thisObject.temp);
+
+                    if (globalStates.unconstrainedPositioning === true)
+                    // thisObject.matrix = copyMatrix(multiplyMatrix(thisObject.begin, invertMatrix(thisObject.temp)));
+
+                        this.ar.utilities.multiplyMatrix(thisObject.begin,  this.ar.utilities.invertMatrix(thisObject.temp), thisObject.matrix);
+
+                    globalMatrix.copyStillFromMatrixSwitch = false;
+                }
+
+                if (globalStates.unconstrainedPositioning === true)
+                    thisTransform2 = globalMatrix.visual;
+
+            }
+
+            if (typeof thisObject.matrix[1] !== "undefined") {
+                if (thisObject.matrix.length > 0) {
+                    if (globalStates.unconstrainedPositioning === false) {
+                        //thisObject.begin = copyMatrix(multiplyMatrix(thisObject.matrix, thisObject.temp));
+                        this.ar.utilities.multiplyMatrix(thisObject.matrix, thisObject.temp, thisObject.begin);
+                    }
+
+                    var r = globalMatrix.r, r2 = globalMatrix.r2;
+                    this.ar.utilities.multiplyMatrix(thisObject.begin,  this.ar.utilities.invertMatrix(thisObject.temp), r);
+                    this.ar.utilities.multiplyMatrix(finalMatrixTransform2, r, r2);
+                    this.ar.utilities.estimateIntersection(nodeKey, r2, thisObject);
+                } else {
+                    this.ar.utilities.estimateIntersection(nodeKey, null, thisObject);
+                }
+
+            } else {
+
+                this.ar.utilities.estimateIntersection(nodeKey, null, thisObject);
+            }
+        }
+
+        if (thisObject.matrix.length < 13) {
+
+            this.ar.utilities.multiplyMatrix(finalMatrixTransform2, thisTransform2, thisTransform);
+        } else {
+            var r = globalMatrix.r;
+            this.ar.utilities.multiplyMatrix(thisObject.matrix, thisTransform2, r);
+            this.ar.utilities.multiplyMatrix(finalMatrixTransform2, r, thisTransform);
+
+            // thisTransform = multiplyMatrix(finalMatrixTransform2, multiplyMatrix(thisObject.matrix, thisTransform2));
+        }
+
+        //    else {
+        //        multiplyMatrix(finalMatrixTransform2, thisTransform2,thisTransform);
+        //   }
+
+        // console.log(nodeKey);
+        // console.log(globalDOMCach["thisObject" + nodeKey]);
+        // console.log(globalDOMCach["thisObject" + nodeKey].visibility);
+
+        this.webkitTransformMatrix3d(globalDOMCach["thisObject" + nodeKey], thisTransform);
+
+        // this is for later
+        // The matrix has been changed from Vuforia 3 to 4 and 5. Instead of  thisTransform[3][2] it is now thisTransform[3][3]
+        thisObject.screenX = thisTransform[12] / thisTransform[15] + (globalStates.height / 2);
+        thisObject.screenY = thisTransform[13] / thisTransform[15] + (globalStates.width / 2);
+        thisObject.screenZ = thisTransform[14];
+
+    }
+    if (type === "ui") {
+
+        if (thisObject.sendMatrix === true || thisObject.sendAcceleration === true) {
+
+            var thisMsg = {};
+
+            if(thisObject.sendMatrix === true) {
+                thisMsg.modelViewMatrix = globalObjects[objectKey];
+            }
+
+            if(thisObject.sendAcceleration === true) {
+                thisMsg.acceleration = globalStates.acceleration;
+            }
+
+            this.cout(thisMsg);
+            globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
+                JSON.stringify(thisMsg), '*');
+            //  console.log("I am here");
+
+        }
+    } else {
+
+        thisObject.screenLinearZ = (((10001 - (20000 / thisObject.screenZ)) / 9999) + 1) / 2;
+        // map the linearized zBuffer to the final ball size
+        thisObject.screenLinearZ = this.ar.utilities.map(thisObject.screenLinearZ, 0.996, 1, 50, 1);
+
+    }
+
+
+    if (type === "logic" && objectKey!=="pocket"){
+
+        if (globalStates.pointerPosition[0] > -1 && globalProgram.objectA) {
+
+            var size = (thisObject.screenLinearZ * 40) * thisObject.scale;
+            var x = thisObject.screenX;
+            var y = thisObject.screenY;
+
+            globalCanvas.hasContent = true;
+
+            globalLogic.rectPoints = [
+                [x - (-1 * size), y - (-0.42 * size)],
+                [x - (-1 * size), y - (0.42 * size)],
+                [x - (-0.42 * size), y - (size)],
+                [x - (0.42 * size), y - (size)],
+                [x - (size), y - (0.42 * size)],
+                [x - (size), y - (-0.42 * size)],
+                [x - (0.42 * size), y - (-1 * size)],
+                [x - (-0.42 * size), y - (-1 * size)]
+            ];
+            /* var context = globalCanvas.context;
+             context.setLineDash([]);
+             // context.restore();
+             context.beginPath();
+             context.moveTo(globalLogic.rectPoints[0][0], globalLogic.rectPoints[0][1]);
+             context.lineTo(globalLogic.rectPoints[1][0], globalLogic.rectPoints[1][1]);
+             context.lineTo(globalLogic.rectPoints[2][0], globalLogic.rectPoints[2][1]);
+             context.lineTo(globalLogic.rectPoints[3][0], globalLogic.rectPoints[3][1]);
+             context.lineTo(globalLogic.rectPoints[4][0], globalLogic.rectPoints[4][1]);
+             context.lineTo(globalLogic.rectPoints[5][0], globalLogic.rectPoints[5][1]);
+             context.lineTo(globalLogic.rectPoints[6][0], globalLogic.rectPoints[6][1]);
+             context.lineTo(globalLogic.rectPoints[7][0], globalLogic.rectPoints[7][1]);
+             context.closePath();
+
+             if (globalLogic.farFrontElement === nodeKey) {
+             context.strokeStyle = "#ff0000";
+             } else {
+             context.strokeStyle = "#f0f0f0";
+             }*/
+            if (this.ar.utilities.insidePoly(globalStates.pointerPosition, globalLogic.rectPoints)) {
+                if(thisObject.animationScale ===0 && !globalStates.editingMode)
+                    globalDOMCach["logic" + nodeKey].className = "mainEditing scaleIn";
+                thisObject.animationScale =1;
+            }
+            else {
+                if(thisObject.animationScale ===1)
+                    globalDOMCach["logic" + nodeKey].className = "mainEditing scaleOut";
+                thisObject.animationScale =0;
+            }
+
+            // context.stroke();
+        } else{
+            if(thisObject.animationScale ===1) {
+                globalDOMCach["logic" + nodeKey].className = "mainEditing scaleOut";
+                thisObject.animationScale =0;
+            }
+        }
+    }
 };
 
 realityEditor.gui.ar.draw.webkitTransformMatrix3d = function (thisDom, thisTransform) {
@@ -578,7 +572,8 @@ realityEditor.gui.ar.draw.webkitTransformMatrix3d = function (thisDom, thisTrans
  **/
 
 realityEditor.gui.ar.draw.hideTransformed = function (objectKey, nodeKey, thisObject, type) {
-    if (thisObject.visible === true) {
+    var elt = globalDOMCach["thisObject" + nodeKey];
+    if (thisObject.visible || (elt && elt.classList.contains('backgroundObject'))) {
         globalDOMCach["thisObject" + nodeKey].style.display = 'none';
         globalDOMCach["iframe" + nodeKey].style.visibility = 'hidden';
         globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
@@ -645,6 +640,12 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
                 0, 0, 0, 1
             ];
 
+        }
+
+        if (document.getElementById("thisObject" + nodeKey)) {
+            console.warn("Object already loaded, bailing");
+            globalStates.notLoading = false;
+            return;
         }
 
         var addContainer = document.createElement('div');

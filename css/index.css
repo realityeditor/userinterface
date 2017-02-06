@@ -88,6 +88,14 @@ body {
     border-width: 0px;
     /*-webkit-user-select: none;    Disable selection/Copy of UIWebView */
     -webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    transition: filter 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.main.backgroundObject {
+    opacity: 0.2;
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(16px);
 }
 
 .mainProgram {
