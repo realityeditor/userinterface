@@ -55,13 +55,19 @@ realityEditor.gui.settings.hideSettings = function() {
     console.log("this is what I want to show:  ",globalStates.clearSkyState);
 
 	globalStates.settingsButtonState = false;
-	document.getElementById("settingsIframe").style.visibility = "hidden";
-	document.getElementById("settingsIframe").style.display = "none";
 
-    document.getElementById("settingsIframe").contentWindow.postMessage(JSON.stringify({
-        startAnimation: true
+    document.getElementById("settingsIframe").contentWindow.postMessage(JSON.stringify({getSettings: {
+        extendedTracking: globalStates.extendedTracking,
+        editingMode: globalStates.editingMode,
+        clearSkyState: globalStates.clearSkyState,
+        instantState: globalStates.instantState,
+        externalState: globalStates.externalState,
+        settingsButton : globalStates.settingsButtonState
+    }
     }), "*");
 
+	document.getElementById("settingsIframe").style.visibility = "hidden";
+	document.getElementById("settingsIframe").style.display = "none";
 
 
     if (globalStates.clearSkyState) {
@@ -105,9 +111,9 @@ realityEditor.gui.settings.showSettings = function() {
         editingMode: globalStates.editingMode,
         clearSkyState: globalStates.clearSkyState,
         instantState: globalStates.instantState,
-        externalState: globalStates.externalState
-    },
-    startAnimation: true
+        externalState: globalStates.externalState,
+        settingsButton : globalStates.settingsButtonState
+    }
     }), "*");
 
     overlayDiv.style.display = "none";

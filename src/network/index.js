@@ -687,7 +687,8 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
             editingMode: globalStates.editingMode,
             clearSkyState: globalStates.clearSkyState,
             instantState: globalStates.instantState,
-            externalState: globalStates.externalState
+            externalState: globalStates.externalState,
+            settingsButton : globalStates.settingsButtonState
         }
         }), "*");
     }

@@ -45,7 +45,7 @@
  */
 
 
-window.onload = function () {
+//window.onload = function () {
 
     var version = "Version 1.8";
     var timeCorrection = {delta: 0, now: 0, then: 0};
@@ -161,10 +161,10 @@ window.onload = function () {
     }
 
     function step() {
-        logo();
-        if(states.logoAnimation) {
-            console.log("+++++");
+        if(states.settingsButton) {
+            logo();
             window.requestAnimationFrame(step);
-        }
+        } else return;
     }
-};
+  //  window.requestAnimationFrame(step);
+//}

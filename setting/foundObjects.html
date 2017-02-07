@@ -20,6 +20,7 @@
 
     <!-- Include the compiled Ratchet JS -->
     <script src="../thirdPartyCode/js/ratchet.min.js"></script>
+    <script src="states.js"></script>
 </head>
 <body style="background-color: #efeff4;">
 <div style="position: absolute; right: 0; width: 65px; top:0; bottom: 0; background-color: #222222"></div>
@@ -49,8 +50,6 @@
 
 <script>
 
-    var objectInterval;
-
     window.addEventListener("message", function (e) {
 
         var msg = JSON.parse(e.data);
@@ -61,8 +60,6 @@
     });
 
     function getObjectsFunction(msg) {
-console.log("gotObjects");
-
         var appendText ='<div class="card"><ul class="table-view" id="objectList">';
 
         for(var key in msg){
@@ -101,7 +98,6 @@ console.log("gotObjects");
   //  objectInterval = setInterval(callObjects, 4000);
 
     function callObjects() {
-        console.log("+++++");
         parent.postMessage(
             JSON.stringify({
                 settings: {

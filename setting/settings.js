@@ -1,52 +1,3 @@
-var states = {
-    extendedTracking: false,
-    editingMode: false,
-    clearSkyState: false,
-    externalState: "",
-    logoAnimation:false
-};
-
-window.addEventListener("message", function (e) {
-
-    var msg = JSON.parse(e.data);
-
-    if (msg.getSettings) {
-
-        console.log(msg.getSettings);
-        states.extendedTracking = msg.getSettings.extendedTracking;
-        states.editingMode = msg.getSettings.editingMode;
-        states.clearSkyState = msg.getSettings.clearSkyState;
-        states.instantState = msg.getSettings.instantState;
-        states.externalState = msg.getSettings.externalState;
-
-
-        setSettings("extendedTracking",  states.extendedTracking);
-        setSettings("lockingState",  false);
-        setSettings("instantState", states.instantState);
-        setSettings("editingMode",  states.editingMode);
-        setSettings("clearSkyState",  states.clearSkyState);
-        setSettings("externalText", states.externalState);
-    }
-
-    console.log(msg);
-    if(msg.startAnimation === false){
-        if(objectInterval) {
-            clearInterval(objectInterval);
-        }
-        states.logoAnimation = false;
-    }
-
-    if(msg.startAnimation === true){
-        if(typeof callObjects !== "undefined") {
-            objectInterval = setInterval(callObjects, 4000);
-        }
-        if(typeof step !== "undefined") {
-            window.requestAnimationFrame(step);
-        }
-        states.logoAnimation = true;
-    }
-});
-
 
 function setSettings (id,state) {
     if(!document.getElementById(id)) return;
@@ -67,8 +18,7 @@ function setSettings (id,state) {
     }
 }
 
-
- function newURLTextLoad() {
+function newURLTextLoad() {
      states.externalState = encodeURIComponent(document.getElementById('externalText').value);
 };
 
@@ -92,6 +42,53 @@ function loadSettingsPost() {
         })
         // this needs to contain the final interface source
         , "*");
+
+
+
+
+    window.addEventListener("message", function (e) {
+
+        var msg = JSON.parse(e.data);
+
+        if (msg.getSettings) {
+
+            states.extendedTracking = msg.getSettings.extendedTracking;
+            states.editingMode = msg.getSettings.editingMode;
+            states.clearSkyState = msg.getSettings.clearSkyState;
+            states.instantState = msg.getSettings.instantState;
+            states.externalState = msg.getSettings.externalState;
+            states.settingsButton = msg.getSettings.settingsButton;
+
+            setSettings("extendedTracking", states.extendedTracking);
+            setSettings("lockingState", false);
+            setSettings("instantState", states.instantState);
+            setSettings("editingMode", states.editingMode);
+            setSettings("clearSkyState", states.clearSkyState);
+            setSettings("externalText", states.externalState);
+
+            if (typeof step !== "undefined" && states.settingsButton && !states.animationFrameRequested) {
+                states.animationFrameRequested = true;
+                window.requestAnimationFrame(step);
+            }
+            if (!states.settingsButton) {
+                states.animationFrameRequested = false;
+            }
+
+            if (typeof callObjects !== "undefined" && states.settingsButton && !states.setInt) {
+                states.setInt = true;
+                objectInterval = setInterval(callObjects, 1000);
+            }
+
+            if (!states.settingsButton) {
+                states.setInt = false;
+                if (typeof objectInterval !== "undefined") {
+                    clearInterval(objectInterval);
+                }
+            }
+        }
+    });
+
+
 };
 
     document.addEventListener('toggle',
