@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="cache-control" content="max-age=0"/>
+    <meta http-equiv="cache-control" content="no-cache"/>
+    <meta http-equiv="expires" content="0"/>
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT"/>
+    <meta http-equiv="pragma" content="no-cache"/>
+    <title>Reality Editor</title>
+
+    <!-- Sets initial viewport load and disables zooming  -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,  minimal-ui">
+    <script src="../../index.js"></script>
+
+    <!-- Include the compiled Ratchet CSS -->
+    <link href="../../../thirdPartyCode/css/ratchet.css" rel="stylesheet">
+    <link href="../../../thirdPartyCode/css/ratchet-theme-ios.css" rel="stylesheet">
+
+    <!-- Include the compiled Ratchet JS -->
+    <script src="../../../thirdPartyCode/js/ratchet.min.js"></script>
+    <script src="states.js"></script>
+</head>
+<body style="background-color: #efeff4;">
+<div style="position: absolute; right: 0; width: 65px; top:0; bottom: 0; background-color: #222222"></div>
+
+<div>
+
+    <header class="bar bar-nav" style="right:65px; left:0">
+        <a class="" href="index.html" data-ignore="push">
+            <button class="btn btn-link btn-nav pull-left">
+                <span class="icon icon-left-nav"></span>
+                Back
+            </button>
+            <h1 class="title">Develop</h1></a>
+    </header>
+
+    <!-- Wrap all non-bar HTML in the .content div (this is actually what scrolls) -->
+    <div class="content" style="right:65px;top: -15px; bottom: -14px">
+
+            <ul class="table-view">
+                <li class="table-view-cell">
+                    <img class="media-object pull-left" src="../../../svg/move.svg"
+                         style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
+                    AR-UI Repositioning <small style="color: #b1b1b1;">object developer access required</small>
+                    <div class="toggle" id="editingMode">
+                        <div class="toggle-handle"></div>
+                    </div>
+                </li>
+                <li class="table-view-cell">
+                    <img class="media-object pull-left" src="../../../svg/clear.svg"
+                         style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
+                    Clear Sky Mode <small style="color: #b1b1b1;">hides all buttons</small>
+                    <div class="toggle" id="clearSkyState">
+                        <div class="toggle-handle"></div>
+                    </div>
+                </li>
+                <li class="table-view-cell">
+                    <img class="media-object pull-left" src="../../../svg/download.svg"
+                         style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
+                    External Interface URL<br>
+                    <button class="btn btn-positive pull-right" style="width: 80px; height: 40px; margin-top: 8px" onclick="realityEditor.gui.settings.reloadUI()">Activate</button>
+
+                    <input type="text" id="externalText" style=" margin-left: 35px; margin-top:10px;width: 340px" placeholder="http://..." oninput="realityEditor.gui.settings.newURLTextLoad()">
+                </li>
+            </ul>
+    </div>
+
+</div>
+<script src="index.js"></script>
+</body>
+</html>
