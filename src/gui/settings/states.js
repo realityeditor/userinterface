@@ -1,4 +1,3 @@
-
 createNameSpace("realityEditor.gui.settings");
 
 realityEditor.gui.settings.states = {
