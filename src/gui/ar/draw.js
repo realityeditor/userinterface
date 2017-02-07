@@ -805,7 +805,7 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
             theObject.style.visibility = "hidden";
             //theObject.style.display = "none";
         }
-        this.cout("addElementInPreferences");
+
     }
 };
 

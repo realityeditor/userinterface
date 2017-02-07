@@ -146,8 +146,6 @@ realityEditor.network.addHeartbeatObject = function (beat) {
                     _this.cout(JSON.stringify(objects[thisKey]));
 
                     _this.realityEditor.gui.memory.addObjectMemory(objects[thisKey]);
-
-                    _this.realityEditor.gui.preferences.addElementInPreferences();
                 }
             });
         }
@@ -677,11 +675,18 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
 
     var self = document.getElementById("settingsIframe");
 
+
+    /**
+     * Get all the setting states
+     *
+     */
+
     if (msgContent.settings.getSettings) {
         self.contentWindow.postMessage(JSON.stringify({getSettings: {
             extendedTracking: globalStates.extendedTracking,
             editingMode: globalStates.editingMode,
             clearSkyState: globalStates.clearSkyState,
+            instantState: globalStates.instantState,
             externalState: globalStates.externalState
         }
         }), "*");
@@ -704,6 +709,12 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
 
         self.contentWindow.postMessage(JSON.stringify({getObjects: thisObjects}), "*");
     }
+
+
+    /**
+     * This is where all the setters are palced for the Settings menu
+     *
+     */
 
     if (msgContent.settings.setSettings) {
         if (typeof msgContent.settings.setSettings.extendedTracking !== "undefined") {
@@ -736,9 +747,30 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
 
         }
 
+        if (typeof msgContent.settings.setSettings.instantState !== "undefined") {
+
+            if (msgContent.settings.setSettings.instantState) {
+                globalStates.instantState = true;
+                window.location.href = "of://instantOn";
+
+            } else {
+                globalStates.editingMode = false;
+                window.location.href = "of://instantOff";
+            }
+        }
+
+        if (typeof msgContent.settings.setSettings.clearSkyState !== "undefined") {
+
+            if (msgContent.settings.setSettings.clearSkyState) {
+                globalStates.clearSkyState = true;
+                window.location.href = "of://clearSkyOn";
+
+            } else {
+                globalStates.clearSkyState = false;
+                window.location.href = "of://clearSkyOff";
+            }
+        }
     }
-
-
 };
 
 realityEditor.network.deleteData = function(url, content) {

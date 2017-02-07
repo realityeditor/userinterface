@@ -186,7 +186,7 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
         if (pocketShown()) {
             return true;
         }
-        if (globalStates.preferencesButtonState) {
+        if (globalStates.settingsButtonState) {
             return false;
         }
         if (globalStates.editingNode) {

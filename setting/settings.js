@@ -2,7 +2,8 @@ var states = {
     extendedTracking: false,
     editingMode: false,
     clearSkyState: false,
-    externalState: ""
+    externalState: "",
+    logoAnimation:false
 };
 
 window.addEventListener("message", function (e) {
@@ -15,15 +16,34 @@ window.addEventListener("message", function (e) {
         states.extendedTracking = msg.getSettings.extendedTracking;
         states.editingMode = msg.getSettings.editingMode;
         states.clearSkyState = msg.getSettings.clearSkyState;
+        states.instantState = msg.getSettings.instantState;
         states.externalState = msg.getSettings.externalState;
+
+
         setSettings("extendedTracking",  states.extendedTracking);
         setSettings("lockingState",  false);
-        setSettings("instantState",  false);
+        setSettings("instantState", states.instantState);
         setSettings("editingMode",  states.editingMode);
-        setSettings("clearSky",  states.clearSkyState);
+        setSettings("clearSkyState",  states.clearSkyState);
         setSettings("externalText", states.externalState);
+    }
 
+    console.log(msg);
+    if(msg.startAnimation === false){
+        if(objectInterval) {
+            clearInterval(objectInterval);
+        }
+        states.logoAnimation = false;
+    }
 
+    if(msg.startAnimation === true){
+        if(typeof callObjects !== "undefined") {
+            objectInterval = setInterval(callObjects, 4000);
+        }
+        if(typeof step !== "undefined") {
+            window.requestAnimationFrame(step);
+        }
+        states.logoAnimation = true;
     }
 });
 

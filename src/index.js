@@ -187,10 +187,9 @@ var realityEditor = realityEditor || {
                 pocketOnMemoryDeletionStart: {},
                 pocketOnMemoryDeletionStop: {}
 			},
-			preferences: {
-				preferencesHide: {},
-				preferencesVisible: {},
-                addElementInPreferences: {}
+			settings: {
+				hideSettings: {},
+				showSettings: {},
 			},
 			crafting: {
 				logicStates: {},

@@ -162,9 +162,9 @@ window.onload = function () {
 
     function step() {
         logo();
-        window.requestAnimationFrame(step);
-
+        if(states.logoAnimation) {
+            console.log("+++++");
+            window.requestAnimationFrame(step);
+        }
     }
-
-    window.requestAnimationFrame(step);
-}
+};

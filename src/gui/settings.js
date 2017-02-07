@@ -48,68 +48,73 @@
  */
 
 
+createNameSpace("realityEditor.gui.settings");
+
+realityEditor.gui.settings.hideSettings = function() {
+
+    console.log("this is what I want to show:  ",globalStates.clearSkyState);
+
+	globalStates.settingsButtonState = false;
+	document.getElementById("settingsIframe").style.visibility = "hidden";
+	document.getElementById("settingsIframe").style.display = "none";
+
+    document.getElementById("settingsIframe").contentWindow.postMessage(JSON.stringify({
+        startAnimation: true
+    }), "*");
+
+
+
+    if (globalStates.clearSkyState) {
+        document.getElementById("UIButtons").classList.add('clearSky');
+    } else {
+        document.getElementById("UIButtons").classList.remove('clearSky');
+    }
+
+	this.cout("hide Settings");
+};
+
 /**
  * @desc
  **/
+/*
+timeForContentLoaded = 240000;
+window.location.href = "of://clearSkyOn";
 
-createNameSpace("realityEditor.device");
-
-realityEditor.device.onload = function () {
-
-        //window.location.href = "of://kickoff";
-
-
-    realityEditor.gui.menus.init();
-
-    realityEditor.gui.menus.off("main",["gui","reset","unconstrained"]);
-    realityEditor.gui.menus.on("main",["gui"]);
+document.body.classList.add('clearSky');
+} else {
 
 
-	globalStates.tempUuid = realityEditor.device.utilities.uuidTimeShort();
-	console.log("-----------------------------:  "+globalStates.tempUuid);
-	console.log("starting up GUI");
-	uiButtons = document.getElementById("GUI");
-	overlayDiv = document.getElementById('overlay');
+    // realityEditor.gui.menus.on("main",[]);
 
-	realityEditor.gui.buttons.draw();
-	realityEditor.gui.memory.initMemoryBar();
-	realityEditor.gui.pocket.pocketInit();
 
-	console.log(globalStates.platform);
+    globalStates.UIOffMode = false;
+    timeForContentLoaded = 240;
 
-	if (globalStates.platform !== 'iPad' && globalStates.platform !== 'iPhone' && globalStates.platform !== 'iPod touch') {
-		globalStates.platform = false;
-	}
+*/
 
-	globalCanvas.canvas = document.getElementById('canvas');
-	globalCanvas.canvas.width = globalStates.height;
-	globalCanvas.canvas.height = globalStates.width;
+realityEditor.gui.settings.showSettings = function() {
 
-	globalCanvas.context = canvas.getContext('2d');
+    realityEditor.gui.menus.on("setting", ["setting"]);
 
-	if (globalStates.platform) {
-		window.location.href = "of://kickoff";
-	}
+	globalStates.settingsButtonState = true;
+	document.getElementById("settingsIframe").style.visibility = "visible";
+	document.getElementById("settingsIframe").style.display = "inline";
 
-	globalCanvas.canvas.addEventListener("pointerdown", realityEditor.device.onCanvasPointerDown.bind(realityEditor.device), false);
-	ec++;
+    document.getElementById("settingsIframe").contentWindow.postMessage(JSON.stringify({getSettings: {
+        extendedTracking: globalStates.extendedTracking,
+        editingMode: globalStates.editingMode,
+        clearSkyState: globalStates.clearSkyState,
+        instantState: globalStates.instantState,
+        externalState: globalStates.externalState
+    },
+    startAnimation: true
+    }), "*");
 
-	document.addEventListener("pointermove", realityEditor.device.onDocumentPointerMove.bind(realityEditor.device), false);
-	ec++;
-	document.addEventListener("pointerdown", realityEditor.device.onDocumentPointerDown.bind(realityEditor.device), false);
-	//document.addEventListener("pointerdown", getPossition, false);
-	ec++;
-	document.addEventListener("pointerup", realityEditor.device.onDocumentPointerUp.bind(realityEditor.device), false);
-	ec++;
-	window.addEventListener("message", realityEditor.network.onInternalPostMessage.bind(realityEditor.network), false);
-	ec++;
-	overlayDiv.addEventListener('touchstart', function (e) {
-		e.preventDefault();
-	});
+    overlayDiv.style.display = "none";
 
-	this.cout("onload");
+    if(document.getElementById("UIButtons").classList.contains('clearSky')) {
+        document.getElementById("UIButtons").classList.remove('clearSky');
+    }
 
+    this.cout("show Settings");
 };
-
-
-window.onload = realityEditor.device.onload;
