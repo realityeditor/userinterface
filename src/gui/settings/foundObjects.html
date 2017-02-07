@@ -60,44 +60,42 @@
     });
 
     realityEditor.gui.settings.getObjectsFunction = function (msg) {
-        var appendText ='<div class="card"><ul class="table-view" id="objectList">';
+        var appendText = '<div class="card"><ul class="table-view" id="objectList">';
 
-        for(var key in msg){
+        for (var key in msg) {
             appendText +=
-                '<li class="table-view-cell table-view-cell">'+
-                '<div style="width: 500px; display: inline-block">'+
-                '<img class="media-object pull-left" src="../../../svg/object.svg" style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">'+
-                '<div style="display: inline-block; width: 130px; overflow: hidden; font-size: large">'+msg[key].name+'</div>'+
-                '<div style="display: inline-block; width: 70px; text-align: center;">'+
-                '<span class="badge" style="font-size: large">'+msg[key].version+'</span>'+
-                '</div>'+
-                '<div style="display: inline-block; width: 140px; text-align: center;">'+
-                '<span class="badge" style="font-size: large">'+msg[key].ip+'</span>'+
-                '</div>'+
-                '<div style="display: inline-block; width: 40px; text-align: center; font-size: large;">'+
-                '<span class="badge" style="font-size: large">'+ msg[key].nodes+'</span>'+
-                '</div>'+
-                '<div style="display: inline-block; width: 40px; text-align: center; font-size: large;">'+
-                '<span class="badge" style="font-size: large">'+ msg[key].links+ '</span>'+
-                '</div>'+
-                '</div>'+
+                '<li class="table-view-cell table-view-cell">' +
+                '<div style="width: 500px; display: inline-block">' +
+                '<img class="media-object pull-left" src="../../../svg/object.svg" style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">' +
+                '<div style="display: inline-block; width: 130px; overflow: hidden; font-size: large">' + msg[key].name + '</div>' +
+                '<div style="display: inline-block; width: 70px; text-align: center;">' +
+                '<span class="badge" style="font-size: large">' + msg[key].version + '</span>' +
+                '</div>' +
+                '<div style="display: inline-block; width: 140px; text-align: center;">' +
+                '<span class="badge" style="font-size: large">' + msg[key].ip + '</span>' +
+                '</div>' +
+                '<div style="display: inline-block; width: 40px; text-align: center; font-size: large;">' +
+                '<span class="badge" style="font-size: large">' + msg[key].nodes + '</span>' +
+                '</div>' +
+                '<div style="display: inline-block; width: 40px; text-align: center; font-size: large;">' +
+                '<span class="badge" style="font-size: large">' + msg[key].links + '</span>' +
+                '</div>' +
+                '</div>' +
                 '</li>';
-
 
             // document.getElementById("objectList").insertAdjacentHTML( 'beforeend', appendText);
 
         }
 
-        appendText +=  '</ul></div>';
+        appendText += '</ul></div>';
 
         document.getElementById("objectList").innerHTML = appendText;
 
     };
 
+    //  objectInterval = setInterval(callObjects, 4000);
 
-  //  objectInterval = setInterval(callObjects, 4000);
-
-    realityEditor.gui.settings.callObjects = function() {
+    realityEditor.gui.settings.callObjects = function () {
         parent.postMessage(
             JSON.stringify({
                 settings: {

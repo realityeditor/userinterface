@@ -31,56 +31,58 @@
 
     <!-- Wrap all non-bar HTML in the .content div (this is actually what scrolls) -->
     <div class="content" style="right:65px; top: -15px; bottom: -14px">
-            <ul class="table-view">
-                <li class="table-view-cell">
-                    <img class="media-object pull-left" src="../../../svg/extended.svg"
+        <ul class="table-view">
+            <li class="table-view-cell">
+                <img class="media-object pull-left" src="../../../svg/extended.svg"
+                     style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
+                Extended Tracking
+                <div class="toggle" id="extendedTracking">
+                    <div class="toggle-handle"></div>
+                </div>
+            </li>
+            <li class="table-view-cell">
+                <img class="media-object pull-left" src="../../../svg/lock.svg"
+                     style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
+                Object and Link Locking
+                <small style="color: #b1b1b1;">touch ID required</small>
+                <div class="toggle" id="lockingToggle">
+                    <div class="toggle-handle"></div>
+                </div>
+            </li>
+            <li class="table-view-cell">
+                <img class="media-object pull-left" src="../../../svg/instantLink.svg"
+                     style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
+                Instant Connect
+                <small style="color: #b1b1b1;">if available with prepared objects</small>
+                <div class="toggle" id="instantState">
+                    <div class="toggle-handle"></div>
+                </div>
+            </li>
+        </ul>
+        <ul class="table-view">
+            <li class="table-view-cell">
+                <a class="push-right" href="foundObjects.html" data-ignore="push">
+                    <img class="media-object pull-left" src="../../../svg/object.svg"
                          style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
-                    Extended Tracking
-                    <div class="toggle" id="extendedTracking">
-                        <div class="toggle-handle"></div>
-                    </div>
-                </li>
-                <li class="table-view-cell">
-                    <img class="media-object pull-left" src="../../../svg/lock.svg"
-                         style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
-                    Object and Link Locking <small style="color: #b1b1b1;">touch ID required</small>
-                    <div class="toggle" id="lockingToggle">
-                        <div class="toggle-handle"></div>
-                    </div>
-                </li>
-                <li class="table-view-cell">
-                    <img class="media-object pull-left" src="../../../svg/instantLink.svg"
-                         style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
-                    Instant Connect <small style="color: #b1b1b1;">if available with prepared objects</small>
-                    <div class="toggle" id="instantState">
-                        <div class="toggle-handle"></div>
-                    </div>
-                </li>
-            </ul>
-            <ul class="table-view">
-                <li class="table-view-cell">
-                    <a class="push-right" href="foundObjects.html" data-ignore="push">
-                        <img class="media-object pull-left" src="../../../svg/object.svg"
-                             style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
-                        Found Objects
-                    </a>
-                </li>
-                <li class="table-view-cell">
-                    <a class="push-right" href="develop.html" data-ignore="push">
-                        <img class="media-object pull-left" src="../../../svg/hammer.svg"
-                             style=" width:26px; height:26px; margin-top: -3px; margin-bottom: -5px">
-                        Develop
-                    </a>
-                </li>
-                <li class="table-view-cell">
-                    <a class="push-right" href="about.html" data-ignore="push">
-                        <img class="media-object pull-left" src="../../../svg/info.svg"
-                             style=" width:26px; height:26px; margin-top: -3px; margin-bottom: -5px">
-                        About
-                    </a>
-                </li>
-            </ul>
-        </div>
+                    Found Objects
+                </a>
+            </li>
+            <li class="table-view-cell">
+                <a class="push-right" href="develop.html" data-ignore="push">
+                    <img class="media-object pull-left" src="../../../svg/hammer.svg"
+                         style=" width:26px; height:26px; margin-top: -3px; margin-bottom: -5px">
+                    Develop
+                </a>
+            </li>
+            <li class="table-view-cell">
+                <a class="push-right" href="about.html" data-ignore="push">
+                    <img class="media-object pull-left" src="../../../svg/info.svg"
+                         style=" width:26px; height:26px; margin-top: -3px; margin-bottom: -5px">
+                    About
+                </a>
+            </li>
+        </ul>
+    </div>
 
 
 </div>

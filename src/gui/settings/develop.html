@@ -39,32 +39,37 @@
     <!-- Wrap all non-bar HTML in the .content div (this is actually what scrolls) -->
     <div class="content" style="right:65px;top: -15px; bottom: -14px">
 
-            <ul class="table-view">
-                <li class="table-view-cell">
-                    <img class="media-object pull-left" src="../../../svg/move.svg"
-                         style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
-                    AR-UI Repositioning <small style="color: #b1b1b1;">object developer access required</small>
-                    <div class="toggle" id="editingMode">
-                        <div class="toggle-handle"></div>
-                    </div>
-                </li>
-                <li class="table-view-cell">
-                    <img class="media-object pull-left" src="../../../svg/clear.svg"
-                         style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
-                    Clear Sky Mode <small style="color: #b1b1b1;">hides all buttons</small>
-                    <div class="toggle" id="clearSkyState">
-                        <div class="toggle-handle"></div>
-                    </div>
-                </li>
-                <li class="table-view-cell">
-                    <img class="media-object pull-left" src="../../../svg/download.svg"
-                         style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
-                    External Interface URL<br>
-                    <button class="btn btn-positive pull-right" style="width: 80px; height: 40px; margin-top: 8px" onclick="realityEditor.gui.settings.reloadUI()">Activate</button>
+        <ul class="table-view">
+            <li class="table-view-cell">
+                <img class="media-object pull-left" src="../../../svg/move.svg"
+                     style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
+                AR-UI Repositioning
+                <small style="color: #b1b1b1;">object developer access required</small>
+                <div class="toggle" id="editingMode">
+                    <div class="toggle-handle"></div>
+                </div>
+            </li>
+            <li class="table-view-cell">
+                <img class="media-object pull-left" src="../../../svg/clear.svg"
+                     style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
+                Clear Sky Mode
+                <small style="color: #b1b1b1;">hides all buttons</small>
+                <div class="toggle" id="clearSkyState">
+                    <div class="toggle-handle"></div>
+                </div>
+            </li>
+            <li class="table-view-cell">
+                <img class="media-object pull-left" src="../../../svg/download.svg"
+                     style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
+                External Interface URL<br>
+                <button class="btn btn-positive pull-right" style="width: 80px; height: 40px; margin-top: 8px"
+                        onclick="realityEditor.gui.settings.reloadUI()">Activate
+                </button>
 
-                    <input type="text" id="externalText" style=" margin-left: 35px; margin-top:10px;width: 340px" placeholder="http://..." oninput="realityEditor.gui.settings.newURLTextLoad()">
-                </li>
-            </ul>
+                <input type="text" id="externalText" style=" margin-left: 35px; margin-top:10px;width: 340px"
+                       placeholder="http://..." oninput="realityEditor.gui.settings.newURLTextLoad()">
+            </li>
+        </ul>
     </div>
 
 </div>
