@@ -12,14 +12,14 @@
 
     <!-- Sets initial viewport load and disables zooming  -->
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,  minimal-ui">
-
+    <script src="../../index.js"></script>
 
     <!-- Include the compiled Ratchet CSS -->
-    <link href="../thirdPartyCode/css/ratchet.css" rel="stylesheet">
-    <link href="../thirdPartyCode/css/ratchet-theme-ios.css" rel="stylesheet">
+    <link href="../../../thirdPartyCode/css/ratchet.css" rel="stylesheet">
+    <link href="../../../thirdPartyCode/css/ratchet-theme-ios.css" rel="stylesheet">
 
     <!-- Include the compiled Ratchet JS -->
-    <script src="../thirdPartyCode/js/ratchet.min.js"></script>
+    <script src="../../../thirdPartyCode/js/ratchet.min.js"></script>
     <script src="states.js"></script>
 </head>
 <body style="background-color: #efeff4;">
@@ -55,59 +55,57 @@
         var msg = JSON.parse(e.data);
 
         if (msg.getObjects) {
-            getObjectsFunction(msg.getObjects);
+            realityEditor.gui.settings.getObjectsFunction(msg.getObjects);
         }
     });
 
-    function getObjectsFunction(msg) {
-        var appendText ='<div class="card"><ul class="table-view" id="objectList">';
+    realityEditor.gui.settings.getObjectsFunction = function (msg) {
+        var appendText = '<div class="card"><ul class="table-view" id="objectList">';
 
-        for(var key in msg){
+        for (var key in msg) {
             appendText +=
-                '<li class="table-view-cell table-view-cell">'+
-                '<div style="width: 500px; display: inline-block">'+
-                '<img class="media-object pull-left" src="../svg/object.svg" style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">'+
-                '<div style="display: inline-block; width: 130px; overflow: hidden; font-size: large">'+msg[key].name+'</div>'+
-                '<div style="display: inline-block; width: 70px; text-align: center;">'+
-                '<span class="badge" style="font-size: large">'+msg[key].version+'</span>'+
-                '</div>'+
-                '<div style="display: inline-block; width: 140px; text-align: center;">'+
-                '<span class="badge" style="font-size: large">'+msg[key].ip+'</span>'+
-                '</div>'+
-                '<div style="display: inline-block; width: 40px; text-align: center; font-size: large;">'+
-                '<span class="badge" style="font-size: large">'+ msg[key].nodes+'</span>'+
-                '</div>'+
-                '<div style="display: inline-block; width: 40px; text-align: center; font-size: large;">'+
-                '<span class="badge" style="font-size: large">'+ msg[key].links+ '</span>'+
-                '</div>'+
-                '</div>'+
+                '<li class="table-view-cell table-view-cell">' +
+                '<div style="width: 500px; display: inline-block">' +
+                '<img class="media-object pull-left" src="../../../svg/object.svg" style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">' +
+                '<div style="display: inline-block; width: 130px; overflow: hidden; font-size: large">' + msg[key].name + '</div>' +
+                '<div style="display: inline-block; width: 70px; text-align: center;">' +
+                '<span class="badge" style="font-size: large">' + msg[key].version + '</span>' +
+                '</div>' +
+                '<div style="display: inline-block; width: 140px; text-align: center;">' +
+                '<span class="badge" style="font-size: large">' + msg[key].ip + '</span>' +
+                '</div>' +
+                '<div style="display: inline-block; width: 40px; text-align: center; font-size: large;">' +
+                '<span class="badge" style="font-size: large">' + msg[key].nodes + '</span>' +
+                '</div>' +
+                '<div style="display: inline-block; width: 40px; text-align: center; font-size: large;">' +
+                '<span class="badge" style="font-size: large">' + msg[key].links + '</span>' +
+                '</div>' +
+                '</div>' +
                 '</li>';
-
 
             // document.getElementById("objectList").insertAdjacentHTML( 'beforeend', appendText);
 
         }
 
-        appendText +=  '</ul></div>';
+        appendText += '</ul></div>';
 
         document.getElementById("objectList").innerHTML = appendText;
 
-    }
+    };
 
+    //  objectInterval = setInterval(callObjects, 4000);
 
-  //  objectInterval = setInterval(callObjects, 4000);
-
-    function callObjects() {
+    realityEditor.gui.settings.callObjects = function () {
         parent.postMessage(
             JSON.stringify({
                 settings: {
                     getObjects: true
                 }
             }), "*")
-    }
-    callObjects();
+    };
+    realityEditor.gui.settings.callObjects();
 
 </script>
-<script src="settings.js"></script>
+<script src="index.js"></script>
 </body>
 </html>

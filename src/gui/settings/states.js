@@ -1,4 +1,6 @@
-var states = {
+createNameSpace("realityEditor.gui.settings");
+
+realityEditor.gui.settings.states = {
     extendedTracking: false,
     editingMode: false,
     clearSkyState: false,
@@ -9,4 +11,4 @@ var states = {
     setInt : false
 };
 
-var objectInterval;
+realityEditor.gui.settings.objectInterval = null;
