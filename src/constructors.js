@@ -325,6 +325,8 @@ function Block() {
 
 	this.isTempBlock = false;
 	this.isPortBlock = false;
+    
+    this.lockHolder = null;
 }
 
 /**

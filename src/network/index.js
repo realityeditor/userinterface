@@ -261,6 +261,7 @@ realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
         if(remote.matrix) {
             origin.matrix =  remote.matrix;
         }
+        origin.lockHolder = remote.lockHolder;
 
         if(origin.type === "logic") {
             if (!origin.guiState) {
@@ -892,7 +893,11 @@ realityEditor.network.postLinkToServer = function(linkObject, objects){
 
     //  window.location.href = "of://event_" + objects[globalProgram.objectA].visible;
 
-    if (okForNewLink) {
+    var isLockedA = isValueLocked(thisTempObject.nodes[linkObject.nodeA].lockHolder);
+    var isLockedB = isValueLocked(thisTempObject.nodes[linkObject.nodeB].lockHolder);
+    var bothUnlocked = !isLockedA && !isLockedB;
+    
+    if (okForNewLink && bothUnlocked) {
         var thisKeyId = this.realityEditor.device.utilities.uuidTimeShort();
 
         var namesA, namesB;
@@ -1126,4 +1131,49 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
     globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
         JSON.stringify(newStyle), '*');
     this.cout("on_load");
+};
+
+/**
+ * @desc
+ * @param
+ * @param
+ * @return
+ **/
+
+realityEditor.network.postNewLockToObject = function(ip, thisObjectKey, thisKey, content) {
+
+// generate action for all links to be reloaded after upload
+    console.log("sending lock");
+    this.postData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/lock/" + thisKey, content);
+    // postData('http://' +ip+ ':' + httpPort+"/", content);
+    console.log("sent lock");
+
+};
+
+/*
+ realityEditor.network.uploadNewLock = function(ip, thisObjectKey, thisKey, authenticatedUser) {
+
+ // generate action for all links to be reloaded after upload
+ console.log("sending lock");
+ console.log("authenticatedUser is " + authenticatedUser);
+ postData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/lock/" + thisKey + "/user/" + authenticatedUser);
+ // postData('http://' +ip+ ':' + httpPort+"/", content);
+ console.log("sent lock");
+
+ };
+ */
+
+/**
+ * @desc
+ * @param
+ * @param
+ * @return
+ **/
+
+realityEditor.network.deleteLockFromObject = function(ip, thisObjectKey, thisKey, authenticatedUser) {
+// generate action for all links to be reloaded after upload
+    console.log("I am deleting a lock: " + ip);
+    console.log("authenticatedUser is " + authenticatedUser);
+    this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/lock/" + thisKey + "/user/" + authenticatedUser);
+    console.log("deleteLockFromObject");
 };

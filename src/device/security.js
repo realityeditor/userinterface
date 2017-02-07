@@ -61,14 +61,14 @@ realityEditor.device.security.authenticateSessionForUser = function(encryptedId)
         if (document.getElementById("adminModeSwitch").checked) {
             document.getElementById("adminModeSwitch").click(); //.checked = false;            
         }
-        globalStates.adminMode = false;
+        globalStates.lockingMode = false;
         globalStates.authenticatedUser = null;
-        console.log("Is admin mode on now? " + globalStates.adminMode);
+        console.log("Is admin mode on now? " + globalStates.lockingMode);
     } else {
         console.log("success");
-        globalStates.adminMode = true;
+        globalStates.lockingMode = true;
         globalStates.authenticatedUser = encryptedId;
-        console.log("Is admin mode on now? " + globalStates.adminMode);
+        console.log("Is admin mode on now? " + globalStates.lockingMode);
     }
     //console.log(objectExp);
 };

@@ -61,7 +61,16 @@ function cout() {
 	if (globalStates.debug){
 		console.log.apply(this, arguments);
 	}
-};
+}
+
+// interprets the lockHolder string to return whether the object is locked
+function isValueLocked(lockHolder) {
+    var shouldBeLocked = false;
+    if (!(lockHolder === null || lockHolder === undefined)) {
+        shouldBeLocked = true;
+    }
+    return shouldBeLocked;
+}
 
 realityEditor.device.utilities.newURLTextLoad = function () {
     globalStates.newURLText = encodeURIComponent(document.getElementById('newURLText').value);
