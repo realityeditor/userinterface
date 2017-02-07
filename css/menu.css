@@ -172,6 +172,43 @@
     visibility: hidden;
     z-index: 20;
 }
+
+#lockButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 65px;
+    top: 260px;
+    visibility: hidden;
+}
+#lockButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 65px;
+    top: 260px;
+    visibility: hidden;
+    z-index: 20;
+}
+
+#unlockButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 130px;
+    top: 260px;
+    visibility: hidden;
+}
+#unlockButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 130px;
+    top: 260px;
+    visibility: hidden;
+    z-index: 20;
+}
+
 #bigTrashButton {
     position: fixed;
     top: 0px;

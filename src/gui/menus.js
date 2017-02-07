@@ -68,7 +68,9 @@ realityEditor.gui.menus.buttons = {
 		pocket: {},
 		reset: {},
 		setting: {},
-		unconstrained: {}
+		unconstrained: {},
+		lock:{},
+		unlock:{}
 };
 
 realityEditor.gui.menus.menus = {
@@ -80,7 +82,8 @@ realityEditor.gui.menus.menus = {
     editing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", reset: "blue", unconstrained: "blue"},
     crafting: {back: "blue", logicPocket: "green", logicSetting: "blue", freeze: "blue"},
     bigTrash: {bigTrash: "red"},
-    bigPocket: {bigPocket: "green"}
+    bigPocket: {bigPocket: "green"},
+    locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue",unlock:"blue",lock:"blue"}
 };
 
 realityEditor.gui.menus.getVisibility = function(item){
