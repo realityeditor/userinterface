@@ -935,55 +935,31 @@ realityEditor.device.setDeviceName = function(deviceName) {
  * @param externalState
  **/
 
-realityEditor.device.setStates = function(developerState, extendedTrackingState, clearSkyState, externalState) {
+realityEditor.device.setStates = function (developerState, extendedTrackingState, clearSkyState, instantState, externalState) {
 
     globalStates.extendedTrackingState = extendedTrackingState;
     globalStates.developerState = developerState;
     globalStates.clearSkyState = clearSkyState;
+    globalStates.instantState = instantState;
     globalStates.externalState = externalState;
 
-    if (clearSkyState) {
-        // globalStates.UIOffMode = true;
-        //  timeForContentLoaded = 240000;
-        // document.getElementById("turnOffUISwitch").checked = true;
+    if (globalStates.clearSkyState) {
+        document.getElementById("UIButtons").classList.add('clearSky');
+    } else {
+        document.getElementById("UIButtons").classList.remove('clearSky');
     }
 
     if (developerState) {
         realityEditor.device.addEventHandlers();
         globalStates.editingMode = true;
-        document.getElementById("editingModeSwitch").checked = true;
     }
 
     if (extendedTrackingState) {
         globalStates.extendedTracking = true;
-        document.getElementById("extendedTrackingSwitch").checked = true;
-    }
-
-    if (globalStates.externalState !== "") {
-        document.getElementById("newURLText").value = globalStates.externalState;
     }
 
     if (globalStates.editingMode) {
-
-        realityEditor.gui.menus.on("editing",[]);
-
-       /* document.getElementById('resetButton').style.visibility = "visible";
-        document.getElementById('unconstButton').style.visibility = "visible";
-        document.getElementById('resetButtonDiv').style.display = "inline";
-        document.getElementById('unconstButtonDiv').style.display = "inline";
-        */
-    }
-
-    // Once all the states are send the alternative checkbox is loaded
-    // Its a bad hack to place it here, but it works
-
-    if (typeof checkBoxElements === "undefined") {
-        var checkBoxElements = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
-
-        checkBoxElements.forEach(function (html) {
-            var switchery = new Switchery(html, {size: 'large', speed: '0.2s', color: '#1ee71e'});
-
-        });
+        realityEditor.gui.menus.on("editing", []);
     }
 };
 

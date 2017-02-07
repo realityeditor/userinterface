@@ -367,9 +367,7 @@
       if (options._timeout) {
         clearTimeout(options._timeout);
       }
-      if (xhr.readyState === 4) {
-        xhr.status === 200 ? success(xhr, options) : failure(options.url);
-      }
+        if (xhr.readyState == 4) xhr.status == 200 || (xhr.status == 0 && options.url.indexOf('file:///') != -1) ? success(xhr, options) : failure(options.url);
     };
 
     if (!PUSH.id) {

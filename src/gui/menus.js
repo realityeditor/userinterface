@@ -80,9 +80,7 @@ realityEditor.gui.menus.menus = {
     editing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", reset: "blue", unconstrained: "blue"},
     crafting: {back: "blue", logicPocket: "green", logicSetting: "blue", freeze: "blue"},
     bigTrash: {bigTrash: "red"},
-    bigPocket: {bigPocket: "green"},
-    // clear sky needs some more work.
-    clearSky: {}
+    bigPocket: {bigPocket: "green"}
 };
 
 realityEditor.gui.menus.getVisibility = function(item){
@@ -170,7 +168,7 @@ realityEditor.gui.menus.on = function(menuDiv, buttonArray) {
     realityEditor.gui.menus.history.push(menuDiv);
 
     if(globalStates.editingMode){
-        if((menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic") && !globalStates.preferencesButtonState){
+        if((menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic") && !globalStates.settingsButtonState){
             menuDiv = "editing";
         }
     }

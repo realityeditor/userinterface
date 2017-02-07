@@ -476,7 +476,7 @@ function memoryCanCreate() {
     if (realityEditor.gui.pocket.pocketShown()) {
         return false;
     }
-    if (globalStates.preferencesButtonState) {
+    if (globalStates.settingsButtonState) {
         return false;
     }
     if (globalStates.editingMode || globalStates.editingNode) {

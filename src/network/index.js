@@ -146,8 +146,6 @@ realityEditor.network.addHeartbeatObject = function (beat) {
                     _this.cout(JSON.stringify(objects[thisKey]));
 
                     _this.realityEditor.gui.memory.addObjectMemory(objects[thisKey]);
-
-                    _this.realityEditor.gui.preferences.addElementInPreferences();
                 }
             });
         }
@@ -445,6 +443,12 @@ realityEditor.network.onInternalPostMessage = function(e) {
         msgContent = JSON.parse(e);
     }
 
+    if (typeof msgContent.settings !== "undefined") {
+        realityEditor.network.onSettingPostMessage(msgContent);
+        return;
+    }
+
+
     if (msgContent.resendOnElementLoad) {
         var elt = document.getElementById('iframe' + msgContent.nodeKey);
         if (elt) {
@@ -537,7 +541,7 @@ realityEditor.network.onInternalPostMessage = function(e) {
 
                         });
 
-                        window.addEventListener("devicemotion", function () {
+                        window.addEventListener("devicemotion", function (event) {
 
                             var thisState = globalStates.acceleration;
 
@@ -660,6 +664,111 @@ realityEditor.network.onInternalPostMessage = function(e) {
                 frame.contentWindow.postMessage(JSON.stringify({
                     stopTouchEditing: true
                 }), "*");
+            }
+        }
+    }
+
+};
+
+
+realityEditor.network.onSettingPostMessage = function(msgContent) {
+
+    var self = document.getElementById("settingsIframe");
+
+
+    /**
+     * Get all the setting states
+     *
+     */
+
+    if (msgContent.settings.getSettings) {
+        self.contentWindow.postMessage(JSON.stringify({getSettings: {
+            extendedTracking: globalStates.extendedTracking,
+            editingMode: globalStates.editingMode,
+            clearSkyState: globalStates.clearSkyState,
+            instantState: globalStates.instantState,
+            externalState: globalStates.externalState,
+            settingsButton : globalStates.settingsButtonState
+        }
+        }), "*");
+    }
+
+    if(msgContent.settings.getObjects){
+
+        var thisObjects = {};
+
+        for (var keyPref in objects) {
+            thisObjects[keyPref] = {
+              name: objects[keyPref].name,
+                ip:    objects[keyPref].ip,
+                version : objects[keyPref].version,
+                nodes: Object.keys(objects[keyPref].nodes).length,
+                links: Object.keys(objects[keyPref].links).length
+
+            };
+        }
+
+        self.contentWindow.postMessage(JSON.stringify({getObjects: thisObjects}), "*");
+    }
+
+
+    /**
+     * This is where all the setters are palced for the Settings menu
+     *
+     */
+
+    if (msgContent.settings.setSettings) {
+        if (typeof msgContent.settings.setSettings.extendedTracking !== "undefined") {
+
+            globalStates.extendedTracking = msgContent.settings.setSettings.extendedTracking;
+
+            console.log("jetzt aber mal richtig hier!!", globalStates.extendedTracking);
+
+            if (globalStates.extendedTracking === true) {
+                window.location.href = "of://extendedTrackingOn";
+            } else {
+                window.location.href = "of://extendedTrackingOff";
+            }
+        }
+
+        if (typeof msgContent.settings.setSettings.editingMode !== "undefined") {
+
+            if (msgContent.settings.setSettings.editingMode) {
+
+                realityEditor.device.addEventHandlers();
+                globalStates.editingMode = true;
+
+                window.location.href = "of://developerOn";
+                globalMatrix.matrixtouchOn = "";
+            } else {
+                realityEditor.device.removeEventHandlers();
+                globalStates.editingMode = false;
+                window.location.href = "of://developerOff";
+            }
+
+        }
+
+        if (typeof msgContent.settings.setSettings.instantState !== "undefined") {
+
+            if (msgContent.settings.setSettings.instantState) {
+                globalStates.instantState = true;
+                window.location.href = "of://instantOn";
+
+            } else {
+                globalStates.editingMode = false;
+                window.location.href = "of://instantOff";
+            }
+        }
+
+        if (typeof msgContent.settings.setSettings.clearSkyState !== "undefined") {
+
+            if (msgContent.settings.setSettings.clearSkyState) {
+                globalStates.clearSkyState = true;
+                window.location.href = "of://clearSkyOn";
+
+            } else {
+                globalStates.clearSkyState = false;
+                window.location.href = "of://clearSkyOff";
             }
         }
     }

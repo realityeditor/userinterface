@@ -59,10 +59,8 @@
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="css/index.css">
     <link rel="stylesheet" type="text/css" href="css/menu.css">
-    <link rel="stylesheet" href="thirdPartyCode/switchery.css"/>
 
     <!-- Javascript -->
-    <script src="thirdPartyCode/switchery.js"></script>
     <script src="thirdPartyCode/pep.min.js"></script>
     <script src="thirdPartyCode/d3.min.js"></script>
 
@@ -86,7 +84,7 @@
     <script src="src/gui/menus.js"></script>
     <script src="src/gui/instantConnection.js"></script>
     <script src="src/gui/pocket.js"></script>
-    <script src="src/gui/preferences.js"></script>
+    <script src="src/gui/settings.js"></script>
     <script src="src/gui/frame.js"></script>
 
     <script src="src/gui/ar/index.js"></script>
@@ -127,79 +125,6 @@
         line-height: 198px; font-size: 80px; font-family: Calibri, Helvetica Neue, Helvetica, sans-serif">X</div>
         </div>
     </div>
-
-<div class='Interfaces' id="preferences">
-
-    <div id="content1" class='Interfaces'>
-        <div id="content1Padding" class='Interfaces PrefTitle'>
-        </div>
-
-        <div id="content11" class='Interfaces PrefTitle'>
-            <b>Authoring: Position UI</b><br>
-        </div>
-
-        <div id="content12" class='Interfaces PrefTitle'>
-            <input type="checkbox" name="editingModeSwitch" id="editingModeSwitch"  class="js-switch"/>
-        </div>
-
-        <div id="content13" class='Interfaces PrefTitle'>
-            <b>Extended Tracking</b><br>
-        </div>
-
-        <div id="content14" class='Interfaces PrefTitle'>
-            <input type="checkbox" name="extendedTrackingSwitch" id="extendedTrackingSwitch" class="js-switch" oninput='setExtendetTracking()'/>
-        </div>
-
-        <div id="content15" class='Interfaces PrefTitle'>
-            <b>External User Interface</b><br>
-        </div>
-
-        <div id="content16" class='Interfaces PrefTitle'>
-            <img id="loadNewUI" src="png/load.png" width="99" height="40" alt="Load New UI"/>
-        </div>
-
-        <div id="content20" class='Interfaces PrefTitle'>
-            <input id="newURLText"
-                   type="url" name="newURL"  size="15" placeholder="http://..." value="http://"
-                   oninput="realityEditor.device.utilities.newURLTextLoad()"><br>
-        </div>
-
-        <div id="content30" class='Interfaces PrefTitle'>
-            <b>Clear Sky<br>(No Buttons)</b><br>
-        </div>
-
-        <div id="content31" class='Interfaces PrefTitle'>
-            <input type="checkbox" name="extendedTrackingSwitch" id="turnOffUISwitch" class="js-switch" oninput='setTurnOffUISwitch()'/>
-        </div>
-
-
-        <div id="content18" class='Interfaces PrefTitle'>
-            <b>Move &amp; Scale UI</b> activate the ability to move and scale virtual user interfaces on developer objects.
-            <br><br>
-            <b>Extended Tracking</b> allows you to interact with virtual interfaces that extend the marker size, even if
-            the marker moves outside the video frame.
-            <br><br>
-            <b>External User Interface</b> allows you to load a modified Reality Editor from an external web server.
-            Learn more about such modifications here: https://github.com/openhybrid/editor.
-            <br>
-        </div>
-
-
-        <div id="contentPadding" class='Interfaces PrefTitle'>
-        </div>
-    </div>
-
-    <div id="content1title" class='Interfaces'>
-        Settings
-    </div>
-
-    <div id="content2" class='Interfaces'>
-    </div>
-
-    <div id="content2title" class='Interfaces'>
-        Found Objects in this Network
-    </div>
-</div>
 
 <!-- This is the Interface frontend GUI part -->
 
@@ -388,8 +313,7 @@
 
 <div class='Interfaces' id="overlay"></div>
 
+<iframe src="setting/index.html" id="settingsIframe" frameborder="0" style="background-color: #222222; position: absolute; left: 0px; top: 0px; bottom: 0px; right: 0px; height: 100%; width: 100%; -webkit-transform: translateZ(0px); display: none;" ></iframe>
 
-<!--<iframe src="setting/index.html" frameborder="0" style="position: absolute; left: 0px; top: 0px; bottom: 0px; right: 0px; height: 100%; width: 100%; -webkit-transform: translateZ(0px);" ></iframe>
--->
 </body>
 </html>

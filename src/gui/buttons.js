@@ -48,19 +48,7 @@
  */
 
 createNameSpace("realityEditor.gui.buttons");
-
-var freezeButtonImage = [];
-var guiButtonImage = [];
-var preferencesButtonImage = [];
-var reloadButtonImage = [];
-var resetButtonImage = [];
-var unconstButtonImage = [];
-var editingButtonImage = [];
-var pocketButtonImage = [];
-var loadNewUiImage = [];
 var blockTabImage = [];
-var memoryWebButtonImage = [];
-var pocketButtonImage = [];
 
 /**
  * @desc
@@ -185,8 +173,8 @@ realityEditor.gui.buttons.settingButtonUp = function(event) {
         }
 
 
-        if (globalStates.preferencesButtonState === true) {
-            this.gui.preferences.preferencesHide();
+        if (globalStates.settingsButtonState === true) {
+            this.gui.settings.hideSettings();
 
             realityEditor.gui.menus.off("setting", ["setting"]);
 
@@ -195,31 +183,9 @@ realityEditor.gui.buttons.settingButtonUp = function(event) {
             if (globalStates.editingMode) {
                 realityEditor.gui.menus.on("editing", []);
             }
-
-            if (globalStates.UIOffMode) {
-                // If clearSky is hiding the buttons, make sure the buttons are hidden as preferences exits
-               // document.body.classList.add('clearSky');
-              //  realityEditor.gui.menus.on("clearSky", []);
-            }
-
         }
         else {
-
-            realityEditor.gui.menus.on("setting", ["setting"]);
-
-            this.gui.preferences.addElementInPreferences();
-
-            this.gui.preferences.preferencesVisible();
-
-            overlayDiv.style.display = "none";
-
-            if (globalStates.UIOffMode) {
-                // If clearSky is hiding the buttons, make sure the buttons are
-                // hidden as preferences appears.
-               // document.body.classList.add('clearSky');
-                //  realityEditor.gui.menus.on("clearSky", []);
-            }
-
+            this.gui.settings.showSettings();
         }
     };
 
@@ -247,67 +213,6 @@ realityEditor.gui.buttons.freezeButtonUp = function(event) {
 
 
 realityEditor.gui.buttons.draw = function() {
-    
-    this.preload(blockTabImage,
-        'png/iconBlocks.png', 'png/iconEvents.png', 'png/iconSignals.png', 'png/iconMath.png', 'png/iconWeb.png'
-    );
-
-    document.getElementById("extendedTrackingSwitch").addEventListener("change", function () {
-		if (document.getElementById("extendedTrackingSwitch").checked) {
-			globalStates.extendedTracking = true;
-			window.location.href = "of://extendedTrackingOn";
-		} else {
-			globalStates.extendedTracking = false;
-			window.location.href = "of://extendedTrackingOff";
-		}
-	}.bind(this));
-	ec++;
-
-	document.getElementById("editingModeSwitch").addEventListener("change", function () {
-
-		if (document.getElementById("editingModeSwitch").checked) {
-
-           // realityEditor.gui.menus.on("editing",[]);
-
-			this.realityEditor.device.addEventHandlers();
-			globalStates.editingMode = true;
-
-            window.location.href = "of://developerOn";
-			globalMatrix.matrixtouchOn = "";
-		} else {
-
-          //  realityEditor.gui.menus.on("setting",[]);
-
-			this.realityEditor.device.removeEventHandlers();
-			globalStates.editingMode = false;
-			window.location.href = "of://developerOff";
-		}
-	}.bind(this));
-	ec++;
-
-	document.getElementById("turnOffUISwitch").addEventListener("change", function () {
-		if (document.getElementById("turnOffUISwitch").checked) {
-
-          //  realityEditor.gui.menus.on("clearSky",[]);
-
-			globalStates.UIOffMode = true;
-			timeForContentLoaded = 240000;
-			window.location.href = "of://clearSkyOn";
-
-			document.body.classList.add('clearSky');
-		} else {
-
-           // realityEditor.gui.menus.on("main",[]);
-
-
-			globalStates.UIOffMode = false;
-			timeForContentLoaded = 240;
-			window.location.href = "of://clearSkyOff";
-
-			document.body.classList.remove('clearSky');
-		}
-	}.bind(this));
-	ec++;
 
 
 	/**
@@ -317,52 +222,10 @@ realityEditor.gui.buttons.draw = function() {
 	 **/
 
 
+};
 
 
-	document.getElementById("loadNewUI").addEventListener("touchstart", function () {
-		if (globalStates.extendedTracking === true) {
-			document.getElementById('loadNewUI').src = loadNewUiImage[3].src;
-		}
-		else {
-			document.getElementById('loadNewUI').src = loadNewUiImage[1].src;
-		}
-	}.bind(this));
-	ec++;
-
-	document.getElementById("loadNewUI").addEventListener("touchend", function () {
-		document.getElementById('loadNewUI').src = loadNewUiImage[0].src;
-		window.location.href = "of://loadNewUI"+globalStates.newURLText;
-
-	}.bind(this));
-	ec++;
-
-}
-
-	/**
-	 * Freeze Button
-	 */
-
-
-/*
-	document.getElementById("reloadButton").addEventListener("touchstart", function () {
-		document.getElementById('reloadButton').src = reloadButtonImage[0].src;
-		window.location.href = "of://reload";
-	}.bind(this));
-	ec++;
-
-	document.getElementById("reloadButton").addEventListener("touchend", function () {
-		// location.reload(true);
-	}.bind(this));
-	ec++;
-	*/
-
-	/**
-	 * Pocket Button
-	 */
-
-
-
-    realityEditor.gui.buttons.pocketButtonDown = function(event) {
+realityEditor.gui.buttons.pocketButtonDown = function(event) {
         if (event.button !== "pocket" && event.button !== "logicPocket") return;
 
         if (globalStates.guiState !== "node" && globalStates.guiState !== "logic") {
@@ -371,7 +234,7 @@ realityEditor.gui.buttons.draw = function() {
 
         globalStates.pocketButtonDown = true;
 
-    };
+};
 
 
 realityEditor.gui.buttons.pocketButtonUp = function(event) {
@@ -480,43 +343,4 @@ realityEditor.gui.buttons.bigPocketButtonEnter = function(event) {
     realityEditor.gui.pocket.onBigPocketButtonEnter();
 };
 
-/*
-	document.getElementById("reloadButton").addEventListener("touchstart", function () {
-		if (!globalStates.UIOffMode)    document.getElementById('reloadButton').src = reloadButtonImage[0].src;
-		window.location.href = "of://reload";
-	}.bind(this));
-	ec++;
-	document.getElementById("reloadButton").addEventListener("touchend", function () {
-		// location.reload(true);
 
-		window.open("index.html?v=" + Math.floor((Math.random() * 100) + 1));
-	}.bind(this));
-	ec++;
-
-
-	var memoryWebButton = document.getElementById('memoryWebButton');
-	memoryWebButton.addEventListener('touchstart', function() {
-		if (!globalStates.UIOffMode) {
-			memoryWebButton.src = memoryWebButtonImage[1].src;
-		}
-	}.bind(this));
-
-	ec++;
-	memoryWebButton.addEventListener('touchend', function() {
-		if (document.querySelector('.memoryWeb')) {
-			if (!globalStates.UIOffMode) {
-				memoryWebButton.src = memoryWebButtonImage[0].src
-			}
-			removeMemoryWeb();
-		} else {
-			if (!globalStates.UIOffMode) {
-				memoryWebButton.src = memoryWebButtonImage[2].src
-			}
-			createMemoryWeb();
-		}
-	}.bind(this));
-	ec++;
-
-	this.cout("GUI");
-};
-*/
