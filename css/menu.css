@@ -7,7 +7,7 @@
     top: 18px;*/
 
     /* this is a hack for adding the interface in front of the transformed web interface */
-    -webkit-transform: translateZ(3px);
+    -webkit-transform: translateZ(10px);
     z-index: 10;
 }
 #mainButton {
