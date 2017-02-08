@@ -266,11 +266,22 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
         } else {
             palette.style.display = 'block';
         }
+        setPaletteElementDemo(true);
+    }
+
+    function setPaletteElementDemo(value) {
+        var paletteElements = document.querySelectorAll('.palette-element');
+        for (var i = 0; i < paletteElements.length; i++) {
+            var elt = paletteElements[i];
+            // TODO(hobinjk): stringify is not required except for legacy reasons
+            elt.contentWindow.postMessage(JSON.stringify({demo: value}), '*');
+        }
     }
 
     function pocketHide() {
         pocket.classList.remove('pocketShown');
         realityEditor.gui.menus.buttonOff('main', ['pocket']);
+        setPaletteElementDemo(false);
     }
 
     function pocketShown() {
@@ -282,14 +293,14 @@ realityEditor.gui.pocket.setPocketPosition = function(evt){
             var element = realityElements[i];
             var container = document.createElement('div');
             container.classList.add('element-template');
-            container.dataset.src = 'bower_components/' + element.name + '/index.html';
+            container.dataset.src = 'thirdPartyCode/bower_components/' + element.name + '/index.html';
 
             container.dataset.width = element.width;
             container.dataset.height = element.height;
 
             var elt = document.createElement('iframe');
             elt.classList.add('palette-element');
-            elt.src = 'bower_components/' + element.name + '/index.html?demo=true';
+            elt.src = 'thirdPartyCode/bower_components/' + element.name + '/index.html?demo=true';
 
             container.appendChild(elt);
             palette.appendChild(container);

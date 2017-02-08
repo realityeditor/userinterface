@@ -1,7 +1,7 @@
 <!DOCTYPE html><html><head>
 
     <meta charset="utf-8">
-    <title>&lt;reality-sensor-digital&gt;</title>
+    <title>&lt;reality-control-slider-kinetic-2d&gt;</title>
 
     <!-- Imports polyfill -->
     <script src="../webcomponentsjs/webcomponents-lite.min.js"></script>
@@ -8317,6 +8317,7 @@ Polymer({
     }
   },
   isReadValue: false,
+  demonstrating: false,
   onNameChange: function() {
     // addReadListener doesn't have a removeReadListener so this can get real inefficient real fast
     hybridObject.addReadListener(this.name, this.onRead);
@@ -8336,7 +8337,17 @@ Polymer({
   created: function() {
     this.onRead = this.onRead.bind(this);
   },
+  startDemonstrating: function() {
+    this.demonstrating = true;
+    this.demonstrateMotion();
+  },
+  stopDemonstrating: function() {
+    this.demonstrating = false;
+  },
   demonstrateMotion: function() {
+    if (!this.demonstrating) {
+      return;
+    }
     var newValue = this.value + 0.003;
     if (newValue > 1) {
       newValue = 0;
@@ -8347,11 +8358,18 @@ Polymer({
     window.requestAnimationFrame(this.demonstrateMotion);
   },
   ready: function() {
-    // Hardcoded demonstration mode
-    if (isDemoMode) {
-      this.demonstrateMotion = this.demonstrateMotion.bind(this);
-      this.demonstrateMotion();
-    }
+    this.demonstrateMotion = this.demonstrateMotion.bind(this);
+    window.addEventListener('message', function(msg) {
+      var data = JSON.parse(msg.data);
+      if (!data.hasOwnProperty('demo')) {
+        return;
+      }
+      if (data.demo) {
+        this.startDemonstrating();
+      } else {
+        this.stopDemonstrating();
+      }
+    }.bind(this));
 
     hybridObject.sendCreateNode(this.name);
   }
@@ -8359,52 +8377,218 @@ Polymer({
 </script>
 
 </dom-module>
-<dom-module id="reality-sensor-digital" assetpath="./">
+<dom-module id="reality-control-slider-kinetic-2d" assetpath="./">
   <template>
     <style>
-      div {
-        border: 2px solid #fff;
-        background-color: rgba(255, 255, 255, 0.3);
-        width: 48px;
-        height: 48px;
+      path {
+        stroke-width: 6px;
+        stroke: #00ffff;
+        fill: rgba(0, 255, 255, 0.3);
       }
-      div.active {
-        background-color: #00ff00;
-        border-color: #00ff00;
+      path.active {
+        stroke: #00ff00;
+        fill: #00ff00;
+      }
+      #activation {
+        stroke: #00ff00;
+        fill: #00ff00;
+      }
+      path.slice {
+        display: none;
+      }
+      path.slice.active {
+        display: block;
+        stroke: #00ff00;
+        fill: #00ff00;
       }
     </style>
 
-    <reality-node name="input" value="{{value}}"></reality-node>
-    <div id="output"></div>
+    <reality-node name="valueX" value="{{valueX}}"></reality-node>
+    <reality-node name="valueY" value="{{valueY}}"></reality-node>
+
+    <svg id="container" width="526" height="526" version="1.1" xmlns="http://www.w3.org/2000/svg" touch-action="none">
+      <defs>
+        <clipPath id="kinetic-outline">
+          <path id="sliceN" class="slice" d="M159.5 160 L 260 109.5 L 360.5 160 L 260 260.5 Z"></path>
+          <path id="sliceE" class="slice" d="M259.5 260 L 360 159.5 L 410.5 260 L 360 360.5 Z"></path>
+          <path id="sliceS" class="slice" d="M260 259.5 L 360.5 360 L 260 410.5 L 159.5 360 Z"></path>
+          <path id="sliceW" class="slice" d="M260.5 260 L 160 360.5 L 109.5 260 L 160 159.5 Z"></path>
+        </clipPath>
+      </defs>
+
+      <g transform="translate(3 3)">
+        <path d="M160 160 L 260 110 L 360 160 L 410 260 L 360 360 L 260 410 L 160 360 L 110 260 Z"></path>
+
+        <path id="activation" d="M160 160 L 260 110 L 360 160 L 410 260 L 360 360 L 260 410 L 160 360 L 110 260 Z" clip-path="url(#kinetic-outline)"></path>
+        <path id="arrowN1" d="M160 75 L 160 50 L 260 0 L 360 50 L 360 75 L 260 25 Z"></path>
+        <path id="arrowN0" d="M160 130 L 160 105 L 260 55 L 360 105 L 360 130 L 260 80 Z"></path>
+
+
+        <g transform="translate(520 0) rotate(90)">
+          <path id="arrowE1" d="M160 75 L 160 50 L 260 0 L 360 50 L 360 75 L 260 25 Z"></path>
+          <path id="arrowE0" d="M160 130 L 160 105 L 260 55 L 360 105 L 360 130 L 260 80 Z"></path>
+        </g>
+        <g transform="translate(520 520) rotate(180)">
+          <path id="arrowS1" d="M160 75 L 160 50 L 260 0 L 360 50 L 360 75 L 260 25 Z"></path>
+          <path id="arrowS0" d="M160 130 L 160 105 L 260 55 L 360 105 L 360 130 L 260 80 Z"></path>
+        </g>
+        <g transform="translate(0 520) rotate(270)">
+          <path id="arrowW1" d="M160 75 L 160 50 L 260 0 L 360 50 L 360 75 L 260 25 Z"></path>
+          <path id="arrowW0" d="M160 130 L 160 105 L 260 55 L 360 105 L 360 130 L 260 80 Z"></path>
+        </g>
+      </g>
+    </svg>
+
   </template>
 </dom-module>
 
+<script src="../pepjs/dist/pep.min.js"></script>
 <!-- Registers custom element -->
 <script>
 Polymer({
-  is: 'reality-sensor-digital',
+  is: 'reality-control-slider-kinetic-2d',
   properties: {
-    value: {
+    valueX: {
+      type: Number,
+      value: 0,
+      observer: 'onValueChange'
+    },
+    valueY: {
       type: Number,
       value: 0,
       observer: 'onValueChange'
     }
   },
+  height: 520,
+  width: 520,
+  pointers: {},
+  onPointerDown: function(e) {
+    e.preventDefault();
+    this.pointers[e.pointerId] = true;
+    this.onPointerMove(e);
+  },
+  limit: function(value) {
+    if (value < -1) {
+      return -1;
+    }
+    if (value > 1) {
+      return 1;
+    }
+    return value;
+  },
+  onPointerMove: function(e) {
+    e.preventDefault();
+    if (!this.pointers[e.pointerId]) {
+      return;
+    }
+    var rect = this.$.container.getBoundingClientRect();
+
+    var dY = e.clientY - rect.top - 258;
+    var dX = e.clientX - rect.left - 258;
+
+    var deadzone = 30;
+    if (Math.abs(dY) < deadzone) {
+      dY = 0;
+    }
+    if (Math.abs(dX) < deadzone) {
+      dX = 0;
+    }
+
+    this.valueY = this.limit(-dY / this.height * 2);
+    this.valueX = this.limit(dX / this.width * 2);
+  },
   onValueChange: function() {
-    if (this.value > 0.5) {
-      this.$.output.classList.add('active');
+    var dY = -this.valueY * this.height / 2;
+    var dX = this.valueX * this.width / 2;
+
+    var absY = Math.abs(dY);
+    var absX = Math.abs(dX);
+
+    var deadzone = 30;
+    var arrowLevel0 = 160;
+    var arrowLevel1 = 210;
+
+    var scale = Math.sqrt(dY * dY + dX * dX) / 150;
+    if (scale > 153 / 150) {
+      scale = 153 / 150;
+    }
+    if (scale > deadzone / 150) {
+      var centerDiff = 260 - 260 * scale;
+
+      this.$.activation.setAttribute('transform', 'translate(' + centerDiff +
+            ',' + centerDiff + ') scale(' + scale + ')');
     } else {
-      this.$.output.classList.remove('active');
+      this.$.activation.setAttribute('transform', 'scale(0)');
+    }
+
+    var activePaths = [].slice.call(this.$.container.querySelectorAll('path.active'));
+    activePaths.forEach(function(path) {
+      path.classList.remove('active');
+    });
+
+    var arrowX0 = this.$.arrowW0;
+    var arrowX1 = this.$.arrowW1;
+
+    if (dX < -deadzone) {
+      this.$.sliceW.classList.add('active');
+    } else if (dX > deadzone) {
+      this.$.sliceE.classList.add('active');
+      arrowX0 = this.$.arrowE0;
+      arrowX1 = this.$.arrowE1;
+    }
+
+    if (absX > arrowLevel0) {
+      arrowX0.classList.add('active');
+    }
+    if (absX > arrowLevel1) {
+      arrowX1.classList.add('active');
+    }
+
+    var arrowY0 = this.$.arrowN0;
+    var arrowY1 = this.$.arrowN1;
+
+    if (dY < -deadzone) {
+      this.$.sliceN.classList.add('active');
+    } else if (dY > deadzone) {
+      this.$.sliceS.classList.add('active');
+      arrowY0 = this.$.arrowS0;
+      arrowY1 = this.$.arrowS1;
+    }
+
+    if (absY > arrowLevel0) {
+      arrowY0.classList.add('active');
+    }
+    if (absY > arrowLevel1) {
+      arrowY1.classList.add('active');
     }
   },
+  onPointerUp: function(e) {
+    e.preventDefault();
+    this.pointers[e.pointerId] = false;
+  },
+  fixClipPath: function() {
+    var clipPathId = 'kinetic-outline-' + (Math.random() + '').substr(2);
+    this.$$('clipPath').id = clipPathId;
+    this.$.activation.setAttribute('clip-path', 'url(#' + clipPathId + ')');
+  },
   ready: function() {
+    this.onPointerDown = this.onPointerDown.bind(this);
+    this.onPointerMove = this.onPointerMove.bind(this);
+    this.onPointerUp = this.onPointerUp.bind(this);
+
+    this.$.container.addEventListener('pointermove', this.onPointerMove);
+    this.$.container.addEventListener('pointerdown', this.onPointerDown);
+    this.$.container.addEventListener('pointerup', this.onPointerUp);
+    this.$.container.addEventListener('pointercancel', this.onPointerUp);
+
+    this.fixClipPath();
   }
 });
 </script>
 </div>
 
     <!-- Runs custom element -->
-    <reality-sensor-digital></reality-sensor-digital>
+    <reality-control-slider-kinetic-2d></reality-control-slider-kinetic-2d>
 
 
 
