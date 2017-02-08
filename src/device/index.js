@@ -664,6 +664,7 @@ realityEditor.device.onDocumentPointerDown = function(evt) {
 	}
 
 	if (realityEditor.gui.memory.memoryCanCreate() && window.innerWidth - evt.clientX > 65) {
+        console.log("stop this from happening");
         realityEditor.gui.menus.on("bigPocket",[]);
 	//	realityEditor.gui.pocket.pocketOnMemoryCreationStart();
 	}

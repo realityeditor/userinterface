@@ -25,9 +25,10 @@ realityEditor.gui.settings.newURLTextLoad = function () {
 
 realityEditor.gui.settings.reloadUI = function () {
     if (this.states.externalState !== "" && this.states.externalState !== "http") {
+        console.log("window.location.href = " + "of://loadNewUI" + this.states.externalState);
         window.location.href = "of://loadNewUI" + this.states.externalState;
     }
-}
+};
 
 realityEditor.gui.settings.loadSettingsPost = function () {
     parent.postMessage(

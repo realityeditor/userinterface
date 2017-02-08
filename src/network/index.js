@@ -772,6 +772,20 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
                 window.location.href = "of://clearSkyOff";
             }
         }
+
+        if (typeof msgContent.settings.setSettings.lockingToggle !== "undefined") {
+
+            if (msgContent.settings.setSettings.lockingToggle) {
+                window.location.href = "of://authenticateTouch";
+
+            } else {
+                globalStates.lockingMode = false;
+                globalStates.authenticatedUser = null;
+                console.log("Is admin mode on now? " + globalStates.lockingMode);
+            }
+        }
+
+
     }
 };
 

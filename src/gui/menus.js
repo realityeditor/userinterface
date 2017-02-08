@@ -80,12 +80,11 @@ realityEditor.gui.menus.menus = {
     gui: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue"},
     setting: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue"},
     editing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", reset: "blue", unconstrained: "blue"},
-    // todo: locking and editing at same time?
-    locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", lock: "blue", unlock: "blue"},
     crafting: {back: "blue", logicPocket: "green", logicSetting: "blue", freeze: "blue"},
     bigTrash: {bigTrash: "red"},
     bigPocket: {bigPocket: "green"},
-    locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue",unlock:"blue",lock:"blue"}
+    locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", lock:"blue"},
+    lockingEditing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", lock:"blue", reset: "blue", unconstrained: "blue"}
 };
 
 realityEditor.gui.menus.getVisibility = function(item){
@@ -172,15 +171,13 @@ realityEditor.gui.menus.on = function(menuDiv, buttonArray) {
     }
     realityEditor.gui.menus.history.push(menuDiv);
 
-    if(globalStates.editingMode){
-        if((menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic") && !globalStates.settingsButtonState){
+    // show correct combination of sub-menus
+    if ((menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic") && !globalStates.settingsButtonState) {
+        if (globalStates.editingMode && globalStates.lockingMode) {
+            menuDiv = "lockingEditing";
+        } else if (globalStates.editingMode) {
             menuDiv = "editing";
-        }
-    }
-
-    // todo: locking and editing at same time?
-    if(globalStates.lockingMode){
-        if((menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic") && !globalStates.preferencesButtonState){
+        } else if (globalStates.lockingMode) {
             menuDiv = "locking";
         }
     }
@@ -214,15 +211,13 @@ realityEditor.gui.menus.off = function(menuDiv, buttonArray) {
     }
     realityEditor.gui.menus.history.push(menuDiv);
 
-    if(globalStates.editingMode){
-        if(menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic"){
+    // show correct combination of sub-menus
+    if (menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic") {
+        if (globalStates.editingMode && globalStates.lockingMode) {
+            menuDiv = "lockingEditing";
+        } else if (globalStates.editingMode) {
             menuDiv = "editing";
-        }
-    }
-
-    // todo: locking and editing at same time?
-    if(globalStates.lockingMode){
-        if(menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic"){
+        } else if (globalStates.lockingMode) {
             menuDiv = "locking";
         }
     }

@@ -58,9 +58,9 @@ realityEditor.device.security.authenticateSessionForUser = function(encryptedId)
     console.log("authenticating with userId: " + encryptedId);
     if (encryptedId === null) {
         console.log("authentication failed");
-        if (document.getElementById("adminModeSwitch").checked) {
-            document.getElementById("adminModeSwitch").click(); //.checked = false;            
-        }
+        //if (document.getElementById("adminModeSwitch").checked) {
+        //    document.getElementById("adminModeSwitch").click(); //.checked = false;            
+        //}
         globalStates.lockingMode = false;
         globalStates.authenticatedUser = null;
         console.log("Is admin mode on now? " + globalStates.lockingMode);

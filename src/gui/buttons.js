@@ -216,6 +216,8 @@ realityEditor.gui.buttons.freezeButtonUp = function(event) {
 realityEditor.gui.buttons.lockButtonUp = function(event) {
     if (event.button !== "lock") return;
     
+    console.log("activate lock button");
+    
     for (var key in objects) {
         if (!objects.hasOwnProperty(key)) continue;
         if (globalObjects.hasOwnProperty(key)) { // this is a way to check which objects are currently visible
@@ -271,6 +273,8 @@ realityEditor.gui.buttons.lockButtonUp = function(event) {
 
 realityEditor.gui.buttons.unlockButtonUp = function(event) {
     if (event.button !== "unlock") return;
+
+    console.log("activate unlock button");
 
     for (var key in objects) {
         if (!objects.hasOwnProperty(key)) continue;
@@ -329,17 +333,17 @@ realityEditor.gui.buttons.draw = function() {
     );
 
 
-    document.getElementById("adminModeSwitch").addEventListener("change", function () {
-        if(document.getElementById("adminModeSwitch").checked){
-            window.location.href = "of://authenticateTouch";
-
-        }else{
-            globalStates.lockingMode = false;
-            globalStates.authenticatedUser = null;
-            console.log("Is admin mode on now? " + globalStates.lockingMode);
-        }
-    });
-    ec++;
+    //document.getElementById("adminModeSwitch").addEventListener("change", function () {
+    //    if(document.getElementById("adminModeSwitch").checked){
+    //        window.location.href = "of://authenticateTouch";
+    //
+    //    }else{
+    //        globalStates.lockingMode = false;
+    //        globalStates.authenticatedUser = null;
+    //        console.log("Is admin mode on now? " + globalStates.lockingMode);
+    //    }
+    //});
+    //ec++;
 
 /*
     document.getElementById("lockButton").addEventListener("touchstart", function () {

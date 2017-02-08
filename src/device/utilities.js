@@ -72,11 +72,6 @@ function isValueLocked(lockHolder) {
     return shouldBeLocked;
 }
 
-realityEditor.device.utilities.newURLTextLoad = function () {
-    globalStates.newURLText = encodeURIComponent(document.getElementById('newURLText').value);
-    this.cout("newURLTextLoad");
-};
-
 /**
  * @desc
  * @param
