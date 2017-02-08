@@ -124,7 +124,9 @@ realityEditor.device.deactivateMultiTouch = function() {
 realityEditor.device.endTrash = function(nodeID) {
 
 	realityEditor.device.deactivateMultiTouch();
-	realityEditor.device.deactivateNodeMove(nodeID);
+	if (!globalStates.editingMode) {
+		realityEditor.device.deactivateNodeMove(nodeID);
+	}
 	setTimeout(function() {
         realityEditor.gui.menus.buttonOn("main",[]);
 		//realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
@@ -253,6 +255,7 @@ realityEditor.device.onTouchDown = function(evt) {
 		globalStates.editingModeObject = target.objectId;
 		globalStates.editingModeLocation = target.nodeId;
 		globalStates.editingModeKind = target.type;
+		globalStates.editingNode = target.nodeId;
 		globalStates.editingModeHaveObject = true;
 	}
 	cout("touchDown");
@@ -348,46 +351,35 @@ realityEditor.device.onTrueTouchUp = function(evt){
 			globalProgram.logicSelector = 4;
 		}
 	}
+
 	globalCanvas.hasContent = true;
 
-	if(!globalStates.editingMode) {
-		console.log("finale "+evt.pageX);
-		realityEditor.device.endTrash(target.nodeId);
+    realityEditor.device.endTrash(target.nodeId);
 
-		if (target.type !== 'logic' && target.type !== 'node') {
-			return;
-		}
+    if(target.type === 'logic' && evt.pageX >= (globalStates.height-60)){
 
-		if(target.type === 'logic' && evt.pageX >= (globalStates.height-60)){
+        for(var objectKey in objects){
+            var thisObject = objects[objectKey];
+            for (linkKey in thisObject.links){
+                var thisLink = thisObject.links[linkKey];
+                if(((thisLink.objectA === target.objectId) && (thisLink.nodeA === target.nodeId)) ||
+                    ((thisLink.objectB === target.objectId) && (thisLink.nodeB === target.nodeId))
+                ){
+                    delete thisLink;
+                    realityEditor.network.deleteLinkFromObject(thisObject.ip, objectKey, linkKey);
+                }
+            }
+        }
 
-			for(var objectKey in objects){
-				var thisObject = objects[objectKey];
-				for (linkKey in thisObject.links){
-					var thisLink = thisObject.links[linkKey];
-					if(((thisLink.objectA === target.objectId) && (thisLink.nodeA === target.nodeId)) ||
-						((thisLink.objectB === target.objectId) && (thisLink.nodeB === target.nodeId))
-					){
-						delete thisLink;
-						realityEditor.network.deleteLinkFromObject(thisObject.ip, objectKey, linkKey);
-					}
-				}
-			}
+        realityEditor.gui.ar.draw.deleteNode(target.objectId, target.nodeId);
 
-			realityEditor.gui.ar.draw.deleteNode(target.objectId, target.nodeId);
+        realityEditor.network.deleteNodeFromObject(objects[target.objectId].ip, target.objectId, target.nodeId);
 
-			realityEditor.network.deleteNodeFromObject(objects[target.objectId].ip, target.objectId, target.nodeId);
-
-		} else {
-			if (target.objectId !== "pocket") {
-				realityEditor.network.sendResetContent(target.objectId, target.nodeId, target.type);
-			}
-		}
-
-
-
-
-	}
-
+    } else if (target.type === 'logic' || target.type === 'node') {
+        if (target.objectId !== "pocket") {
+            realityEditor.network.sendResetContent(target.objectId, target.nodeId, target.type);
+        }
+    }
 
 	cout("trueTouchUp");
 };
@@ -685,59 +677,8 @@ realityEditor.device.onDocumentPointerDown = function(evt) {
 
 	if (realityEditor.gui.memory.memoryCanCreate() && !globalStates.realityState && window.innerWidth - evt.clientX > 65) {
             realityEditor.gui.menus.on("bigPocket", []);
-	//	realityEditor.gui.pocket.pocketOnMemoryCreationStart();
 	}
 
-	/*
-	 // todo for testing only
-
-	 pocketItemId = uuidTime();
-
-
-	 pocketItem.pocket.nodes[pocketItemId] = new Logic();
-
-
-	 var thisItem = pocketItem.pocket.nodes[pocketItemId];
-
-
-	 if(globalLogic.farFrontElement==="") {
-	 thisItem.x = evt.clientX - (globalStates.height / 2);
-	 thisItem.y = evt.clientY - (globalStates.width / 2);
-	 }
-	 // else {
-	 // var matrixTouch =  screenCoordinatesToMatrixXY(thisItem, [evt.clientX,evt.clientY]);
-	 // thisItem.x = matrixTouch[0];
-	 // thisItem.y = matrixTouch[1];
-	 //}
-	 thisItem.scale = 1;
-	 thisItem.loaded = false;
-
-	 var thisObject = pocketItem.pocket;
-	 // this is a work around to set the state of an objects to not being visible.
-	 thisObject.objectId = "pocket";
-	 thisObject.name =  "pocket";
-	 thisObject.objectVisible = false;
-	 thisObject.screenZ = 1000;
-	 thisObject.fullScreen = false;
-	 thisObject.sendMatrix = false;
-	 thisObject.loaded = false;
-	 thisObject.integerVersion = 170;
-	 thisObject.matrix = [];
-	 // thisObject.nodes = {};
-	 thisObject.protocol = "R1";
-
-
-
-
-
-
-	 thisObject.visibleCounter = timeForContentLoaded;
-	 thisObject.objectVisible = true;
-
-	 //addElement("pocket", pocketItemId, "nodes/" + thisItem.type + "/index.html",  pocketItem.pocket, "logic",globalStates);
-
-
-	 */
 	cout("documentPointerDown");
 };
 
@@ -834,7 +775,7 @@ realityEditor.device.onMultiTouchEnd = function(evt) {
 			//realityEditor.gui.pocket.pocketOnMemoryDeletionStop();
 		}
 		if (globalStates.editingNode) {
-			if (globalStates.editingModeKind === 'ui') {
+			if ((!globalStates.editingMode) && globalStates.editingModeKind === 'ui') {
 				globalDOMCach[globalStates.editingNode].style.visibility = 'hidden';
 			}
 			realityEditor.device.onTrueTouchUp(evt);
