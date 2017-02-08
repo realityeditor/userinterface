@@ -72,3 +72,46 @@ realityEditor.device.security.authenticateSessionForUser = function(encryptedId)
     }
     //console.log(objectExp);
 };
+
+// TODO: can the lock owner change locked objects? i don't think they should be able to
+
+// actionType = "move", "delete", "lock", "unlock" // TODO: do we need actionType?
+realityEditor.device.security.isNodeActionAllowed = function(objectKey, nodeKey, actionType) {
+    var node = objects[objectKey].nodes[nodeKey];
+    var lockHolder = node.lockHolder;
+    var isLocked = !!lockHolder;
+    
+    if (!isLocked) return true; // if the node isn't locked, of course this action is allowed
+
+    var currentUser = globalStates.authenticatedUser;
+
+    if ((lockHolder === currentUser) && (actionType === "lock" || actionType === "unlock")) return true; // if the user owns the lock, they can lock or unlock it //do anything
+    
+    return false; // otherwise nothing is allowed
+};
+
+// TODO: should only nodes have locks, and links inherit those? or links have their own locks?
+realityEditor.device.security.isLinkActionAllowed = function(objectKeyA, nodeKeyA, objectKeyB, nodeKeyB, actionType) {
+    var nodeA = objects[objectKeyA].nodes[nodeKeyA];
+    var lockHolderA = nodeA.lockHolder;
+    var isLockedA = !!lockHolderA;
+
+    var nodeB = objects[objectKeyB].nodes[nodeKeyB];
+    var lockHolderB = nodeB.lockHolder;
+    var isLockedB = !!lockHolderB;
+    
+    if (!isLockedA && !isLockedB) return true; // if both nodes aren't locked, of course this action is allowed
+
+    //var currentUser = globalStates.authenticatedUser;
+
+    //if (lockHolderA === currentUser && lockHolderB === currentUser) return true; // if the user owns both locks, they can do anything
+
+    return false; // otherwise nothing is allowed
+};
+
+//realityEditor.device.security.isObjectActionAllowed = function(objectKey, actionType) {
+//    var object = objects[objectKey];
+//    // TODO: implement
+//};
+
+

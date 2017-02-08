@@ -556,6 +556,17 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
                 }
 
             }
+            
+            
+            // temporary UI styling to visualize locks
+            
+            if (type === "node" || type === "logic") {
+                if (!!thisObject.lockHolder) {
+                    globalDOMCach["iframe" + nodeKey].style.opacity = 0.25;
+                } else {
+                    globalDOMCach["iframe" + nodeKey].style.opacity = 1.0;
+                }
+            }
 
 
 
