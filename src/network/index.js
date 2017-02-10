@@ -262,6 +262,7 @@ realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
             origin.matrix =  remote.matrix;
         }
         origin.lockHolder = remote.lockHolder;
+        console.log("update node: lockHolder = " + remote.lockHolder);
 
         if(origin.type === "logic") {
             if (!origin.guiState) {

@@ -50,9 +50,6 @@
 createNameSpace("realityEditor.gui.buttons");
 var blockTabImage = [];
 
-var lockButtonImage = [];
-var unlockButtonImage = [];
-
 /**
  * @desc
  * @param array
@@ -218,13 +215,20 @@ realityEditor.gui.buttons.lockButtonUp = function(event) {
     
     console.log("activate lock button");
     
+    //var visibleObjects = [];
+    var visibleNodes = [];
+    
     for (var key in objects) {
         if (!objects.hasOwnProperty(key)) continue;
         if (globalObjects.hasOwnProperty(key)) { // this is a way to check which objects are currently visible
             console.log(key + " is visible");
             
+            //visibleObjects.push(key);
+            
             for (var nodeKey in objects[key].nodes) {
                 if (!objects[key].nodes.hasOwnProperty(nodeKey)) continue;
+                
+                visibleNodes.push(nodeKey);
                 
                 var content = {
                     lockHolder: globalStates.authenticatedUser
@@ -232,8 +236,75 @@ realityEditor.gui.buttons.lockButtonUp = function(event) {
 
                 realityEditor.network.postNewLockToObject(objects[key].ip, key, nodeKey, content);
             }
+
+            /*
+            for (var subKey in thisObject.links) {
+                if (!thisObject.links.hasOwnProperty(subKey)) {
+                    continue;
+                }
+                var l = thisObject.links[subKey];
+                var oA = thisObject;
+
+                if (isNaN(l.ballAnimationCount))
+                    l.ballAnimationCount = 0;
+
+                if (!objects.hasOwnProperty(l.objectB)) {
+                    continue;
+                }
+                var oB = objects[l.objectB];
+                if (!oA.nodes.hasOwnProperty(l.nodeA)) {
+                    continue;
+                }
+                if (!oB.nodes.hasOwnProperty(l.nodeB)) {
+                    continue;
+                }
+
+                var bA = oA.nodes[l.nodeA];
+
+                var bB = oB.nodes[l.nodeB];
+
+                if (bA === undefined || bB === undefined || oA === undefined || oB === undefined) {
+                    continue; //should not be undefined
+                }
+
+                // Don't draw off-screen lines
+                if (!oB.objectVisible && !oA.objectVisible) {
+                    continue;
+                }
+            }
+            */
         }
     }
+
+    console.log("visibleNodes = ", visibleNodes);
+
+    var visibleLinks = [];
+    
+    for (var objectKey in objects) {
+    //visibleObjects.forEach(function(objectKey) {
+        if (!objects.hasOwnProperty(objectKey)) continue;
+
+        var thisObject = objects[objectKey];
+
+        for (var linkKey in thisObject.links) {
+            if (!thisObject.links.hasOwnProperty(linkKey)) continue;
+            var thisLink = thisObject.links[linkKey];
+
+            var isVisibleNodeA = visibleNodes.indexOf(thisLink.nodeA) > -1;
+            var isVisibleNodeB = visibleNodes.indexOf(thisLink.nodeB) > -1;
+            
+            if (isVisibleNodeA || isVisibleNodeB) {
+                visibleLinks.push(linkKey);
+            }
+        }
+    //});
+    }
+    
+    console.log("visibleLinks = ", visibleLinks);
+    
+    visibleLinks.forEach(function(link) {
+       // TODO: set lockHolder and sync online... make sure all get set before sync/resetting 
+    });
 
     /*
     globalStates.currentlyLocked = true;
@@ -331,95 +402,6 @@ realityEditor.gui.buttons.draw = function() {
     this.preload(blockTabImage,
         'png/iconBlocks.png', 'png/iconEvents.png', 'png/iconSignals.png', 'png/iconMath.png', 'png/iconWeb.png'
     );
-
-
-    //document.getElementById("adminModeSwitch").addEventListener("change", function () {
-    //    if(document.getElementById("adminModeSwitch").checked){
-    //        window.location.href = "of://authenticateTouch";
-    //
-    //    }else{
-    //        globalStates.lockingMode = false;
-    //        globalStates.authenticatedUser = null;
-    //        console.log("Is admin mode on now? " + globalStates.lockingMode);
-    //    }
-    //});
-    //ec++;
-
-/*
-    document.getElementById("lockButton").addEventListener("touchstart", function () {
-        if(!globalStates.UIOffMode) document.getElementById('lockButton').src = lockButtonImage[1].src;
-    });
-    ec++;
-
-    document.getElementById("lockButton").addEventListener("touchend", function () {
-        if(!globalStates.UIOffMode)    document.getElementById('lockButton').src = lockButtonImage[0].src;
-        globalStates.currentlyLocked = true;
-        console.log("locked for user: " + globalStates.authenticatedUser);
-
-        console.log(objectExp);
-        for (var key in objectExp) {
-            console.log(key);
-
-            if (globalObjects.hasOwnProperty(key)) { // this is a way to check which objects are currently visible
-                console.log(key + " is visible");
-                for (var objectValue in objectExp[key].objectValues) {
-                    // objectExp[key].objectValues[objectValue].lockHolder = globalStates.authenticatedUser;
-                    var content = {
-                        lockHolder: globalStates.authenticatedUser
-                    }
-                    uploadNewLock(objectExp[key].ip, key, objectValue, content);
-
-                    // document.getElementById("iframe" + objectValue).contentWindow.postMessage(
-                    // JSON.stringify(
-                    //     {
-                    //         "lockFeedback": true
-                    //     })
-                    // , "*");
-
-                }
-
-                console.log(objectExp[key]);
-            }
-
-        }
-
-        console.log("is currentlyLocked? " + globalStates.currentlyLocked);
-
-    });
-    ec++;
-
-    document.getElementById("unlockButton").addEventListener("touchstart", function () {
-        if(!globalStates.UIOffMode) document.getElementById('unlockButton').src = unlockButtonImage[1].src;
-    });
-    ec++;
-
-    document.getElementById("unlockButton").addEventListener("touchend", function () {
-        if(!globalStates.UIOffMode)    document.getElementById('unlockButton').src = unlockButtonImage[0].src;
-        globalStates.currentlyLocked = false;
-
-        for (var key in objectExp) {
-            if (globalObjects.hasOwnProperty(key)) { // this is a way to check which objects are currently visible
-                for (var objectValue in objectExp[key].objectValues) {
-                    // objectExp[key].objectValues[objectValue].lockHolder = null; //TODO: should this be here, or not until response confirms it?
-                    deleteLockFromObject(objectExp[key].ip, key, objectValue, globalStates.authenticatedUser);
-                    // document.getElementById("iframe" + objectValue).contentWindow.postMessage(
-                    // JSON.stringify(
-                    //     {
-                    //         "lockFeedback": false
-                    //     })
-                    // , "*");
-
-                }
-                console.log(objectExp[key]);
-            }
-        }
-
-        console.log("is currentlyLocked? " + globalStates.currentlyLocked); // TODO: remove all instances of globalStates.currentlyLocked
-
-    });
-    ec++;
-    */
-
 
 	/**
 	 * @desc

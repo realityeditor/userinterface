@@ -85,11 +85,27 @@ realityEditor.device.security.isNodeActionAllowed = function(objectKey, nodeKey,
 
     var currentUser = globalStates.authenticatedUser;
 
-    if ((lockHolder === currentUser) && (actionType === "lock" || actionType === "unlock")) return true; // if the user owns the lock, they can lock or unlock it //do anything
+    if ((lockHolder === currentUser) && (actionType === "lock" || actionType === "unlock")) return true; // if the user owns the lock, they can lock or unlock it
     
     return false; // otherwise nothing is allowed
 };
 
+// actionType = "delete", "lock", "unlock"
+realityEditor.device.security.isLinkActionAllowed = function(objectKey, linkKey, actionType) {
+    var link = objects[objectKey].links[linkKey];
+    var lockHolder = link.lockHolder;
+    var isLocked = !!lockHolder;
+    
+    if (!isLocked) return true; // if the link isn't locked, of couse this action is allowed
+    
+    var currentUser = globalStates.authenticatedUser;
+    
+    if ((lockHolder === currentUser) && (actionType === "lock" || actionType === "unlock")) return true; // if the user owns the lock, they can lock or unlock it 
+
+    return false; // otherwise nothing is allowed
+};
+
+/*
 // TODO: should only nodes have locks, and links inherit those? or links have their own locks?
 realityEditor.device.security.isLinkActionAllowed = function(objectKeyA, nodeKeyA, objectKeyB, nodeKeyB, actionType) {
     var nodeA = objects[objectKeyA].nodes[nodeKeyA];
@@ -108,10 +124,6 @@ realityEditor.device.security.isLinkActionAllowed = function(objectKeyA, nodeKey
 
     return false; // otherwise nothing is allowed
 };
-
-//realityEditor.device.security.isObjectActionAllowed = function(objectKey, actionType) {
-//    var object = objects[objectKey];
-//    // TODO: implement
-//};
+*/
 
 

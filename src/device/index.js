@@ -200,8 +200,14 @@ realityEditor.device.addEventHandlers = function() {
 realityEditor.device.touchTimer = null;
 
 realityEditor.device.onTouchDown = function(evt) {
+    
     var target = evt.currentTarget;
 	console.log(target.nodeId);
+
+    if (!realityEditor.device.security.isNodeActionAllowed(target.objectId, target.nodeId)) {
+        return;
+    }
+    
 	if (!globalStates.editingMode) {
 		if (globalStates.guiState ==="node") {
 			if (!globalProgram.objectA) {
@@ -316,13 +322,17 @@ realityEditor.device.onTrueTouchUp = function(evt){
 		if (globalProgram.objectA) {
 
 			if(target.nodeId === globalProgram.nodeA && target.type === "logic"){
-				realityEditor.gui.crafting.craftingBoardVisible(target.objectId, target.nodeId);
+                if (realityEditor.device.security.isNodeActionAllowed(target.objectId, target.nodeId)) {
+                    realityEditor.gui.crafting.craftingBoardVisible(target.objectId, target.nodeId);
+                }
 			}
 
 			globalProgram.objectB = target.objectId;
 			globalProgram.nodeB = target.nodeId;
 
-			realityEditor.network.postLinkToServer(globalProgram, objects);
+            if (realityEditor.device.security.isNodeActionAllowed(target.objectId, target.nodeId)) {
+                realityEditor.network.postLinkToServer(globalProgram, objects);
+            }
 
 			// set everything back to false
 			globalProgram.objectA = false;

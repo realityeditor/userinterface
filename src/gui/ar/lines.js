@@ -89,11 +89,14 @@ realityEditor.gui.ar.lines.deleteLines = function(x21, y21, x22, y22) {
             }
 
             if (this.realityEditor.gui.utilities.checkLineCross(bA.screenX, bA.screenY, bB.screenX, bB.screenY, x21, y21, x22, y22, globalCanvas.canvas.width, globalCanvas.canvas.height)) {
-                delete thisObject.links[subKeysome];
-                this.cout("iam executing link deletion");
-                //todo this is a work around to not crash the server. only temporarly for testing
-                // if(l.logicA === false && l.logicB === false)
-                realityEditor.network.deleteLinkFromObject(thisObject.ip, keysome, subKeysome);
+                
+                if (realityEditor.device.security.isLinkActionAllowed(keysome, subKeysome, "delete")) {
+                    delete thisObject.links[subKeysome];
+                    this.cout("iam executing link deletion");
+                    //todo this is a work around to not crash the server. only temporarly for testing
+                    // if(l.logicA === false && l.logicB === false)
+                    realityEditor.network.deleteLinkFromObject(thisObject.ip, keysome, subKeysome);                    
+                }
             }
         }
     }
