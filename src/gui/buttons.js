@@ -214,6 +214,9 @@ realityEditor.gui.buttons.freezeButtonUp = function(event) {
 
 realityEditor.gui.buttons.draw = function() {
 
+    this.preload(blockTabImage,
+        'png/iconBlocks.png', 'png/iconEvents.png', 'png/iconSignals.png', 'png/iconMath.png', 'png/iconWeb.png'
+    );
 
 	/**
 	 * @desc
