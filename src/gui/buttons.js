@@ -222,16 +222,20 @@ realityEditor.gui.buttons.lockButtonUp = function(event) {
         if (globalObjects.hasOwnProperty(key)) { // this is a way to check which objects are currently visible
             for (var nodeKey in objects[key].nodes) {
                 if (!objects[key].nodes.hasOwnProperty(nodeKey)) continue;
-                visibleNodes.push(nodeKey);
-                var content = {
-                    lockHolder: globalStates.authenticatedUser
-                };
-                realityEditor.network.postNewLockToObject(objects[key].ip, key, nodeKey, content);
+                
+                if (realityEditor.gui.ar.utilities.isNodeWithinScreen(objects[key], nodeKey)) {
+                    visibleNodes.push(nodeKey);
+                    var content = {
+                        lockHolder: globalStates.authenticatedUser
+                    };
+                    realityEditor.network.postNewLockToObject(objects[key].ip, key, nodeKey, content);
+                }
             }
         }
     }
 
     console.log("visibleNodes = ", visibleNodes);
+    
     var visibleLinks = realityEditor.gui.ar.getVisibleLinks(visibleNodes);
     
     visibleLinks.forEach( function(keys) {
@@ -254,8 +258,10 @@ realityEditor.gui.buttons.unlockButtonUp = function(event) {
         if (globalObjects.hasOwnProperty(key)) { // this is a way to check which objects are currently visible
             for (var nodeKey in objects[key].nodes) {
                 if (!objects[key].nodes.hasOwnProperty(nodeKey)) continue;
-                visibleNodes.push(nodeKey);
-                realityEditor.network.deleteLockFromObject(objects[key].ip, key, nodeKey, globalStates.authenticatedUser);
+                if (realityEditor.gui.ar.utilities.isNodeWithinScreen(objects[key], nodeKey)) {
+                    visibleNodes.push(nodeKey);
+                    realityEditor.network.deleteLockFromObject(objects[key].ip, key, nodeKey, globalStates.authenticatedUser);
+                }
             }
         }
     }
