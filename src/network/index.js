@@ -907,12 +907,8 @@ realityEditor.network.postLinkToServer = function(linkObject, objects){
     var okForNewLink = this.checkForNetworkLoop(linkObject.objectA, linkObject.nodeA, linkObject.logicA, linkObject.objectB, linkObject.nodeB, linkObject.logicB);
 
     //  window.location.href = "of://event_" + objects[globalProgram.objectA].visible;
-
-    var isLockedA = isValueLocked(thisTempObject.nodes[linkObject.nodeA].lockHolder);
-    var isLockedB = isValueLocked(thisTempObject.nodes[linkObject.nodeB].lockHolder);
-    var bothUnlocked = !isLockedA && !isLockedB;
     
-    if (okForNewLink && bothUnlocked) {
+    if (okForNewLink) {
         var thisKeyId = this.realityEditor.device.utilities.uuidTimeShort();
 
         var namesA, namesB;

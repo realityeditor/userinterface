@@ -63,15 +63,6 @@ function cout() {
 	}
 }
 
-// interprets the lockHolder string to return whether the object is locked
-function isValueLocked(lockHolder) {
-    var shouldBeLocked = false;
-    if (!(lockHolder === null || lockHolder === undefined)) {
-        shouldBeLocked = true;
-    }
-    return shouldBeLocked;
-}
-
 /**
  * @desc
  * @param

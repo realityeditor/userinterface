@@ -59,7 +59,7 @@ realityEditor.device.security.authenticateSessionForUser = function(encryptedId)
     if (encryptedId === null) {
         console.log("authentication failed");
         //if (document.getElementById("adminModeSwitch").checked) {
-        //    document.getElementById("adminModeSwitch").click(); //.checked = false;            
+        //    document.getElementById("adminModeSwitch").click(); //.checked = false; // TODO: how to do this in new settings menu?       
         //}
         globalStates.lockingMode = false;
         globalStates.authenticatedUser = null;
@@ -73,9 +73,7 @@ realityEditor.device.security.authenticateSessionForUser = function(encryptedId)
     //console.log(objectExp);
 };
 
-// TODO: can the lock owner change locked objects? i don't think they should be able to
-
-// actionType = "move", "delete", "lock", "unlock" // TODO: do we need actionType?
+// actionType = "move", "delete", "lock", "unlock"
 realityEditor.device.security.isNodeActionAllowed = function(objectKey, nodeKey, actionType) {
     var node = objects[objectKey].nodes[nodeKey];
     var lockHolder = node.lockHolder;
@@ -105,36 +103,20 @@ realityEditor.device.security.isLinkActionAllowed = function(objectKey, linkKey,
     return false; // otherwise nothing is allowed
 };
 
-/*
-// TODO: should only nodes have locks, and links inherit those? or links have their own locks?
-realityEditor.device.security.isLinkActionAllowed = function(objectKeyA, nodeKeyA, objectKeyB, nodeKeyB, actionType) {
-    var nodeA = objects[objectKeyA].nodes[nodeKeyA];
-    var lockHolderA = nodeA.lockHolder;
-    var isLockedA = !!lockHolderA;
-
-    var nodeB = objects[objectKeyB].nodes[nodeKeyB];
-    var lockHolderB = nodeB.lockHolder;
-    var isLockedB = !!lockHolderB;
-    
-    if (!isLockedA && !isLockedB) return true; // if both nodes aren't locked, of course this action is allowed
-
-    //var currentUser = globalStates.authenticatedUser;
-
-    //if (lockHolderA === currentUser && lockHolderB === currentUser) return true; // if the user owns both locks, they can do anything
-
-    return false; // otherwise nothing is allowed
-};
-*/
-
+// TODO: debug only
+// temporary method that can be called from the console to unlock all objects, in case they get locked by an inaccessible device
 realityEditor.device.security.debugUnlockAll = function() {
     for (var objectKey in objects) {
         if (!objects.hasOwnProperty(objectKey)) continue;
 
+        // unlock all nodes
         for (var nodeKey in objects[objectKey].nodes) {
             if (!objects[objectKey].nodes.hasOwnProperty(nodeKey)) continue;
 
             realityEditor.network.deleteLockFromObject(objects[objectKey].ip, objectKey, nodeKey, "DEBUG");
         }
+        
+        // unlock all links
         for (var linkKey in objects[objectKey].links) {
             if (!objects[objectKey].links.hasOwnProperty(linkKey)) continue;
 
@@ -142,6 +124,3 @@ realityEditor.device.security.debugUnlockAll = function() {
         }
     }
 };
-
-
-

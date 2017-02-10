@@ -536,7 +536,7 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
                      } else {
                      context.strokeStyle = "#f0f0f0";
                      }*/
-                    if (this.ar.utilities.insidePoly(globalStates.pointerPosition, globalLogic.rectPoints)) {
+                    if (this.ar.utilities.insidePoly(globalStates.pointerPosition, globalLogic.rectPoints) && !thisObject.lockHolder) {
                         if(thisObject.animationScale ===0 && !globalStates.editingMode)
                             globalDOMCach["logic" + nodeKey].className = "mainEditing scaleIn";
                         thisObject.animationScale =1;
