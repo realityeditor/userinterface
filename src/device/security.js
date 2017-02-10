@@ -126,4 +126,22 @@ realityEditor.device.security.isLinkActionAllowed = function(objectKeyA, nodeKey
 };
 */
 
+realityEditor.device.security.debugUnlockAll = function() {
+    for (var objectKey in objects) {
+        if (!objects.hasOwnProperty(objectKey)) continue;
+
+        for (var nodeKey in objects[objectKey].nodes) {
+            if (!objects[objectKey].nodes.hasOwnProperty(nodeKey)) continue;
+
+            realityEditor.network.deleteLockFromObject(objects[objectKey].ip, objectKey, nodeKey, "DEBUG");
+        }
+        for (var linkKey in objects[objectKey].links) {
+            if (!objects[objectKey].links.hasOwnProperty(linkKey)) continue;
+
+            realityEditor.network.deleteLockFromLink(objects[objectKey].ip, objectKey, linkKey, "DEBUG");
+        }
+    }
+};
+
+
 

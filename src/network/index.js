@@ -1192,3 +1192,35 @@ realityEditor.network.deleteLockFromObject = function(ip, thisObjectKey, thisKey
     this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/lock/" + thisKey + "/user/" + authenticatedUser);
     console.log("deleteLockFromObject");
 };
+
+/**
+ * @desc
+ * @param
+ * @param
+ * @return
+ **/
+
+realityEditor.network.postNewLockToLink = function(ip, thisObjectKey, thisLinkKey, content) {
+
+// generate action for all links to be reloaded after upload
+    console.log("sending link lock");
+    this.postData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/linkLock/" + thisLinkKey, content);
+    // postData('http://' +ip+ ':' + httpPort+"/", content);
+    console.log('post --- ' + 'http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/lock/" + thisLinkKey);
+
+};
+
+/**
+ * @desc
+ * @param
+ * @param
+ * @return
+ **/
+
+realityEditor.network.deleteLockFromLink = function(ip, thisObjectKey, thisLinkKey, authenticatedUser) {
+// generate action for all links to be reloaded after upload
+    console.log("I am deleting a lock: " + ip);
+    console.log("authenticatedUser is " + authenticatedUser);
+    this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/linkLock/" + thisLinkKey + "/user/" + authenticatedUser);
+    console.log('delete --- ' + 'http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/lock/" + thisLinkKey + "/user/" + authenticatedUser);
+};

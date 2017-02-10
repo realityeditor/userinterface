@@ -278,7 +278,14 @@ realityEditor.gui.ar.lines.drawLine = function(context, lineStartPoint, lineEndP
     var spacer = 2.3;
     var ratio = 0;
     var mathPI = 2*Math.PI;
-    var newColor = [255,255,255];
+    var newColor = [255,255,255,1.0];
+    
+    // TODO: temporary solution to render lock information for this link
+    
+    if (!!linkObject.lockHolder) {
+        newColor[3] = 0.25;
+    }
+    
     var colors = [[0,255,255], // Blue
         [0,255,0],   // Green
         [255,255,0], // Yellow
@@ -301,7 +308,7 @@ realityEditor.gui.ar.lines.drawLine = function(context, lineStartPoint, lineEndP
         var y__ = lineStartPoint[1] - Math.sin(angle) * ballPossition;
         possitionDelta += ballSize * spacer;
         context.beginPath();
-        context.fillStyle = "rgb("+newColor+")";
+        context.fillStyle = "rgba("+newColor+")";
         context.arc(x__, y__, ballSize, 0, mathPI);
         context.fill();
     }

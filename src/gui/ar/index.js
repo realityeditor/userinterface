@@ -182,3 +182,32 @@ realityEditor.gui.ar.setProjectionMatrix = function(matrix) {
     window.location.href = "of://gotProjectionMatrix";
 
 };
+
+realityEditor.gui.ar.getVisibleLinks = function(visibleNodes) {
+
+    var visibleLinks = [];
+
+    for (var objectKey in objects) {
+        if (!objects.hasOwnProperty(objectKey)) continue;
+
+        var thisObject = objects[objectKey];
+
+        for (var linkKey in thisObject.links) {
+            if (!thisObject.links.hasOwnProperty(linkKey)) continue;
+            var thisLink = thisObject.links[linkKey];
+
+            var isVisibleNodeA = visibleNodes.indexOf(thisLink.nodeA) > -1;
+            var isVisibleNodeB = visibleNodes.indexOf(thisLink.nodeB) > -1;
+
+            if (isVisibleNodeA || isVisibleNodeB) {
+                visibleLinks.push({
+                    objectKey: objectKey,
+                    linkKey: linkKey
+                });
+            }
+        }
+    }
+
+    console.log("visibleLinks = ", visibleLinks);
+    return visibleLinks;
+};

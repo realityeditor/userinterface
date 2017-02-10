@@ -885,5 +885,3 @@ realityEditor.gui.ar.draw.deleteFrame = function (objectId, frameId) {
     delete globalDOMCach["canvas" + frameId];
 
 };
-
-
