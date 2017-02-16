@@ -497,17 +497,26 @@ realityEditor.network.onInternalPostMessage = function(e) {
 
     if (msgContent.width && msgContent.height) {
         var thisMsgNode = document.getElementById(msgContent.node);
+        var top = ((globalStates.width - msgContent.height) / 2);
+        var left = ((globalStates.height - msgContent.width) / 2);
         thisMsgNode.style.width = msgContent.width;
         thisMsgNode.style.height = msgContent.height;
-        thisMsgNode.style.top = ((globalStates.width - msgContent.height) / 2);
-        thisMsgNode.style.left = ((globalStates.height - msgContent.width) / 2);
+        thisMsgNode.style.top = top;
+        thisMsgNode.style.left = left;
 
         thisMsgNode = document.getElementById("iframe" + msgContent.node);
         thisMsgNode.style.width = msgContent.width;
         thisMsgNode.style.height = msgContent.height;
-        thisMsgNode.style.top = ((globalStates.width - msgContent.height) / 2);
-        thisMsgNode.style.left = ((globalStates.height - msgContent.width) / 2);
+        thisMsgNode.style.top = top;
+        thisMsgNode.style.left = left;
 
+        if (tempThisObject.frameTouchSynthesizer) {
+            var cover = tempThisObject.frameTouchSynthesizer.cover;
+            cover.style.width = msgContent.width;
+            cover.style.height = msgContent.height;
+            cover.style.top = top;
+            cover.style.left = left;
+        }
     }
 
     if (typeof msgContent.sendMatrix !== "undefined") {

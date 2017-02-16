@@ -44,6 +44,8 @@ createNameSpace("realityEditor.gui.frame");
 
 (function(realityEditor) {
 
+var touchMoveTolerance = 100;
+
 /**
  * Sanitize a potentially bloated frame object, keeping only the
  * keys present in the frame constructor
@@ -149,6 +151,66 @@ function deleteLocally(objectId, frameId) {
     }
 }
 
+function FrameTouchSynthesizer(cover, iframe) {
+    this.cover = cover;
+    this.iframe = iframe;
+    this.beginTouchEditing = this.beginTouchEditing.bind(this);
+    this.onPointerEvent = this.onPointerEvent.bind(this);
+    this.cover.addEventListener('pointerdown', this.onPointerEvent);
+    this.cover.addEventListener('pointermove', this.onPointerEvent);
+    this.cover.addEventListener('pointerup', this.onPointerEvent);
+    this.cover.addEventListener('pointercancel', this.onPointerEvent);
+}
+
+FrameTouchSynthesizer.prototype.onPointerEvent = function(event) {
+
+    // Note that this is a legacy API that the GeometryUtils should eventually replace
+    var newCoords = webkitConvertPointFromPageToNode(this.iframe, new WebKitPoint(event.pageX, event.pageY));
+    this.iframe.contentWindow.postMessage({
+        event: {
+            type: event.type,
+            pointerId: event.pointerId,
+            pointerType: event.pointerType,
+            x: newCoords.x,
+            y: newCoords.y
+        }
+    }, '*');
+
+    if (event.type === 'pointerdown') {
+        this.start = {
+            x: event.pageX,
+            y: event.pageY
+        };
+        this.timer = setTimeout(this.beginTouchEditing, 400);
+    } else if (event.type === 'pointermove') {
+        if (this.timer) {
+            var dx = event.pageX - this.start.x;
+            var dy = event.pageY - this.start.y;
+            if (dx * dx + dy * dy > touchMoveTolerance) {
+                clearTimeout(this.timer);
+                this.timer = null;
+            }
+        }
+    } else {
+        if (this.timer) {
+            clearTimeout(this.timer);
+            this.timer = null;
+        }
+    }
+};
+
+FrameTouchSynthesizer.prototype.beginTouchEditing = function() {
+    var nodeKey = this.iframe.dataset.nodeKey;
+    realityEditor.device.beginTouchEditing(document.getElementById(nodeKey));
+};
+
+FrameTouchSynthesizer.prototype.remove = function() {
+    this.cover.removeEventListener('pointerdown', this.onPointerEvent);
+    this.cover.removeEventListener('pointermove', this.onPointerEvent);
+    this.cover.removeEventListener('pointerup', this.onPointerEvent);
+    this.cover.removeEventListener('pointercancel', this.onPointerEvent);
+};
+
 function Frame(src, width, height) {
     this.src = src;
     this.x = 0;
@@ -170,7 +232,8 @@ realityEditor.gui.frame = {
     update: update,
     delete: deleteFrame,
     deleteLocally: deleteLocally,
-    Frame: Frame
+    Frame: Frame,
+    FrameTouchSynthesizer: FrameTouchSynthesizer
 };
 
 })(realityEditor);

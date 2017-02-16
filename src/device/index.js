@@ -74,6 +74,8 @@ realityEditor.device.activateNodeMove = function(nodeKey) {
 		ec++;
 		thisObject2.addEventListener("touchend", realityEditor.device.onMultiTouchEnd.bind(realityEditor.device), false);
 		ec++;
+		thisObject2.addEventListener("pointerup", realityEditor.device.onMultiTouchEnd.bind(realityEditor.device), false);
+		ec++;
 		//}
 	}
 };
@@ -95,6 +97,8 @@ realityEditor.device.deactivateNodeMove = function(nodeKey) {
 		thisObject2.removeEventListener("touchend", realityEditor.device.onMultiTouchEnd, false);
 		ec--;
 		ec--;
+		ec--;
+		thisObject2.removeEventListener("pointerup", realityEditor.device.onMultiTouchEnd, false);
 		ec--;
 		//  }
 	}
