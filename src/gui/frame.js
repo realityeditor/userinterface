@@ -166,7 +166,7 @@ FrameTouchSynthesizer.prototype.onPointerEvent = function(event) {
 
     // Note that this is a legacy API that the GeometryUtils should eventually replace
     var newCoords = webkitConvertPointFromPageToNode(this.iframe, new WebKitPoint(event.pageX, event.pageY));
-    this.iframe.contentWindow.postMessage({
+    this.iframe.contentWindow.postMessage(JSON.stringify({
         event: {
             type: event.type,
             pointerId: event.pointerId,
@@ -174,7 +174,7 @@ FrameTouchSynthesizer.prototype.onPointerEvent = function(event) {
             x: newCoords.x,
             y: newCoords.y
         }
-    }, '*');
+    }), '*');
 
     if (event.type === 'pointerdown') {
         this.start = {
