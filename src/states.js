@@ -88,7 +88,8 @@ var globalStates = {
 	sendAcl: false,
     
     lockingMode: false,
-    authenticatedUser: null,
+    //authenticatedUser: null,
+    lockPassword: null,
 
 	pocketButtonState: false,
 	pocketButtonDown: false,

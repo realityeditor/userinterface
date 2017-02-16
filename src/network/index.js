@@ -261,8 +261,8 @@ realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
         if(remote.matrix) {
             origin.matrix =  remote.matrix;
         }
-        origin.lockHolder = remote.lockHolder;
-        console.log("update node: lockHolder = " + remote.lockHolder);
+        origin.lockPassword = remote.lockPassword;
+        console.log("update node: lockPassword = " + remote.lockPassword);
 
         if(origin.type === "logic") {
             if (!origin.guiState) {
@@ -690,7 +690,9 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
             clearSkyState: globalStates.clearSkyState,
             instantState: globalStates.instantState,
             externalState: globalStates.externalState,
-            settingsButton : globalStates.settingsButtonState
+            settingsButton : globalStates.settingsButtonState,
+            lockingMode: globalStates.lockingMode,
+            lockPassword: globalStates.lockPassword
         }
         }), "*");
     }
@@ -776,17 +778,23 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
 
         if (typeof msgContent.settings.setSettings.lockingToggle !== "undefined") {
 
+            console.log("received message in settings");
+
             if (msgContent.settings.setSettings.lockingToggle) {
                 window.location.href = "of://authenticateTouch";
 
             } else {
                 globalStates.lockingMode = false;
-                globalStates.authenticatedUser = null;
-                console.log("Is admin mode on now? " + globalStates.lockingMode);
+                //globalStates.authenticatedUser = null;
+                globalStates.lockPassword = null;
             }
         }
 
-
+        if (typeof msgContent.settings.setSettings.lockPassword !== "undefined") {
+            
+            globalStates.lockPassword = msgContent.settings.setSettings.lockPassword;
+            console.log("received lock password: " + globalStates.lockPassword);
+        }
     }
 };
 
@@ -1181,11 +1189,11 @@ realityEditor.network.postNewLockToObject = function(ip, thisObjectKey, thisKey,
  * @return
  **/
 
-realityEditor.network.deleteLockFromObject = function(ip, thisObjectKey, thisKey, authenticatedUser) {
+realityEditor.network.deleteLockFromObject = function(ip, thisObjectKey, thisKey, lockPassword) {
 // generate action for all links to be reloaded after upload
     console.log("I am deleting a lock: " + ip);
-    console.log("authenticatedUser is " + authenticatedUser);
-    this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/lock/" + thisKey + "/user/" + authenticatedUser);
+    console.log("lockPassword is " + lockPassword);
+    this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/lock/" + thisKey + "/password/" + lockPassword);
     console.log("deleteLockFromObject");
 };
 
@@ -1202,7 +1210,7 @@ realityEditor.network.postNewLockToLink = function(ip, thisObjectKey, thisLinkKe
     console.log("sending link lock");
     this.postData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/linkLock/" + thisLinkKey, content);
     // postData('http://' +ip+ ':' + httpPort+"/", content);
-    console.log('post --- ' + 'http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/lock/" + thisLinkKey);
+    //console.log('post --- ' + 'http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/lock/" + thisLinkKey);
 
 };
 
@@ -1213,10 +1221,10 @@ realityEditor.network.postNewLockToLink = function(ip, thisObjectKey, thisLinkKe
  * @return
  **/
 
-realityEditor.network.deleteLockFromLink = function(ip, thisObjectKey, thisLinkKey, authenticatedUser) {
+realityEditor.network.deleteLockFromLink = function(ip, thisObjectKey, thisLinkKey, lockPassword) {
 // generate action for all links to be reloaded after upload
-    console.log("I am deleting a lock: " + ip);
-    console.log("authenticatedUser is " + authenticatedUser);
-    this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/linkLock/" + thisLinkKey + "/user/" + authenticatedUser);
-    console.log('delete --- ' + 'http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/lock/" + thisLinkKey + "/user/" + authenticatedUser);
+    console.log("I am deleting a link lock: " + ip);
+    console.log("lockPassword is " + lockPassword);
+    this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/linkLock/" + thisLinkKey + "/password/" + lockPassword);
+    //console.log('delete --- ' + 'http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/lock/" + thisLinkKey + "/password/" + authenticatedUser);
 };

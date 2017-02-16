@@ -282,7 +282,7 @@ realityEditor.gui.ar.lines.drawLine = function(context, lineStartPoint, lineEndP
     
     // TODO: temporary solution to render lock information for this link
     
-    if (!!linkObject.lockHolder) {
+    if (!!linkObject.lockPassword) {
         newColor[3] = 0.25;
     }
     

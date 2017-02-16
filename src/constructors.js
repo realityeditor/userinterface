@@ -135,7 +135,7 @@ function Link() {
 	// It needs to be discussed what to do if a link is not able to find the destination and for what time span.
 	this.health = 0; // todo use this to test if link is still valid. If not able to send for some while, kill link.
 
-    this.lockHolder = null;
+    this.lockPassword = null;
 }
 
 /**
@@ -165,7 +165,7 @@ function Node() {
 	// indicates how much calls per second is happening on this node
 	this.stress = 0;
 
-    this.lockHolder = null;
+    this.lockPassword = null;
 }
 
 /**
@@ -217,7 +217,7 @@ function Logic() {
 
 	this.guiState = new LogicGUIState();
 
-    this.lockHolder = null;
+    this.lockPassword = null;
 }
 
 /**

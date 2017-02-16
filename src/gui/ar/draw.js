@@ -536,7 +536,7 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
                      } else {
                      context.strokeStyle = "#f0f0f0";
                      }*/
-                    if (this.ar.utilities.insidePoly(globalStates.pointerPosition, globalLogic.rectPoints) && !thisObject.lockHolder) {
+                    if (this.ar.utilities.insidePoly(globalStates.pointerPosition, globalLogic.rectPoints) && !thisObject.lockPassword) {
                         if(thisObject.animationScale ===0 && !globalStates.editingMode)
                             globalDOMCach["logic" + nodeKey].className = "mainEditing scaleIn";
                         thisObject.animationScale =1;
@@ -561,7 +561,7 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
             // temporary UI styling to visualize locks
             
             if (type === "node" || type === "logic") {
-                if (!!thisObject.lockHolder) {
+                if (!!thisObject.lockPassword) {
                     globalDOMCach["iframe" + nodeKey].style.opacity = 0.25;
                 } else {
                     globalDOMCach["iframe" + nodeKey].style.opacity = 1.0;

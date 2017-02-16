@@ -58,32 +58,48 @@ realityEditor.device.security.authenticateSessionForUser = function(encryptedId)
     console.log("authenticating with userId: " + encryptedId);
     if (encryptedId === null) {
         console.log("authentication failed");
+        
+        
         //if (document.getElementById("adminModeSwitch").checked) {
         //    document.getElementById("adminModeSwitch").click(); //.checked = false; // TODO: how to do this in new settings menu?       
         //}
+        //realityEditor.gui.settings.setSettings("lockingState", false);
+        //document.getElementById("settingsIframe").contentWindow.postMessage(JSON.stringify({getSettings: {lockingToggle: false}}), "*");
+
         globalStates.lockingMode = false;
-        globalStates.authenticatedUser = null;
-        console.log("Is admin mode on now? " + globalStates.lockingMode);
+        globalStates.lockPassword = null;
+        
+        document.getElementById("settingsIframe").contentWindow.postMessage(JSON.stringify({getSettings: {
+            extendedTracking: globalStates.extendedTracking,
+            editingMode: globalStates.editingMode,
+            clearSkyState: globalStates.clearSkyState,
+            instantState: globalStates.instantState,
+            externalState: globalStates.externalState,
+            settingsButton : globalStates.settingsButtonState,
+            lockingMode: globalStates.lockingMode,
+            lockPassword: globalStates.lockPassword
+        }
+        }), "*");
+        
+        //globalStates.authenticatedUser = null;
+        
     } else {
-        console.log("success");
+        console.log("authentication success");
         globalStates.lockingMode = true;
-        globalStates.authenticatedUser = encryptedId;
-        console.log("Is admin mode on now? " + globalStates.lockingMode);
+        //globalStates.authenticatedUser = encryptedId;
+        console.log("Is locking mode on now? " + globalStates.lockingMode + " ...and lockPassword = " + globalStates.lockPassword);
     }
-    //console.log(objectExp);
 };
 
 // actionType = "move", "delete", "lock", "unlock"
 realityEditor.device.security.isNodeActionAllowed = function(objectKey, nodeKey, actionType) {
     var node = objects[objectKey].nodes[nodeKey];
-    var lockHolder = node.lockHolder;
-    var isLocked = !!lockHolder;
+    var lockPassword = node.lockPassword;
+    var isLocked = !!lockPassword;
     
     if (!isLocked) return true; // if the node isn't locked, of course this action is allowed
 
-    var currentUser = globalStates.authenticatedUser;
-
-    if ((lockHolder === currentUser) && (actionType === "lock" || actionType === "unlock")) return true; // if the user owns the lock, they can lock or unlock it
+    if ((lockPassword === globalStates.lockPassword) && (actionType === "lock" || actionType === "unlock")) return true; // if the user owns the lock, they can lock or unlock it
     
     return false; // otherwise nothing is allowed
 };
@@ -91,14 +107,12 @@ realityEditor.device.security.isNodeActionAllowed = function(objectKey, nodeKey,
 // actionType = "delete", "lock", "unlock"
 realityEditor.device.security.isLinkActionAllowed = function(objectKey, linkKey, actionType) {
     var link = objects[objectKey].links[linkKey];
-    var lockHolder = link.lockHolder;
-    var isLocked = !!lockHolder;
+    var lockPassword = link.lockPassword;
+    var isLocked = !!lockPassword;
     
     if (!isLocked) return true; // if the link isn't locked, of couse this action is allowed
     
-    var currentUser = globalStates.authenticatedUser;
-    
-    if ((lockHolder === currentUser) && (actionType === "lock" || actionType === "unlock")) return true; // if the user owns the lock, they can lock or unlock it 
+    if ((lockPassword === globalStates.lockPassword) && (actionType === "lock" || actionType === "unlock")) return true; // if the user owns the lock, they can lock or unlock it 
 
     return false; // otherwise nothing is allowed
 };

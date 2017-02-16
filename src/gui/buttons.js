@@ -226,7 +226,7 @@ realityEditor.gui.buttons.lockButtonUp = function(event) {
                 if (realityEditor.gui.ar.utilities.isNodeWithinScreen(objects[key], nodeKey)) {
                     visibleNodes.push(nodeKey);
                     var content = {
-                        lockHolder: globalStates.authenticatedUser
+                        lockPassword: globalStates.lockPassword
                     };
                     realityEditor.network.postNewLockToObject(objects[key].ip, key, nodeKey, content);
                 }
@@ -240,7 +240,7 @@ realityEditor.gui.buttons.lockButtonUp = function(event) {
     
     visibleLinks.forEach( function(keys) {
         var content = {
-            lockHolder: globalStates.authenticatedUser
+            lockPassword: globalStates.lockPassword
         };
         realityEditor.network.postNewLockToLink(objects[keys.objectKey].ip, keys.objectKey, keys.linkKey, content);
     });
@@ -260,7 +260,7 @@ realityEditor.gui.buttons.unlockButtonUp = function(event) {
                 if (!objects[key].nodes.hasOwnProperty(nodeKey)) continue;
                 if (realityEditor.gui.ar.utilities.isNodeWithinScreen(objects[key], nodeKey)) {
                     visibleNodes.push(nodeKey);
-                    realityEditor.network.deleteLockFromObject(objects[key].ip, key, nodeKey, globalStates.authenticatedUser);
+                    realityEditor.network.deleteLockFromObject(objects[key].ip, key, nodeKey, globalStates.lockPassword);
                 }
             }
         }
@@ -270,7 +270,7 @@ realityEditor.gui.buttons.unlockButtonUp = function(event) {
     var visibleLinks = realityEditor.gui.ar.getVisibleLinks(visibleNodes);
 
     visibleLinks.forEach( function(keys) {
-        realityEditor.network.deleteLockFromLink(objects[keys.objectKey].ip, keys.objectKey, keys.linkKey, globalStates.authenticatedUser);
+        realityEditor.network.deleteLockFromLink(objects[keys.objectKey].ip, keys.objectKey, keys.linkKey, globalStates.lockPassword);
     });
 };
 
