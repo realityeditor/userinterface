@@ -91,27 +91,78 @@ realityEditor.device.security.authenticateSessionForUser = function(encryptedId)
     }
 };
 
-// actionType = "move", "delete", "lock", "unlock"
+realityEditor.device.security.lockVisibleNodesAndLinks = function(lockType) {
+    var visibleNodes = realityEditor.gui.ar.getVisibleNodes();
+    console.log("visibleNodes = ", visibleNodes);
+
+    visibleNodes.forEach( function(keys) {
+        var content = {
+            lockPassword: globalStates.lockPassword,
+            lockType: lockType
+        };
+        realityEditor.network.postNewLockToNode(objects[keys.objectKey].ip, keys.objectKey, keys.nodeKey, content);
+    });
+
+    var visibleLinks = realityEditor.gui.ar.getVisibleLinks(visibleNodes);
+    console.log("visibleLinks = ", visibleLinks);
+
+    visibleLinks.forEach( function(keys) {
+        var content = {
+            lockPassword: globalStates.lockPassword,
+            lockType: lockType
+        };
+        realityEditor.network.postNewLockToLink(objects[keys.objectKey].ip, keys.objectKey, keys.linkKey, content);
+    });
+};
+
+realityEditor.device.security.unlockVisibleNodesAndLinks = function() {
+    var visibleNodes = realityEditor.gui.ar.getVisibleNodes();
+    console.log("visibleNodes = ", visibleNodes);
+
+    visibleNodes.forEach( function(keys) {
+        realityEditor.network.deleteLockFromNode(objects[keys.objectKey].ip, keys.objectKey, keys.nodeKey, globalStates.lockPassword);
+    });
+
+    var visibleLinks = realityEditor.gui.ar.getVisibleLinks(visibleNodes);
+    console.log("visibleLinks = ", visibleLinks);
+
+    visibleLinks.forEach( function(keys) {
+        realityEditor.network.deleteLockFromLink(objects[keys.objectKey].ip, keys.objectKey, keys.linkKey, globalStates.lockPassword);
+    });
+};
+
+
+
+
+
+// actionType = "edit", "create", "lock", "unlock"
 realityEditor.device.security.isNodeActionAllowed = function(objectKey, nodeKey, actionType) {
     var node = objects[objectKey].nodes[nodeKey];
     var lockPassword = node.lockPassword;
-    var isLocked = !!lockPassword;
+    var lockType = node.lockType;
+    var isLocked = !!lockPassword && !!lockType;
     
     if (!isLocked) return true; // if the node isn't locked, of course this action is allowed
+    
+    if (lockType === "half" && !(actionType === "lock" || actionType === "unlock")) return true; // a half locked node can be modified but not un/locked unless correct password
 
     if ((lockPassword === globalStates.lockPassword) && (actionType === "lock" || actionType === "unlock")) return true; // if the user owns the lock, they can lock or unlock it
     
     return false; // otherwise nothing is allowed
 };
 
+// TODO: do we need separate methods for link and node, or are they equivalent?
 // actionType = "delete", "lock", "unlock"
 realityEditor.device.security.isLinkActionAllowed = function(objectKey, linkKey, actionType) {
     var link = objects[objectKey].links[linkKey];
     var lockPassword = link.lockPassword;
-    var isLocked = !!lockPassword;
+    var lockType = link.lockType;
+    var isLocked = !!lockPassword && !!lockType;
     
     if (!isLocked) return true; // if the link isn't locked, of couse this action is allowed
-    
+
+    if (lockType === "half" && !(actionType === "lock" || actionType === "unlock")) return true; // a half locked node can be modified but not un/locked unless correct password
+
     if ((lockPassword === globalStates.lockPassword) && (actionType === "lock" || actionType === "unlock")) return true; // if the user owns the lock, they can lock or unlock it 
 
     return false; // otherwise nothing is allowed
@@ -127,7 +178,7 @@ realityEditor.device.security.debugUnlockAll = function() {
         for (var nodeKey in objects[objectKey].nodes) {
             if (!objects[objectKey].nodes.hasOwnProperty(nodeKey)) continue;
 
-            realityEditor.network.deleteLockFromObject(objects[objectKey].ip, objectKey, nodeKey, "DEBUG");
+            realityEditor.network.deleteLockFromNode(objects[objectKey].ip, objectKey, nodeKey, "DEBUG");
         }
         
         // unlock all links

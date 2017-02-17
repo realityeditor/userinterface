@@ -70,6 +70,7 @@ realityEditor.gui.menus.buttons = {
 		setting: {},
 		unconstrained: {},
 		lock:{},
+        halflock:{},
 		unlock:{}
 };
 
@@ -83,8 +84,8 @@ realityEditor.gui.menus.menus = {
     crafting: {back: "blue", logicPocket: "green", logicSetting: "blue", freeze: "blue"},
     bigTrash: {bigTrash: "red"},
     bigPocket: {bigPocket: "green"},
-    locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", lock:"blue"},
-    lockingEditing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", lock:"blue", reset: "blue", unconstrained: "blue"}
+    locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", halflock:"blue", lock:"blue"},
+    lockingEditing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", halflock:"blue", lock:"blue", reset: "blue", unconstrained: "blue"}
 };
 
 realityEditor.gui.menus.getVisibility = function(item){
@@ -349,6 +350,7 @@ realityEditor.gui.menus.pointerUp = function(event) {
     realityEditor.gui.buttons.freezeButtonUp(event);
     realityEditor.gui.buttons.pocketButtonUp(event);
     realityEditor.gui.buttons.lockButtonUp(event);
+    realityEditor.gui.buttons.halflockButtonUp(event);
     realityEditor.gui.buttons.unlockButtonUp(event);
 
     realityEditor.gui.menus.backButton(event, function(event, lastMenu) {

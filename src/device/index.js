@@ -204,7 +204,7 @@ realityEditor.device.onTouchDown = function(evt) {
     var target = evt.currentTarget;
 	console.log(target.nodeId);
 
-    if (!realityEditor.device.security.isNodeActionAllowed(target.objectId, target.nodeId)) {
+    if (!realityEditor.device.security.isNodeActionAllowed(target.objectId, target.nodeId, "edit")) {
         return;
     }
     
@@ -322,7 +322,7 @@ realityEditor.device.onTrueTouchUp = function(evt){
 		if (globalProgram.objectA) {
 
 			if(target.nodeId === globalProgram.nodeA && target.type === "logic"){
-                if (realityEditor.device.security.isNodeActionAllowed(target.objectId, target.nodeId)) {
+                if (realityEditor.device.security.isNodeActionAllowed(target.objectId, target.nodeId, "edit")) {
                     realityEditor.gui.crafting.craftingBoardVisible(target.objectId, target.nodeId);
                 }
 			}
@@ -330,7 +330,7 @@ realityEditor.device.onTrueTouchUp = function(evt){
 			globalProgram.objectB = target.objectId;
 			globalProgram.nodeB = target.nodeId;
 
-            if (realityEditor.device.security.isNodeActionAllowed(target.objectId, target.nodeId)) {
+            if (realityEditor.device.security.isNodeActionAllowed(target.objectId, target.nodeId, "create")) {
                 realityEditor.network.postLinkToServer(globalProgram, objects);
             }
 
@@ -676,7 +676,7 @@ realityEditor.device.onDocumentPointerDown = function(evt) {
     // when in locking mode, don't start the pocket if you tap on the area over the locking buttons
     var ignoreLockingButtons = true;
     if (globalStates.lockingMode) {
-        ignoreLockingButtons = (window.innerWidth - evt.clientX > 205) || (window.innerHeight - evt.clientY > 65);
+        ignoreLockingButtons = (window.innerWidth - evt.clientX > 255) || (window.innerHeight - evt.clientY > 65);
     }
 
 	if (realityEditor.gui.memory.memoryCanCreate() && window.innerWidth - evt.clientX > 65 && ignoreLockingButtons) {

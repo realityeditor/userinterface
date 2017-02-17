@@ -20,7 +20,7 @@ realityEditor.gui.settings.setSettings = function (id, state) {
     if (id) {
         if (state) {
 
-            document.getElementById(id).classList.add('active');
+            document.getElementById(id).classList.add('active'); // TODO: doesn't really need this change, revert to previous?
             
             //document.getElementById(id).className = "toggle active";
         } else {
@@ -46,7 +46,7 @@ realityEditor.gui.settings.setSettings = function (id, state) {
 
 realityEditor.gui.settings.updateLockUI = function() {
     document.getElementById("lockText").disabled = document.getElementById('lockingToggle').classList.contains('active');  //e.detail.isActive;
-}
+};
 
 realityEditor.gui.settings.newURLTextLoad = function () {
     this.states.externalState = encodeURIComponent(document.getElementById('externalText').value);

@@ -136,6 +136,7 @@ function Link() {
 	this.health = 0; // todo use this to test if link is still valid. If not able to send for some while, kill link.
 
     this.lockPassword = null;
+    this.lockType = null;
 }
 
 /**
@@ -166,6 +167,7 @@ function Node() {
 	this.stress = 0;
 
     this.lockPassword = null;
+    this.lockType = null;
 }
 
 /**
@@ -218,6 +220,7 @@ function Logic() {
 	this.guiState = new LogicGUIState();
 
     this.lockPassword = null;
+    this.lockType = null;
 }
 
 /**

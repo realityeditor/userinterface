@@ -561,14 +561,14 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
             // temporary UI styling to visualize locks
             
             if (type === "node" || type === "logic") {
-                if (!!thisObject.lockPassword) {
+                if (!!thisObject.lockPassword && thisObject.lockType === "full") {
                     globalDOMCach["iframe" + nodeKey].style.opacity = 0.25;
+                } else if (!!thisObject.lockPassword && thisObject.lockType === "half") {
+                    globalDOMCach["iframe" + nodeKey].style.opacity = 0.75;
                 } else {
                     globalDOMCach["iframe" + nodeKey].style.opacity = 1.0;
                 }
             }
-
-
 
         }
     }

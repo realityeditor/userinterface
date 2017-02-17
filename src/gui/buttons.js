@@ -215,63 +215,25 @@ realityEditor.gui.buttons.lockButtonUp = function(event) {
     
     console.log("activate lock button");
     
-    var visibleNodes = [];
-    
-    for (var key in objects) {
-        if (!objects.hasOwnProperty(key)) continue;
-        if (globalObjects.hasOwnProperty(key)) { // this is a way to check which objects are currently visible
-            for (var nodeKey in objects[key].nodes) {
-                if (!objects[key].nodes.hasOwnProperty(nodeKey)) continue;
-                
-                if (realityEditor.gui.ar.utilities.isNodeWithinScreen(objects[key], nodeKey)) {
-                    visibleNodes.push(nodeKey);
-                    var content = {
-                        lockPassword: globalStates.lockPassword
-                    };
-                    realityEditor.network.postNewLockToObject(objects[key].ip, key, nodeKey, content);
-                }
-            }
-        }
-    }
+    var LOCK_TYPE_FULL = "full";
+    realityEditor.device.security.lockVisibleNodesAndLinks(LOCK_TYPE_FULL);
+};
 
-    console.log("visibleNodes = ", visibleNodes);
-    
-    var visibleLinks = realityEditor.gui.ar.getVisibleLinks(visibleNodes);
-    
-    visibleLinks.forEach( function(keys) {
-        var content = {
-            lockPassword: globalStates.lockPassword
-        };
-        realityEditor.network.postNewLockToLink(objects[keys.objectKey].ip, keys.objectKey, keys.linkKey, content);
-    });
+realityEditor.gui.buttons.halflockButtonUp = function(event) {
+    if (event.button !== "halflock") return;
+
+    console.log("activate halflock button");
+
+    var LOCK_TYPE_HALF = "half";
+    realityEditor.device.security.lockVisibleNodesAndLinks(LOCK_TYPE_HALF);
 };
 
 realityEditor.gui.buttons.unlockButtonUp = function(event) {
     if (event.button !== "unlock") return;
 
     console.log("activate unlock button");
-
-    var visibleNodes = [];
-
-    for (var key in objects) {
-        if (!objects.hasOwnProperty(key)) continue;
-        if (globalObjects.hasOwnProperty(key)) { // this is a way to check which objects are currently visible
-            for (var nodeKey in objects[key].nodes) {
-                if (!objects[key].nodes.hasOwnProperty(nodeKey)) continue;
-                if (realityEditor.gui.ar.utilities.isNodeWithinScreen(objects[key], nodeKey)) {
-                    visibleNodes.push(nodeKey);
-                    realityEditor.network.deleteLockFromObject(objects[key].ip, key, nodeKey, globalStates.lockPassword);
-                }
-            }
-        }
-    }
-
-    console.log("visibleNodes = ", visibleNodes);
-    var visibleLinks = realityEditor.gui.ar.getVisibleLinks(visibleNodes);
-
-    visibleLinks.forEach( function(keys) {
-        realityEditor.network.deleteLockFromLink(objects[keys.objectKey].ip, keys.objectKey, keys.linkKey, globalStates.lockPassword);
-    });
+    
+    realityEditor.device.security.unlockVisibleNodesAndLinks();
 };
 
 realityEditor.gui.buttons.draw = function() {
