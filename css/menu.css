@@ -245,6 +245,98 @@
     visibility: hidden;
     z-index: 20;
 }
+
+/* RETAIL */
+#advertisementButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 0px;
+    visibility: hidden;
+    z-index: 20;
+}
+#advertisementButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 0px;
+    visibility: hidden;
+}
+#infoButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 65px;
+    top: 0px;
+    visibility: hidden;
+    z-index: 20;
+}
+#infoButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 65px;
+    top: 0px;
+    visibility: hidden;
+}
+#discountButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 65px;
+    visibility: hidden;
+}
+#discountButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 65px;
+    visibility: hidden;
+    z-index: 20;
+}
+#searchButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 130px;
+    visibility: hidden;
+}
+#searchButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 130px;
+    visibility: hidden;
+    z-index: 20;
+}
+#internalButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 260px;
+    visibility: hidden;
+}
+#internalButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 260px;
+    visibility: hidden;
+    z-index: 20;
+}
+
+/***
+ * COLORS
+ */
+
 .colorBackground {
     background-color: #00FFFF;
 }

@@ -62,7 +62,8 @@ realityEditor.gui.settings.hideSettings = function() {
         clearSkyState: globalStates.clearSkyState,
         instantState: globalStates.instantState,
         externalState: globalStates.externalState,
-        settingsButton : globalStates.settingsButtonState
+        settingsButton : globalStates.settingsButtonState,
+        retailState: globalStates.retailState
     }
     }), "*");
 
@@ -100,7 +101,13 @@ document.body.classList.add('clearSky');
 
 realityEditor.gui.settings.showSettings = function() {
 
-    realityEditor.gui.menus.on("setting", ["setting"]);
+    if(!globalStates.retailState) {
+        realityEditor.gui.menus.on("setting", ["setting"]);
+    }
+    else {
+        realityEditor.gui.menus.on("settingRetail", ["setting"]);
+    }
+
 
 	globalStates.settingsButtonState = true;
 	document.getElementById("settingsIframe").style.visibility = "visible";
@@ -112,7 +119,8 @@ realityEditor.gui.settings.showSettings = function() {
         clearSkyState: globalStates.clearSkyState,
         instantState: globalStates.instantState,
         externalState: globalStates.externalState,
-        settingsButton : globalStates.settingsButtonState
+        settingsButton : globalStates.settingsButtonState,
+        retailState: globalStates.retailState
     }
     }), "*");
 

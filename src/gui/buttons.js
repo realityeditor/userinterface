@@ -174,9 +174,14 @@ realityEditor.gui.buttons.settingButtonUp = function(event) {
 
 
         if (globalStates.settingsButtonState === true) {
+
             this.gui.settings.hideSettings();
 
-            realityEditor.gui.menus.off("setting", ["setting"]);
+            if(!globalStates.retailState) {
+                realityEditor.gui.menus.buttonOff("setting", ["setting"]);
+            } else {
+                realityEditor.gui.menus.buttonOff("retail", ["setting"]);
+            }
 
             overlayDiv.style.display = "inline";
 
@@ -346,4 +351,54 @@ realityEditor.gui.buttons.bigPocketButtonEnter = function(event) {
     realityEditor.gui.pocket.onBigPocketButtonEnter();
 };
 
+/**
+ *
+ *   RETAIL
+ *
+ */
 
+realityEditor.gui.buttons.advertisementButtonUp = function (event) {
+    if (event.button !== "advertisement") return;
+
+    realityEditor.gui.menus.buttonOff("retail", ["advertisement", "info", "discount", "search", "internal"]);
+    realityEditor.gui.menus.on("retailInfo", ["advertisement"]);
+
+    // Add your functionality here.
+};
+
+realityEditor.gui.buttons.infoButtonUp = function (event) {
+    if (event.button !== "info") return;
+
+
+    realityEditor.gui.menus.buttonOff("retail", ["discount", "search", "internal"]);
+    realityEditor.gui.menus.on("retailInfo", ["info", "advertisement"]);
+
+    // Add your functionality here.
+};
+
+realityEditor.gui.buttons.discountButtonUp = function (event) {
+    if (event.button !== "discount") return;
+
+    realityEditor.gui.menus.buttonOff("retail", ["advertisement", "info", "discount", "search", "internal"]);
+    realityEditor.gui.menus.on("retail", ["discount"]);
+
+    // Add your functionality here.
+};
+
+realityEditor.gui.buttons.searchButtonUp = function (event) {
+    if (event.button !== "search") return;
+
+    realityEditor.gui.menus.buttonOff("retail", ["advertisement", "info", "discount", "search", "internal"]);
+    realityEditor.gui.menus.on("retail", ["search"]);
+
+    // Add your functionality here.
+};
+
+realityEditor.gui.buttons.internalButtonUp = function (event) {
+    if (event.button !== "internal") return;
+
+    realityEditor.gui.menus.buttonOff("retail", ["advertisement", "info", "discount", "search", "internal"]);
+    realityEditor.gui.menus.on("retail", ["internal"]);
+
+    // Add your functionality here.
+};

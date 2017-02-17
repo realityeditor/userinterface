@@ -8,7 +8,8 @@ realityEditor.gui.settings.states = {
     logoAnimation:false,
     settingsButton:false,
     animationFrameRequested: false,
-    setInt : false
+    setInt : false,
+    retailState: false
 };
 
 realityEditor.gui.settings.objectInterval = null;

@@ -70,7 +70,13 @@ realityEditor.gui.menus.buttons = {
 		setting: {},
 		unconstrained: {},
 		lock:{},
-		unlock:{}
+		unlock:{},
+    // retail UI
+    advertisement : {},
+    info : {},
+    discount: {},
+    search : {},
+    internal : {}
 };
 
 realityEditor.gui.menus.menus = {
@@ -83,7 +89,10 @@ realityEditor.gui.menus.menus = {
     crafting: {back: "blue", logicPocket: "green", logicSetting: "blue", freeze: "blue"},
     bigTrash: {bigTrash: "red"},
     bigPocket: {bigPocket: "green"},
-    locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue",unlock:"blue",lock:"blue"}
+    locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue",unlock:"blue",lock:"blue"},
+    retailInfo: {advertisement: "blue", info: "blue", discount: "blue", search: "blue", setting:"blue", internal: "blue"},
+    retail: {advertisement: "blue", discount: "blue", search: "blue", setting:"blue", internal: "blue"},
+    settingRetail: {advertisement: "blue", discount: "blue", search: "blue", setting:"blue", internal: "blue"}
 };
 
 realityEditor.gui.menus.getVisibility = function(item){
@@ -94,6 +103,15 @@ if(this.buttons[item].item.style.visibility !== "hidden"){
 }
 };
 
+realityEditor.gui.menus.getSelected = function(item){
+    if(this.buttons[item+"Div"].item.style.opacity !== 0){
+        return true;
+    }else {
+        return false;
+    }
+};
+
+
 realityEditor.gui.menus.history = [];
 
 realityEditor.gui.menus.historySteps = 5;
@@ -103,7 +121,7 @@ realityEditor.gui.menus.getElements = function (element) {
 		if (element === "logic" || element === "gui") {
             svgDoc = document.getElementById("mainButton");
     } else {
-            svgDoc = document.getElementById(element+"Button");
+        svgDoc = document.getElementById(element+"Button");
     }
 
     l = document.getElementById(element+"ButtonDiv");
@@ -337,6 +355,17 @@ realityEditor.gui.menus.pointerUp = function(event) {
     realityEditor.gui.buttons.settingButtonUp(event);
     realityEditor.gui.buttons.freezeButtonUp(event);
     realityEditor.gui.buttons.pocketButtonUp(event);
+
+    // Retail UI
+
+    realityEditor.gui.buttons.advertisementButtonUp(event);
+    realityEditor.gui.buttons.infoButtonUp(event);
+    realityEditor.gui.buttons.discountButtonUp(event);
+    realityEditor.gui.buttons.searchButtonUp(event);
+    realityEditor.gui.buttons.internalButtonUp(event);
+
+    // End
+
 
     realityEditor.gui.menus.backButton(event, function(event, lastMenu) {
         var button = event.button;

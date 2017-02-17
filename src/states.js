@@ -83,6 +83,7 @@ var globalStates = {
 	extendedTrackingState: false,
 	developerState: false,
 	clearSkyState: false,
+    retailState: false,
 	externalState: "",
 	sendMatrix3d: false,
 	sendAcl: false,
@@ -133,7 +134,10 @@ var globalStates = {
 	thisAndthat : {
 		interval: undefined,
 		timeout: undefined
-	}
+	},
+
+	// rettail
+	retail: false
 };
 
 var globalCanvas = {};

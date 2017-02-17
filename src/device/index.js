@@ -625,7 +625,8 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 	overlayDiv.classList.remove('overlayNegative');
     
     if (globalStates.guiState !== "logic") {
-        realityEditor.gui.menus.on("main",[]);
+    	// todo check if this works with all other states. Maybe this is not needed here. retail, main, gui
+       // realityEditor.gui.menus.on("main",[]);
     }
 	
     //realityEditor.gui.pocket.pocketOnMemoryCreationStop();
@@ -935,19 +936,29 @@ realityEditor.device.setDeviceName = function(deviceName) {
  * @param externalState
  **/
 
-realityEditor.device.setStates = function (developerState, extendedTrackingState, clearSkyState, instantState, externalState) {
+realityEditor.device.setStates = function (developerState, extendedTrackingState, clearSkyState, instantState, externalState, retailState) {
 
     globalStates.extendedTrackingState = extendedTrackingState;
     globalStates.developerState = developerState;
     globalStates.clearSkyState = clearSkyState;
     globalStates.instantState = instantState;
     globalStates.externalState = externalState;
+    globalStates.retailState = retailState;
 
     if (globalStates.clearSkyState) {
         document.getElementById("UIButtons").classList.add('clearSky');
     } else {
         document.getElementById("UIButtons").classList.remove('clearSky');
     }
+
+	if (globalStates.retailState) {
+            realityEditor.gui.menus.on("retailInfo",["advertisement"]);
+            globalStates.retailState = true;
+	} else {
+            realityEditor.gui.menus.off("main",["gui","reset","unconstrained"]);
+            realityEditor.gui.menus.on("main",["gui"]);
+            globalStates.retailState = false;
+	}
 
     if (developerState) {
         realityEditor.device.addEventHandlers();
