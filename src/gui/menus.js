@@ -71,12 +71,12 @@ realityEditor.gui.menus.buttons = {
 		unconstrained: {},
 		lock:{},
 		unlock:{},
-    // retail UI
-    advertisement : {},
-    info : {},
-    discount: {},
-    search : {},
-    internal : {}
+    // reality UI
+    realityGui : {},
+    realityInfo : {},
+    realityTag: {},
+    realitySearch : {},
+    realityWork : {}
 };
 
 realityEditor.gui.menus.menus = {
@@ -90,9 +90,9 @@ realityEditor.gui.menus.menus = {
     bigTrash: {bigTrash: "red"},
     bigPocket: {bigPocket: "green"},
     locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue",unlock:"blue",lock:"blue"},
-    retailInfo: {advertisement: "blue", info: "blue", discount: "blue", search: "blue", setting:"blue", internal: "blue"},
-    retail: {advertisement: "blue", discount: "blue", search: "blue", setting:"blue", internal: "blue"},
-    settingRetail: {advertisement: "blue", discount: "blue", search: "blue", setting:"blue", internal: "blue"}
+    realityInfo: {realityGui: "blue", realityInfo: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"},
+    reality: {realityGui: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"},
+    settingReality: {realityGui: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"}
 };
 
 realityEditor.gui.menus.getVisibility = function(item){
@@ -376,13 +376,13 @@ realityEditor.gui.menus.pointerUp = function(event) {
     realityEditor.gui.buttons.freezeButtonUp(event);
     realityEditor.gui.buttons.pocketButtonUp(event);
 
-    // Retail UI
+    // Reality UI
 
-    realityEditor.gui.buttons.advertisementButtonUp(event);
-    realityEditor.gui.buttons.infoButtonUp(event);
-    realityEditor.gui.buttons.discountButtonUp(event);
-    realityEditor.gui.buttons.searchButtonUp(event);
-    realityEditor.gui.buttons.internalButtonUp(event);
+    realityEditor.gui.buttons.realityGuiButtonUp(event);
+    realityEditor.gui.buttons.realityInfoButtonUp(event);
+    realityEditor.gui.buttons.realityTagButtonUp(event);
+    realityEditor.gui.buttons.realitySearchButtonUp(event);
+    realityEditor.gui.buttons.realityWorkButtonUp(event);
 
     // End
 

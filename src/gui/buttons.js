@@ -177,10 +177,10 @@ realityEditor.gui.buttons.settingButtonUp = function(event) {
 
             this.gui.settings.hideSettings();
 
-            if(!globalStates.retailState) {
+            if(!globalStates.realityState) {
                 realityEditor.gui.menus.buttonOff("setting", ["setting"]);
             } else {
-                realityEditor.gui.menus.buttonOff("retail", ["setting"]);
+                realityEditor.gui.menus.buttonOff("reality", ["setting"]);
             }
 
             overlayDiv.style.display = "inline";
@@ -357,48 +357,48 @@ realityEditor.gui.buttons.bigPocketButtonEnter = function(event) {
  *
  */
 
-realityEditor.gui.buttons.advertisementButtonUp = function (event) {
-    if (event.button !== "advertisement") return;
+realityEditor.gui.buttons.realityGuiButtonUp = function (event) {
+    if (event.button !== "realityGui") return;
 
-    realityEditor.gui.menus.buttonOff("retail", ["advertisement", "info", "discount", "search", "internal"]);
-    realityEditor.gui.menus.on("retailInfo", ["advertisement"]);
-
-    // Add your functionality here.
-};
-
-realityEditor.gui.buttons.infoButtonUp = function (event) {
-    if (event.button !== "info") return;
-
-
-    realityEditor.gui.menus.buttonOff("retail", ["discount", "search", "internal"]);
-    realityEditor.gui.menus.on("retailInfo", ["info", "advertisement"]);
+    realityEditor.gui.menus.buttonOff("reality", ["realityGui", "realityInfo", "realityTag", "realitySearch", "realityWork"]);
+    realityEditor.gui.menus.on("realityInfo", ["realityGui"]);
 
     // Add your functionality here.
 };
 
-realityEditor.gui.buttons.discountButtonUp = function (event) {
-    if (event.button !== "discount") return;
+realityEditor.gui.buttons.realityInfoButtonUp = function (event) {
+    if (event.button !== "realityInfo") return;
 
-    realityEditor.gui.menus.buttonOff("retail", ["advertisement", "info", "discount", "search", "internal"]);
-    realityEditor.gui.menus.on("retail", ["discount"]);
 
-    // Add your functionality here.
-};
-
-realityEditor.gui.buttons.searchButtonUp = function (event) {
-    if (event.button !== "search") return;
-
-    realityEditor.gui.menus.buttonOff("retail", ["advertisement", "info", "discount", "search", "internal"]);
-    realityEditor.gui.menus.on("retail", ["search"]);
+    realityEditor.gui.menus.buttonOff("reality", ["realityTag", "realitySearch", "realityWork"]);
+    realityEditor.gui.menus.on("realityInfo", ["realityInfo", "realityGui"]);
 
     // Add your functionality here.
 };
 
-realityEditor.gui.buttons.internalButtonUp = function (event) {
-    if (event.button !== "internal") return;
+realityEditor.gui.buttons.realityTagButtonUp = function (event) {
+    if (event.button !== "realityTag") return;
 
-    realityEditor.gui.menus.buttonOff("retail", ["advertisement", "info", "discount", "search", "internal"]);
-    realityEditor.gui.menus.on("retail", ["internal"]);
+    realityEditor.gui.menus.buttonOff("reality", ["realityGui", "realityInfo", "realityTag", "realitySearch", "realityWork"]);
+    realityEditor.gui.menus.on("reality", ["realityTag"]);
+
+    // Add your functionality here.
+};
+
+realityEditor.gui.buttons.realitySearchButtonUp = function (event) {
+    if (event.button !== "realitySearch") return;
+
+    realityEditor.gui.menus.buttonOff("reality", ["realityGui", "realityInfo", "realityTag", "realitySearch", "realityWork"]);
+    realityEditor.gui.menus.on("reality", ["realitySearch"]);
+
+    // Add your functionality here.
+};
+
+realityEditor.gui.buttons.realityWorkButtonUp = function (event) {
+    if (event.button !== "realityWork") return;
+
+    realityEditor.gui.menus.buttonOff("reality", ["realityGui", "realityInfo", "realityTag", "realitySearch", "realityWork"]);
+    realityEditor.gui.menus.on("reality", ["realityWork"]);
 
     // Add your functionality here.
 };

@@ -53,7 +53,7 @@ realityEditor.gui.settings.loadSettingsPost = function () {
             this.states.externalState = msg.getSettings.externalState;
             this.states.settingsButton = msg.getSettings.settingsButton;
 
-            this.states.retailState = msg.getSettings.retailState;
+            this.states.realityState = msg.getSettings.realityState;
 
             this.setSettings("extendedTracking", this.states.extendedTracking);
             this.setSettings("lockingState", false);
@@ -62,7 +62,7 @@ realityEditor.gui.settings.loadSettingsPost = function () {
             this.setSettings("clearSkyState", this.states.clearSkyState);
             this.setSettings("externalText", this.states.externalState);
 
-            this.setSettings("retailState", this.states.retailState);
+            this.setSettings("realityState", this.states.realityState);
 
             if (typeof realityEditor.gui.settings.logo !== "undefined" && this.states.settingsButton && !this.states.animationFrameRequested) {
                 this.states.animationFrameRequested = true;

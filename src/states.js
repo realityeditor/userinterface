@@ -83,7 +83,7 @@ var globalStates = {
 	extendedTrackingState: false,
 	developerState: false,
 	clearSkyState: false,
-    retailState: false,
+    realityState: false,
 	externalState: "",
 	sendMatrix3d: false,
 	sendAcl: false,
@@ -137,7 +137,7 @@ var globalStates = {
 	},
 
 	// rettail
-	retail: false,
+	reality: false,
 	interface: "gui"
 };
 

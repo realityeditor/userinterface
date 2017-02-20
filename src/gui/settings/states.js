@@ -9,7 +9,7 @@ realityEditor.gui.settings.states = {
     settingsButton:false,
     animationFrameRequested: false,
     setInt : false,
-    retailState: false
+    realityState: false
 };
 
 realityEditor.gui.settings.objectInterval = null;

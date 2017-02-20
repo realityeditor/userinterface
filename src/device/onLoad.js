@@ -63,7 +63,7 @@ realityEditor.device.onload = function () {
 
    realityEditor.gui.menus.off("main",["gui","reset","unconstrained"]);
     realityEditor.gui.menus.on("main",["gui"]);
-    globalStates.retailState= false;
+    globalStates.realityState= false;
 
 	globalStates.tempUuid = realityEditor.device.utilities.uuidTimeShort();
 	console.log("-----------------------------:  "+globalStates.tempUuid);

@@ -689,7 +689,7 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
             instantState: globalStates.instantState,
             externalState: globalStates.externalState,
             settingsButton : globalStates.settingsButtonState,
-            retailState: globalStates.retailState
+            realityState: globalStates.realityState
         }
         }), "*");
     }
@@ -773,17 +773,17 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
             }
         }
 
-        if (typeof msgContent.settings.setSettings.retailState !== "undefined") {
+        if (typeof msgContent.settings.setSettings.realityState !== "undefined") {
 
-            if (msgContent.settings.setSettings.retailState) {
-                realityEditor.gui.menus.on("retail",["advertisement"]);
-                globalStates.retailState = true;
-                window.location.href = "of://retailOn";
+            if (msgContent.settings.setSettings.realityState) {
+                realityEditor.gui.menus.on("reality",["realityGui"]);
+                globalStates.realityState = true;
+                window.location.href = "of://realityOn";
             } else {
                 realityEditor.gui.menus.off("main",["gui","reset","unconstrained"]);
                 realityEditor.gui.menus.on("main",["gui"]);
-                globalStates.retailState = false;
-                window.location.href = "of://retailOff";
+                globalStates.realityState = false;
+                window.location.href = "of://realityOff";
             }
         }
     }
