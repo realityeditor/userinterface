@@ -168,7 +168,6 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
                 }
             }
         }
-
         else {
             generalObject.objectVisible = false;
 

@@ -688,7 +688,8 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
             clearSkyState: globalStates.clearSkyState,
             instantState: globalStates.instantState,
             externalState: globalStates.externalState,
-            settingsButton : globalStates.settingsButtonState
+            settingsButton : globalStates.settingsButtonState,
+            realityState: globalStates.realityState
         }
         }), "*");
     }
@@ -769,6 +770,20 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
             } else {
                 globalStates.clearSkyState = false;
                 window.location.href = "of://clearSkyOff";
+            }
+        }
+
+        if (typeof msgContent.settings.setSettings.realityState !== "undefined") {
+
+            if (msgContent.settings.setSettings.realityState) {
+                realityEditor.gui.menus.on("reality",["realityGui"]);
+                globalStates.realityState = true;
+                window.location.href = "of://realityOn";
+            } else {
+                realityEditor.gui.menus.off("main",["gui","reset","unconstrained"]);
+                realityEditor.gui.menus.on("main",["gui"]);
+                globalStates.realityState = false;
+                window.location.href = "of://realityOff";
             }
         }
     }
@@ -1101,7 +1116,8 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
     var oldStyle = {
         obj: objectKey,
         pos: nodeKey,
-        objectValues: nodes
+        objectValues: nodes,
+        interface: globalStates.interface
     };
 
     var simpleNodes = this.utilities.getNodesJsonForIframes(nodes);
@@ -1110,7 +1126,8 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
         object: objectKey,
         objectData:{},
         node: nodeKey,
-        nodes: simpleNodes
+        nodes: simpleNodes,
+        interface: globalStates.interface
     };
 
     if (objects[objectKey] && objects[objectKey].ip) {

@@ -174,9 +174,14 @@ realityEditor.gui.buttons.settingButtonUp = function(event) {
 
 
         if (globalStates.settingsButtonState === true) {
+
             this.gui.settings.hideSettings();
 
-            realityEditor.gui.menus.off("setting", ["setting"]);
+            if(!globalStates.realityState) {
+                realityEditor.gui.menus.buttonOff("setting", ["setting"]);
+            } else {
+                realityEditor.gui.menus.buttonOff("reality", ["setting"]);
+            }
 
             overlayDiv.style.display = "inline";
 
@@ -346,4 +351,54 @@ realityEditor.gui.buttons.bigPocketButtonEnter = function(event) {
     realityEditor.gui.pocket.onBigPocketButtonEnter();
 };
 
+/**
+ *
+ *   RETAIL
+ *
+ */
 
+realityEditor.gui.buttons.realityGuiButtonUp = function (event) {
+    if (event.button !== "realityGui") return;
+
+    realityEditor.gui.menus.buttonOff("reality", ["realityGui", "realityInfo", "realityTag", "realitySearch", "realityWork"]);
+    realityEditor.gui.menus.on("realityInfo", ["realityGui"]);
+
+    // Add your functionality here.
+};
+
+realityEditor.gui.buttons.realityInfoButtonUp = function (event) {
+    if (event.button !== "realityInfo") return;
+
+
+    realityEditor.gui.menus.buttonOff("reality", ["realityTag", "realitySearch", "realityWork"]);
+    realityEditor.gui.menus.on("realityInfo", ["realityInfo", "realityGui"]);
+
+    // Add your functionality here.
+};
+
+realityEditor.gui.buttons.realityTagButtonUp = function (event) {
+    if (event.button !== "realityTag") return;
+
+    realityEditor.gui.menus.buttonOff("reality", ["realityGui", "realityInfo", "realityTag", "realitySearch", "realityWork"]);
+    realityEditor.gui.menus.on("reality", ["realityTag"]);
+
+    // Add your functionality here.
+};
+
+realityEditor.gui.buttons.realitySearchButtonUp = function (event) {
+    if (event.button !== "realitySearch") return;
+
+    realityEditor.gui.menus.buttonOff("reality", ["realityGui", "realityInfo", "realityTag", "realitySearch", "realityWork"]);
+    realityEditor.gui.menus.on("reality", ["realitySearch"]);
+
+    // Add your functionality here.
+};
+
+realityEditor.gui.buttons.realityWorkButtonUp = function (event) {
+    if (event.button !== "realityWork") return;
+
+    realityEditor.gui.menus.buttonOff("reality", ["realityGui", "realityInfo", "realityTag", "realitySearch", "realityWork"]);
+    realityEditor.gui.menus.on("reality", ["realityWork"]);
+
+    // Add your functionality here.
+};

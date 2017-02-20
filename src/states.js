@@ -83,6 +83,7 @@ var globalStates = {
 	extendedTrackingState: false,
 	developerState: false,
 	clearSkyState: false,
+    realityState: false,
 	externalState: "",
 	sendMatrix3d: false,
 	sendAcl: false,
@@ -133,7 +134,11 @@ var globalStates = {
 	thisAndthat : {
 		interval: undefined,
 		timeout: undefined
-	}
+	},
+
+	// rettail
+	reality: false,
+	interface: "gui"
 };
 
 var globalCanvas = {};
