@@ -261,6 +261,98 @@
     visibility: hidden;
     z-index: 20;
 }
+
+/* RETAIL */
+#realityGuiButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 0px;
+    visibility: hidden;
+    z-index: 20;
+}
+#realityGuiButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 0px;
+    visibility: hidden;
+}
+#realityInfoButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 65px;
+    top: 0px;
+    visibility: hidden;
+    z-index: 20;
+}
+#realityInfoButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 65px;
+    top: 0px;
+    visibility: hidden;
+}
+#realityTagButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 65px;
+    visibility: hidden;
+}
+#realityTagButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 65px;
+    visibility: hidden;
+    z-index: 20;
+}
+#realitySearchButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 130px;
+    visibility: hidden;
+}
+#realitySearchButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 130px;
+    visibility: hidden;
+    z-index: 20;
+}
+#realityWorkButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 260px;
+    visibility: hidden;
+}
+#realityWorkButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 260px;
+    visibility: hidden;
+    z-index: 20;
+}
+
+/***
+ * COLORS
+ */
+
 .colorBackground {
     background-color: #00FFFF;
 }

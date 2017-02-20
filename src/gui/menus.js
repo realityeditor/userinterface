@@ -72,6 +72,12 @@ realityEditor.gui.menus.buttons = {
 		lock:{},
         halflock:{},
 		unlock:{}
+    // reality UI
+    realityGui : {},
+    realityInfo : {},
+    realityTag: {},
+    realitySearch : {},
+    realityWork : {}
 };
 
 realityEditor.gui.menus.menus = {
@@ -86,6 +92,9 @@ realityEditor.gui.menus.menus = {
     bigPocket: {bigPocket: "green"},
     locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", halflock:"blue", lock:"blue"},
     lockingEditing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", halflock:"blue", lock:"blue", reset: "blue", unconstrained: "blue"}
+    realityInfo: {realityGui: "blue", realityInfo: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"},
+    reality: {realityGui: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"},
+    settingReality: {realityGui: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"}
 };
 
 realityEditor.gui.menus.getVisibility = function(item){
@@ -96,6 +105,15 @@ if(this.buttons[item].item.style.visibility !== "hidden"){
 }
 };
 
+realityEditor.gui.menus.getSelected = function(item){
+    if(this.buttons[item+"Div"].item.style.opacity !== 0){
+        return true;
+    }else {
+        return false;
+    }
+};
+
+
 realityEditor.gui.menus.history = [];
 
 realityEditor.gui.menus.historySteps = 5;
@@ -105,7 +123,7 @@ realityEditor.gui.menus.getElements = function (element) {
 		if (element === "logic" || element === "gui") {
             svgDoc = document.getElementById("mainButton");
     } else {
-            svgDoc = document.getElementById(element+"Button");
+        svgDoc = document.getElementById(element+"Button");
     }
 
     l = document.getElementById(element+"ButtonDiv");
@@ -324,6 +342,24 @@ realityEditor.gui.buttons.buttonActionLeave = function (event){
 };
 
 
+realityEditor.gui.buttons.sendInterfaces = function (interface) {
+
+/// send active user interface status in to the AR-UI
+
+    globalStates.interface = interface;
+
+    for (var objectKey in objects) {
+        if (objects[objectKey].visible) {
+            globalDOMCach["iframe" + objectKey].contentWindow.postMessage(JSON.stringify({interface: globalStates.interface}), "*");
+        }
+
+        for (var nodeKey in objects[objectKey].nodes) {
+            if (objects[objectKey].nodes[nodeKey].visible) {
+                globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(JSON.stringify({interface: globalStates.interface}), "*");
+            }
+        }
+    }
+}
 
 
 /********************************************************************
@@ -342,6 +378,8 @@ console.log("Down on: "+event.button);
 realityEditor.gui.menus.pointerUp = function(event) {
     console.log("Up on: "+event.button);
 
+    realityEditor.gui.buttons.sendInterfaces(event.button);
+
     realityEditor.gui.buttons.guiButtonUp(event);
     realityEditor.gui.buttons.logicButtonUp(event);
     realityEditor.gui.buttons.resetButtonUp(event);
@@ -353,6 +391,18 @@ realityEditor.gui.menus.pointerUp = function(event) {
     realityEditor.gui.buttons.halflockButtonUp(event);
     realityEditor.gui.buttons.unlockButtonUp(event);
 
+    // Reality UI
+
+    realityEditor.gui.buttons.realityGuiButtonUp(event);
+    realityEditor.gui.buttons.realityInfoButtonUp(event);
+    realityEditor.gui.buttons.realityTagButtonUp(event);
+    realityEditor.gui.buttons.realitySearchButtonUp(event);
+    realityEditor.gui.buttons.realityWorkButtonUp(event);
+
+    // End
+
+
+    /// User interfaces for the back button
     realityEditor.gui.menus.backButton(event, function(event, lastMenu) {
         var button = event.button;
         //  place action in here for when back button is pressed

@@ -168,7 +168,6 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
                 }
             }
         }
-
         else {
             generalObject.objectVisible = false;
 
@@ -766,6 +765,20 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
         document.getElementById("GUI").appendChild(addContainer);
 
         addContainer.appendChild(addIframe);
+
+        // If this is a frame, add a cover object for touch event synthesizing
+        if (thisObject.src) {
+            var cover = document.createElement('div');
+            cover.classList.add('main');
+            cover.style.visibility = 'visible';
+            cover.style.background = 'rgba(255, 0, 0, 0.3)';
+            cover.style.width = addIframe.style.width;
+            cover.style.height = addIframe.style.height;
+            cover.style.top = addIframe.style.top;
+            cover.style.left = addIframe.style.left;
+            thisObject.frameTouchSynthesizer = new realityEditor.gui.frame.FrameTouchSynthesizer(cover, addIframe);
+            addContainer.appendChild(cover);
+        }
         addOverlay.appendChild(addCanvas);
         addContainer.appendChild(addOverlay);
 

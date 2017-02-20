@@ -90,6 +90,8 @@ realityEditor.gui.settings.loadSettingsPost = function () {
             this.states.lockingMode = msg.getSettings.lockingMode;
             this.states.lockPassword = msg.getSettings.lockPassword;
 
+            this.states.realityState = msg.getSettings.realityState;
+
             this.setSettings("extendedTracking", this.states.extendedTracking);
             this.setSettings("instantState", this.states.instantState);
             this.setSettings("editingMode", this.states.editingMode);
@@ -101,6 +103,8 @@ realityEditor.gui.settings.loadSettingsPost = function () {
             //if (!this.states.lockingMode) {
             //    document.getElementById('lockingToggle').firstChild.style.transform = "translate3d(0px, 0px, 0px);";
             //}
+
+            this.setSettings("realityState", this.states.realityState);
 
             if (typeof realityEditor.gui.settings.logo !== "undefined" && this.states.settingsButton && !this.states.animationFrameRequested) {
                 this.states.animationFrameRequested = true;

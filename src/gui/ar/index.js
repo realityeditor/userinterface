@@ -166,6 +166,11 @@ realityEditor.gui.ar.setProjectionMatrix = function(matrix) {
         corX = -11;
         corY = 6.5;
     }
+    
+    // iPad Pro
+    if (globalStates.device === "iPad6,7") {
+        // TODO: make any small corrections if needed
+    }
 
     var viewportScaling = [
         globalStates.height, 0, 0, 0,

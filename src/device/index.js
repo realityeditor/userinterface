@@ -74,6 +74,8 @@ realityEditor.device.activateNodeMove = function(nodeKey) {
 		ec++;
 		thisObject2.addEventListener("touchend", realityEditor.device.onMultiTouchEnd.bind(realityEditor.device), false);
 		ec++;
+		thisObject2.addEventListener("pointerup", realityEditor.device.onMultiTouchEnd.bind(realityEditor.device), false);
+		ec++;
 		//}
 	}
 };
@@ -95,6 +97,8 @@ realityEditor.device.deactivateNodeMove = function(nodeKey) {
 		thisObject2.removeEventListener("touchend", realityEditor.device.onMultiTouchEnd, false);
 		ec--;
 		ec--;
+		ec--;
+		thisObject2.removeEventListener("pointerup", realityEditor.device.onMultiTouchEnd, false);
 		ec--;
 		//  }
 	}
@@ -633,8 +637,8 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 	overlayDiv.classList.remove('overlayAction');
 	overlayDiv.classList.remove('overlayPositive');
 	overlayDiv.classList.remove('overlayNegative');
-    
-    if (globalStates.guiState !== "logic") {
+
+    if (globalStates.guiState !== "logic" && !globalStates.realityState) {
         realityEditor.gui.menus.on("main",[]);
     }
 	
@@ -679,9 +683,8 @@ realityEditor.device.onDocumentPointerDown = function(evt) {
         ignoreLockingButtons = (window.innerWidth - evt.clientX > 255) || (window.innerHeight - evt.clientY > 65);
     }
 
-	if (realityEditor.gui.memory.memoryCanCreate() && window.innerWidth - evt.clientX > 65 && ignoreLockingButtons) {
-        console.log("stop this from happening");
-        realityEditor.gui.menus.on("bigPocket",[]);
+	if (realityEditor.gui.memory.memoryCanCreate() && !globalStates.realityState && window.innerWidth - evt.clientX > 65) {
+            realityEditor.gui.menus.on("bigPocket", []);
 	//	realityEditor.gui.pocket.pocketOnMemoryCreationStart();
 	}
 
@@ -952,19 +955,29 @@ realityEditor.device.setDeviceName = function(deviceName) {
  * @param externalState
  **/
 
-realityEditor.device.setStates = function (developerState, extendedTrackingState, clearSkyState, instantState, externalState) {
+realityEditor.device.setStates = function (developerState, extendedTrackingState, clearSkyState, instantState, externalState, realityState) {
 
     globalStates.extendedTrackingState = extendedTrackingState;
     globalStates.developerState = developerState;
     globalStates.clearSkyState = clearSkyState;
     globalStates.instantState = instantState;
     globalStates.externalState = externalState;
+    globalStates.realityState = realityState;
 
     if (globalStates.clearSkyState) {
         document.getElementById("UIButtons").classList.add('clearSky');
     } else {
         document.getElementById("UIButtons").classList.remove('clearSky');
     }
+
+	if (globalStates.realityState) {
+            realityEditor.gui.menus.on("realityInfo",["realityGui"]);
+            globalStates.realityState = true;
+	} else {
+            realityEditor.gui.menus.off("main",["gui","reset","unconstrained"]);
+            realityEditor.gui.menus.on("main",["gui"]);
+            globalStates.realityState = false;
+	}
 
     if (developerState) {
         realityEditor.device.addEventHandlers();

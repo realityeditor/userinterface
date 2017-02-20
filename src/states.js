@@ -71,9 +71,9 @@ var globalStates = {
 	ballDistance: 14,
 	ballSize: 6,
 	ballAnimationCount: 0,
-
-	width: window.screen.width,
-	height: window.screen.height,
+    
+    width: window.innerHeight,
+    height: window.innerWidth,
 	guiState: "ui",
 	UIOffMode: false,
 	settingsButtonState: false,
@@ -83,6 +83,7 @@ var globalStates = {
 	extendedTrackingState: false,
 	developerState: false,
 	clearSkyState: false,
+    realityState: false,
 	externalState: "",
 	sendMatrix3d: false,
 	sendAcl: false,
@@ -137,7 +138,11 @@ var globalStates = {
 	thisAndthat : {
 		interval: undefined,
 		timeout: undefined
-	}
+	},
+
+	// rettail
+	reality: false,
+	interface: "gui"
 };
 
 var globalCanvas = {};

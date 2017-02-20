@@ -500,17 +500,26 @@ realityEditor.network.onInternalPostMessage = function(e) {
 
     if (msgContent.width && msgContent.height) {
         var thisMsgNode = document.getElementById(msgContent.node);
+        var top = ((globalStates.width - msgContent.height) / 2);
+        var left = ((globalStates.height - msgContent.width) / 2);
         thisMsgNode.style.width = msgContent.width;
         thisMsgNode.style.height = msgContent.height;
-        thisMsgNode.style.top = ((globalStates.width - msgContent.height) / 2);
-        thisMsgNode.style.left = ((globalStates.height - msgContent.width) / 2);
+        thisMsgNode.style.top = top;
+        thisMsgNode.style.left = left;
 
         thisMsgNode = document.getElementById("iframe" + msgContent.node);
         thisMsgNode.style.width = msgContent.width;
         thisMsgNode.style.height = msgContent.height;
-        thisMsgNode.style.top = ((globalStates.width - msgContent.height) / 2);
-        thisMsgNode.style.left = ((globalStates.height - msgContent.width) / 2);
+        thisMsgNode.style.top = top;
+        thisMsgNode.style.left = left;
 
+        if (tempThisObject.frameTouchSynthesizer) {
+            var cover = tempThisObject.frameTouchSynthesizer.cover;
+            cover.style.width = msgContent.width;
+            cover.style.height = msgContent.height;
+            cover.style.top = top;
+            cover.style.left = left;
+        }
     }
 
     if (typeof msgContent.sendMatrix !== "undefined") {
@@ -694,6 +703,7 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
             settingsButton : globalStates.settingsButtonState,
             lockingMode: globalStates.lockingMode,
             lockPassword: globalStates.lockPassword
+            realityState: globalStates.realityState
         }
         }), "*");
     }
@@ -795,6 +805,20 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
             
             globalStates.lockPassword = msgContent.settings.setSettings.lockPassword;
             console.log("received lock password: " + globalStates.lockPassword);
+        }
+
+        if (typeof msgContent.settings.setSettings.realityState !== "undefined") {
+
+            if (msgContent.settings.setSettings.realityState) {
+                realityEditor.gui.menus.on("reality",["realityGui"]);
+                globalStates.realityState = true;
+                window.location.href = "of://realityOn";
+            } else {
+                realityEditor.gui.menus.off("main",["gui","reset","unconstrained"]);
+                realityEditor.gui.menus.on("main",["gui"]);
+                globalStates.realityState = false;
+                window.location.href = "of://realityOff";
+            }
         }
     }
 };
@@ -1126,7 +1150,8 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
     var oldStyle = {
         obj: objectKey,
         pos: nodeKey,
-        objectValues: nodes
+        objectValues: nodes,
+        interface: globalStates.interface
     };
 
     var simpleNodes = this.utilities.getNodesJsonForIframes(nodes);
@@ -1135,7 +1160,8 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
         object: objectKey,
         objectData:{},
         node: nodeKey,
-        nodes: simpleNodes
+        nodes: simpleNodes,
+        interface: globalStates.interface
     };
 
     if (objects[objectKey] && objects[objectKey].ip) {
