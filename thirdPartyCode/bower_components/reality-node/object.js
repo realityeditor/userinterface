@@ -570,6 +570,27 @@ window.addEventListener('message', function (msg) {
   if (msgContent.stopTouchEditing) {
     sendTouchEvents = false;
   }
+
+  if (msgContent.event) {
+    var eventData = msgContent.event;
+    var event = new PointerEvent(eventData.type, {
+      view: window,
+      bubbles: true,
+      cancelable: true
+    });
+    event.pointerId = eventData.pointerId;
+    event.pointerType = eventData.pointerType;
+    event.x = eventData.x;
+    event.y = eventData.y;
+    event.clientX = eventData.x;
+    event.clientY = eventData.y;
+    event.pageX = eventData.x;
+    event.pageY = eventData.y;
+    event.screenX = eventData.x;
+    event.screenY = eventData.y;
+    var elt = document.elementFromPoint(eventData.x, eventData.y) || document.body;
+    elt.dispatchEvent(event);
+  }
 });
 
 exports.realityObject = realityObject;
