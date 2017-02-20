@@ -1116,7 +1116,8 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
     var oldStyle = {
         obj: objectKey,
         pos: nodeKey,
-        objectValues: nodes
+        objectValues: nodes,
+        interface: globalStates.interface
     };
 
     var simpleNodes = this.utilities.getNodesJsonForIframes(nodes);
@@ -1125,7 +1126,8 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
         object: objectKey,
         objectData:{},
         node: nodeKey,
-        nodes: simpleNodes
+        nodes: simpleNodes,
+        interface: globalStates.interface
     };
 
     if (objects[objectKey] && objects[objectKey].ip) {

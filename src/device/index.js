@@ -623,10 +623,9 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 	overlayDiv.classList.remove('overlayAction');
 	overlayDiv.classList.remove('overlayPositive');
 	overlayDiv.classList.remove('overlayNegative');
-    
-    if (globalStates.guiState !== "logic") {
-    	// todo check if this works with all other states. Maybe this is not needed here. retail, main, gui
-       // realityEditor.gui.menus.on("main",[]);
+
+    if (globalStates.guiState !== "logic" && !globalStates.retailState) {
+        realityEditor.gui.menus.on("main",[]);
     }
 	
     //realityEditor.gui.pocket.pocketOnMemoryCreationStop();
@@ -664,8 +663,8 @@ realityEditor.device.onDocumentPointerDown = function(evt) {
 		}
 	}
 
-	if (realityEditor.gui.memory.memoryCanCreate() && window.innerWidth - evt.clientX > 65) {
-        realityEditor.gui.menus.on("bigPocket",[]);
+	if (realityEditor.gui.memory.memoryCanCreate() && !globalStates.retailState && window.innerWidth - evt.clientX > 65) {
+            realityEditor.gui.menus.on("bigPocket", []);
 	//	realityEditor.gui.pocket.pocketOnMemoryCreationStart();
 	}
 

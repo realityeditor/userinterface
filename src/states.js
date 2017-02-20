@@ -137,7 +137,8 @@ var globalStates = {
 	},
 
 	// rettail
-	retail: false
+	retail: false,
+	interface: "gui"
 };
 
 var globalCanvas = {};
