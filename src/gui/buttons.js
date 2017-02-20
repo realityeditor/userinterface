@@ -377,7 +377,7 @@ realityEditor.gui.buttons.bigPocketButtonEnter = function(event) {
 
 /**
  *
- *   RETAIL
+ *   REALITY
  *
  */
 
