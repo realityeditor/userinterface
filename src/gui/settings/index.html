@@ -43,8 +43,9 @@
             <li class="table-view-cell">
                 <img class="media-object pull-left" src="../../../svg/lock.svg"
                      style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
-                Object and Link Locking
+                Object Locking
                 <small style="color: #b1b1b1;">touch ID required</small>
+                <input type="text" id="lockText" style="width:120px; height:26px; margin-top: -2px; margin-bottom: -5px; text-align: center; right: 80px;" placeholder="password" oninput="realityEditor.gui.settings.newLockTextLoad()">
                 <div class="toggle" id="lockingToggle">
                     <div class="toggle-handle"></div>
                 </div>

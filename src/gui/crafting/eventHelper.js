@@ -332,9 +332,7 @@ realityEditor.gui.crafting.eventHelper.placeBlockInCell = function(contents, cel
         }
 
         this.crafting.removeBlockDom(contents.block); // remove do so it can be re-rendered in the correct place
-
-        this.convertTempLinkOutlinesToLinks(contents);
-
+        
         var _this = this;
         portLinkData.forEach( function(linkData) {
 
@@ -357,12 +355,15 @@ realityEditor.gui.crafting.eventHelper.placeBlockInCell = function(contents, cel
         if (contents.block.y === 0 || contents.block.y === 3) {
             this.crafting.grid.updateInOutLinks(contents.block.globalId);
         }
-
+        
         // if it's being moved away from the top or bottom rows, re-add the invisible port block underneath
         if (prevCell) {
             var prevCellsOver = grid.getCellsOver(prevCell, contents.block.blockSize, contents.item);
             this.replacePortBlocksIfNecessary(prevCellsOver);
         }
+
+        this.convertTempLinkOutlinesToLinks(contents);
+
         contents = null;
 
     } else {
@@ -487,10 +488,15 @@ realityEditor.gui.crafting.eventHelper.convertTempLinkOutlinesToLinks = function
                 _this.crafting.grid.addBlockLink(linkData.nodeA, contents.block.globalId, linkData.logicA, linkData.logicB, true);
 
             } else {
+                
                 // create separate links from in->edge and edge->block
                 var x = linkData.nodeA.slice(-1);
-                _this.crafting.grid.addBlockLink(linkData.nodeA, _this.edgePlaceholderName(true, x), linkData.logicA, linkData.logicB, true);
-                _this.crafting.grid.addBlockLink(_this.edgePlaceholderName(true, x), contents.block.globalId, linkData.logicA, linkData.logicB, true);
+                var placeholderBlockExists = !!(globalStates.currentLogic.blocks[_this.edgePlaceholderName(true, x)]);
+                if (placeholderBlockExists)  {
+                    _this.crafting.grid.addBlockLink(linkData.nodeA, _this.edgePlaceholderName(true, x), linkData.logicA, linkData.logicB, true);
+                    _this.crafting.grid.addBlockLink(_this.edgePlaceholderName(true, x), contents.block.globalId, linkData.logicA, linkData.logicB, true);
+                }
+                
             }
 
         }
@@ -506,10 +512,12 @@ realityEditor.gui.crafting.eventHelper.convertTempLinkOutlinesToLinks = function
             } else {
                 // create separate links from block->edge and edge->out
                 var x = linkData.nodeB.slice(-1);
-                _this.crafting.grid.addBlockLink(contents.block.globalId, _this.edgePlaceholderName(false, x), linkData.logicA, linkData.logicB, true);
-                _this.crafting.grid.addBlockLink(_this.edgePlaceholderName(false, x), linkData.nodeB, linkData.logicA, linkData.logicB, true);
+                var placeholderBlockExists = !!(globalStates.currentLogic.blocks[_this.edgePlaceholderName(false, x)]);
+                if (placeholderBlockExists) {
+                    _this.crafting.grid.addBlockLink(contents.block.globalId, _this.edgePlaceholderName(false, x), linkData.logicA, linkData.logicB, true);
+                    _this.crafting.grid.addBlockLink(_this.edgePlaceholderName(false, x), linkData.nodeB, linkData.logicA, linkData.logicB, true);
+                }
             }
-
         }
     });
 

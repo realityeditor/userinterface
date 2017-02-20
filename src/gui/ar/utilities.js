@@ -254,6 +254,19 @@ realityEditor.gui.ar.utilities.insidePoly = function(point, vs) {
     return inside;
 };
 
+realityEditor.gui.ar.utilities.isNodeWithinScreen = function(thisObject, nodeKey) {
+    var thisNode = thisObject.nodes[nodeKey];
+    var screenCorners = [
+        [0,0],
+        [568,0],
+        [568,320],
+        [0,320]
+    ];
+    var isInsideScreen = this.insidePoly([thisNode.screenX, thisNode.screenY],screenCorners, true);
+    //console.log(thisNode.name, [thisNode.screenX, thisNode.screenY], isInsideScreen);
+    return isInsideScreen;
+};
+
 /**********************************************************************************************************************
  **********************************************************************************************************************/
 

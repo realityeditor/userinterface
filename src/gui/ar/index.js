@@ -187,3 +187,56 @@ realityEditor.gui.ar.setProjectionMatrix = function(matrix) {
     window.location.href = "of://gotProjectionMatrix";
 
 };
+
+realityEditor.gui.ar.getVisibleNodes = function() {
+    var visibleNodes = [];
+
+    for (var objectKey in objects) {
+        if (!objects.hasOwnProperty(objectKey)) continue;
+        if (globalObjects.hasOwnProperty(objectKey)) { // this is a way to check which objects are currently visible
+            var thisObject = objects[objectKey];
+
+            for (var nodeKey in thisObject.nodes) {
+                if (!thisObject.nodes.hasOwnProperty(nodeKey)) continue;
+
+                if (realityEditor.gui.ar.utilities.isNodeWithinScreen(thisObject, nodeKey)) {
+                    visibleNodes.push({
+                        objectKey: objectKey,
+                        nodeKey: nodeKey
+                    });
+                }
+            }
+        }
+    }
+    return visibleNodes;
+};
+
+realityEditor.gui.ar.getVisibleLinks = function(visibleNodes) {
+    
+    var visibleNodeKeys = visibleNodes.map(function(keys){return keys.nodeKey;});
+
+    var visibleLinks = [];
+
+    for (var objectKey in objects) {
+        if (!objects.hasOwnProperty(objectKey)) continue;
+        var thisObject = objects[objectKey];
+        
+        for (var linkKey in thisObject.links) {
+            if (!thisObject.links.hasOwnProperty(linkKey)) continue;
+            var thisLink = thisObject.links[linkKey];
+
+            var isVisibleNodeA = visibleNodeKeys.indexOf(thisLink.nodeA) > -1;
+            var isVisibleNodeB = visibleNodeKeys.indexOf(thisLink.nodeB) > -1;
+
+            if (isVisibleNodeA || isVisibleNodeB) {
+                visibleLinks.push({
+                    objectKey: objectKey,
+                    linkKey: linkKey
+                });
+            }
+        }
+    }
+
+    console.log("visibleLinks = ", visibleLinks);
+    return visibleLinks;
+};

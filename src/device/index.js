@@ -204,8 +204,14 @@ realityEditor.device.addEventHandlers = function() {
 realityEditor.device.touchTimer = null;
 
 realityEditor.device.onTouchDown = function(evt) {
+    
     var target = evt.currentTarget;
 	console.log(target.nodeId);
+
+    if (!realityEditor.device.security.isNodeActionAllowed(target.objectId, target.nodeId, "edit")) {
+        return;
+    }
+    
 	if (!globalStates.editingMode) {
 		if (globalStates.guiState ==="node") {
 			if (!globalProgram.objectA) {
@@ -320,13 +326,17 @@ realityEditor.device.onTrueTouchUp = function(evt){
 		if (globalProgram.objectA) {
 
 			if(target.nodeId === globalProgram.nodeA && target.type === "logic"){
-				realityEditor.gui.crafting.craftingBoardVisible(target.objectId, target.nodeId);
+                if (realityEditor.device.security.isNodeActionAllowed(target.objectId, target.nodeId, "edit")) {
+                    realityEditor.gui.crafting.craftingBoardVisible(target.objectId, target.nodeId);
+                }
 			}
 
 			globalProgram.objectB = target.objectId;
 			globalProgram.nodeB = target.nodeId;
 
-			realityEditor.network.postLinkToServer(globalProgram, objects);
+            if (realityEditor.device.security.isNodeActionAllowed(target.objectId, target.nodeId, "create")) {
+                realityEditor.network.postLinkToServer(globalProgram, objects);
+            }
 
 			// set everything back to false
 			globalProgram.objectA = false;
@@ -666,6 +676,12 @@ realityEditor.device.onDocumentPointerDown = function(evt) {
 			overlayDiv.classList.add('overlayMemory');
 		}
 	}
+    
+    // when in locking mode, don't start the pocket if you tap on the area over the locking buttons
+    var ignoreLockingButtons = true;
+    if (globalStates.lockingMode) {
+        ignoreLockingButtons = (window.innerWidth - evt.clientX > 255) || (window.innerHeight - evt.clientY > 65);
+    }
 
 	if (realityEditor.gui.memory.memoryCanCreate() && !globalStates.realityState && window.innerWidth - evt.clientX > 65) {
             realityEditor.gui.menus.on("bigPocket", []);

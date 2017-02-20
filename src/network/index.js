@@ -230,7 +230,7 @@ realityEditor.network.updateObject = function (origin, remote, thisKey) {
 
 realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
 
-    console.log(remote.links, origin.links, remote.blocks, origin.blocks);
+    //console.log(remote.links, origin.links, remote.blocks, origin.blocks);
 
     var isRemoteNodeDeleted = (Object.keys(remote).length === 0 && remote.constructor === Object);
 
@@ -261,6 +261,9 @@ realityEditor.network.updateNode = function (origin, remote, thisKey, nodeKey) {
         if(remote.matrix) {
             origin.matrix =  remote.matrix;
         }
+        origin.lockPassword = remote.lockPassword;
+        origin.lockType = remote.lockType;
+        console.log("update node: lockPassword = " + remote.lockPassword + ", lockType = " + remote.lockType);
 
         if(origin.type === "logic") {
             if (!origin.guiState) {
@@ -698,6 +701,8 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
             instantState: globalStates.instantState,
             externalState: globalStates.externalState,
             settingsButton : globalStates.settingsButtonState,
+            lockingMode: globalStates.lockingMode,
+            lockPassword: globalStates.lockPassword
             realityState: globalStates.realityState
         }
         }), "*");
@@ -780,6 +785,26 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
                 globalStates.clearSkyState = false;
                 window.location.href = "of://clearSkyOff";
             }
+        }
+
+        if (typeof msgContent.settings.setSettings.lockingToggle !== "undefined") {
+
+            console.log("received message in settings");
+
+            if (msgContent.settings.setSettings.lockingToggle) {
+                window.location.href = "of://authenticateTouch";
+
+            } else {
+                globalStates.lockingMode = false;
+                //globalStates.authenticatedUser = null;
+                globalStates.lockPassword = null;
+            }
+        }
+
+        if (typeof msgContent.settings.setSettings.lockPassword !== "undefined") {
+            
+            globalStates.lockPassword = msgContent.settings.setSettings.lockPassword;
+            console.log("received lock password: " + globalStates.lockPassword);
         }
 
         if (typeof msgContent.settings.setSettings.realityState !== "undefined") {
@@ -915,7 +940,7 @@ realityEditor.network.postLinkToServer = function(linkObject, objects){
     var okForNewLink = this.checkForNetworkLoop(linkObject.objectA, linkObject.nodeA, linkObject.logicA, linkObject.objectB, linkObject.nodeB, linkObject.logicB);
 
     //  window.location.href = "of://event_" + objects[globalProgram.objectA].visible;
-
+    
     if (okForNewLink) {
         var thisKeyId = this.realityEditor.device.utilities.uuidTimeShort();
 
@@ -1152,4 +1177,68 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
     globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
         JSON.stringify(newStyle), '*');
     this.cout("on_load");
+};
+
+/**
+ * @desc
+ * @param
+ * @param
+ * @return
+ **/
+
+realityEditor.network.postNewLockToNode = function(ip, thisObjectKey, thisNodeKey, content) {
+
+// generate action for all links to be reloaded after upload
+    console.log("sending node lock (" + content.lockType + ")");
+    this.postData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/nodeLock/" + thisNodeKey, content);
+    // postData('http://' +ip+ ':' + httpPort+"/", content);
+    //console.log("sent lock");
+
+};
+
+/**
+ * @desc
+ * @param
+ * @param
+ * @return
+ **/
+
+realityEditor.network.deleteLockFromNode = function(ip, thisObjectKey, thisNodeKey, lockPassword) {
+// generate action for all links to be reloaded after upload
+    console.log("I am deleting a lock: " + ip);
+    console.log("lockPassword is " + lockPassword);
+    this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/nodeLock/" + thisNodeKey + "/password/" + lockPassword);
+    //console.log("deleteLockFromObject");
+};
+
+/**
+ * @desc
+ * @param
+ * @param
+ * @return
+ **/
+
+realityEditor.network.postNewLockToLink = function(ip, thisObjectKey, thisLinkKey, content) {
+
+// generate action for all links to be reloaded after upload
+    console.log("sending link lock (" + content.lockType + ")");
+    this.postData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/linkLock/" + thisLinkKey, content);
+    // postData('http://' +ip+ ':' + httpPort+"/", content);
+    //console.log('post --- ' + 'http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/lock/" + thisLinkKey);
+
+};
+
+/**
+ * @desc
+ * @param
+ * @param
+ * @return
+ **/
+
+realityEditor.network.deleteLockFromLink = function(ip, thisObjectKey, thisLinkKey, lockPassword) {
+// generate action for all links to be reloaded after upload
+    console.log("I am deleting a link lock: " + ip);
+    console.log("lockPassword is " + lockPassword);
+    this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/linkLock/" + thisLinkKey + "/password/" + lockPassword);
+    //console.log('delete --- ' + 'http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/lock/" + thisLinkKey + "/password/" + authenticatedUser);
 };

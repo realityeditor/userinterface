@@ -89,11 +89,14 @@ realityEditor.gui.ar.lines.deleteLines = function(x21, y21, x22, y22) {
             }
 
             if (this.realityEditor.gui.utilities.checkLineCross(bA.screenX, bA.screenY, bB.screenX, bB.screenY, x21, y21, x22, y22, globalCanvas.canvas.width, globalCanvas.canvas.height)) {
-                delete thisObject.links[subKeysome];
-                this.cout("iam executing link deletion");
-                //todo this is a work around to not crash the server. only temporarly for testing
-                // if(l.logicA === false && l.logicB === false)
-                realityEditor.network.deleteLinkFromObject(thisObject.ip, keysome, subKeysome);
+                
+                if (realityEditor.device.security.isLinkActionAllowed(keysome, subKeysome, "delete")) {
+                    delete thisObject.links[subKeysome];
+                    this.cout("iam executing link deletion");
+                    //todo this is a work around to not crash the server. only temporarly for testing
+                    // if(l.logicA === false && l.logicB === false)
+                    realityEditor.network.deleteLinkFromObject(thisObject.ip, keysome, subKeysome);                    
+                }
             }
         }
     }
@@ -275,7 +278,18 @@ realityEditor.gui.ar.lines.drawLine = function(context, lineStartPoint, lineEndP
     var spacer = 2.3;
     var ratio = 0;
     var mathPI = 2*Math.PI;
-    var newColor = [255,255,255];
+    var newColor = [255,255,255,1.0];
+    
+    // TODO: temporary solution to render lock information for this link
+    
+    if (!!linkObject.lockPassword) {
+        if (linkObject.lockType === "full") {
+            newColor[3] = 0.25;
+        } else if (linkObject.lockType === "half") {
+            newColor[3] = 0.75;
+        }
+    }
+    
     var colors = [[0,255,255], // Blue
         [0,255,0],   // Green
         [255,255,0], // Yellow
@@ -298,7 +312,7 @@ realityEditor.gui.ar.lines.drawLine = function(context, lineStartPoint, lineEndP
         var y__ = lineStartPoint[1] - Math.sin(angle) * ballPossition;
         possitionDelta += ballSize * spacer;
         context.beginPath();
-        context.fillStyle = "rgb("+newColor+")";
+        context.fillStyle = "rgba("+newColor+")";
         context.arc(x__, y__, ballSize, 0, mathPI);
         context.fill();
     }

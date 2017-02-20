@@ -63,6 +63,8 @@ realityEditor.gui.settings.hideSettings = function() {
         instantState: globalStates.instantState,
         externalState: globalStates.externalState,
         settingsButton : globalStates.settingsButtonState,
+        lockingMode: globalStates.lockingMode,
+        lockPassword: globalStates.lockPassword
         realityState: globalStates.realityState
     }
     }), "*");
@@ -120,6 +122,8 @@ realityEditor.gui.settings.showSettings = function() {
         instantState: globalStates.instantState,
         externalState: globalStates.externalState,
         settingsButton : globalStates.settingsButtonState,
+        lockingMode: globalStates.lockingMode,
+        lockPassword: globalStates.lockPassword
         realityState: globalStates.realityState
     }
     }), "*");

@@ -70,7 +70,8 @@ realityEditor.gui.menus.buttons = {
 		setting: {},
 		unconstrained: {},
 		lock:{},
-		unlock:{},
+        halflock:{},
+		unlock:{}
     // reality UI
     realityGui : {},
     realityInfo : {},
@@ -89,7 +90,8 @@ realityEditor.gui.menus.menus = {
     crafting: {back: "blue", logicPocket: "green", logicSetting: "blue", freeze: "blue"},
     bigTrash: {bigTrash: "red"},
     bigPocket: {bigPocket: "green"},
-    locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue",unlock:"blue",lock:"blue"},
+    locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", halflock:"blue", lock:"blue"},
+    lockingEditing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", halflock:"blue", lock:"blue", reset: "blue", unconstrained: "blue"}
     realityInfo: {realityGui: "blue", realityInfo: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"},
     reality: {realityGui: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"},
     settingReality: {realityGui: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"}
@@ -188,12 +190,17 @@ realityEditor.gui.menus.on = function(menuDiv, buttonArray) {
     }
     realityEditor.gui.menus.history.push(menuDiv);
 
-    if(globalStates.editingMode){
-        if((menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic") && !globalStates.settingsButtonState){
+    // show correct combination of sub-menus
+    if ((menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic") && !globalStates.settingsButtonState) {
+        if (globalStates.editingMode && globalStates.lockingMode) {
+            menuDiv = "lockingEditing";
+        } else if (globalStates.editingMode) {
             menuDiv = "editing";
+        } else if (globalStates.lockingMode) {
+            menuDiv = "locking";
         }
     }
-
+    
     // activate menu Items
     for(var key in this.buttons){
 		if(key in this.menus[menuDiv]){
@@ -223,9 +230,14 @@ realityEditor.gui.menus.off = function(menuDiv, buttonArray) {
     }
     realityEditor.gui.menus.history.push(menuDiv);
 
-    if(globalStates.editingMode){
-        if(menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic"){
+    // show correct combination of sub-menus
+    if (menuDiv === "main" || menuDiv === "gui" ||menuDiv === "logic") {
+        if (globalStates.editingMode && globalStates.lockingMode) {
+            menuDiv = "lockingEditing";
+        } else if (globalStates.editingMode) {
             menuDiv = "editing";
+        } else if (globalStates.lockingMode) {
+            menuDiv = "locking";
         }
     }
 
@@ -375,6 +387,9 @@ realityEditor.gui.menus.pointerUp = function(event) {
     realityEditor.gui.buttons.settingButtonUp(event);
     realityEditor.gui.buttons.freezeButtonUp(event);
     realityEditor.gui.buttons.pocketButtonUp(event);
+    realityEditor.gui.buttons.lockButtonUp(event);
+    realityEditor.gui.buttons.halflockButtonUp(event);
+    realityEditor.gui.buttons.unlockButtonUp(event);
 
     // Reality UI
 

@@ -134,6 +134,9 @@ function Link() {
 	// Will be used to test if a link is still able to find its destination.
 	// It needs to be discussed what to do if a link is not able to find the destination and for what time span.
 	this.health = 0; // todo use this to test if link is still valid. If not able to send for some while, kill link.
+
+    this.lockPassword = null;
+    this.lockType = null;
 }
 
 /**
@@ -162,6 +165,9 @@ function Node() {
 	// defines the origin Hardware interface of the IO Point. For example if this is arduinoYun the Server associates
 	// indicates how much calls per second is happening on this node
 	this.stress = 0;
+
+    this.lockPassword = null;
+    this.lockType = null;
 }
 
 /**
@@ -212,6 +218,9 @@ function Logic() {
 	this.blocks = {};
 
 	this.guiState = new LogicGUIState();
+
+    this.lockPassword = null;
+    this.lockType = null;
 }
 
 /**

@@ -197,25 +197,49 @@ realityEditor.gui.buttons.settingButtonUp = function(event) {
 realityEditor.gui.buttons.freezeButtonUp = function(event) {
     if (event.button !== "freeze") return;
 
-        realityEditor.gui.pocket.pocketHide();
+    realityEditor.gui.pocket.pocketHide();
 
-        if (globalStates.freezeButtonState === true) {
+    if (globalStates.freezeButtonState === true) {
 
-            realityEditor.gui.menus.buttonOff("default", ["freeze"]);
+        realityEditor.gui.menus.buttonOff("default", ["freeze"]);
 
-            globalStates.freezeButtonState = false;
-            var memoryBackground = document.querySelector('.memoryBackground');
-            memoryBackground.innerHTML = '';
-            window.location.href = "of://unfreeze";
-        }
-        else {
-            realityEditor.gui.menus.buttonOn("default", ["freeze"]);
-            globalStates.freezeButtonState = true;
-            window.location.href = "of://freeze";
-        }
-    };
+        globalStates.freezeButtonState = false;
+        var memoryBackground = document.querySelector('.memoryBackground');
+        memoryBackground.innerHTML = '';
+        window.location.href = "of://unfreeze";
+    }
+    else {
+        realityEditor.gui.menus.buttonOn("default", ["freeze"]);
+        globalStates.freezeButtonState = true;
+        window.location.href = "of://freeze";
+    }
+};
 
+realityEditor.gui.buttons.lockButtonUp = function(event) {
+    if (event.button !== "lock") return;
+    
+    console.log("activate lock button");
+    
+    var LOCK_TYPE_FULL = "full";
+    realityEditor.device.security.lockVisibleNodesAndLinks(LOCK_TYPE_FULL);
+};
 
+realityEditor.gui.buttons.halflockButtonUp = function(event) {
+    if (event.button !== "halflock") return;
+
+    console.log("activate halflock button");
+
+    var LOCK_TYPE_HALF = "half";
+    realityEditor.device.security.lockVisibleNodesAndLinks(LOCK_TYPE_HALF);
+};
+
+realityEditor.gui.buttons.unlockButtonUp = function(event) {
+    if (event.button !== "unlock") return;
+
+    console.log("activate unlock button");
+    
+    realityEditor.device.security.unlockVisibleNodesAndLinks();
+};
 
 realityEditor.gui.buttons.draw = function() {
 

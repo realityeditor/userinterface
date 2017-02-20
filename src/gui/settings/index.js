@@ -9,15 +9,44 @@ realityEditor.gui.settings.setSettings = function (id, state) {
         }
         return;
     }
+    
+    if (id === "lockText") {
+        //if (state !== "") {
+        //    document.getElementById(id).value = state; // TODO: do we need this?
+        //}
+        return;
+    }
 
     if (id) {
         if (state) {
-            document.getElementById(id).className = "toggle active";
+
+            document.getElementById(id).classList.add('active'); // TODO: doesn't really need this change, revert to previous?
+            
+            //document.getElementById(id).className = "toggle active";
         } else {
-            document.getElementById(id).className = "toggle";
+
+            document.getElementById(id).classList.remove('active');
+
+            //document.getElementById(id).className = "toggle";
         }
     }
-}
+    
+    if (id === "lockingToggle") {
+        this.updateLockUI();
+        //document.getElementById("lockText").disabled = document.getElementById(id).classList.contains('active');  //e.detail.isActive;
+    }
+    
+    //    if (!state) {
+    //        document.getElementById(id).firstElementChild.style.transform = "translate3d(0px, 0px, 0px);";
+    //    }
+    //    //    document.getElementById("lockText").disabled = state;
+    //    //    console.log("change text disabled " + document.getElementById("lockText").disabled);
+    //}
+};
+
+realityEditor.gui.settings.updateLockUI = function() {
+    document.getElementById("lockText").disabled = document.getElementById('lockingToggle').classList.contains('active');  //e.detail.isActive;
+};
 
 realityEditor.gui.settings.newURLTextLoad = function () {
     this.states.externalState = encodeURIComponent(document.getElementById('externalText').value);
@@ -25,9 +54,15 @@ realityEditor.gui.settings.newURLTextLoad = function () {
 
 realityEditor.gui.settings.reloadUI = function () {
     if (this.states.externalState !== "" && this.states.externalState !== "http") {
+        console.log("window.location.href = " + "of://loadNewUI" + this.states.externalState);
         window.location.href = "of://loadNewUI" + this.states.externalState;
     }
-}
+};
+
+realityEditor.gui.settings.newLockTextLoad = function () {
+    this.states.lockPassword = encodeURIComponent(document.getElementById('lockText').value);
+    console.log("lockPassword = " + this.states.lockPassword);
+};
 
 realityEditor.gui.settings.loadSettingsPost = function () {
     parent.postMessage(
@@ -52,15 +87,22 @@ realityEditor.gui.settings.loadSettingsPost = function () {
             this.states.instantState = msg.getSettings.instantState;
             this.states.externalState = msg.getSettings.externalState;
             this.states.settingsButton = msg.getSettings.settingsButton;
+            this.states.lockingMode = msg.getSettings.lockingMode;
+            this.states.lockPassword = msg.getSettings.lockPassword;
 
             this.states.realityState = msg.getSettings.realityState;
 
             this.setSettings("extendedTracking", this.states.extendedTracking);
-            this.setSettings("lockingState", false);
             this.setSettings("instantState", this.states.instantState);
             this.setSettings("editingMode", this.states.editingMode);
             this.setSettings("clearSkyState", this.states.clearSkyState);
             this.setSettings("externalText", this.states.externalState);
+            this.setSettings("lockingToggle", this.states.lockingMode);
+            this.setSettings("lockText", this.states.lockPassword);
+            
+            //if (!this.states.lockingMode) {
+            //    document.getElementById('lockingToggle').firstChild.style.transform = "translate3d(0px, 0px, 0px);";
+            //}
 
             this.setSettings("realityState", this.states.realityState);
 
@@ -93,6 +135,16 @@ realityEditor.gui.settings.loadSettingsPost = function () {
             msg.settings = {};
             msg.settings.setSettings = {};
             msg.settings.setSettings[e.target.id] = e.detail.isActive;
+            if (e.target.id === "lockingToggle") {
+                
+                msg.settings.setSettings['lockPassword'] = realityEditor.gui.settings.states.lockPassword;
+                realityEditor.gui.settings.updateLockUI();
+
+                //if (id === "lockingToggle") {
+                //    document.getElementById("lockText").disabled = e.detail.isActive;
+                    //console.log("change text disabled " + document.getElementById("lockText").disabled);
+                //}
+            }
             parent.postMessage(JSON.stringify(msg), "*");
         }
     );

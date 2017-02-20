@@ -61,12 +61,7 @@ function cout() {
 	if (globalStates.debug){
 		console.log.apply(this, arguments);
 	}
-};
-
-realityEditor.device.utilities.newURLTextLoad = function () {
-    globalStates.newURLText = encodeURIComponent(document.getElementById('newURLText').value);
-    this.cout("newURLTextLoad");
-};
+}
 
 /**
  * @desc

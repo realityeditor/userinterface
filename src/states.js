@@ -87,6 +87,10 @@ var globalStates = {
 	externalState: "",
 	sendMatrix3d: false,
 	sendAcl: false,
+    
+    lockingMode: false,
+    //authenticatedUser: null,
+    lockPassword: null,
 
 	pocketButtonState: false,
 	pocketButtonDown: false,
