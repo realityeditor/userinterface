@@ -365,3 +365,9 @@
 .touched{opacity:0.6; touch-action: none}
 
 
+
+.searchCell {
+    margin-top: 5px; margin-left: 0px;
+    height: 34px; width: 160px; -webkit-transform: translateZ(9px);
+    display: inline-table; background-color: rgba(0,255,255,0.1);
+}
