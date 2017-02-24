@@ -71,7 +71,7 @@ realityEditor.gui.menus.buttons = {
 		unconstrained: {},
 		lock:{},
         halflock:{},
-		unlock:{}
+		unlock:{},
     // reality UI
     realityGui : {},
     realityInfo : {},
@@ -91,7 +91,7 @@ realityEditor.gui.menus.menus = {
     bigTrash: {bigTrash: "red"},
     bigPocket: {bigPocket: "green"},
     locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", halflock:"blue", lock:"blue"},
-    lockingEditing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", halflock:"blue", lock:"blue", reset: "blue", unconstrained: "blue"}
+    lockingEditing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", halflock:"blue", lock:"blue", reset: "blue", unconstrained: "blue"},
     realityInfo: {realityGui: "blue", realityInfo: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"},
     reality: {realityGui: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"},
     settingReality: {realityGui: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"}
@@ -359,7 +359,7 @@ realityEditor.gui.buttons.sendInterfaces = function (interface) {
             }
         }
     }
-}
+};
 
 
 /********************************************************************

@@ -702,7 +702,7 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
             externalState: globalStates.externalState,
             settingsButton : globalStates.settingsButtonState,
             lockingMode: globalStates.lockingMode,
-            lockPassword: globalStates.lockPassword
+            lockPassword: globalStates.lockPassword,
             realityState: globalStates.realityState
         }
         }), "*");
@@ -1177,6 +1177,23 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
     globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
         JSON.stringify(newStyle), '*');
     this.cout("on_load");
+
+/*
+    globalStates.interface = interface;
+
+    for (var objectKey in objects) {
+        if (objects[objectKey].visible) {
+            globalDOMCach["iframe" + objectKey].contentWindow.postMessage(JSON.stringify({interface: globalStates.interface}), "*");
+        }
+
+        for (var nodeKey in objects[objectKey].nodes) {
+            if (objects[objectKey].nodes[nodeKey].visible) {
+                globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(JSON.stringify({interface: globalStates.interface}), "*");
+            }
+        }
+    }
+    */
+
 };
 
 /**

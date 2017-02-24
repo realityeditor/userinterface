@@ -308,7 +308,8 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
             globalDOMCach["iframe" + nodeKey].contentWindow.postMessage(
                 JSON.stringify(
                     {
-                        visibility: "visible"
+                        visibility: "visible",
+                        interface: globalStates.interface
                     }), '*');
 
             if (type === "node") {
