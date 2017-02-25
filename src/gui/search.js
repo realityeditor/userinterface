@@ -63,6 +63,19 @@ realityEditor.gui.search.list = {
     gluten: {text:"Gluten free", state: null}
 };
 
+
+
+
+//set item in storage.
+if(typeof localStorage["searchList"] !== "undefined"){
+    var thisSearchList = JSON.parse(localStorage["searchList"]);
+    for(var key in thisSearchList){
+      if(key in realityEditor.gui.search.list){
+          realityEditor.gui.search.list[key].state = thisSearchList[key].state;
+      }
+    }
+}
+
 realityEditor.gui.search.visible = false;
 
 realityEditor.gui.search.switch = function(id, state){
@@ -107,6 +120,7 @@ realityEditor.gui.search.add = function () {
                 that.switch(this.search, null);
             }
             realityEditor.gui.buttons.sendInterfaces("realitySearch");
+            localStorage["searchList"] = JSON.stringify(that.list);
         };
 
         var searchButtonContent = document.createElement('div');
@@ -149,6 +163,8 @@ realityEditor.gui.search.add = function () {
         searchButtonContainer.appendChild(searchButtonText);
 
         document.getElementById("searchDiv").appendChild(searchButtonContainer);
+
+        this.switch(buttonName, this.list[buttonName].state);
     }
 
 };
