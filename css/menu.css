@@ -367,7 +367,17 @@
 
 
 .searchCell {
-    margin-top: 5px; margin-left: 0px;
+    margin-top: 5px; margin-left: 5px;
     height: 34px; width: 160px; -webkit-transform: translateZ(9px);
     display: inline-table; background-color: rgba(0,255,255,0.1);
+}
+
+.searchItem {
+    display: table-cell; width: 33px;
+}
+
+.searchText {
+    display: table-cell; padding-left: 5px; text-align: left; height: 33px; overflow: hidden; vertical-align: middle;
+    font-family: Helvetica Neue, Helvetica, sans-serif; font-size:16px; font-weight: bold;
+
 }
