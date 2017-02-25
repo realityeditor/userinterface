@@ -415,6 +415,13 @@ realityEditor.gui.buttons.realitySearchButtonUp = function (event) {
     realityEditor.gui.menus.buttonOff("reality", ["realityGui", "realityInfo", "realityTag", "realitySearch", "realityWork"]);
     realityEditor.gui.menus.on("reality", ["realitySearch"]);
 
+    if(realityEditor.gui.search.getVisibility()){
+        realityEditor.gui.search.remove();
+    } else
+{
+    realityEditor.gui.search.add();
+}
+
     // Add your functionality here.
 };
 
