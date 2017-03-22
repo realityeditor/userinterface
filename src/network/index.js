@@ -703,7 +703,8 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
             settingsButton : globalStates.settingsButtonState,
             lockingMode: globalStates.lockingMode,
             lockPassword: globalStates.lockPassword,
-            realityState: globalStates.realityState
+            realityState: globalStates.realityState,
+            orientationState : globalStates.orientationState
         }
         }), "*");
     }
@@ -820,6 +821,21 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
                 window.location.href = "of://realityOff";
             }
         }
+        if (typeof msgContent.settings.setSettings.orientationState !== "undefined") {
+            console.log("xxxxxxxxxxx");
+
+            if (msgContent.settings.setSettings.orientationState) {
+                globalStates.orientationState = true;
+                window.location.href = "of://orientationStateOn";
+
+            } else {
+                globalStates.orientationState = false;
+                window.location.href = "of://orientationStateOff";
+            }
+
+        }
+
+
     }
 };
 

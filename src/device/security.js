@@ -77,7 +77,8 @@ realityEditor.device.security.authenticateSessionForUser = function(encryptedId)
             externalState: globalStates.externalState,
             settingsButton : globalStates.settingsButtonState,
             lockingMode: globalStates.lockingMode,
-            lockPassword: globalStates.lockPassword
+            lockPassword: globalStates.lockPassword,
+            orientationState: globalStates.orientationState
         }
         }), "*");
         

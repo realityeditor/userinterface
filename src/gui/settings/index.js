@@ -89,6 +89,7 @@ realityEditor.gui.settings.loadSettingsPost = function () {
             this.states.settingsButton = msg.getSettings.settingsButton;
             this.states.lockingMode = msg.getSettings.lockingMode;
             this.states.lockPassword = msg.getSettings.lockPassword;
+            this.states.lockPassword = msg.getSettings.orientationState;
 
             this.states.realityState = msg.getSettings.realityState;
 
@@ -99,6 +100,7 @@ realityEditor.gui.settings.loadSettingsPost = function () {
             this.setSettings("externalText", this.states.externalState);
             this.setSettings("lockingToggle", this.states.lockingMode);
             this.setSettings("lockText", this.states.lockPassword);
+            this.setSettings("orientationState", this.states.orientationState);
             
             //if (!this.states.lockingMode) {
             //    document.getElementById('lockingToggle').firstChild.style.transform = "translate3d(0px, 0px, 0px);";

@@ -79,6 +79,7 @@ var globalStates = {
 	settingsButtonState: false,
 	extendedTracking: false,
 	currentLogic: null,
+    orientationState: true,
 
 	extendedTrackingState: false,
 	developerState: false,

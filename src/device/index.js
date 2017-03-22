@@ -955,7 +955,7 @@ realityEditor.device.setDeviceName = function(deviceName) {
  * @param externalState
  **/
 
-realityEditor.device.setStates = function (developerState, extendedTrackingState, clearSkyState, instantState, externalState, realityState) {
+realityEditor.device.setStates = function (developerState, extendedTrackingState, clearSkyState, instantState, externalState, realityState, orientationState) {
 
     globalStates.extendedTrackingState = extendedTrackingState;
     globalStates.developerState = developerState;
@@ -963,6 +963,7 @@ realityEditor.device.setStates = function (developerState, extendedTrackingState
     globalStates.instantState = instantState;
     globalStates.externalState = externalState;
     globalStates.realityState = realityState;
+    globalStates.orientationState = orientationState;
 
     if (globalStates.clearSkyState) {
         document.getElementById("UIButtons").classList.add('clearSky');

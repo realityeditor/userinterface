@@ -11,7 +11,8 @@ realityEditor.gui.settings.states = {
     settingsButton:false,
     animationFrameRequested: false,
     setInt : false,
-    realityState: false
+    realityState: false,
+    orientationState: true
 };
 
 realityEditor.gui.settings.objectInterval = null;

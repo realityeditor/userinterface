@@ -54,12 +54,7 @@
     z-index: 20;
 }
 #freezeButton {
-    position: fixed;
-    width: 60px;
-    height: 60px;
-    right: 0px;
-    top: 260px;
-    visibility: hidden;
+
 }
 #freezeButtonDiv {
     position: fixed;
@@ -69,6 +64,14 @@
     top: 260px;
     visibility: hidden;
     z-index: 20;
+}
+#freezeButtonRotation {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 260px;
+    visibility: hidden;
 }
 #settingButton {
     position: fixed;
@@ -105,12 +108,7 @@
     z-index: 20;
 }
 #pocketButton {
-    position: fixed;
-    width: 60px;
-    height: 60px;
-    right: 0px;
-    top: 130px;
-    visibility: hidden;
+
 }
 #pocketButtonDiv {
     position: fixed;
@@ -121,6 +119,15 @@
     visibility: hidden;
     z-index: 20;
 }
+#pocketButtonRotation {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    right: 0px;
+    top: 130px;
+    visibility: hidden;
+}
+
 #logicPocketButton {
     position: fixed;
     width: 60px;
@@ -380,4 +387,21 @@
     display: table-cell; padding-left: 5px; text-align: left; height: 33px; overflow: hidden; vertical-align: middle;
     font-family: Helvetica Neue, Helvetica, sans-serif; font-size:16px; font-weight: bold;
 
+}
+
+.orientationLandscape {
+    -webkit-transform: rotate(0deg);
+}
+
+.orientationLandscapeInvert {
+    -webkit-transform: rotate(180deg);
+}
+
+
+.orientationLeft {
+    right: 0px;
+}
+
+.orientationRight {
+    left:0px;
 }
