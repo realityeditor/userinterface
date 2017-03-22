@@ -127,69 +127,98 @@
         </div>
     </div>
 
-<!-- This is the Interface frontend GUI part -->
+<canvas class="Canvas" id="canvas" touch-action="none"></canvas>
 
-<div class='Interfaces' id="UIButtons">
-    <div id="backButtonDiv"></div>
-    <svg id="backButton">
-        <path class="blue" d="M60,125H0V0h60V125z M58.1,1.9H1.8v121.3h56.3V1.9z"/>
-        <path class="blue" d="M46.7,52.4v25.4c0,2.1-1.7,3.9-3.9,3.9H17.4c-2.1,0-3.9-1.7-3.9-3.9V65.2h1.9v12.6c0,1.1,0.9,2,2,2h25.4
+<div class='Interfaces' id="overlay"></div>
+
+<div id="orientationRotation" style="position: fixed; left: 0px; bottom: 0px; right: 0px; top: 0px; visibility: hidden">
+
+
+    <!-- This is the Interface frontend GUI part -->
+
+    <div class='memoryBackground' style="visibility: visible"></div>
+
+    <div class="memoryPointerContainer" style="visibility: visible">
+    </div>
+
+    <div class="memoryDragContainer" style="visibility: visible">
+    </div>
+
+
+
+    <div class="pocket" style="visibility: visible">
+        <div class='memoryBar' style="visibility: visible">
+        </div>
+        <div class="palette" style="visibility: visible">
+        </div>
+    </div>
+
+
+    <iframe src="src/gui/settings/index.html" id="settingsIframe" frameborder="0" style="background-color: #222222; position: absolute; left: 0px; top: 0px; bottom: 0px; right: 0px; height: 100%; width: 100%; -webkit-transform: translateZ(9px); display: none; visibility: visible;" ></iframe>
+    <div id= "searchDiv" style="position: absolute; left: 0px; bottom: 0px; right: 65px; height: 121px; -webkit-transform: translateZ(9px); display: none; visibility: visible; border: solid #01fffc 2px"></div>
+
+    <!-- UI BUTTONS  - START -->
+    <div class='Interfaces' id="UIButtons">
+        <div id="backButtonDiv"></div>
+        <svg id="backButton">
+            <path class="blue" d="M60,125H0V0h60V125z M58.1,1.9H1.8v121.3h56.3V1.9z"/>
+            <path class="blue" d="M46.7,52.4v25.4c0,2.1-1.7,3.9-3.9,3.9H17.4c-2.1,0-3.9-1.7-3.9-3.9V65.2h1.9v12.6c0,1.1,0.9,2,2,2h25.4
                     c1.1,0,2-0.9,2-2V52.4c0-1.1-0.9-2-2-2H16.6l9.4,9.4l-1.3,1.4L12.9,49.5l11.7-11.7l1.3,1.4l-9.4,9.4h26.2
                     C44.9,48.5,46.7,50.3,46.7,52.4z"/>
-        <rect id="bg" class="blue inactive" width="60" height="125"/>
-    </svg>
-    <div id="bigPocketButtonDiv"></div>
-    <svg id="bigPocketButton">
-        <rect id="bg" class="green inactive" width="60" height="320"/>
-        <path class="green" d="M60,320H0V0h60V320z M58.1,1.9H1.8v316.3h56.3V1.9z"/>
-        <path class="green" d="M30,149.2c1.7,0,3.1,1.4,3.1,3.1c0,1.7-1.4,3.1-3.1,3.1s-3.1-1.4-3.1-3.1C26.9,150.6,28.3,149.2,30,149.2
+            <rect id="bg" class="blue inactive" width="60" height="125"/>
+        </svg>
+        <div id="bigPocketButtonDiv"></div>
+        <svg id="bigPocketButton">
+            <rect id="bg" class="green inactive" width="60" height="320"/>
+            <path class="green" d="M60,320H0V0h60V320z M58.1,1.9H1.8v316.3h56.3V1.9z"/>
+            <path class="green" d="M30,149.2c1.7,0,3.1,1.4,3.1,3.1c0,1.7-1.4,3.1-3.1,3.1s-3.1-1.4-3.1-3.1C26.9,150.6,28.3,149.2,30,149.2
                    L30,149.2z M30,148c-2.4,0-4.4,1.9-4.4,4.4c0,2.4,1.9,4.4,4.4,4.4c2.4,0,4.4-1.9,4.4-4.4C34.3,149.9,32.4,148,30,148L30,148z"/>
-        <path class="green" d="M11.7,142v30c0,1.5,0.9,2.9,2.4,3.5l13.1,4.9c0.8,0.3,1.7,0.5,2.6,0.5s1.7-0.2,2.6-0.5l13.4-5
+            <path class="green" d="M11.7,142v30c0,1.5,0.9,2.9,2.4,3.5l13.1,4.9c0.8,0.3,1.7,0.5,2.6,0.5s1.7-0.2,2.6-0.5l13.4-5
                    c1.5-0.5,2.4-1.9,2.4-3.5v-30H11.7V142z M13.6,143.9h32.8v8c0,0.8-0.5,1.5-1.2,1.7l-13.4,5c-0.6,0.2-1.3,0.3-1.9,0.3
                    c-0.7,0-1.3-0.1-2-0.4l-13.1-4.9c-0.7-0.3-1.2-1-1.2-1.7C13.6,151.9,13.6,143.9,13.6,143.9z M46.4,172c0,0.8-0.5,1.5-1.2,1.7
                    l-13.4,5c-0.6,0.2-1.3,0.3-1.9,0.3c-0.7,0-1.3-0.1-2-0.4l-13.1-4.9c-0.7-0.3-1.2-1-1.2-1.7v-16.9c0.2,0.1,0.3,0.2,0.5,0.2l13.1,4.9
                    c0.8,0.3,1.7,0.5,2.6,0.5s1.7-0.2,2.6-0.5l13.4-5c0.2-0.1,0.4-0.2,0.6-0.3V172z"/>
-    </svg>
-    <div id="bigTrashButtonDiv"></div>
-    <svg id="bigTrashButton">
-        <path class="red" d="M60,320H0V0h60V320z M58.1,1.9H1.9v316.3h56.3V1.9H58.1z"/>
-        <path id="trash" class="red" d="M35.8,142.2v-3.4H24.5v3.4H11.7v9.9h3v29h30.5v-29h3v-9.9H35.8z M26.4,140.6H34v1.6h-7.6V140.6z
+        </svg>
+        <div id="bigTrashButtonDiv"></div>
+        <svg id="bigTrashButton">
+            <path class="red" d="M60,320H0V0h60V320z M58.1,1.9H1.9v316.3h56.3V1.9H58.1z"/>
+            <path id="trash" class="red" d="M35.8,142.2v-3.4H24.5v3.4H11.7v9.9h3v29h30.5v-29h3v-9.9H35.8z M26.4,140.6H34v1.6h-7.6V140.6z
                   M43.4,179.4H16.6v-27.2h26.8V179.4z M46.4,150.3H13.6v-6.2h32.8V150.3z"/>
-        <rect x="22.4" y="155.9" class="red" width="1.9" height="19"/>
-        <rect x="29" y="155.9" class="red" width="1.9" height="19"/>
-        <rect x="35.9" y="155.9" class="red" width="1.9" height="19"/>
-        <rect id="bg" class="red inactive" width="60" height="320"/>
-    </svg>
-    <div id="freezeButtonDiv"></div>
-    <div id="freezeButtonRotation">
-    <svg id="freezeButton">
-        <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.8v56.3h56.3V1.9z"/>
-        <path class="blue" d="M16.5,47.5h-9v-35h8.9v35H16.5z M9.4,45.7h5.2V14.3H9.4V45.7z"/>
-        <path class="blue" d="M52.4,47.5h-8.9v-35h8.9V47.5z M45.4,45.7h5.2V14.3h-5.2V45.7z"/>
-        <path class="blue" d="M40.8,22.7l-10.4-5.3l0,0L30,17.2l-0.4,0.2l-1.4,0.7l-9.5,4.8v13.8l0.4,0.3l1.9,1l9.1,5.5l0.5-0.3l10.3-6.3
+            <rect x="22.4" y="155.9" class="red" width="1.9" height="19"/>
+            <rect x="29" y="155.9" class="red" width="1.9" height="19"/>
+            <rect x="35.9" y="155.9" class="red" width="1.9" height="19"/>
+            <rect id="bg" class="red inactive" width="60" height="320"/>
+        </svg>
+        <div id="freezeButtonDiv"></div>
+        <div id="freezeButtonRotation">
+            <svg id="freezeButton">
+                <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.8v56.3h56.3V1.9z"/>
+                <path class="blue" d="M16.5,47.5h-9v-35h8.9v35H16.5z M9.4,45.7h5.2V14.3H9.4V45.7z"/>
+                <path class="blue" d="M52.4,47.5h-8.9v-35h8.9V47.5z M45.4,45.7h5.2V14.3h-5.2V45.7z"/>
+                <path class="blue" d="M40.8,22.7l-10.4-5.3l0,0L30,17.2l-0.4,0.2l-1.4,0.7l-9.5,4.8v13.8l0.4,0.3l1.9,1l9.1,5.5l0.5-0.3l10.3-6.3
                     l0.4-0.3V22.9L40.8,22.7z M30,19.3l8.4,4.3h0.1l0,0l-8.4,5.2l0,0H30l-8.5-5.1l0,0L30,19.3z M20.6,35.6V25.1l8.5,5.2h0.1v10.5h-0.1
                     l0,0L20.6,35.6z M39.4,35.6L31,40.8l0,0h-0.1V30.3H31l8.4-5.2V35.6z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    </div>
-    <div id="logicPocketButtonDiv"></div>
-    <svg id="logicPocketButton">
-        <path class="green" d="M35.9,15.3c-2.1,0-3.9,1.7-3.9,3.9c0,1,0.4,2,1.1,2.7l0,0c0.7,0.7,1.6,1.1,2.7,1.1h0.1l0,0
+                <rect id="bg" class="blue inactive" width="60" height="60"/>
+            </svg>
+        </div>
+        <div id="logicPocketButtonDiv"></div>
+        <svg id="logicPocketButton">
+            <path class="green" d="M35.9,15.3c-2.1,0-3.9,1.7-3.9,3.9c0,1,0.4,2,1.1,2.7l0,0c0.7,0.7,1.6,1.1,2.7,1.1h0.1l0,0
                     c2.1,0,3.7-1.8,3.7-3.8C39.8,17.1,38,15.3,35.9,15.3z M35.9,21.1c-1,0-1.9-0.9-1.9-1.9c0-1.1,0.9-1.9,1.9-1.9c1.1,0,1.9,0.9,1.9,1.9
                     C37.8,20.3,37,21.1,35.9,21.1z"/>
-        <path class="green" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9H58.1z"/>
-        <path class="green" d="M19.7,10v11.7c-5.2,0-9.4,4.2-9.4,9.5v11.4c0,5.2,4.2,9.5,9.4,9.5h11.4c5,0,9-3.9,9.4-8.8l8.9-3.3
+            <path class="green" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9H58.1z"/>
+            <path class="green" d="M19.7,10v11.7c-5.2,0-9.4,4.2-9.4,9.5v11.4c0,5.2,4.2,9.5,9.4,9.5h11.4c5,0,9-3.9,9.4-8.8l8.9-3.3
                     c1.6-0.6,2.7-1.9,2.7-3.5V10H19.7z M31.1,50.3H19.7c-4.2,0-7.6-3.4-7.6-7.7V31.2c0-4.2,3.4-7.7,7.6-7.7V37c0,1.3,0.8,2.4,2.2,2.9
                     l11.7,4.4c0.7,0.2,1.4,0.4,2.2,0.4c0.7,0,1.5-0.2,2.2-0.4l0.7-0.3C38,47.6,34.9,50.3,31.1,50.3z M50.1,36.6c0,0.7-0.5,1.3-1.4,1.6
                     l-8.2,3l-1.8,0.7l-1.5,0.6c-1,0.3-2.1,0.3-3,0L22.6,38c-0.5-0.2-0.9-0.6-0.9-1V21.8c0.1,0,0.1,0.1,0.2,0.1l4.1,1.5l7.6,2.8
                     c0.7,0.2,1.4,0.4,2.2,0.4c0.5,0,1,0,1.5-0.2c0.2-0.1,0.5-0.1,0.7-0.2l1.1-0.4L49.5,22c0.2-0.1,0.5-0.2,0.7-0.3v14.9H50.1z
                      M50.2,18.7c0,0.1,0,0.2,0,0.2c-0.1,0.6-0.6,1.1-1.4,1.4l-11.1,4.1l-0.4,0.2c-0.6,0.2-1.3,0.3-2,0.2c-0.4,0-0.7-0.1-1-0.2l-2.6-1
                     l-4.9-1.8l-4.2-1.6c-0.6-0.2-0.9-0.6-0.9-1V12h28.5C50.2,12,50.2,18.7,50.2,18.7z"/>
-        <rect id="bg" class="green inactive" width="60" height="60"/>
-    </svg>
-    <div id="logicSettingButtonDiv"></div>
-    <svg id="logicSettingButton">
-        <path class="blue" d="M51.2,25.9c-2.4-1.4-2.5-3.1-0.2-4.6c2.1-1.4,1.3-2.9,0.6-4.6c-0.7-1.6-1.6-3-3.6-2.1c-1.6,0.6-2.6,0-3.4-1.2
+            <rect id="bg" class="green inactive" width="60" height="60"/>
+        </svg>
+        <div id="logicSettingButtonDiv"></div>
+        <svg id="logicSettingButton">
+            <path class="blue" d="M51.2,25.9c-2.4-1.4-2.5-3.1-0.2-4.6c2.1-1.4,1.3-2.9,0.6-4.6c-0.7-1.6-1.6-3-3.6-2.1c-1.6,0.6-2.6,0-3.4-1.2
                     c-0.6-0.8,0.4-1.7,0.1-2.5c0.3-2.8-2-2.7-3.6-3.4s-2.6,0-3.5,1.3C36.2,11,34.4,11.1,33,9c-1.3-1.9-2.7-1.5-4.4-0.7
                     c-1.7,0.8-3.1,1.6-2.4,3.9c0.7,2.4-0.6,3.8-3,3.2c-1.9-0.5-2.9,0.2-3.5,2c-0.6,1.8-1.8,3.5,0.7,4.9h-2.7c-5.2,0-9.4,4.3-9.4,9.5
                     v11.4c0,5.2,4.2,9.5,9.4,9.5h11.4c5.2,0,9.4-4.3,9.4-9.5v-3.9c1.3,2,2.8,1.4,4.4,0.6c1.6-0.7,3-1.5,2.3-3.8
@@ -202,61 +231,61 @@
                     c-0.8-0.5-1.2-0.9-0.7-1.9c0.5-0.8,0.3-2,1.9-1.8c3.9,0.4,5.9-1.7,5-5.4c-0.3-1.1,0.2-1.5,1-1.7c0.8-0.3,1.5-1.2,2.5,0
                     c2.6,3.2,5.1,3,7.7-0.4c0.9-1.1,1.6-0.2,2.3-0.1c0.7,0.2,1.5,0.4,1.3,1.6c-0.5,4,1.5,6,5.4,5.2c1.3-0.3,1.4,0.4,1.7,1.1
                     c0.4,0.8,1,1.5-0.2,2.5c-3,2.4-2.9,5.4,0.2,7.4C51.2,28.2,50.5,28.9,50.2,29.7z"/>
-        <path class="blue" d="M35.7,16.5c-3.7,0-6.7,2.5-7.4,5.9c-0.1,0.6-0.2,1.2-0.2,1.8l0,0c0.1,4.3,3.4,7.6,7.6,7.6c0.3,0,0.7,0,1-0.1
+            <path class="blue" d="M35.7,16.5c-3.7,0-6.7,2.5-7.4,5.9c-0.1,0.6-0.2,1.2-0.2,1.8l0,0c0.1,4.3,3.4,7.6,7.6,7.6c0.3,0,0.7,0,1-0.1
                     c0.6-0.1,1.2-0.2,1.8-0.4c2.9-1.1,4.9-3.9,4.9-7.2C43.4,19.8,40.1,16.4,35.7,16.5z M35.6,29.9c-3.1-0.1-5.5-2.5-5.6-5.7
                     c3.1,0.4,5.7,2.6,6.5,5.6C36.2,29.9,35.9,29.9,35.6,29.9z M38.2,29.4c-1-3.7-4.1-6.5-8-7c0.7-2.5,2.9-4.2,5.7-4.1
                     c3.2,0.1,5.6,2.6,5.6,5.9C41.5,26.6,40.2,28.5,38.2,29.4z"/>
-        <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9H58.1z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    <div id="guiButtonDiv"></div>
-    <div id="logicButtonDiv"></div>
-    <svg id="mainButton">
-        <path class="blue" d="M47.4,48.7H12.5V10.8h34.9V48.7z M14.4,46.9h31.2V12.6H14.4V46.9z"/>
-        <rect x="19.9" y="17.2" class="blue" width="20.1" height="1.8"/>
-        <rect x="19.9" y="35.4" class="blue" width="20.1" height="1.8"/>
-        <rect x="19.9" y="23.2" class="blue" width="20.1" height="1.8"/>
-        <rect x="19.9" y="28.8" class="blue" width="20.1" height="1.8"/>
-        <rect x="19.9" y="41.5" class="blue" width="20.1" height="1.8"/>
-        <path id="test" class="blue" d="M43.4,90.8c-2.3,0-4.4,0.9-6,2.3l-6.7-6c1.1-1.5,1.7-3.3,1.7-5.2c0-4.9-4-8.9-8.9-8.9s-9,4-9,8.9
+            <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9H58.1z"/>
+            <rect id="bg" class="blue inactive" width="60" height="60"/>
+        </svg>
+        <div id="guiButtonDiv"></div>
+        <div id="logicButtonDiv"></div>
+        <svg id="mainButton">
+            <path class="blue" d="M47.4,48.7H12.5V10.8h34.9V48.7z M14.4,46.9h31.2V12.6H14.4V46.9z"/>
+            <rect x="19.9" y="17.2" class="blue" width="20.1" height="1.8"/>
+            <rect x="19.9" y="35.4" class="blue" width="20.1" height="1.8"/>
+            <rect x="19.9" y="23.2" class="blue" width="20.1" height="1.8"/>
+            <rect x="19.9" y="28.8" class="blue" width="20.1" height="1.8"/>
+            <rect x="19.9" y="41.5" class="blue" width="20.1" height="1.8"/>
+            <path id="test" class="blue" d="M43.4,90.8c-2.3,0-4.4,0.9-6,2.3l-6.7-6c1.1-1.5,1.7-3.3,1.7-5.2c0-4.9-4-8.9-8.9-8.9s-9,4-9,8.9
                     c0,4.2,3,7.8,7,8.7l-0.3,8.3c-4.8,0.1-8.8,4-8.8,8.9s4,8.9,8.9,8.9s9-4,9-8.9c0-4.3-3.1-7.9-7.3-8.7l0.3-8.2h0.1
                     c2.3,0,4.4-0.9,6-2.3l6.7,6.1c-1.1,1.5-1.7,3.3-1.7,5.2c0,4.9,4,8.9,8.9,8.9s8.9-4,8.9-8.9C52.3,94.8,48.3,90.8,43.4,90.8z
                      M28.6,107.6c0,3.9-3.2,7-7.1,7s-7.1-3.2-7.1-7s3.2-7,7.1-7S28.6,103.8,28.6,107.6z M23.5,88.9c-3.9,0-7.1-3.2-7.1-7
                     c0-3.9,3.2-7,7.1-7s7.1,3.2,7.1,7C30.6,85.7,27.4,88.9,23.5,88.9z M43.4,106.7c-3.9,0-7.1-3.2-7.1-7s3.2-7,7.1-7s7.1,3.2,7.1,7
                     S47.3,106.7,43.4,106.7z"/>
-        <path class="blue" d="M1.9,63.5L1.9,63.5h56.3l0,0H1.9z"/>
-        <path class="blue" d="M0,0v125h60V63.5l0,0V0H0z M1.9,1.8h56.3v59.8H1.9V1.8z M58.1,123.2H1.9V63.5h56.3v59.7H58.1z"/>
-        <rect id="bg0" class="blue inactive" width="60" height="62.5"/>
-        <rect id="bg1" x="1.9" y="62.5" class="blue inactive" width="56.3" height="60.7"/>
-    </svg>
-    <div id="pocketButtonDiv"></div>
-    <div id="pocketButtonRotation">
-    <svg id="pocketButton">
-        <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.8v56.3h56.3V1.9z"/>
-        <path class="blue" d="M30,19.2c1.7,0,3.1,1.4,3.1,3.1s-1.4,3.1-3.1,3.1s-3.1-1.4-3.1-3.1S28.3,19.2,30,19.2 M30,18
+            <path class="blue" d="M1.9,63.5L1.9,63.5h56.3l0,0H1.9z"/>
+            <path class="blue" d="M0,0v125h60V63.5l0,0V0H0z M1.9,1.8h56.3v59.8H1.9V1.8z M58.1,123.2H1.9V63.5h56.3v59.7H58.1z"/>
+            <rect id="bg0" class="blue inactive" width="60" height="62.5"/>
+            <rect id="bg1" x="1.9" y="62.5" class="blue inactive" width="56.3" height="60.7"/>
+        </svg>
+        <div id="pocketButtonDiv"></div>
+        <div id="pocketButtonRotation">
+            <svg id="pocketButton">
+                <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.8v56.3h56.3V1.9z"/>
+                <path class="blue" d="M30,19.2c1.7,0,3.1,1.4,3.1,3.1s-1.4,3.1-3.1,3.1s-3.1-1.4-3.1-3.1S28.3,19.2,30,19.2 M30,18
                     c-2.4,0-4.4,1.9-4.4,4.4c0,2.4,1.9,4.4,4.4,4.4c2.4,0,4.4-1.9,4.4-4.4C34.3,19.9,32.4,18,30,18L30,18z"/>
-        <path class="blue" d="M11.7,12v30c0,1.5,1,2.9,2.4,3.5l13.1,4.9c0.8,0.3,1.7,0.5,2.6,0.5s1.7-0.2,2.6-0.5l13.4-5
+                <path class="blue" d="M11.7,12v30c0,1.5,1,2.9,2.4,3.5l13.1,4.9c0.8,0.3,1.7,0.5,2.6,0.5s1.7-0.2,2.6-0.5l13.4-5
                     c1.4-0.5,2.4-1.9,2.4-3.5V12H11.7z M13.6,13.9h32.8v8c0,0.8-0.5,1.5-1.2,1.7l-13.4,5c-0.6,0.2-1.3,0.3-1.9,0.3c-0.7,0-1.3-0.1-2-0.4
                     l-13.1-4.9c-0.7-0.3-1.2-1-1.2-1.7C13.6,21.9,13.6,13.9,13.6,13.9z M46.4,42c0,0.8-0.5,1.5-1.2,1.7l-13.4,5
                     c-0.6,0.2-1.3,0.3-1.9,0.3c-0.7,0-1.3-0.1-2-0.4l-13.1-4.9c-0.7-0.3-1.2-1-1.2-1.7V25.1c0.2,0.1,0.3,0.2,0.5,0.2l13.1,4.9
                     c0.8,0.3,1.7,0.5,2.6,0.5s1.7-0.2,2.6-0.5l13.4-5c0.2-0.1,0.4-0.2,0.6-0.3V42z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    </div>
-    <div id="resetButtonDiv"></div>
-    <svg id="resetButton">
-        <path class="blue" d="M35,47.4c-1.8,0.5-3.6,0.8-5.4,0.8c-7.8,0-15.1-5.1-17.5-12.9c-2.7-8.8,1.6-18.2,9.9-22l0.8,1.7
+                <rect id="bg" class="blue inactive" width="60" height="60"/>
+            </svg>
+        </div>
+        <div id="resetButtonDiv"></div>
+        <svg id="resetButton">
+            <path class="blue" d="M35,47.4c-1.8,0.5-3.6,0.8-5.4,0.8c-7.8,0-15.1-5.1-17.5-12.9c-2.7-8.8,1.6-18.2,9.9-22l0.8,1.7
                     c-7.5,3.4-11.3,11.9-8.8,19.7c2.6,8.6,11.8,13.5,20.5,10.8C43.1,43,48,33.8,45.3,25.1c-1.6-5.2-5.7-9.2-10.8-10.8L34.3,18l-8-5
                     l8.4-4.4l-0.1,3.8c6,1.7,10.7,6.3,12.6,12.2C50.1,34.2,44.7,44.5,35,47.4z"/>
-        <rect x="28.6" y="19.6" class="blue" width="1.9" height="17"/>
-        <rect x="28.6" y="38.7" class="blue" width="1.9" height="2.5"/>
-        <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9H58.1z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    <div id="settingButtonDiv"></div>
-    <svg id="settingButton">
-        <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.8v56.3h56.3V1.9z"/>
-        <path class="blue" d="M35.2,12.6c0.1,0,0.3,0,0.6,0.2c0.5,0.2,1,0.4,1.5,0.5c1.6,0.5,1.6,0.6,1.5,1.4v0.4l0.1,0.2
+            <rect x="28.6" y="19.6" class="blue" width="1.9" height="17"/>
+            <rect x="28.6" y="38.7" class="blue" width="1.9" height="2.5"/>
+            <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9H58.1z"/>
+            <rect id="bg" class="blue inactive" width="60" height="60"/>
+        </svg>
+        <div id="settingButtonDiv"></div>
+        <svg id="settingButton">
+            <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.8v56.3h56.3V1.9z"/>
+            <path class="blue" d="M35.2,12.6c0.1,0,0.3,0,0.6,0.2c0.5,0.2,1,0.4,1.5,0.5c1.6,0.5,1.6,0.6,1.5,1.4v0.4l0.1,0.2
                     c0,0.1-0.1,0.2-0.1,0.3c-0.2,0.7-0.7,2,0.3,3.4c1.2,1.6,2.6,2.4,4.1,2.4c0.7,0,1.3-0.1,2-0.4c0.3-0.1,0.5-0.2,0.6-0.2
                     c0.2,0,0.6,0.5,1.1,1.6l0.1,0.2c0.9,2,0.8,2.1-0.1,2.6c-2.3,1.5-2.8,3.2-2.7,4.3c0,1.1,0.6,2.8,3,4.2c0.8,0.5,0.9,0.5,0.3,2.2
                     c-0.1,0.3-0.3,0.7-0.4,1.1c-0.4,1.2-0.8,1.2-1.2,1.2c-0.2,0-0.4,0-0.6-0.1c-0.5-0.1-1-0.2-1.5-0.2c-1.6,0-2.9,0.6-3.7,1.7
@@ -275,83 +304,85 @@
                     c1.5,0,2.5-0.9,3-2.6c0.6-2,1.9-3.9-0.7-5.5c-2.7-1.6-2.8-3.6-0.2-5.3c2.4-1.6,1.5-3.3,0.6-5.2c-0.7-1.5-1.4-2.7-2.8-2.7
                     c-0.4,0-0.8,0.1-1.3,0.3c-0.5,0.2-0.9,0.3-1.3,0.3c-1.1,0-1.9-0.7-2.6-1.6c-0.7-1,0.4-1.9,0.1-2.9c0.3-3.2-2.3-3.1-4.1-3.9
                     C36.1,10.8,35.6,10.7,35.2,10.7L35.2,10.7z"/>
-        <path class="blue" d="M30.6,23.1c3.9,0,6.9,2.9,6.9,6.8c0,1.9-0.7,3.6-2,4.9c-1.3,1.3-3,2-4.9,2c-3.8,0-6.8-2.9-6.8-6.8
+            <path class="blue" d="M30.6,23.1c3.9,0,6.9,2.9,6.9,6.8c0,1.9-0.7,3.6-2,4.9c-1.3,1.3-3,2-4.9,2c-3.8,0-6.8-2.9-6.8-6.8
                     c0-1.9,0.6-3.6,1.9-4.9C26.9,23.9,28.6,23.2,30.6,23.1L30.6,23.1 M30.6,21.2C30.6,21.2,30.5,21.2,30.6,21.2c-5.1,0-8.9,3.9-8.8,8.9
                     c0.1,4.9,3.9,8.6,8.7,8.6l0,0c4.9,0,8.8-3.8,8.8-8.8C39.4,25.1,35.5,21.2,30.6,21.2L30.6,21.2z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    <div id="unconstrainedButtonDiv"></div>
-    <svg id="unconstrainedButton">
-        <path class="blue" d="M38.7,34.8L38.7,34.8l-8.3,5.1l0,0l0,0l0,0L38.7,34.8L38.7,34.8L38.7,34.8z M29.4,52L29.4,52l0.1-10.4h-0.1V52z
+            <rect id="bg" class="blue inactive" width="60" height="60"/>
+        </svg>
+        <div id="unconstrainedButtonDiv"></div>
+        <svg id="unconstrainedButton">
+            <path class="blue" d="M38.7,34.8L38.7,34.8l-8.3,5.1l0,0l0,0l0,0L38.7,34.8L38.7,34.8L38.7,34.8z M29.4,52L29.4,52l0.1-10.4h-0.1V52z
                 "/>
-        <path class="blue" d="M31.3,41.6V52h0.1L31.3,41.6L31.3,41.6z M21.9,34.8L21.9,34.8l8.4,5.1l0,0l0,0l0,0L21.9,34.8z M29.4,52L29.4,52
+            <path class="blue" d="M31.3,41.6V52h0.1L31.3,41.6L31.3,41.6z M21.9,34.8L21.9,34.8l8.4,5.1l0,0l0,0l0,0L21.9,34.8z M29.4,52L29.4,52
                     l-8.5-5.2L29.4,52z"/>
-        <path class="blue" d="M33.2,29.9l7.9,4l0,0L33.2,29.9z M31.3,41.6L31.3,41.6L31.3,41.6l8.4-5.1v-0.1L31.3,41.6L31.3,41.6z M21.9,34.8
+            <path class="blue" d="M33.2,29.9l7.9,4l0,0L33.2,29.9z M31.3,41.6L31.3,41.6L31.3,41.6l8.4-5.1v-0.1L31.3,41.6L31.3,41.6z M21.9,34.8
                     l8.4-4.2L21.9,34.8L21.9,34.8z M20.9,36.4L20.9,36.4l8.5,5.2h0.1l0,0h-0.1L20.9,36.4z"/>
-        <path class="blue" d="M29.9,26.6l-16.3-9.9l0.1-1.7l16.2-8.2h0.9L46.9,15l0.1,1.7l-16.1,9.9H29.9z M16.1,16l14.3,8.7L44.6,16
+            <path class="blue" d="M29.9,26.6l-16.3-9.9l0.1-1.7l16.2-8.2h0.9L46.9,15l0.1,1.7l-16.1,9.9H29.9z M16.1,16l14.3,8.7L44.6,16
                     L30.3,8.8L16.1,16z"/>
-        <path class="blue" d="M38.7,34.8l-8.4-4.2L38.7,34.8L38.7,34.8L38.7,34.8L38.7,34.8z"/>
-        <path class="blue" d="M41.1,33.9l-7.9-4l-2.4-1.2l-0.4-0.2L30,28.7l-11,5.4v13.8l0.5,0.3l0.8,0.5l10.1,6.2l0.5-0.3l10.3-6.3l0.5-0.3
+            <path class="blue" d="M38.7,34.8l-8.4-4.2L38.7,34.8L38.7,34.8L38.7,34.8L38.7,34.8z"/>
+            <path class="blue" d="M41.1,33.9l-7.9-4l-2.4-1.2l-0.4-0.2L30,28.7l-11,5.4v13.8l0.5,0.3l0.8,0.5l10.1,6.2l0.5-0.3l10.3-6.3l0.5-0.3
                     V34.1L41.1,33.9z M30.3,30.5L30.3,30.5l8.4,4.2l0,0l0,0L30.4,40l0,0l0,0L22,34.9l0,0l0,0L30.3,30.5z M20.9,36.4l8.5,5.1h0.1V52h-0.1
                     l0,0l-8.5-5.2V36.4z M39.7,46.9L31.3,52l0,0h-0.1V41.6h0.1l8.3-5.1v10.4H39.7z"/>
-        <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9H58.1z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    <div id="unlockButtonDiv"></div>
-    <svg id="unlockButton">
-        <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9z"/>
-        <path class="blue" d="M40.3,31.2V19.4c0-2.8-1.1-5.4-3-7.3c-2-2-4.5-3-7.3-3c-5.7,0-10.3,4.6-10.3,10.3V24h1.9v-4.6
+            <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9H58.1z"/>
+            <rect id="bg" class="blue inactive" width="60" height="60"/>
+        </svg>
+        <div id="unlockButtonDiv"></div>
+        <svg id="unlockButton">
+            <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9z"/>
+            <path class="blue" d="M40.3,31.2V19.4c0-2.8-1.1-5.4-3-7.3c-2-2-4.5-3-7.3-3c-5.7,0-10.3,4.6-10.3,10.3V24h1.9v-4.6
 	                c0-4.7,3.8-8.5,8.5-8.5c2.3,0,4.4,0.9,6,2.5c1.6,1.6,2.5,3.7,2.5,6v11.8h-23V51h29.1V31.2H40.3z M42.7,49.1H17.3V33h25.4V49.1z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    <div id="halflockButtonDiv"></div>
-    <svg id="halflockButton">
-        <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9z"/>
-        <path class="blue" d="M40.3,31.2V19.4c0-2.8-1.1-5.4-3-7.3c-2-2-4.5-3-7.3-3c-5.7,0-10.3,4.6-10.3,10.3V24h1.9v-4.6
+            <rect id="bg" class="blue inactive" width="60" height="60"/>
+        </svg>
+        <div id="halflockButtonDiv"></div>
+        <svg id="halflockButton">
+            <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9z"/>
+            <path class="blue" d="M40.3,31.2V19.4c0-2.8-1.1-5.4-3-7.3c-2-2-4.5-3-7.3-3c-5.7,0-10.3,4.6-10.3,10.3V24h1.9v-4.6
 	                c0-4.7,3.8-8.5,8.5-8.5c2.3,0,4.4,0.9,6,2.5c1.6,1.6,2.5,3.7,2.5,6v11.8h-23V51h29.1V31.2H40.3z M42.7,49.1H17.3V33h25.4V49.1z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    <div id="lockButtonDiv"></div>
-    <svg id="lockButton">
-        <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9z"/>
-        <path class="blue" d="M40.3,28.7v-6.8c0-2.8-1.1-5.4-3-7.3c-2-1.9-4.5-3-7.3-3c-5.7,0-10.3,4.6-10.3,10.3v6.8h-4.2v19.8h29.1V28.7
+            <rect id="bg" class="blue inactive" width="60" height="60"/>
+        </svg>
+        <div id="lockButtonDiv"></div>
+        <svg id="lockButton">
+            <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9z"/>
+            <path class="blue" d="M40.3,28.7v-6.8c0-2.8-1.1-5.4-3-7.3c-2-1.9-4.5-3-7.3-3c-5.7,0-10.3,4.6-10.3,10.3v6.8h-4.2v19.8h29.1V28.7
 	                H40.3z M21.5,21.9c0-4.7,3.8-8.5,8.5-8.5c2.3,0,4.4,0.9,6,2.5c1.6,1.6,2.5,3.7,2.5,6v6.8h-17V21.9z M42.7,46.6H17.3V30.5h25.4V46.6z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    <!-- Reality UI - Start -->
-    <div id="realityGuiButtonDiv"></div>
-    <svg id="realityGuiButton">
-        <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9z"/>
-        <path class="blue" d="M47.4,48.7H12.5V10.8h34.9V48.7z M14.4,46.9h31.2V12.6H14.4V46.9z"/>
-        <rect x="19.9" y="17.2" class="blue" width="20.1" height="1.8"/>
-        <rect x="19.9" y="35.4" class="blue" width="20.1" height="1.8"/>
-        <rect x="19.9" y="23.2" class="blue" width="20.1" height="1.8"/>
-        <rect x="19.9" y="28.8" class="blue" width="20.1" height="1.8"/>
-        <rect x="19.9" y="41.5" class="blue" width="20.1" height="1.8"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    <div id="realityInfoButtonDiv"></div>
-    <svg id="realityInfoButton">
-        <rect x="24.4" y="40.9" class="blue" width="11.2" height="1.8"/>
-        <rect x="27.7" y="49.1" class="blue" width="4.6" height="1.8"/>
-        <path class="blue" d="M0,0v60h60V0H0z M58.1,58.2H1.9V1.9h56.3V58.2z"/>
-        <rect x="24.4" y="44.9" class="blue" width="11.2" height="1.8"/>
-        <path class="blue" d="M30,9.1c-7.6,0-13.8,6.2-13.8,13.8c0,3.2,1.3,6.4,3.9,9.6c1.5,1.9,2.7,3.7,3.5,5.5l0.2,0.5h12.4l0.2-0.5
+            <rect id="bg" class="blue inactive" width="60" height="60"/>
+        </svg>
+        <!-- Reality UI - Start -->
+        <div id="realityGuiButtonDiv"></div>
+        <svg id="realityGuiButton">
+            <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9z"/>
+            <path class="blue" d="M47.4,48.7H12.5V10.8h34.9V48.7z M14.4,46.9h31.2V12.6H14.4V46.9z"/>
+            <rect x="19.9" y="17.2" class="blue" width="20.1" height="1.8"/>
+            <rect x="19.9" y="35.4" class="blue" width="20.1" height="1.8"/>
+            <rect x="19.9" y="23.2" class="blue" width="20.1" height="1.8"/>
+            <rect x="19.9" y="28.8" class="blue" width="20.1" height="1.8"/>
+            <rect x="19.9" y="41.5" class="blue" width="20.1" height="1.8"/>
+            <rect id="bg" class="blue inactive" width="60" height="60"/>
+        </svg>
+        <div id="realityInfoButtonDiv"></div>
+        <div id="realityInfoButtonRotation">
+        <svg id="realityInfoButton">
+            <rect x="24.4" y="40.9" class="blue" width="11.2" height="1.8"/>
+            <rect x="27.7" y="49.1" class="blue" width="4.6" height="1.8"/>
+            <path class="blue" d="M0,0v60h60V0H0z M58.1,58.2H1.9V1.9h56.3V58.2z"/>
+            <rect x="24.4" y="44.9" class="blue" width="11.2" height="1.8"/>
+            <path class="blue" d="M30,9.1c-7.6,0-13.8,6.2-13.8,13.8c0,3.2,1.3,6.4,3.9,9.6c1.5,1.9,2.7,3.7,3.5,5.5l0.2,0.5h12.4l0.2-0.5
 	        c0.8-1.8,2-3.6,3.5-5.4c2.6-2.9,3.9-6.3,3.9-9.6C43.8,15.3,37.6,9.1,30,9.1z M28.3,36.8c-2.1-6.2-3.4-13.3-2.2-14.2
 	        c0.2,0,0.8,0.6,1.1,0.9c0.7,0.7,1.6,1.6,2.6,1.5c0.8,0,1.6-0.7,2.4-1.4c0.3-0.3,1-0.9,1.2-1c1,0.9,0.2,6.6-2.4,14.1H28.3z
 	        M38.6,31.4C37,33.2,35.8,35,35,36.8h-2.1c1.5-4.3,4.3-13.8,1.4-15.7c-1.2-0.8-2.4,0.3-3.4,1.2c-0.4,0.3-1,0.9-1.2,1
 	        c-0.2,0-0.9-0.7-1.2-1c-0.8-0.8-2.1-2.1-3.4-1.1c-2.7,2-0.1,11.4,1.3,15.7h-1.5c-0.8-1.7-2-3.5-3.5-5.3C19.1,28.5,18,25.8,18,23
 	        c0-6.6,5.4-12,12-12c6.6,0,12,5.4,12,12C42,25.9,40.9,28.8,38.6,31.4z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
+            <rect id="bg" class="blue inactive" width="60" height="60"/>
+        </svg>
+        </div>
 
 
 
-
-    <div id="realityTagButtonDiv"></div>
-    <svg id="realityTagButton">
-        <path class="blue" d="M0,0v60h60V0H0z M58.1,58.1H1.9V1.9h56.3V58.1z"/>
-        <path class="blue" d="M47.6,37.5L34.1,14.8c-0.5-0.9-1.4-1.5-2.4-1.8l-9.9-2.8c-1.2-0.3-2.5-0.2-3.5,0.5c-1.1,0.6-1.8,1.7-2.1,2.9
+        <div id="realityTagButtonDiv"></div>
+        <div id="realityTagButtonRotation">
+        <svg id="realityTagButton">
+            <path class="blue" d="M0,0v60h60V0H0z M58.1,58.1H1.9V1.9h56.3V58.1z"/>
+            <path class="blue" d="M47.6,37.5L34.1,14.8c-0.5-0.9-1.4-1.5-2.4-1.8l-9.9-2.8c-1.2-0.3-2.5-0.2-3.5,0.5c-1.1,0.6-1.8,1.7-2.1,2.9
 	        l-2.3,10c-0.2,1-0.1,2,0.5,2.9l1.8,3c-0.2,0.9-0.3,1.8-0.4,2.8c-0.5,3.8-0.6,7.5-0.2,10.4c0.4,3.3,1.4,5.1,2.9,5.2
 	        c2.2,0.2,3.5-2.7,4.2-4.3c0.3-0.6,0.5-1.3,0.7-2l4.6,7.8c0.8,1.3,2.3,2,3.8,1.7c0.4-0.1,0.9-0.2,1.3-0.5l13.3-7.9
 	        C48,41.5,48.6,39.3,47.6,37.5z M20.9,42.8c-1,2.5-2,3.2-2.2,3.2c-0.2,0-1-0.8-1.3-3.7c-0.4-2.7-0.3-6.2,0.2-9.9c0-0.2,0-0.4,0.1-0.6
@@ -362,51 +393,32 @@
 	        c0,0,0,0,0.1,0c0.1,0.5,0.3,1.2,0.4,2c0.4,3.3,0.2,6.6-0.2,9.9c-0.2,1.2-0.4,2.5-0.6,3.6l-4.6-7.7l-1.4-2.3L16,25.5
 	        c-0.3-0.5-0.4-1.1-0.3-1.6l2.3-10c0.2-0.7,0.6-1.3,1.2-1.7c0.3-0.2,0.6-0.3,0.9-0.3c0.4-0.1,0.8,0,1.2,0.1l9.9,2.8
 	        c0.6,0.2,1,0.5,1.3,1L46,38.4C46.3,38.9,46.4,39.4,46.2,39.9z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    <div id="realitySearchButtonDiv"></div>
-    <svg id="realitySearchButton">
-        <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9z"/>
-        <path class="blue" d="M35.1,10.3c-4.2,0-8.1,1.6-11,4.6c-2.9,2.9-4.6,6.9-4.6,11c0,3.2,1,6.3,2.8,8.9L10.5,46.6l3.9,3.9l11.9-11.9
+            <rect id="bg" class="blue inactive" width="60" height="60"/>
+        </svg>
+        </div>
+        <div id="realitySearchButtonDiv"></div>
+        <svg id="realitySearchButton">
+            <path class="blue" d="M60,60H0V0h60V60z M58.1,1.9H1.9v56.3h56.3V1.9z"/>
+            <path class="blue" d="M35.1,10.3c-4.2,0-8.1,1.6-11,4.6c-2.9,2.9-4.6,6.9-4.6,11c0,3.2,1,6.3,2.8,8.9L10.5,46.6l3.9,3.9l11.9-11.9
 	        c2.6,1.8,5.7,2.8,8.9,2.8c8.6,0,15.6-7,15.6-15.6C50.7,17.2,43.7,10.3,35.1,10.3z M14.4,48L13,46.6l10.4-10.4
 	        c0.4,0.5,0.9,0.9,1.4,1.4L14.4,48z M35.1,39.6c-3.1,0-6-1-8.4-2.9c-0.9-0.7-1.8-1.5-2.5-2.5c-1.9-2.4-2.9-5.3-2.9-8.4
 	        c0-3.7,1.4-7.1,4-9.7c2.6-2.6,6.1-4,9.7-4c7.6,0,13.8,6.2,13.8,13.8C48.9,33.4,42.7,39.6,35.1,39.6z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    <div id="realityWorkButtonDiv"></div>
-    <svg id="realityWorkButton">
-        <path class="blue" d="M0,0v60h60V0H0z M58.2,58.2H1.9V1.9h56.3V58.2z"/>
-        <path class="blue" d="M49.7,37l-0.8-1.6l-1.8,0.9l-7.4-14.6L33,25.1l-3.5-6.9l-7.6,3.9l-5.2-10.5l-5.3,3.2l0.9,1.5l3.7-2.2l13,25.9
+            <rect id="bg" class="blue inactive" width="60" height="60"/>
+        </svg>
+        <div id="realityWorkButtonDiv"></div>
+        <div id="realityWorkButtonRotation">
+        <svg id="realityWorkButton">
+            <path class="blue" d="M0,0v60h60V0H0z M58.2,58.2H1.9V1.9h56.3V58.2z"/>
+            <path class="blue" d="M49.7,37l-0.8-1.6l-1.8,0.9l-7.4-14.6L33,25.1l-3.5-6.9l-7.6,3.9l-5.2-10.5l-5.3,3.2l0.9,1.5l3.7-2.2l13,25.9
 	        c-2.4,1.7-3.3,4.8-2,7.6c1.4,3,5.1,4.3,8.1,2.9c2.8-1.3,4.1-4.6,3.1-7.5L49.7,37z M22.7,23.6l5.9-3l2.7,5.3l-5.9,3L22.7,23.6z
 	        M26.3,30.6l12.7-6.4l6.4,12.6l-8.4,4.3h0c-1.5-1.8-4-2.6-6.3-1.9h0L26.3,30.6z M34.1,48.8c-2.1,1-4.7,0.1-5.7-2
 	        c-1-2.1-0.1-4.7,2-5.7c2.1-1,4.7-0.1,5.7,2C37.2,45.3,36.2,47.8,34.1,48.8z"/>
-        <rect id="bg" class="blue inactive" width="60" height="60"/>
-    </svg>
-    <!-- Reality UI - End -->
-</div>
-
-<div class='memoryBackground'></div>
-
-<div class="memoryPointerContainer">
-</div>
-
-<div class="memoryDragContainer">
-</div>
-
-<div class="pocket">
-    <div class='memoryBar'>
+            <rect id="bg" class="blue inactive" width="60" height="60"/>
+        </svg>
+        </div>
+        <!-- Reality UI - End -->
     </div>
-    <div class="palette">
-    </div>
+
 </div>
-
-<canvas class="Canvas" id="canvas" touch-action="none"></canvas>
-
-<div class='Interfaces' id="overlay"></div>
-
-<iframe src="src/gui/settings/index.html" id="settingsIframe" frameborder="0" style="background-color: #222222; position: absolute; left: 0px; top: 0px; bottom: 0px; right: 0px; height: 100%; width: 100%; -webkit-transform: translateZ(9px); display: none;" ></iframe>
-
-<div id= "searchDiv" style="position: absolute; left: 0px; bottom: 0px; right: 65px; height: 121px; -webkit-transform: translateZ(9px); display: none; border: solid #01fffc 2px"></div>
-
 </body>
 </html>

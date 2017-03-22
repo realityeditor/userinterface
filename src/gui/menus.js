@@ -49,7 +49,31 @@
 
 createNameSpace("realityEditor.gui.menus");
 
+ realityEditor.gui.menus.setOrientation = function (orientation) {
 
+    if(orientation === 3 || orientation === 4 ) {
+        document.getElementById("freezeButtonRotation").style.webkitTransform = "rotate(0deg)";
+        document.getElementById("pocketButtonRotation").style.webkitTransform = "rotate(0deg)";
+        document.getElementById("realityInfoButtonRotation").style.webkitTransform = "rotate(0deg)";
+        document.getElementById("realityTagButtonRotation").style.webkitTransform = "rotate(0deg)";
+        document.getElementById("realityWorkButtonRotation").style.webkitTransform = "rotate(0deg)";
+    }
+    if(orientation === 1 || orientation === 2 ) {
+        document.getElementById("freezeButtonRotation").style.webkitTransform = "rotate(90deg)";
+        document.getElementById("pocketButtonRotation").style.webkitTransform = "rotate(90deg)";
+        document.getElementById("realityInfoButtonRotation").style.webkitTransform = "rotate(90deg)";
+        document.getElementById("realityTagButtonRotation").style.webkitTransform = "rotate(90deg)";
+        document.getElementById("realityWorkButtonRotation").style.webkitTransform = "rotate(90deg)";
+    }
+
+    if(orientation === 1 || orientation === 4 ) {
+        document.getElementById("orientationRotation").style.webkitTransform  = "rotate(0deg)";
+    }
+
+    if(orientation === 2 || orientation === 3 ) {
+        document.getElementById("orientationRotation").style.webkitTransform  = "rotate(180deg)";
+    }
+};
 
 /**
  * @desc

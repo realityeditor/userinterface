@@ -47,30 +47,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-function setOrientation(orientation) {
-    console.log(orientation)
-
-    if(orientation === 3 || orientation === 4 ) {
-        document.getElementById("freezeButtonRotation").style.webkitTransform = "rotate(0deg)";
-        document.getElementById("pocketButtonRotation").style.webkitTransform = "rotate(0deg)";
-    }
-    if(orientation === 1 || orientation === 2 ) {
-        document.getElementById("freezeButtonRotation").style.webkitTransform = "rotate(90deg)";
-        document.getElementById("pocketButtonRotation").style.webkitTransform = "rotate(90deg)";
-    }
-
-    if(orientation === 1 || orientation === 4 ) {
-        document.getElementById("UIButtons").style.webkitTransform = "rotate(0deg)";
-    }
-
-    if(orientation === 2 || orientation === 3 ) {
-        document.getElementById("UIButtons").style.webkitTransform  = "rotate(180deg)";
-    }
-
-};
-
-
-
 
 createNameSpace("realityEditor.gui.buttons");
 var blockTabImage = [];

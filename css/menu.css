@@ -297,6 +297,9 @@
     z-index: 20;
 }
 #realityInfoButton {
+
+}
+#realityInfoButtonRotation{
     position: fixed;
     width: 60px;
     height: 60px;
@@ -304,7 +307,11 @@
     top: 0px;
     visibility: hidden;
 }
+
 #realityTagButton {
+
+}
+#realityTagButtonRotation{
     position: fixed;
     width: 60px;
     height: 60px;
@@ -339,6 +346,9 @@
     z-index: 20;
 }
 #realityWorkButton {
+
+}
+#realityWorkButtonRotation{
     position: fixed;
     width: 60px;
     height: 60px;
