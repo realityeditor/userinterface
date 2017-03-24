@@ -772,7 +772,6 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
             var cover = document.createElement('div');
             cover.classList.add('main');
             cover.style.visibility = 'visible';
-            cover.style.background = 'rgba(255, 0, 0, 0.3)';
             cover.style.width = addIframe.style.width;
             cover.style.height = addIframe.style.height;
             cover.style.top = addIframe.style.top;
