@@ -163,6 +163,7 @@ function FrameTouchSynthesizer(cover, iframe) {
 }
 
 FrameTouchSynthesizer.prototype.onPointerEvent = function(event) {
+    event.stopPropagation();
 
     // Note that this is a legacy API that the GeometryUtils should eventually replace
     var newCoords = webkitConvertPointFromPageToNode(this.iframe, new WebKitPoint(event.pageX, event.pageY));
