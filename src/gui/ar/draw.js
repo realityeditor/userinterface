@@ -309,7 +309,8 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
                 JSON.stringify(
                     {
                         visibility: "visible",
-                        interface: globalStates.interface
+                        interface: globalStates.interface,
+                        search: realityEditor.gui.search.getSearch()
                     }), '*');
 
             if (type === "node") {
