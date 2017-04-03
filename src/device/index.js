@@ -244,7 +244,7 @@ realityEditor.device.onTouchDown = function(evt) {
 
 
 
-					globalProgram.logicA = 0;
+					globalProgram.logicA = false;
 				}
 
 				// if(this.type === "logic")
