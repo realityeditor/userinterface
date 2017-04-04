@@ -51,20 +51,17 @@ createNameSpace("realityEditor.gui.search");
 
 realityEditor.gui.search.list = {
     milk: {text:"Milk", state: null},
-    eggs: {text:"Wheat", state: null},
-    peanuts: {text:"Peanuts", state: null},
+    wheat: {text:"Wheat", state: null},
+    nuts: {text:"Nuts", state: null},
 
     fish : {text:"Fish", state: null},
     pork : {text:"Pork", state: null},
     beef: {text:"Beef", state: null},
 
     vegetarian: {text:"Vegetarian", state: null},
-    lowSugar: {text:"Low Sugar", state: null},
-    gluten: {text:"Gluten free", state: null}
+    cornSyrup: {text:"Corn Syrup", state: null},
+    organic: {text:"Organic", state: null}
 };
-
-
-
 
 //set item in storage.
 if(typeof localStorage["searchList"] !== "undefined"){
