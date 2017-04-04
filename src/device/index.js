@@ -239,12 +239,16 @@ realityEditor.device.onTouchDown = function(evt) {
 							}
 							//realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
 
-						}, 400);
+						}, globalStates.moveDelay);
 					}
 
 
-
-					globalProgram.logicA = false;
+                    if (type === "node") {
+                        globalProgram.logicA = false;
+                    }
+					 else {
+                        globalProgram.logicA = 0;
+                    }
 				}
 
 				// if(this.type === "logic")

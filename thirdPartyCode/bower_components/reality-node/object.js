@@ -541,7 +541,7 @@ document.body.addEventListener('touchstart', function() {
     }), '*');
     sendTouchEvents = true;
     touchTimer = null;
-  }, 400);
+  }, globalStates.moveDelay);
 });
 
 document.body.addEventListener('touchmove', function(event) {

@@ -63,6 +63,7 @@ var timeCorrection = {delta: 0, now: 0, then: 0};
  **********************************************************************************************************************/
 
 var globalStates = {
+	moveDelay : 1000,
 	tempUuid : "0000",
 	debug: false,
 	overlay: 0,

@@ -94,7 +94,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
 
                 realityEditor.gui.menus.on("bigTrash",[]);
                 //realityEditor.gui.pocket.pocketOnMemoryDeletionStart();
-            }, HOLD_TIME_THRESHOLD);
+            }, globalStates.moveDelay);
             
         } else {
 
@@ -145,7 +145,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
 
                 // otherwise if enough time has passed, change to TS_HOLD
             } else if (!contents.block.isPortBlock) {
-                if (Date.now() - startTapTime > HOLD_TIME_THRESHOLD) {
+                if (Date.now() - startTapTime > globalStates.moveDelay) {
                     this.cout("enough time has passed -> HOLD (" + (Date.now() - startTapTime) + ")");
                     touchState = TS_HOLD;
                     clearTimeout(activeHoldTimer);
@@ -228,7 +228,7 @@ createNameSpace("realityEditor.gui.crafting.eventHandlers");
             clearTimeout(activeHoldTimer);
 
             if (!contents.block.isPortBlock) {
-                if (Date.now() - startTapTime < (HOLD_TIME_THRESHOLD/2)) {
+                if (Date.now() - startTapTime < (globalStates.moveDelay/2)) {
                     this.crafting.eventHelper.openBlockSettings(tappedContents.block);
                 }
             }
