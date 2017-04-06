@@ -316,11 +316,11 @@ realityEditor.gui.instantConnect = {
 
         if (message === "connected" || message === "disconnected" || message === "not working") {
             this.timeout = setTimeout(function () {
-                if (!realityEditor.instantConnect.links.objectA) {
+                if (!realityEditor.gui.instantConnect.links.objectA) {
                     var thisConnectionPage = document.getElementById("advertisedConnections");
                     thisConnectionPage.style.display = "none";
                 }
-                realityEditor.instantConnect.timeout = undefined;
+                realityEditor.gui.instantConnect.timeout = undefined;
             }, 2000);
         } else {
             if (typeof this.timeout !== "undefined")

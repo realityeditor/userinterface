@@ -417,7 +417,10 @@ console.log("gotdata");
 
 
     if (typeof thisAction.advertiseConnection !== "undefined") {
-        this.realityEditor.advertisement.logic(thisAction.advertiseConnection);
+        console.log(globalStates.instantState);
+        if(globalStates.instantState) {
+            realityEditor.gui.instantConnect.logic(thisAction.advertiseConnection);
+        }
     }
 
 
@@ -764,13 +767,12 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
         }
 
         if (typeof msgContent.settings.setSettings.instantState !== "undefined") {
-
             if (msgContent.settings.setSettings.instantState) {
                 globalStates.instantState = true;
                 window.location.href = "of://instantOn";
 
             } else {
-                globalStates.editingMode = false;
+                globalStates.instantState = false;
                 window.location.href = "of://instantOff";
             }
         }
