@@ -482,6 +482,15 @@ body {
     margin-top: -60px;
 }
 
+.memoryContainer.memoryPointer.remembering {
+    border: 6px solid #00ff00;
+    width: 180px;
+    height: 180px;
+    margin-left: -90px;
+    margin-top: -90px;
+    transition: all 0.5s;
+}
+
 .memoryContainer {
     margin: 3px;
 }
