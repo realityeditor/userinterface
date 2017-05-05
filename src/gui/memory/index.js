@@ -76,14 +76,17 @@ function MemoryContainer(element) {
     this.dragging = false;
     this.dragTimer = null;
 
+    this.onTransitionEnd = this.onTransitionEnd.bind(this);
     this.onPointerUp = this.onPointerUp.bind(this);
     this.onPointerEnter = this.onPointerEnter.bind(this);
+    this.onPointerLeave = this.onPointerLeave.bind(this);
     this.onTouchStart = this.onTouchStart.bind(this);
     this.onTouchMove = this.onTouchMove.bind(this);
     this.onTouchEnd = this.onTouchEnd.bind(this);
 
     this.element.addEventListener('pointerup', this.onPointerUp);
     this.element.addEventListener('pointerenter', this.onPointerEnter);
+    this.element.addEventListener('pointerleave', this.onPointerLeave);
 }
 
 MemoryContainer.prototype.set = function(obj) {
@@ -133,6 +136,7 @@ MemoryContainer.prototype.removeImage = function() {
     this.image.removeEventListener('touchmove', this.onTouchMove);
     this.image.removeEventListener('touchend', this.onTouchEnd);
     this.image.removeEventListener('pointerenter', this.onPointerEnter);
+    this.image.removeEventListener('pointerleave', this.onPointerLeave);
     this.image.parentNode.removeChild(this.image);
     this.image = null;
 };
@@ -248,6 +252,8 @@ MemoryContainer.prototype.stopDragging = function() {
 };
 
 MemoryContainer.prototype.onPointerUp = function() {
+    this.cancelRemember();
+
     if (this.dragTimer) {
         clearTimeout(this.dragTimer);
         this.dragTimer = null;
@@ -294,7 +300,17 @@ MemoryContainer.prototype.onPointerEnter = function() {
     if (this.dragTimer) {
         return;
     }
-    this.remember();
+    this.beginRemember();
+};
+
+MemoryContainer.prototype.onPointerLeave = function() {
+    if (overlayDiv.classList.contains('overlayMemory')) {
+        return;
+    }
+    if (this.dragTimer) {
+        return;
+    }
+    this.cancelRemember();
 };
 
 MemoryContainer.prototype.onTouchEnd = function() {
@@ -303,6 +319,32 @@ MemoryContainer.prototype.onTouchEnd = function() {
     setTimeout(function() {
         this.stopDragging();
     }.bind(this), 0);
+};
+
+MemoryContainer.prototype.beginRemember = function() {
+    if (this.element.classList.contains('remembering')) {
+        return;
+    }
+    if (this.element.classList.contains('memoryPointer')) {
+        this.element.classList.add('remembering');
+        this.element.addEventListener('transitionend', this.onTransitionEnd);
+    } else {
+        this.remember();
+    }
+};
+
+MemoryContainer.prototype.cancelRemember = function() {
+    if (!this.element.classList.contains('remembering')) {
+        return;
+    }
+    this.element.removeEventListener('transitionend', this.onTransitionEnd);
+    this.element.classList.remove('remembering');
+};
+
+MemoryContainer.prototype.onTransitionEnd = function() {
+    this.element.removeEventListener('transitionend', this.onTransitionEnd);
+    this.element.classList.remove('remembering');
+    this.remember();
 };
 
 
@@ -339,6 +381,7 @@ MemoryContainer.prototype.remove = function() {
     this.element.parentNode.removeChild(this.element);
     this.element.removeEventListener('pointerup', this.onPointerUp);
     this.element.removeEventListener('pointerenter', this.onPointerEnter);
+    this.element.removeEventListener('pointerleave', this.onPointerLeave);
     this.removeImage();
 };
 
@@ -355,6 +398,7 @@ MemoryContainer.prototype.createImage = function() {
     this.image.addEventListener('touchmove', this.onTouchMove);
     this.image.addEventListener('touchend', this.onTouchEnd);
     this.image.addEventListener('pointerenter', this.onPointerEnter);
+    this.image.addEventListener('pointerleave', this.onPointerLeave);
 
 };
 

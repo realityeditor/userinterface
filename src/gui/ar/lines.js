@@ -69,7 +69,7 @@ realityEditor.gui.ar.lines.deleteLines = function(x21, y21, x22, y22) {
         }
 
         var thisObject = objects[keysome];
-        if (!thisObject.visible) {
+        if (!thisObject.objectVisible) {
             continue;
         }
 

@@ -92,8 +92,11 @@ function MemoryPointer(link, isObjectA) {
     this.memory = new realityEditor.gui.memory.MemoryContainer(this.element);
     this.memory.set(this.object);
 
-    this.x = 0;
-    this.y = 0;
+    // TODO could calculate center of mass of other points and select location opposite that
+    var baseDistance = (this.connectedNode.screenLinearZ || 5) * 30;
+    var baseTheta = Math.random() * 2 * Math.pi;
+    this.x = Math.cos(baseTheta) * baseDistance;
+    this.y = Math.sin(baseTheta) * baseDistance;
 
     this.alive = true;
     this.lastDraw = Date.now();
@@ -160,7 +163,7 @@ MemoryPointer.prototype.beginForceSimulation = function() {
 
     this.force = d3.forceSimulation()
         .force('link', d3.forceLink().distance(80).id(function(d) { return d.id; }))
-        .force('charge', d3.forceManyBody().strength(-20));
+        .force('charge', d3.forceManyBody().strength(-80));
 
     this.force.nodes(this.forceNodes);
 
@@ -185,7 +188,7 @@ MemoryPointer.prototype.updateForceSimulation = function() {
     }
 
     this.force.alpha(1);
-    this.force.force('link').distance((this.connectedNode.screenLinearZ || 5) * 20);
+    this.force.force('link').distance((this.connectedNode.screenLinearZ || 5) * 30);
     this.force.tick();
 
     this.x = this.simNode.x + this.connectedNode.screenX;
