@@ -595,17 +595,20 @@ realityEditor.device.onDocumentPointerUp = function(evt) {
 				}
 				thisItem.name = "LOGIC"+logicCount;
 
-				objects[globalLogic.farFrontElement].nodes[pocketItemId] = thisItem;
+				// make sure that logic nodes only stick to 2.0 server version
+                if(realityEditor.network.testVersion(globalLogic.farFrontElement)>165) {
+                    objects[globalLogic.farFrontElement].nodes[pocketItemId] = thisItem;
 
-				var _thisNode = document.getElementById("iframe" + pocketItemId);
-				if(_thisNode) {
-					if(_thisNode._loaded)
-						realityEditor.network.onElementLoad(globalLogic.farFrontElement, pocketItemId);
-				}
+                    var _thisNode = document.getElementById("iframe" + pocketItemId);
+                    if (_thisNode) {
+                        if (_thisNode._loaded)
+                            realityEditor.network.onElementLoad(globalLogic.farFrontElement, pocketItemId);
+                    }
 
-				globalDOMCach[pocketItemId].objectId = globalLogic.farFrontElement;
+                    globalDOMCach[pocketItemId].objectId = globalLogic.farFrontElement;
 
-				realityEditor.network.postNewLogicNode(objects[globalLogic.farFrontElement].ip, globalLogic.farFrontElement, pocketItemId, thisItem);
+                    realityEditor.network.postNewLogicNode(objects[globalLogic.farFrontElement].ip, globalLogic.farFrontElement, pocketItemId, thisItem);
+                }
 
 			}
 			realityEditor.gui.ar.draw.hideTransformed("pocket", pocketItemId, pocketItem.pocket.nodes[pocketItemId], "logic");
