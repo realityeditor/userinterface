@@ -79,8 +79,6 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
         thisGlobalCanvas.hasContent = false;
     }
 
-    var destinationString;
-
     var thisGlobalStates = globalStates;
 
     var thisGlobalLogic = globalLogic;
@@ -121,19 +119,6 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
                 this.hideTransformed(objectKey, objectKey, generalObject, "ui");
             }
 
-            // do this for staying compatible with older versions but use new routing after some time.
-            // dataPointInterfaces are clearly their own thing and should not be part of obj
-            // once added, they will be associated with the object via the editor postMessages anyway.
-            if (generalObject.integerVersion >= 170) {
-                destinationString = "/nodes/";
-            } else {
-                if (generalObject.integerVersion > 40) {
-                    destinationString = "/dataPointInterfaces/";
-                } else {
-                    destinationString = "/obj/dataPointInterfaces/";
-                }
-            }
-
             var generalNode;
             for (nodeKey in generalObject.nodes) {
                 // if (!generalObject.nodes.hasOwnProperty(nodeKey)) { continue; }
@@ -142,7 +127,6 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
 
                 if (globalStates.guiState ==="node" || globalStates.guiState === "logic") {
                     this.drawTransformed(objectKey, nodeKey, generalNode, tempMatrix, generalNode.type, thisGlobalStates, thisGlobalCanvas, thisGlobalLogic, thisGlobalDOMCach, thisGlobalMatrix);
-
 
                     this.addElement(objectKey, nodeKey, "nodes/" + generalNode.type + "/index.html", generalNode, generalNode.type, thisGlobalStates);
 
@@ -780,6 +764,7 @@ realityEditor.gui.ar.draw.addElement = function (objectKey, nodeKey, thisUrl, th
             thisObject.frameTouchSynthesizer = new realityEditor.gui.frame.FrameTouchSynthesizer(cover, addIframe);
             addContainer.appendChild(cover);
         }
+
         addOverlay.appendChild(addCanvas);
         addContainer.appendChild(addOverlay);
 

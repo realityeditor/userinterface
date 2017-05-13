@@ -48,6 +48,71 @@
  */
 
 createNameSpace("realityEditor.network");
+
+
+realityEditor.network.oldFormatToNew = function(thisObject, thisKey){
+    var _this = this;
+
+    if (thisObject.integerVersion < 170) {
+
+        _this.utilities.rename(thisObject, "folder", "name");
+        _this.utilities.rename(thisObject, "objectValues", "nodes");
+        _this.utilities.rename(thisObject, "objectLinks", "links");
+        delete thisObject["matrix3dMemory"];
+
+        for (var linkKey in objects[thisKey].links) {
+            thisObject = objects[thisKey].links[linkKey];
+
+            _this.utilities.rename(thisObject, "ObjectA", "objectA");
+            _this.utilities.rename(thisObject, "locationInA", "nodeA");
+            _this.utilities.rename(thisObject, "ObjectNameA", "nameA");
+
+            _this.utilities.rename(thisObject, "ObjectB", "objectB");
+            _this.utilities.rename(thisObject, "locationInB", "nodeB");
+            _this.utilities.rename(thisObject, "ObjectNameB", "nameB");
+            _this.utilities.rename(thisObject, "endlessLoop", "loop");
+            _this.utilities.rename(thisObject, "countLinkExistance", "health");
+        }
+
+        /*for (var nodeKey in objects[thisKey].nodes) {
+         _this.utilities.rename(objects[thisKey].nodes, nodeKey, thisKey + nodeKey);
+         }*/
+        for (var nodeKey in objects[thisKey].nodes) {
+            thisObject = objects[thisKey].nodes[nodeKey];
+            _this.utilities.rename(thisObject, "plugin", "type");
+            _this.utilities.rename(thisObject, "appearance", "type");
+
+           if(thisObject.type === "default") {
+             thisObject.type = "node";
+             }
+
+
+            thisObject.data = {
+                value: thisObject.value,
+                mode: thisObject.mode,
+                unit: "",
+                unitMin: 0,
+                unitMax: 1
+            };
+            delete thisObject.value;
+            delete thisObject.mode;
+
+        }
+
+    }
+
+    objects[thisKey].uuid = thisKey;
+
+    for (var nodeKey in objects[thisKey].nodes) {
+        objects[thisKey].nodes[nodeKey].uuid = nodeKey;
+    }
+
+    for (var linkKey in objects[thisKey].links) {
+        objects[thisKey].links[linkKey].uuid = linkKey;
+    }
+
+};
+
  
 realityEditor.network.addHeartbeatObject = function (beat) {
     /*
@@ -115,10 +180,19 @@ realityEditor.network.addHeartbeatObject = function (beat) {
                             _this.utilities.rename(thisObject, "countLinkExistance", "health");
                         }
 
+                        /*for (var nodeKey in objects[thisKey].nodes) {
+                            _this.utilities.rename(objects[thisKey].nodes, nodeKey, thisKey + nodeKey);
+                        }*/
                         for (var nodeKey in objects[thisKey].nodes) {
                             thisObject = objects[thisKey].nodes[nodeKey];
                             _this.utilities.rename(thisObject, "plugin", "type");
                             _this.utilities.rename(thisObject, "appearance", "type");
+
+                           if(thisObject.type === "default") {
+                                thisObject.type = "node";
+                            }
+
+
                             thisObject.data = {
                                 value: thisObject.value,
                                 mode: thisObject.mode,
@@ -316,6 +390,10 @@ realityEditor.network.onAction = function (action) {
     {
         thisAction = action;
     } else {
+        while(action.charAt(0) === '"') action = action.substr(1);
+        while(action.charAt(action.length-1) === ' ') action = action.substring(0, action.length - 1);
+        while(action.charAt(action.length-1) === '"') action = action.substring(0, action.length - 1);
+
         thisAction = JSON.parse(action);
     }
 
@@ -329,11 +407,18 @@ realityEditor.network.onAction = function (action) {
     // reload links for a specific object.
 
     if (typeof thisAction.reloadLink !== "undefined") {
+        // compatibility with old version where object was ID
+        if (thisAction.reloadLink.id) {
+            thisAction.reloadLink.object = thisAction.reloadLink.id;
+        };
 
         if(thisAction.reloadLink.object in objects) {
             this.getData('http://' + objects[thisAction.reloadLink.object].ip + ':' + httpPort + '/object/' + thisAction.reloadLink.object, thisAction.reloadLink.object, function (req, thisKey) {
 
                 if (objects[thisKey].integerVersion < 170) {
+
+                    realityEditor.network.oldFormatToNew(objects[thisKey],thisKey);
+                    /*
                     objects[thisKey].links = req.links;
                     for (var linkKey in objects[thisKey].links) {
                         var thisObject = objects[thisKey].links[linkKey];
@@ -348,6 +433,7 @@ realityEditor.network.onAction = function (action) {
                         _this.utilities.rename(thisObject, "endlessLoop", "loop");
                         _this.utilities.rename(thisObject, "countLinkExistance", "health");
                     }
+                    */
                 }
                 else {
                     objects[thisKey].links = req.links;
@@ -843,10 +929,24 @@ realityEditor.network.deleteData = function(url, content) {
     this.cout("deleteData");
 };
 
+realityEditor.network.testVersion = function(thisObjectKey) {
+    var version = 170;
+    if (!objects[thisObjectKey]) {
+    } else {
+        version = objects[thisObjectKey].integerVersion;
+    }
+    return version;
+};
+
 realityEditor.network.deleteLinkFromObject = function(ip, thisObjectKey, thisKey) {
     // generate action for all links to be reloaded after upload
     this.cout("I am deleting a link: " + ip);
+
+if(this.testVersion(thisObjectKey)>162) {
     this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/" + thisKey+"/lastEditor/"+globalStates.tempUuid);
+} else {
+    this.deleteData('http://' + ip + ':' + httpPort + '/object/' + thisObjectKey + "/link/" + thisKey);
+}
 };
 
 realityEditor.network.deleteNodeFromObject = function(ip, thisObjectKey, thisKey) {
@@ -975,7 +1075,13 @@ realityEditor.network.postLinkToServer = function(linkObject, objects){
         } else {
             namesB =  [thisOtherTempObject.name, thisOtherTempObject.nodes[linkObject.nodeB].name];
         }
-        
+
+        console.log(this.testVersion(linkObject.objectA));
+
+
+        // this is for backword compatibility
+      if(this.testVersion(linkObject.objectA)>165){
+
         thisTempObjectLinks[thisKeyId] = {
             objectA: linkObject.objectA,
             objectB: linkObject.objectB,
@@ -986,6 +1092,24 @@ realityEditor.network.postLinkToServer = function(linkObject, objects){
             namesA: namesA,
             namesB: namesB
         };
+
+      } else {
+            thisTempObjectLinks[thisKeyId] = {
+
+                ObjectA: linkObject.objectA,
+                ObjectB: linkObject.objectB,
+                locationInA: linkObject.nodeA,
+                locationInB: linkObject.nodeB,
+                ObjectNameA: namesA,
+                ObjectNameB: namesB
+            };
+
+            console.log(linkObject.logicA);
+            if(linkObject.logicA !== false || linkObject.logicB !== false) {
+             return;
+            }
+        }
+
 
         // push new connection to objectA
         //todo this is a work around to not crash the server. only temporarly for testing
@@ -1033,6 +1157,13 @@ realityEditor.network.postNewBlockPosition = function(ip, thisObjectKey, thisLog
     // generate action for all links to be reloaded after upload
     this.cout("I am moving a block: " + ip);
     // /logic/*/*/block/*/
+
+    // this is color
+
+   // this.color = "red";
+   // this.objectA = objects.node[thisObjectKey];
+
+
     content.lastEditor = globalStates.tempUuid;
     if (typeof content.x === "number" && typeof content.y === "number") {
         this.postData('http://' + ip + ':' + httpPort + '/logic/' + thisObjectKey + "/" + thisLogicKey +"/blockPosition/" + thisBlockKey, content);
@@ -1172,7 +1303,7 @@ realityEditor.network.onElementLoad = function(objectKey, nodeKey) {
         };
     }
     
-    if (version < 170) {
+    if (version < 170 && objectKey === nodeKey) {
         newStyle = oldStyle;
     }
     globalDOMCach["iframe" + nodeKey]._loaded = true;
