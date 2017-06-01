@@ -69,9 +69,6 @@ realityEditor.gui.ar.lines.deleteLines = function(x21, y21, x22, y22) {
         }
 
         var thisObject = objects[keysome];
-        if (!thisObject.objectVisible) {
-            continue;
-        }
 
         for (var subKeysome in thisObject.links) {
             if (!thisObject.links.hasOwnProperty(subKeysome)) {
@@ -85,8 +82,12 @@ realityEditor.gui.ar.lines.deleteLines = function(x21, y21, x22, y22) {
                 continue;
             }
 
+            if (!oA.objectVisible && !oB.objectVisible) {
+                continue;
+            }
+
             var bA = oA.nodes[l.nodeA];
-            var bB = oB.nodes[l.nodeB]
+            var bB = oB.nodes[l.nodeB];
 
             if (typeof(bA) === 'undefined' || typeof(bB) === 'undefined') {
                 continue; //should not be undefined
