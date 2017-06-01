@@ -353,6 +353,13 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
              }
              }*/
 
+            if (type === "logic" && objectKey!=="pocket"){
+                if(thisObject.animationScale ===1) {
+                    globalDOMCach["logic" + nodeKey].className = "mainEditing scaleOut";
+                    thisObject.animationScale =0;
+                }
+            }
+
         }
         if (thisObject.visible) {
             // this needs a better solution
@@ -522,14 +529,16 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
                      context.strokeStyle = "#f0f0f0";
                      }*/
                     if (this.ar.utilities.insidePoly(globalStates.pointerPosition, globalLogic.rectPoints) && !thisObject.lockPassword) {
-                        if(thisObject.animationScale ===0 && !globalStates.editingMode)
+                        if(thisObject.animationScale ===0 && !globalStates.editingMode) {
                             globalDOMCach["logic" + nodeKey].className = "mainEditing scaleIn";
-                        thisObject.animationScale =1;
+                            thisObject.animationScale = 1;
+                        }
                     }
                     else {
-                        if(thisObject.animationScale ===1)
+                        if(thisObject.animationScale ===1) {
                             globalDOMCach["logic" + nodeKey].className = "mainEditing scaleOut";
-                        thisObject.animationScale =0;
+                            thisObject.animationScale = 0;
+                        }
                     }
 
                     // context.stroke();
@@ -539,7 +548,6 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
                         thisObject.animationScale =0;
                     }
                 }
-
             }
             
             
