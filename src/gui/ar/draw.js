@@ -90,6 +90,32 @@ realityEditor.gui.ar.draw.update = function(visibleObjects) {
             continue;
         }
 
+        if (objects[objectKey].fullScreen === "sticky") {
+
+            if (objects[objectKey].stickiness) {
+                if (!(objectKey in globalObjects)) {
+                    globalObjects[objectKey] = [
+                        1, 0, 0, 0,
+                        0, 1, 0, 0,
+                        0, 0, 1, 0,
+                        0, 0, 0, 1
+                    ]
+                }
+            }
+
+            for (thisKey in globalObjects) {
+                if (thisKey !== objectKey) {
+                    delete globalObjects[thisKey];
+                }
+            }
+        }
+    }
+
+    for (var objectKey in objects) {
+        if (!objects.hasOwnProperty(objectKey)) {
+            continue;
+        }
+
         var generalObject = objects[objectKey];
 
         //if(  globalStates.pointerPosition[0]>0)
@@ -363,7 +389,7 @@ realityEditor.gui.ar.draw.drawTransformed = function (objectKey, nodeKey, thisOb
         }
         if (thisObject.visible) {
             // this needs a better solution
-            if (thisObject.fullScreen !== true) {
+            if (!thisObject.fullScreen) {
 
                 finalMatrixTransform2 = [
                     thisObject.scale, 0, 0, 0,

@@ -695,7 +695,6 @@ realityEditor.network.onInternalPostMessage = function(e) {
         // console.log("gotfullscreenmessage");
         if (msgContent.fullScreen === true) {
             tempThisObject.fullScreen = true;
-            console.log("fullscreen: " + tempThisObject.fullScreen);
             document.getElementById("thisObject" + msgContent.node).style.webkitTransform =
                 'matrix3d(1, 0, 0, 0,' +
                 '0, 1, 0, 0,' +
@@ -708,6 +707,21 @@ realityEditor.network.onInternalPostMessage = function(e) {
             tempThisObject.fullScreen = false;
         }
 
+    } else if(typeof msgContent.fullScreen === "string") {
+        if (msgContent.fullScreen === "sticky") {
+
+            tempThisObject.fullScreen = "sticky";
+            document.getElementById("thisObject" + msgContent.node).style.webkitTransform =
+                'matrix3d(1, 0, 0, 0,' +
+                '0, 1, 0, 0,' +
+                '0, 0, 1, 0,' +
+                '0, 0, 0, 1)';
+
+        }
+    }
+
+    if(typeof msgContent.stickiness === "boolean") {
+            tempThisObject.stickiness = msgContent.stickiness;
     }
 
     if (typeof msgContent.createNode !== "undefined") {
