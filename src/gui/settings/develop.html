@@ -59,6 +59,32 @@
                 </div>
             </li>
             <li class="table-view-cell">
+                <img class="media-object pull-left" src="../../../svg/download.svg"
+                     style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">Interface URL<br>
+
+                <input type="text" id="externalText" class=" pull-left" style="position: fixed; margin-left: 180px; margin-top:-29px;height: 35px; width: 200px"
+                       placeholder="http://..." oninput="realityEditor.gui.settings.newURLTextLoad()">
+
+                <button class="btn btn-positive pull-right" style="width: 80px; height: 35px; margin-top: -1px"
+                        onclick="realityEditor.gui.settings.reloadUI()">Activate
+                </button>
+
+
+            </li>
+            <li class="table-view-cell">
+                <img class="media-object pull-left" src="../../../svg/discovery.svg"
+                     style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">Discovery Server<br>
+
+                <input type="text" id="discoveryText" style="position: fixed; margin-left: 180px; margin-top:-29px;height: 35px; width: 200px"
+                       placeholder="http://..." oninput="realityEditor.gui.settings.newDiscoveryTextLoad()">
+
+                <button id="discoveryButton" class="btn btn-positive pull-right" style="width: 80px; height: 35px; margin-top: -1px"
+                        onclick="realityEditor.gui.settings.discovery()">Activate
+                </button>
+
+
+            </li>
+            <li class="table-view-cell">
                 <img class="media-object pull-left" src="../../../svg/reality.svg"
                      style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
                 Reality UI
@@ -67,21 +93,13 @@
                     <div class="toggle-handle"></div>
                 </div>
             </li>
-            <li class="table-view-cell">
-                <img class="media-object pull-left" src="../../../svg/download.svg"
-                     style=" width:26px; height:26px; margin-top: -2px; margin-bottom: -5px">
-                External Interface URL<br>
-                <button class="btn btn-positive pull-right" style="width: 80px; height: 40px; margin-top: 8px"
-                        onclick="realityEditor.gui.settings.reloadUI()">Activate
-                </button>
-
-                <input type="text" id="externalText" style=" margin-left: 35px; margin-top:10px;width: 340px"
-                       placeholder="http://..." oninput="realityEditor.gui.settings.newURLTextLoad()">
-            </li>
         </ul>
     </div>
 
 </div>
+<script>
+
+</script>
 <script src="index.js"></script>
 </body>
 </html>

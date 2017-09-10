@@ -803,6 +803,7 @@ realityEditor.network.onSettingPostMessage = function(msgContent) {
             clearSkyState: globalStates.clearSkyState,
             instantState: globalStates.instantState,
             externalState: globalStates.externalState,
+            discoveryState: globalStates.discoveryState,
             settingsButton : globalStates.settingsButtonState,
             lockingMode: globalStates.lockingMode,
             lockPassword: globalStates.lockPassword,

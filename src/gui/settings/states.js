@@ -5,6 +5,8 @@ realityEditor.gui.settings.states = {
     editingMode: false,
     clearSkyState: false,
     externalState: "",
+    discoveryState: "",
+    discoveryActive: false,
     lockingMode: false,
     lockPassword: null,
     logoAnimation:false,

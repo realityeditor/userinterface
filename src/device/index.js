@@ -903,13 +903,14 @@ realityEditor.device.setDeviceName = function(deviceName) {
  * @param externalState
  **/
 
-realityEditor.device.setStates = function (developerState, extendedTrackingState, clearSkyState, instantState, externalState, realityState) {
+realityEditor.device.setStates = function (developerState, extendedTrackingState, clearSkyState, instantState, externalState, discoveryState, realityState) {
 
     globalStates.extendedTrackingState = extendedTrackingState;
     globalStates.developerState = developerState;
     globalStates.clearSkyState = clearSkyState;
     globalStates.instantState = instantState;
     globalStates.externalState = externalState;
+    globalStates.discoveryState = discoveryState;
     globalStates.realityState = realityState;
 
     if (globalStates.clearSkyState) {

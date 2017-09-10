@@ -9,6 +9,36 @@ realityEditor.gui.settings.setSettings = function (id, state) {
         }
         return;
     }
+
+    if (id === "discoveryText") {
+
+        var buttonState = document.getElementById('discoveryButton');
+
+        if (state !== "") {
+            document.getElementById(id).value = state;
+            buttonState.innerText = "Deactivate";
+            buttonState.className = "btn btn-negative pull-right";
+            this.states.discoveryActive = true;
+        } else {
+            buttonState.innerText = "Activate";
+            buttonState.className = "btn btn-positive pull-right";
+            this.states.discoveryActive = false;
+        }
+
+
+        var buttonState = document.getElementById('discoveryButton');
+
+        if (realityEditor.gui.settings.states.discoveryActive) {
+            buttonState.innerText = "Deactivate";
+            buttonState.className = "btn btn-negative pull-right";
+        } else {
+            buttonState.innerText = "Activate";
+            buttonState.className = "btn btn-positive pull-right";
+        }
+
+
+        return;
+    }
     
     if (id === "lockText") {
         //if (state !== "") {
@@ -52,12 +82,54 @@ realityEditor.gui.settings.newURLTextLoad = function () {
     this.states.externalState = encodeURIComponent(document.getElementById('externalText').value);
 };
 
+realityEditor.gui.settings.newDiscoveryTextLoad = function () {
+    this.states.discoveryState = encodeURIComponent(document.getElementById('discoveryText').value);
+    this.states.discoveryActive = false;
+
+    var buttonState = document.getElementById('discoveryButton');
+        buttonState.innerText = "Activate";
+        buttonState.className = "btn btn-positive pull-right";
+};
+
 realityEditor.gui.settings.reloadUI = function () {
     if (this.states.externalState !== "" && this.states.externalState !== "http") {
         console.log("window.location.href = " + "of://loadNewUI" + this.states.externalState);
         window.location.href = "of://loadNewUI" + this.states.externalState;
     }
 };
+
+realityEditor.gui.settings.discovery = function () {
+    if (!this.states.discoveryActive) {
+        if (this.states.discoveryState !== "" && this.states.discoveryState !== "http") {
+            console.log("window.location.href = " + "of://setDiscovery" + this.states.discoveryState);
+            window.location.href = "of://setDiscovery" + this.states.discoveryState;
+            this.states.discoveryActive = true;
+        }
+    } else {
+        console.log("window.location.href = " + "of://removeDiscovery");
+        window.location.href = "of://removeDiscovery";
+        this.states.discoveryActive = false;
+        this.states.discoveryState = "";
+        document.getElementById("discoveryText").value = this.states.discoveryState;
+    }
+
+    var buttonState = document.getElementById('discoveryButton');
+
+    if (this.states.discoveryActive) {
+        buttonState.innerText = "Deactivate";
+        buttonState.className = "btn btn-negative pull-right";
+    } else {
+        buttonState.innerText = "Activate";
+        buttonState.className = "btn btn-positive pull-right";
+    }
+
+};
+
+realityEditor.gui.settings.discoveryState = function () {
+    return this.states.discoveryState;
+};
+
+
 
 realityEditor.gui.settings.newLockTextLoad = function () {
     this.states.lockPassword = encodeURIComponent(document.getElementById('lockText').value);
@@ -86,6 +158,7 @@ realityEditor.gui.settings.loadSettingsPost = function () {
             this.states.clearSkyState = msg.getSettings.clearSkyState;
             this.states.instantState = msg.getSettings.instantState;
             this.states.externalState = msg.getSettings.externalState;
+            this.states.discoveryState = msg.getSettings.discoveryState;
             this.states.settingsButton = msg.getSettings.settingsButton;
             this.states.lockingMode = msg.getSettings.lockingMode;
             this.states.lockPassword = msg.getSettings.lockPassword;
@@ -97,6 +170,7 @@ realityEditor.gui.settings.loadSettingsPost = function () {
             this.setSettings("editingMode", this.states.editingMode);
             this.setSettings("clearSkyState", this.states.clearSkyState);
             this.setSettings("externalText", this.states.externalState);
+            this.setSettings("discoveryText", this.states.discoveryState);
             this.setSettings("lockingToggle", this.states.lockingMode);
             this.setSettings("lockText", this.states.lockPassword);
             
