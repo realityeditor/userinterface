@@ -61,8 +61,8 @@ realityEditor.device.onload = function () {
 
     realityEditor.gui.menus.init();
 
-   realityEditor.gui.menus.off("main",["gui","reset","unconstrained"]);
-    realityEditor.gui.menus.on("main",["gui"]);
+   realityEditor.gui.menus.off("mainhowto",["gui","reset","unconstrained"]);
+    realityEditor.gui.menus.on("mainhowto",["gui"]);
     globalStates.realityState= false;
 
 	globalStates.tempUuid = realityEditor.device.utilities.uuidTimeShort();

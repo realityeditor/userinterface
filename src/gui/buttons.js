@@ -241,6 +241,17 @@ realityEditor.gui.buttons.unlockButtonUp = function(event) {
     realityEditor.device.security.unlockVisibleNodesAndLinks();
 };
 
+realityEditor.gui.buttons.howtoButtonUp = function(event) {
+    if (event.button !== "howto") return;
+
+    console.log("activate info");
+
+    realityEditor.gui.menus.off("main", ["howto"]);
+
+  document.getElementById('howtoIframe').style.display = "inline";
+};
+
+
 realityEditor.gui.buttons.draw = function() {
 
     this.preload(blockTabImage,

@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html slick-uniqueid="3" lang="en-US"><head data-detected="1">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>Getting Started – Reality Editor</title>
+<meta name="viewport" content="initial-scale=1">
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+
+
+<link rel="stylesheet" id="oceanwp-style-css" href="page/style.css" type="text/css" media="all">
+<link rel="stylesheet" id="elementor-frontend-css" href="page/frontend_002.css" type="text/css" media="all">
+<link rel="stylesheet" id="elementor-global-css" href="page/global.css" type="text/css" media="all">
+
+<style type="text/css">
+	/* Site Background CSS */
+	body {
+		background-color: #222222
+	}
+
+	/* General CSS */
+	a:hover, a.light:hover, .theme-heading .text::before, #top-bar-content > a:hover, #top-bar-social li.oceanwp-email a:hover, #site-navigation-wrap .dropdown-menu > li > a:hover, #site-header.medium-header #medium-searchform button:hover, #oceanwp-mobile-menu-icon a:hover, .blog-entry.post .blog-entry-header h2 a:hover, .blog-entry.post .blog-entry-readmore a:hover, ul.meta li a:hover, .dropcap, .single-post .post-pagination-wrap ul li .title, .related-post-title a:hover, #wp-calendar caption, .contact-info-widget i, .custom-links-widget .oceanwp-custom-links li a:hover, .custom-links-widget .oceanwp-custom-links li a:hover:before, .posts-thumbnails-widget li a:hover, .social-widget li.oceanwp-email a:hover, .comment-author .comment-meta .comment-reply-link, #respond #cancel-comment-reply-link:hover, #footer-widgets .footer-box a:hover, #footer-bottom a:hover, #footer-bottom #footer-bottom-menu a:hover, .sidr a:hover, .sidr-class-dropdown-toggle:hover, .sidr-class-menu-item-has-children.active > a, .sidr-class-menu-item-has-children.active > a > .sidr-class-dropdown-toggle, input[type=checkbox]:checked:before {
+		color: #00ffff
+	}
+
+	input[type="button"], input[type="reset"], input[type="submit"], .button, #site-navigation-wrap .dropdown-menu > li.btn > a > span, .thumbnail:hover i, .post-quote-content, .omw-modal .omw-close-modal {
+		background-color: #00ffff
+	}
+
+	.widget-title {
+		border-color: #00ffff
+	}
+
+	blockquote {
+		border-color: #00ffff
+	}
+
+	#searchform-dropdown {
+		border-color: #00ffff
+	}
+
+	.dropdown-menu .sub-menu {
+		border-color: #00ffff
+	}
+
+	.blog-entry.large-entry .blog-entry-readmore a:hover {
+		border-color: #00ffff
+	}
+
+	.oceanwp-newsletter-form-wrap input[type="email"]:focus {
+		border-color: #00ffff
+	}
+
+	.social-widget li.oceanwp-email a:hover {
+		border-color: #00ffff
+	}
+
+	#respond #cancel-comment-reply-link:hover {
+		border-color: #00ffff
+	}
+
+	#footer-widgets .oceanwp-newsletter-form-wrap input[type="email"]:focus {
+		border-color: #00ffff
+	}
+
+	input[type="button"]:hover, input[type="reset"]:hover, input[type="submit"]:hover, input[type="button"]:focus, input[type="reset"]:focus, input[type="submit"]:focus, .button:hover, #site-navigation-wrap .dropdown-menu > li.btn > a:hover > span, .post-quote-author, .omw-modal .omw-close-modal:hover {
+		background-color: #00ffff
+	}
+
+	table th, table td, hr, .content-area, body.content-left-sidebar #content-wrap .content-area, .content-left-sidebar .content-area, #top-bar-wrap, #site-header, #site-header.top-header #search-toggle, .dropdown-menu ul li, .centered-minimal-page-header, .blog-entry.post, .blog-entry.grid-entry .blog-entry-inner, .single-post h2.entry-title, .single-post .entry-share, .single-post .entry-share ul li a, .single-post .post-pagination-wrap, .single-post .post-pagination-wrap ul li.post-prev, #author-bio, #author-bio .author-bio-avatar, #author-bio .author-bio-social li a, #related-posts, #comments, .comment-body, #respond #cancel-comment-reply-link, #blog-entries .type-page, .page-numbers a, .page-numbers span, .page-links span, #wp-calendar caption, #wp-calendar th, #wp-calendar tbody, .contact-info-widget i, .posts-thumbnails-widget li, .tagcloud a {
+		border-color: #939393
+	}
+
+	a {
+		color: #00ffff
+	}
+
+	a:hover {
+		color: #ffff00
+	}
+
+	.container {
+		width: calc(100% - 65px)
+	}
+
+	#main #content-wrap {
+		padding-top: 1px
+	}
+
+	#scroll-top {
+		border-radius: 7px
+	}
+
+	#scroll-top {
+		background-color: rgba(0, 255, 255, 0.1)
+	}
+
+	#scroll-top:hover {
+		background-color: #ffff00
+	}
+
+	#scroll-top {
+		color: #00ffff
+	}
+
+	#scroll-top:hover {
+		color: #222222
+	}
+
+	label {
+		color: #ffffff
+	}
+
+	form input[type="text"], form input[type="password"], form input[type="email"], form input[type="tel"], form input[type="url"], form input[type="search"], form textarea {
+		border-radius: 5px
+	}
+
+	form input[type="text"], form input[type="password"], form input[type="email"], form input[type="tel"], form input[type="url"], form input[type="search"], form textarea {
+		background-color: #555555
+	}
+
+	form input[type="text"], form input[type="password"], form input[type="email"], form input[type="tel"], form input[type="url"], form input[type="search"], form textarea {
+		color: #ffffff
+	}
+
+	.theme-button, input[type="submit"], button {
+		background-color: #13f2ea
+	}
+
+	.theme-button:hover, input[type="submit"]:hover, button:hover {
+		background-color: #0aaaa5
+	}
+
+	/* Header CSS */
+	#site-logo #site-logo-inner, #oceanwp-social-menu .social-menu-inner, #site-header.full_screen-header .menu-bar-inner {
+		height: 60px
+	}
+
+	#site-navigation-wrap .dropdown-menu > li > a, #oceanwp-mobile-menu-icon a {
+		line-height: 60px
+	}
+
+	#site-header, .is-sticky #site-header.transparent-header, #searchform-header-replace {
+		background-color: #777777
+	}
+
+	#site-header {
+		border-color: #898989
+	}
+
+	#site-logo #site-logo-inner a img, #site-header.center-header #site-navigation .middle-site-logo a img {
+		max-width: 251px
+	}
+
+	#site-logo a.site-logo-text {
+		color: #ffffff
+	}
+
+	#site-navigation-wrap .dropdown-menu > li > a {
+		padding: 0 11px
+	}
+
+	#site-navigation-wrap .dropdown-menu > li > a, #oceanwp-mobile-menu-icon a, #searchform-header-replace-close {
+		color: #ffffff
+	}
+
+	#site-navigation-wrap .dropdown-menu > li > a:hover, #oceanwp-mobile-menu-icon a:hover, #searchform-header-replace-close:hover {
+		color: #777777
+	}
+
+	#site-navigation-wrap .dropdown-menu > .current-menu-item > a, #site-navigation-wrap .dropdown-menu > .current-menu-parent > a, #site-navigation-wrap .dropdown-menu > .current-menu-item > a:hover, #site-navigation-wrap .dropdown-menu > .current-menu-parent > a:hover {
+		color: #00ffff
+	}
+
+	#site-navigation-wrap .dropdown-menu > li > a {
+		background-color: #777777
+	}
+
+	#site-navigation-wrap .dropdown-menu > li > a:hover, #site-navigation-wrap .dropdown-menu > li.sfHover > a {
+		background-color: #00ffff
+	}
+
+	#site-navigation-wrap .dropdown-menu > .current-menu-item > a, #site-navigation-wrap .dropdown-menu > .current-menu-parent > a, #site-navigation-wrap .dropdown-menu > .current-menu-item > a:hover, #site-navigation-wrap .dropdown-menu > .current-menu-parent > a:hover {
+		background-color: #777777
+	}
+
+	.dropdown-menu .sub-menu {
+		min-width: 70px
+	}
+
+	.dropdown-menu .sub-menu, #searchform-dropdown, #current-shop-items-dropdown {
+		background-color: #777777
+	}
+
+	.dropdown-menu ul li.menu-item, .navigation > ul > li > ul.megamenu.sub-menu > li, .navigation .megamenu li ul.sub-menu {
+		border-color: #777777
+	}
+
+	.dropdown-menu ul li a.menu-link {
+		color: #ffffff
+	}
+
+	.dropdown-menu ul li a.menu-link:hover {
+		color: #777777
+	}
+
+	.dropdown-menu ul li a.menu-link:hover {
+		background-color: #00ffff
+	}
+
+	.dropdown-menu ul > .current-menu-item > a > span {
+		color: #777777
+	}
+
+	.dropdown-menu ul > .current-menu-item > a.menu-link {
+		background-color: #00ffff
+	}
+
+	.navigation li.mega-cat .mega-cat-title {
+		background-color: #ffffff
+	}
+
+	/* Footer Bottom CSS */
+	#footer-bottom {
+		background-color: #222222
+	}
+
+	#footer-bottom, #footer-bottom p {
+		color: #555555
+	}
+
+	#footer-bottom a, #footer-bottom #footer-bottom-menu a {
+		color: #324f51
+	}
+
+	#footer-bottom a:hover, #footer-bottom #footer-bottom-menu a:hover {
+		color: #00ffff
+	}
+
+	/* Typography CSS */
+	body {
+		color: #fcfcfc
+	}
+
+	h1, h2, h3, h4, h5, h6, .theme-heading, .widget-title, .oceanwp-widget-recent-posts-title, .comment-reply-title, .entry-title, .sidebar-box .widget-title {
+		font-family: Georgia, serif
+	}
+
+	#site-logo a.site-logo-text {
+		font-family: Arial, Helvetica, sans-serif;
+		font-weight: 200;
+		font-size: 39px;
+		line-height: 1
+	}
+
+	.blog-entry.post .blog-entry-header h2 a {
+		color: #ffffff
+	}
+
+	.single-post h2.entry-title {
+		color: #ffffff
+	}
+
+	.sidebar-box .widget-title {
+		color: #ffffff
+	}
+</style><style id="fit-vids-style">.fluid-width-video-wrapper{width:100%;position:relative;padding:0;}.fluid-width-video-wrapper iframe,.fluid-width-video-wrapper object,.fluid-width-video-wrapper embed {position:absolute;top:0;left:0;width:100%;height:100%;}</style></head>
+
+<body class="page-template-default page page-id-606 wp-custom-logo oceanwp-theme content-full-width no-header-border page-header-disabled elementor-default elementor-page elementor-page-606" itemscope="itemscope" data-elementor-device-mode="desktop">
+
+	
+	<div id="outer-wrap" class="site clr">
+
+		
+		<div id="wrap" class="clr">
+
+			
+<header id="site-header" class="minimal-header clr" itemscope="itemscope" itemtype="http://schema.org/WPHeader" data-height="60"> <!-- #site-header-inner -->
+
+		
+	
+</header><!-- #site-header -->
+
+
+						
+			<main id="main" class="site-main clr" itemprop="mainContentOfPage" itemscope="itemscope" itemtype="http://schema.org/WebPageElement">
+
+				
+				
+	
+	<div id="content-wrap" class="container clr">
+
+		
+		<div id="primary" class="content-area clr">
+
+			
+			<div id="content" class="site-content clr">
+
+				
+				
+<article class="single-page-article clr">
+
+	
+<div class="entry clr" itemprop="text">
+			<div class="elementor elementor-606">
+			<div class="elementor-inner">
+				<div class="elementor-section-wrap">
+							<section data-id="c66axb1" class="elementor-element elementor-element-c66axb1 elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="0dxocfv" class="elementor-element elementor-element-0dxocfv elementor-column elementor-col-100 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="ig03shh" class="elementor-element elementor-element-ig03shh elementor-widget elementor-widget-spacer" data-element_type="spacer.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-spacer"> </div>
+				</div>
+				</div>
+				<div data-id="2qnr3lb" class="elementor-element elementor-element-2qnr3lb elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-xl">Getting Started</h2>		</div>
+				</div>
+				<div data-id="fearycx" class="elementor-element elementor-element-fearycx elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">An illustrated guide to using the Reality Editor 2.</h2>		</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="ehlcv9i" class="elementor-element elementor-element-ehlcv9i elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="6ly2y9u" class="elementor-element elementor-element-6ly2y9u elementor-column elementor-col-100 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="9nj16lt" class="elementor-element elementor-element-9nj16lt elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix">
+					  <p>The best way to get started is to download the Starter App for
+					    OSX: <br><strong style="color:#00ffff; font-size: 1.5em;">http://www.realityeditor.org/start</strong><br> Once you downloaded the dmg file, copy the Reality Editor Starter
+					    App to your Application folder. Once opened, the Starter App waits for 
+					    you to push the connecting button on your Philips Hue Bridge or your 
+					    Lego WeDo 2.0. The Starter App allows you to print the visual markers required for the AR interface to load. Follow the instruction on 
+					    the printout. You are now ready to use the Reality Editor 2. Point the 
+					    Reality Editor 2 at your connected Objects to learn about the following 
+					    user interface 101.</p>
+					</div>
+				</div>
+				</div>
+				<div data-id="ajgn4bg" class="elementor-element elementor-element-ajgn4bg elementor-widget elementor-widget-spacer" data-element_type="spacer.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-spacer">
+			<div class="elementor-spacer-inner"></div>
+		</div>
+				</div>
+				</div>
+				<div data-id="34fvjvi" class="elementor-element elementor-element-34fvjvi elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-large">Navigating the Reality Editor 2</h2>		</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="yahva57" class="elementor-element elementor-element-yahva57 elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="ualpvs1" class="elementor-element elementor-element-ualpvs1 elementor-column elementor-col-100 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<section data-id="9kc9qz8" class="elementor-element elementor-element-9kc9qz8 elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-inner-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="tziluuj" class="elementor-element elementor-element-tziluuj elementor-column elementor-col-50 elementor-inner-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="xinja3u" class="elementor-element elementor-element-xinja3u elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/navigation_overview_4-1.gif" class="attachment-full size-full" alt="" height="449" width="1000">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="umlr6a6" class="elementor-element elementor-element-umlr6a6 elementor-column elementor-col-50 elementor-inner-column" data-element_type="column">
+			<div class="elementor-column-wrap">
+					<div class="elementor-widget-wrap">
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<div data-id="jtx6ha7" class="elementor-element elementor-element-jtx6ha7 elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>There are five menu buttons. Learning what each does will&nbsp;guide you through the Reality Editor 2.</p><ul><li>The <strong>Interfaces </strong>button displays the <em>AR&nbsp;interface</em> on top of any objects you look at.<ul><li>This is the primary view anytime you aren't&nbsp;customizing how objects behave, and just want to interact with them.</li></ul></li><li>The&nbsp;<strong>Crafting&nbsp;</strong>buttons shows the <em>nodes</em> that compose&nbsp;an object's functionality, and lets you edit how they interact.<ul><li>This is the primary view anytime you want to connect objects together or reprogram&nbsp;their behavior.</li></ul></li><li>The&nbsp;<strong>Pocket&nbsp;</strong>button lets you save and reuse <em>memories</em> and <em>interface components</em>.</li><li>The&nbsp;<strong>Settings&nbsp;</strong>button&nbsp;displays
+ a menu&nbsp;where you can see a list of connected objects and 
+toggle&nbsp;between different modes and developer tools.</li><li>The&nbsp;<strong>Freeze</strong>
+ button freezes the video stream into a still image so the objects 
+you're looking at stay in view even when you move your camera.</li></ul></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="5yh8kg0" class="elementor-element elementor-element-5yh8kg0 elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="edzx0qv" class="elementor-element elementor-element-edzx0qv elementor-column elementor-col-100 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="clw8czq" class="elementor-element elementor-element-clw8czq elementor-widget elementor-widget-spacer" data-element_type="spacer.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-spacer">
+			<div class="elementor-spacer-inner"></div>
+		</div>
+				</div>
+				</div>
+				<div data-id="ueypd4f" class="elementor-element elementor-element-ueypd4f elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-large">The Basics</h2>		</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="ps23xfu" class="elementor-element elementor-element-ps23xfu elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="tein48p" class="elementor-element elementor-element-tein48p elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="271twkm" class="elementor-element elementor-element-271twkm elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/01_drawLine-1.gif" class="attachment-full size-full" alt="" height="450" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="axvdf8y" class="elementor-element elementor-element-axvdf8y elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="9lbxumx" class="elementor-element elementor-element-9lbxumx elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Draw Line</h2>		</div>
+				</div>
+				<div data-id="me7q6s6" class="elementor-element elementor-element-me7q6s6 elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>You can connect any two nodes by dragging a line between them.</p><p>This creates a <em>link</em>
+ that will send data from the distance sensor to the motor. Any time the
+ distance sensor&nbsp;receives a new value, it will send that value to 
+the motor.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="c35fth4" class="elementor-element elementor-element-c35fth4 elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="q6bp19j" class="elementor-element elementor-element-q6bp19j elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="hxgg4h1" class="elementor-element elementor-element-hxgg4h1 elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/02_cutLine.gif" class="attachment-full size-full" alt="" height="450" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="jxw28ts" class="elementor-element elementor-element-jxw28ts elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="7z6hv2l" class="elementor-element elementor-element-7z6hv2l elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Cut Line</h2>		</div>
+				</div>
+				<div data-id="xad56xq" class="elementor-element elementor-element-xad56xq elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>To delete a link,&nbsp;you can swipe through it to cut it.</p><p>The motor will no longer receive any data from the distance sensor.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="rf80vhp" class="elementor-element elementor-element-rf80vhp elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="0h03k25" class="elementor-element elementor-element-0h03k25 elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="uha8jlz" class="elementor-element elementor-element-uha8jlz elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/03_moveNode.gif" class="attachment-full size-full" alt="" height="450" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="afrlsyq" class="elementor-element elementor-element-afrlsyq elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="aj882o4" class="elementor-element elementor-element-aj882o4 elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Move Node</h2>		</div>
+				</div>
+				<div data-id="6g51eur" class="elementor-element elementor-element-6g51eur elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>If you tap
+ and hold on a node for long enough, you can reposition it by dragging 
+it around. The node will be highlighted with blue stripes to show that 
+you can move it.</p><p>This doesn't change the behavior of the objects, but it's useful to keep the nodes organized.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="kwdurv2" class="elementor-element elementor-element-kwdurv2 elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="dky1js7" class="elementor-element elementor-element-dky1js7 elementor-column elementor-col-100 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="joj3ee3" class="elementor-element elementor-element-joj3ee3 elementor-widget elementor-widget-spacer" data-element_type="spacer.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-spacer">
+			<div class="elementor-spacer-inner"></div>
+		</div>
+				</div>
+				</div>
+				<div data-id="jpy82v5" class="elementor-element elementor-element-jpy82v5 elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-large"><a href="http://realityeditor.org/getting-started/Crafting">Logic Crafting</a></h2>		</div>
+				</div>
+				<div data-id="xha7lfy" class="elementor-element elementor-element-xha7lfy elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Logic 
+Crafting is a visual programming language that lets you add more logic 
+to how your objects interact with one another.&nbsp;</p><p>This step by 
+step guide will teach you the basics of logic crafting: how to add a 
+logic node, how to build a basic program, and how to link everything 
+together.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="5ro5nmt" class="elementor-element elementor-element-5ro5nmt elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="lihc3ia" class="elementor-element elementor-element-lihc3ia elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="xdmulaj" class="elementor-element elementor-element-xdmulaj elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/04_addLogicNode.gif" class="attachment-full size-full" alt="" height="450" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="dhe8dsj" class="elementor-element elementor-element-dhe8dsj elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="22mpnyt" class="elementor-element elementor-element-22mpnyt elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Add Logic Node</h2>		</div>
+				</div>
+				<div data-id="68ex0s1" class="elementor-element elementor-element-68ex0s1 elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Dragging out from the pocket&nbsp;button will create a new <em>logic node</em> that you can place onto an object. You can add&nbsp;multiple logic nodes if you wish.</p><p>Logic nodes let you manipulate the data that flows between objects with added&nbsp;logic, math, and other effects.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="kpxjitc" class="elementor-element elementor-element-kpxjitc elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="9yuglu4" class="elementor-element elementor-element-9yuglu4 elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="e3chouc" class="elementor-element elementor-element-e3chouc elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/05_addLogicLinks.gif" class="attachment-full size-full" alt="" height="450" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="c4h1tzj" class="elementor-element elementor-element-c4h1tzj elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="dvmr6wq" class="elementor-element elementor-element-dvmr6wq elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Add Logic Links</h2>		</div>
+				</div>
+				<div data-id="fptdd03" class="elementor-element elementor-element-fptdd03 elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Creating a
+ link to a logic node lets you choose a color for it: blue, green, 
+yellow or red. You can also choose a color for links drawn out of a 
+logic node. The color of this link determines what it will connect to 
+within the logic node.</p><p>This sends the distance sensor values into 
+the blue input of the logic node, and sends processed values out of the 
+green output and into the motor.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="kripx1k" class="elementor-element elementor-element-kripx1k elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="v94qbwf" class="elementor-element elementor-element-v94qbwf elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="1vv5qtq" class="elementor-element elementor-element-1vv5qtq elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/06_openLogicNode.gif" class="attachment-full size-full" alt="" height="450" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="ec5rtza" class="elementor-element elementor-element-ec5rtza elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="mh5wwrp" class="elementor-element elementor-element-mh5wwrp elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Open Logic Node</h2>		</div>
+				</div>
+				<div data-id="zrpgkiy" class="elementor-element elementor-element-zrpgkiy elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Tapping on a logic node opens its&nbsp;<em>crafting board</em>,
+ where you can construct a program that affects the data flowing from 
+its inputs to outputs. The crafting board is a grid where <em>logic blocks</em> can be placed and linked together.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="c8zo070" class="elementor-element elementor-element-c8zo070 elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="frcg01i" class="elementor-element elementor-element-frcg01i elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="yiwhg68" class="elementor-element elementor-element-yiwhg68 elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/07_openLogicMenu.gif" class="attachment-full size-full" alt="" height="450" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="9462968" class="elementor-element elementor-element-9462968 elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="wdxufv3" class="elementor-element elementor-element-wdxufv3 elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Open Logic Menu</h2>		</div>
+				</div>
+				<div data-id="u1qnu0b" class="elementor-element elementor-element-u1qnu0b elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>To select&nbsp;blocks for&nbsp;the crafting board, you first need to open the <em>logic menu</em><strong>,&nbsp;</strong>which displays a list of blocks you can choose from.</p><p>A full list of blocks can be seen <a href="http://realityeditor.org/logic-blocks/">here</a>.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="1kvtbzx" class="elementor-element elementor-element-1kvtbzx elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="6ee5pqf" class="elementor-element elementor-element-6ee5pqf elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="1yobaw8" class="elementor-element elementor-element-1yobaw8 elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/08_adding_Block.gif" class="attachment-full size-full" alt="" height="450" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="r3g5dd2" class="elementor-element elementor-element-r3g5dd2 elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="o3mzn6o" class="elementor-element elementor-element-o3mzn6o elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Add Block</h2>		</div>
+				</div>
+				<div data-id="e41fh01" class="elementor-element elementor-element-e41fh01 elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Dragging a
+ block from the logic menu will hide the menu and let you place the 
+block into the crafting board. Blocks will snap to the closest cell.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="psf6wes" class="elementor-element elementor-element-psf6wes elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="l8581eq" class="elementor-element elementor-element-l8581eq elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="cesmt26" class="elementor-element elementor-element-cesmt26 elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/09_adding_BlockLines.gif" class="attachment-full size-full" alt="" height="450" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="dee0o9l" class="elementor-element elementor-element-dee0o9l elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="nqtb2d2" class="elementor-element elementor-element-nqtb2d2 elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Add Block Links</h2>		</div>
+				</div>
+				<div data-id="eyh3u5c" class="elementor-element elementor-element-eyh3u5c elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Drawing 
+lines between blocks, inputs, or outputs will create a link. To create a
+ working program, you need to&nbsp;make a path from an input to an 
+output.&nbsp;</p><p>Since we&nbsp;connected&nbsp;distance sensor to the 
+blue input, and the motor to the green output,&nbsp;we&nbsp;link the 
+blue input to an inverter block and link that block to the green output.</p><p>This will send inverted values from the sensor to the motor.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="rbhoxtt" class="elementor-element elementor-element-rbhoxtt elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="apdns0e" class="elementor-element elementor-element-apdns0e elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="bcvodv0" class="elementor-element elementor-element-bcvodv0 elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/10_sneakThrough.gif" class="attachment-full size-full" alt="" height="450" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="mgb17ys" class="elementor-element elementor-element-mgb17ys elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="vooroiq" class="elementor-element elementor-element-vooroiq elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Sneak Through</h2>		</div>
+				</div>
+				<div data-id="qd15yr9" class="elementor-element elementor-element-qd15yr9 elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>If you 
+forget which&nbsp;colors you used when you connected the sensor or the 
+motor to the logic node, you can tap and hold on&nbsp;any of the input 
+or outputs to see&nbsp;a preview of the connected nodes in the 
+background.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="51m3xk9" class="elementor-element elementor-element-51m3xk9 elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="8km0jee" class="elementor-element elementor-element-8km0jee elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="mz7g7vi" class="elementor-element elementor-element-mz7g7vi elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/11_deleteLinesCrafting.gif" class="attachment-full size-full" alt="" height="450" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="qrwh7ig" class="elementor-element elementor-element-qrwh7ig elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="dfmvra7" class="elementor-element elementor-element-dfmvra7 elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Delete Block</h2>		</div>
+				</div>
+				<div data-id="d4lnd7e" class="elementor-element elementor-element-d4lnd7e elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Tapping 
+and holding a block for long enough lets you move it around the crafting
+ board. You can place it in a different cell, or you can drop it 
+on&nbsp;the delete button to remove it and any of the links connected to
+ it.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="58i6utg" class="elementor-element elementor-element-58i6utg elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="mb7y52b" class="elementor-element elementor-element-mb7y52b elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="41cpqc0" class="elementor-element elementor-element-41cpqc0 elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/13_deleteLogicNode.gif" class="attachment-full size-full" alt="" height="450" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="buy3eq3" class="elementor-element elementor-element-buy3eq3 elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="dynsnms" class="elementor-element elementor-element-dynsnms elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Delete Logic Node</h2>		</div>
+				</div>
+				<div data-id="g508hc9" class="elementor-element elementor-element-g508hc9 elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Pressing the back button&nbsp;will hide the crafting board and show the nodes again.</p><p>You can delete logic nodes the same way you delete blocks. Tap and hold to move it, then drag it onto the delete button.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="0xq3la7" class="elementor-element elementor-element-0xq3la7 elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="r0sxrvd" class="elementor-element elementor-element-r0sxrvd elementor-column elementor-col-100 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="8dfmakv" class="elementor-element elementor-element-8dfmakv elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>These 
+basic interactions can be used to build a wide variety of logical 
+interactions between your objects. Some example programs are 
+demonstrated on the <a href="http://realityeditor.org/logic-nodes-sharing/">Logic Nodes Sharing page</a>.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="3b7fg34" class="elementor-element elementor-element-3b7fg34 elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="qm0bhis" class="elementor-element elementor-element-qm0bhis elementor-column elementor-col-100 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="96wrsv6" class="elementor-element elementor-element-96wrsv6 elementor-widget elementor-widget-spacer" data-element_type="spacer.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-spacer">
+			<div class="elementor-spacer-inner"></div>
+		</div>
+				</div>
+				</div>
+				<div data-id="fo4a9b4" class="elementor-element elementor-element-fo4a9b4 elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-large">Interface Components</h2>		</div>
+				</div>
+				<div data-id="nh67oel" class="elementor-element elementor-element-nh67oel elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Interface 
+Components let you build user interfaces for your objects by dragging 
+and dropping controls onto them. These include joysticks that send data,
+ and graphs that receive and visualize data from&nbsp;a connected node.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="1jmv4za" class="elementor-element elementor-element-1jmv4za elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="lrzg4c6" class="elementor-element elementor-element-lrzg4c6 elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="d42si0z" class="elementor-element elementor-element-d42si0z elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/select.gif" class="attachment-full size-full" alt="" height="449" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="ma5ugdv" class="elementor-element elementor-element-ma5ugdv elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="zk3vcdu" class="elementor-element elementor-element-zk3vcdu elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Add Component</h2>		</div>
+				</div>
+				<div data-id="1qj4cm0" class="elementor-element elementor-element-1qj4cm0 elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>While 
+viewing the interfaces, selecting the pocket button will open a menu 
+with a selection of&nbsp;interface components. These can be used to 
+build remote controls or visualizers for your objects.</p><p>Drag a component from the menu to add it to your interface.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="m6tenrv" class="elementor-element elementor-element-m6tenrv elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="vxgfetg" class="elementor-element elementor-element-vxgfetg elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="xs3j04w" class="elementor-element elementor-element-xs3j04w elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/move.gif" class="attachment-full size-full" alt="" height="449" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="h6o3pe3" class="elementor-element elementor-element-h6o3pe3 elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="i0fxy2c" class="elementor-element elementor-element-i0fxy2c elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Move Component</h2>		</div>
+				</div>
+				<div data-id="tx4kq2i" class="elementor-element elementor-element-tx4kq2i elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Tap, hold, and drag &nbsp;the component to&nbsp;reposition it within&nbsp;the&nbsp;interface.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="f9ww1hq" class="elementor-element elementor-element-f9ww1hq elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="gnbg51d" class="elementor-element elementor-element-gnbg51d elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="sokaa6i" class="elementor-element elementor-element-sokaa6i elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/link.gif" class="attachment-full size-full" alt="" height="449" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="as27t0n" class="elementor-element elementor-element-as27t0n elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="hqfhf4f" class="elementor-element elementor-element-hqfhf4f elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Link Component</h2>		</div>
+				</div>
+				<div data-id="1nm32cg" class="elementor-element elementor-element-1nm32cg elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Interface components have a node for their data, just like sensors and motors.</p><p>Tap on the crafting button to view the node, which can be linked to the motor in the same way as the sensor was.</p><p>Now the slider control will send values to the motor when you interact with it.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="hg612ie" class="elementor-element elementor-element-hg612ie elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="mkl3nxj" class="elementor-element elementor-element-mkl3nxj elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="5xvkdqj" class="elementor-element elementor-element-5xvkdqj elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/control.gif" class="attachment-full size-full" alt="" height="449" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="7hi5yxh" class="elementor-element elementor-element-7hi5yxh elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="i239b7u" class="elementor-element elementor-element-i239b7u elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Control Using Component</h2>		</div>
+				</div>
+				<div data-id="vpv1l5l" class="elementor-element elementor-element-vpv1l5l elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Sliding your finger on the&nbsp;component will&nbsp;change its appearance and send values between 0 and 1 out of its node.</p><p>In
+ this example, the slider will change the speed of the motor. This is 
+useful for building remote controls for your objects using only your 
+phone.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="g7hnz7r" class="elementor-element elementor-element-g7hnz7r elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="2su3fqc" class="elementor-element elementor-element-2su3fqc elementor-column elementor-col-100 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="3lkklql" class="elementor-element elementor-element-3lkklql elementor-widget elementor-widget-spacer" data-element_type="spacer.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-spacer">
+			<div class="elementor-spacer-inner"></div>
+		</div>
+				</div>
+				</div>
+				<div data-id="s5uhnh4" class="elementor-element elementor-element-s5uhnh4 elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-large">Memories</h2>		</div>
+				</div>
+				<div data-id="t17gfe0" class="elementor-element elementor-element-t17gfe0 elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Memories 
+are a way to save snapshots of your objects so that you can interact 
+with them even when you're not physically close to them.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="slpmdkb" class="elementor-element elementor-element-slpmdkb elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="s7o617k" class="elementor-element elementor-element-s7o617k elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="3bivr2s" class="elementor-element elementor-element-3bivr2s elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/mem_create_quick2.gif" class="attachment-full size-full" alt="" height="281" width="500">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="4lymigf" class="elementor-element elementor-element-4lymigf elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="eclu9g7" class="elementor-element elementor-element-eclu9g7 elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Create Memory</h2>		</div>
+				</div>
+				<div data-id="0lm1p1j" class="elementor-element elementor-element-0lm1p1j elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Tap and 
+hold on the background video stream, and drag it to the pocket button to
+ create a memory. When the pocket opens, &nbsp;choose a slot in the 
+memory bar to save it in.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="mdeoq09" class="elementor-element elementor-element-mdeoq09 elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="0606xx8" class="elementor-element elementor-element-0606xx8 elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="3pfq1m1" class="elementor-element elementor-element-3pfq1m1 elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/mem_load_quick.gif" class="attachment-full size-full" alt="" height="281" width="500">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="xnqdnos" class="elementor-element elementor-element-xnqdnos elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="0ir0yua" class="elementor-element elementor-element-0ir0yua elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">View Memory</h2>		</div>
+				</div>
+				<div data-id="sixj5q2" class="elementor-element elementor-element-sixj5q2 elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Later, when you aren't viewing your object anymore, you can tap the pocket to view the memory bar.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+				<section data-id="gahdexn" class="elementor-element elementor-element-gahdexn elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-element_type="section">
+						<div class="elementor-container elementor-column-gap-default">
+				<div class="elementor-row">
+				<div data-id="uelue2v" class="elementor-element elementor-element-uelue2v elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="b7vcyxd" class="elementor-element elementor-element-b7vcyxd elementor-widget elementor-widget-image" data-element_type="image.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-image">
+		<img src="page/mem_delete.gif" class="attachment-full size-full" alt="" height="449" width="800">		</div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+				<div data-id="fy170w0" class="elementor-element elementor-element-fy170w0 elementor-column elementor-col-50 elementor-top-column" data-element_type="column">
+			<div class="elementor-column-wrap elementor-element-populated">
+					<div class="elementor-widget-wrap">
+				<div data-id="zdys30t" class="elementor-element elementor-element-zdys30t elementor-widget elementor-widget-heading" data-element_type="heading.default">
+				<div class="elementor-widget-container">
+			<h2 class="elementor-heading-title elementor-size-default">Delete Memory</h2>		</div>
+				</div>
+				<div data-id="adsz4s4" class="elementor-element elementor-element-adsz4s4 elementor-widget elementor-widget-text-editor" data-element_type="text-editor.default">
+				<div class="elementor-widget-container">
+					<div class="elementor-text-editor elementor-clearfix"><p>Drag the memory out of the memory bar and into the trash to delete it and make space for a new memory.</p></div>
+				</div>
+				</div>
+						</div>
+			</div>
+		</div>
+						</div>
+			</div>
+		</section>
+						</div>
+			</div>
+		</div>
+		</div> 
+</article>
+				
+			</div><!-- #content -->
+
+			
+		</div><!-- #primary -->
+
+		
+		
+	</div><!-- #content-wrap -->
+
+	
+
+        </main><!-- #main -->
+
+        
+        
+        
+<footer id="footer" class="site-footer" itemscope="itemscope" itemtype="http://schema.org/WPFooter">
+
+    
+    <div id="footer-inner" class="clr">
+
+        
+
+<div id="footer-bottom" class="clr no-footer-nav">
+
+	
+	<div id="footer-bottom-inner" class="container clr">
+
+		
+		
+			<div id="copyright" class="clr" role="contentinfo">
+				<p><a href="http://fluid.media.mit.edu/"><img src="page/flml.png" width="200px"></a></p>
+
+
+You are looking at research results from the MIT Media Lab Fluid Interfaces Group. Feel free to share.<br>
+All logos, trademarks and images are property of their respective owners.<br>
+Apple, the Apple logo, iPhone, iPad are trademarks of Apple Inc..  
+<br>MINDSTORMS, the MINDSTORMS EV3 logo, Lego, Wedo and the Lego logo are trademarks of the LEGO Group.<br>Hue is a trademark of Philips Lighting B.V.. <br>Reality Editor is not endorsed by Apple, Inc., Lego or Philips.			</div><!-- #copyright -->
+
+		
+	</div><!-- #footer-bottom-inner -->
+
+	
+</div><!-- #footer-bottom -->
+
+        
+    </div><!-- #footer-inner -->
+
+    
+</footer><!-- #footer -->
+                        
+    </div><!-- #wrap -->
+
+    
+</div><!-- #outer-wrap -->
+
+
+
+<a id="scroll-top" href="#"><span class="fa fa-angle-up"></span></a>
+
+<div id="sidr-close">
+	<a href="#" class="toggle-sidr-close">
+		<i class="icon icon-close"></i>Close Menu	</a>
+</div>
+
+
+<div id="mobile-menu-search" class="clr">
+	<form method="get" action="http://realityeditor.org/" class="mobile-searchform">
+		<input name="s" autocomplete="off" placeholder="Search" type="search">
+		<button type="submit" class="searchform-submit">
+			<span class="icon icon-magnifier"></span>
+		</button>
+	</form>
+</div><!-- .mobile-menu-search -->
+<script type="text/javascript">
+/* <![CDATA[ */
+var oceanwpLocalize = {"isRTL":"","menuSearchStyle":"disabled","sidrSource":"#sidr-close, #site-navigation","sidrDisplace":"1","sidrSide":"left","sidrDropdownTarget":"arrow","customSelects":".woocommerce-ordering .orderby, .cart-collaterals .cart_totals table select, #dropdown_product_cat, .widget_categories select, .widget_archive select, .single-product .variations_form .variations select"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="page/main.js"></script>
+<script type="text/javascript" src="page/mootools-core-yc.js"></script>
+<script type="text/javascript" src="page/EnlighterJS.js"></script>
+<script type="text/javascript" src="page/wp-embed.js"></script>
+<!--[if lt IE 9]>
+<script type='text/javascript' src='http://realityeditor.org/wp-content/themes/oceanwp/assets/js/html5.js?ver=1.1.9.1'></script>
+<![endif]-->
+<script type="text/javascript">
+/* <![CDATA[ */
+var ElementorProFrontendConfig = {"ajaxurl":"http:\/\/realityeditor.org\/wp-admin\/admin-ajax.php","nonce":"7734dc8de8","postTitle":"Getting Started","postDescription":"","shareButtonsNetworks":{"facebook":{"title":"Facebook","has_counter":true},"twitter":{"title":"Twitter"},"google":{"title":"Google+","has_counter":true},"linkedin":{"title":"LinkedIn","has_counter":true},"pinterest":{"title":"Pinterest","has_counter":true},"reddit":{"title":"Reddit","has_counter":true},"vk":{"title":"VK","has_counter":true},"odnoklassniki":{"title":"OK","has_counter":true},"tumblr":{"title":"Tumblr"},"delicious":{"title":"Delicious"},"digg":{"title":"Digg"},"skype":{"title":"Skype"},"stumbleupon":{"title":"StumbleUpon","has_counter":true},"telegram":{"title":"Telegram"},"pocket":{"title":"Pocket","has_counter":true},"xing":{"title":"XING","has_counter":true},"whatsapp":{"title":"WhatsApp"},"email":{"title":"Email"},"print":{"title":"Print"}}};
+/* ]]> */
+</script>
+<script type="text/javascript" src="page/frontend.js"></script>
+<script type="text/javascript" src="page/waypoints.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var elementorFrontendConfig = {"isEditMode":"","stretchedSectionContainer":"","is_rtl":"","urls":{"assets":"http:\/\/realityeditor.org\/wp-content\/plugins\/elementor\/assets\/"}};
+/* ]]> */
+</script>
+<script type="text/javascript" src="page/frontend_002.js"></script>
+<script type="text/javascript">/* <![CDATA[ */EnlighterJS_Config = {"selector":{"block":"pre.EnlighterJSRAW","inline":"code.EnlighterJSRAW"},"language":"js","theme":"atomic","indent":2,"hover":"hoverEnabled","showLinenumbers":true,"rawButton":false,"infoButton":false,"windowButton":true,"rawcodeDoubleclick":false,"grouping":true,"cryptex":{"enabled":false,"email":"mail@example.tld"}};!function(){var a=function(a){var b="Enlighter Error: ";console.error?console.error(b+a):console.log&&console.log(b+a)};return window.addEvent?"undefined"==typeof EnlighterJS?void a("Javascript Resources not loaded yet!"):"undefined"==typeof EnlighterJS_Config?void a("Configuration not loaded yet!"):void window.addEvent("domready",function(){EnlighterJS.Util.Init(EnlighterJS_Config.selector.block,EnlighterJS_Config.selector.inline,EnlighterJS_Config)}):void a("MooTools Framework not loaded yet!")}();;/* ]]> */</script>
+
+</body></html>

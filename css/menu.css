@@ -262,6 +262,25 @@
     z-index: 20;
 }
 
+
+#howtoButton {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    left: 0px;
+    top: 260px;
+    visibility: visible;
+}
+#howtoButtonDiv {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    left: 0px;
+    top: 260px;
+    visibility: visible;
+    z-index: 20;
+}
+
 /* REALITY */
 #realityGuiButtonDiv {
     position: fixed;
@@ -348,6 +367,7 @@
     visibility: hidden;
     z-index: 20;
 }
+
 
 /***
  * COLORS

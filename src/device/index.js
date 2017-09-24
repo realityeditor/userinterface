@@ -923,8 +923,8 @@ realityEditor.device.setStates = function (developerState, extendedTrackingState
             realityEditor.gui.menus.on("realityInfo",["realityGui"]);
             globalStates.realityState = true;
 	} else {
-            realityEditor.gui.menus.off("main",["gui","reset","unconstrained"]);
-            realityEditor.gui.menus.on("main",["gui"]);
+            realityEditor.gui.menus.off("mainhowto",["gui","reset","unconstrained"]);
+            realityEditor.gui.menus.on("mainhowto",["gui"]);
             globalStates.realityState = false;
 	}
 

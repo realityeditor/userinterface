@@ -72,6 +72,7 @@ realityEditor.gui.menus.buttons = {
 		lock:{},
         halflock:{},
 		unlock:{},
+    howto:{},
     // reality UI
     realityGui : {},
     realityInfo : {},
@@ -81,15 +82,17 @@ realityEditor.gui.menus.buttons = {
 };
 
 realityEditor.gui.menus.menus = {
-    default: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue"},
+    default: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue",howto:"blue"},
+    defaulthowto: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue",howto:"blue"},
     main: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue"},
-    logic: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue"},
-    gui: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue"},
-    setting: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue"},
-    editing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", reset: "blue", unconstrained: "blue"},
-    crafting: {back: "blue", logicPocket: "green", logicSetting: "blue", freeze: "blue"},
-    bigTrash: {bigTrash: "red"},
-    bigPocket: {bigPocket: "green"},
+    mainhowto: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", howto:"blue"},
+    logic: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue",howto:"blue"},
+    gui: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue",howto:"blue"},
+    setting: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue",howto:"blue"},
+    editing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", reset: "blue", unconstrained: "blue",howto:"blue"},
+    crafting: {back: "blue", logicPocket: "green", logicSetting: "blue", freeze: "blue",howto:"blue"},
+    bigTrash: {bigTrash: "red",howto:"blue"},
+    bigPocket: {bigPocket: "green",howto:"blue"},
     locking: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", halflock:"blue", lock:"blue"},
     lockingEditing: {gui: "blue", logic: "blue", pocket: "blue", setting: "blue", freeze: "blue", unlock:"blue", halflock:"blue", lock:"blue", reset: "blue", unconstrained: "blue"},
     realityInfo: {realityGui: "blue", realityInfo: "blue", realityTag: "blue", realitySearch: "blue", setting:"blue", realityWork: "blue"},
@@ -397,6 +400,7 @@ realityEditor.gui.menus.pointerUp = function(event) {
     realityEditor.gui.buttons.lockButtonUp(event);
     realityEditor.gui.buttons.halflockButtonUp(event);
     realityEditor.gui.buttons.unlockButtonUp(event);
+    realityEditor.gui.buttons.howtoButtonUp(event);
 
     // Reality UI
 
@@ -405,6 +409,10 @@ realityEditor.gui.menus.pointerUp = function(event) {
     realityEditor.gui.buttons.realityTagButtonUp(event);
     realityEditor.gui.buttons.realitySearchButtonUp(event);
     realityEditor.gui.buttons.realityWorkButtonUp(event);
+
+    if(event.button !== "howto") {
+        document.getElementById('howtoIframe').style.display = "none";
+    }
 
 
    // console.log(realityEditor.gui.search.getVisibility());
