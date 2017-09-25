@@ -248,6 +248,8 @@ realityEditor.gui.buttons.howtoButtonUp = function(event) {
 
     realityEditor.gui.menus.off("main", ["howto"]);
 
+    document.getElementById('howtoIframe').src = "src/gui/howto/index.html";
+
   document.getElementById('howtoIframe').style.display = "inline";
 };
 
