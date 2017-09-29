@@ -109,7 +109,64 @@ realityEditor.device.onload = function () {
 
 	this.cout("onload");
 
+  realityEditor.device.initCordova();
+
 };
+
+realityEditor.device.initCordova = function() {
+
+  var options = {
+    databaseXmlFile: 'PluginTest.xml',
+    targetList: [ 'logo', 'iceland', 'canterbury-grass', 'brick-lane', 'cordovaVuforiaTarget' ],
+    overlayMessage: 'Point your camera at a test image...',
+    vuforiaLicense: '__PLACEHOLDER_ADD_YOUR_VUFORIA_LICENSE_HERE__',
+    autostopOnImageFound: false
+  };
+
+  navigator.VuforiaPlugin.startVuforia(
+    options,
+    function(data) {
+      // To see exactly what `data` can return, see 'Success callback `data` API' within the plugin's documentation.
+
+      if (data.markersFound) {
+        realityEditor.device.processDetectedMarkers(data);
+
+      } else if(data.status.markersFound) {
+        realityEditor.device.processDetectedMarkers(data.result);
+
+      } else if(data.status.imageFound) {
+        alert("Image name: "+ data.result.imageName +"\n Image mat:  " + data.result.modelViewMatrix);
+
+      } else if (data.status.manuallyClosed) {
+        alert("User manually closed Vuforia by pressing back!");
+      }
+    },
+    function(data) {
+      alert("Error: " + data);
+    }
+  );
+}
+
+realityEditor.device.processDetectedMarkers = function(jsonObject) {
+
+  if (JSON.stringify(globalStates.realProjectionMatrix) === "[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]") {
+    console.log("update projection matrix");
+    var parsedProjectionMatrix = JSON.parse(jsonObject.projectionMatrix);
+    realityEditor.gui.ar.setProjectionMatrix(parsedProjectionMatrix);
+  }
+
+  /*
+  Plugin method for transformations
+  */
+  console.log(jsonObject.markersFound);
+
+  var objectForTransform = {};
+  jsonObject.markersFound.forEach(function(elt) {
+    objectForTransform[elt.name] = JSON.parse(elt.modelViewMatrix);
+  });
+
+  realityEditor.gui.ar.draw.update(objectForTransform);
+}
 
 
 window.onload = realityEditor.device.onload;

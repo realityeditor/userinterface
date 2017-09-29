@@ -76,6 +76,8 @@ body {
 
     font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
     color: #ffffff;
+
+    background-color: transparent;
 }
 
 .main {
